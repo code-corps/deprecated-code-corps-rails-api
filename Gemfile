@@ -7,7 +7,26 @@ gem 'rails-api'
 
 gem 'spring', :group => :development
 
-
 gem 'pg'
 
 gem 'active_model_serializers', github: 'rails-api/active_model_serializers'
+
+gem 'clearance'
+
+gem 'doorkeeper'
+
+group :development, :test do
+  gem 'pry-rails'
+  gem 'pry'
+  gem 'pry-nav'
+
+  gem 'rspec-rails', '~> 3.0'
+end
+
+group :test do
+  gem 'factory_girl_rails', '~> 4.0'
+
+  gem 'oauth2'
+
+  gem 'hashie'
+end
