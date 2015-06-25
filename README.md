@@ -1,5 +1,7 @@
 # Code Corps Rails API
 
+[![Code Climate](https://codeclimate.com/github/code-corps/code-corps-api/badges/gpa.svg)](https://codeclimate.com/github/code-corps/code-corps-api) [![Test Coverage](https://codeclimate.com/github/code-corps/code-corps-api/badges/coverage.svg)](https://codeclimate.com/github/code-corps/code-corps-api/coverage)
+
 The Code Corps API is an open source Rails-API backend that powers the Code Corps platform. It includes:
 
 - developer and project matchmaking
