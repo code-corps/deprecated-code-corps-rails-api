@@ -22,5 +22,11 @@ module CodeCorpsApi
 
     # Do not swallow errors in after_commit/after_rollback callbacks.
     config.active_record.raise_in_transactional_callbacks = true
+
+    # Required for adding oauth applications in Doorkeeper
+    config.middleware.use ActionDispatch::Flash
+
+    # Turn off CSRF since we're using an API only
+    config.action_controller.allow_forgery_protection = false
   end
 end

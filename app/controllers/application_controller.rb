@@ -7,8 +7,6 @@ class ApplicationController < ActionController::API
 
   include Clearance::Controller
 
-  include ActionController::RequestForgeryProtection
-
   def signed_in?
     current_user.present?
   end
