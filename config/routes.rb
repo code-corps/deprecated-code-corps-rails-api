@@ -5,5 +5,6 @@ Rails.application.routes.draw do
 
     get 'ping', to: 'ping#index'
 
+    resources :users, only: [:create]
   end
 end

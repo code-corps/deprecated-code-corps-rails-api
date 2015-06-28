@@ -15,12 +15,18 @@ gem 'clearance'
 
 gem 'doorkeeper'
 
+gem 'cancancan', '~> 1.10'
+
 group :development, :test do
   gem 'pry-rails'
   gem 'pry'
   gem 'pry-nav'
 
   gem 'rspec-rails', '~> 3.0'
+end
+
+group :development do
+  gem 'seed-fu'
 end
 
 group :test do

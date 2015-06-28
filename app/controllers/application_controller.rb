@@ -1,4 +1,10 @@
 class ApplicationController < ActionController::API
+  include CanCan::ControllerAdditions
+
+  rescue_from CanCan::AccessDenied do |exception|
+    render nothing: true, status: :unauthorized
+  end
+
   include Clearance::Controller
 
   include ActionController::RequestForgeryProtection
