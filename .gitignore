@@ -15,3 +15,15 @@
 /log/*
 !/log/.keep
 /tmp
+
+# .env, local environment variables for use with foreman
+.env
+
+# ignore the Ruby Version manager (rvm)
+.rvmrc
+.ruby-version
+.ruby-gemset
+.rbenv
+bundler_stubs/*
+
+vendor/bundle/*
