@@ -21,9 +21,10 @@ The Code Corps API is an open source Rails::API backend that powers the Code Cor
 ### Before you start Rails
 
 1. `bundle install`
-2. `bundle exec rake db:create db:migrate db:test:prepare db:seed db:seed_fu`
-3. Try running the specs: `bundle exec rake spec`
-4. `bundle exec rails server`
+2. `bundle exec rake db:create db:migrate db:test:prepare db:seed`
+3. `bundle exec rake db:seed_fu`
+4. Try running the specs: `bundle exec rake spec`
+5. `bundle exec rails server`
 
 ## Built with
 
