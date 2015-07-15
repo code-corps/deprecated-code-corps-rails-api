@@ -66,7 +66,6 @@ describe "Users API" do
           user: {
             email: "josh@example.com",
             password: "password",
-            username: "joshsmith",
             username: "this-won't-work"
           }
         }
