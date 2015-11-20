@@ -40,7 +40,6 @@ describe "passwords API" do
     	}
 
     	user = User.first
-
     	put "#{host}/passwords/#{user.confirmation_token}", {
     		password: "newpassword"
     	}
