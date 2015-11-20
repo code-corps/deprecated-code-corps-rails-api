@@ -73,11 +73,12 @@ ActiveRecord::Schema.define(version: 20151119113429) do
   end
 
   create_table "projects", force: :cascade do |t|
-    t.string   "name",       null: false
+    t.string   "title",       null: false
+    t.string   "description"
     t.integer  "owner_id"
     t.string   "owner_type"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
   end
 
   add_index "projects", ["owner_type", "owner_id"], name: "index_projects_on_owner_type_and_owner_id", using: :btree

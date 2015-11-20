@@ -15,7 +15,8 @@ class CreateProjectRelatedTables < ActiveRecord::Migration
     end
 
     create_table :projects do |t|
-      t.string :name, null: false
+      t.string :title, null: false
+      t.string :description
 
       t.references :owner, polymorphic: true, index: true
 
