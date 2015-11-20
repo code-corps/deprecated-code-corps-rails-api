@@ -27,3 +27,6 @@
 bundler_stubs/*
 
 vendor/bundle/*
+
+# Ignore database.yml
+config/database.yml
