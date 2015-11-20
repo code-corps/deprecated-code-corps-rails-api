@@ -1,5 +1,5 @@
 Rails.application.routes.draw do
-   use_doorkeeper do
+  use_doorkeeper do
     controllers tokens: 'tokens'
   end
 
@@ -8,5 +8,6 @@ Rails.application.routes.draw do
     get 'ping', to: 'ping#index'
 
     resources :users, only: [:create]
+    resources :passwords
   end
 end
