@@ -149,6 +149,8 @@ GEM
     seed-fu (2.3.5)
       activerecord (>= 3.1, < 4.3)
       activesupport (>= 3.1, < 4.3)
+    shoulda-matchers (3.0.1)
+      activesupport (>= 4.0.0)
     slop (3.6.0)
     spring (1.3.6)
     sprockets (3.2.0)
@@ -181,4 +183,8 @@ DEPENDENCIES
   rails-api
   rspec-rails (~> 3.0)
   seed-fu
+  shoulda-matchers
   spring
+
+BUNDLED WITH
+   1.10.6
