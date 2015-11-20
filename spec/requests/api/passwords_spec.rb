@@ -4,7 +4,7 @@ describe "passwords API" do
 
   describe "POST /passwords/send_email" do
   	before do
-        @user = create(:user, id: 10, email: 'existing-user@mail.com', password: 'test_password')
+      @user = create(:user, id: 10, email: 'existing-user@mail.com', password: 'test_password')
     end
 
 		it "returns the user when the email is found" do
@@ -16,6 +16,7 @@ describe "passwords API" do
 			expect(last_response.status).to eq 200
 			expect(json.email).to eq @user.email
 		end
+		
 		it "returns an error when the email is not found" do
 			post "#{host}/passwords", {
 				user: {
@@ -40,6 +41,7 @@ describe "passwords API" do
     	}
 
     	user = User.first
+    	
     	put "#{host}/passwords/#{user.confirmation_token}", {
     		password: "newpassword"
     	}
