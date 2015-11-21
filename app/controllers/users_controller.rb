@@ -25,5 +25,4 @@ class UsersController < ApplicationController
   def render_validation_errors errors
     render json: {errors: errors.to_h}, status: 422
   end
-
 end

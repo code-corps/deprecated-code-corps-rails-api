@@ -7,8 +7,17 @@ describe "Users API" do
   end
 
   context 'GET /users' do
-    it 'raises a routing error' do
-      expect{ get "#{host}/users" }.to raise_error( ActionController::RoutingError)
+    before do
+        @user = create(:user, email: "josh@example.com", username: "joshsmith", password: "password")
+    end
+
+    it 'returns a user object if the user exists' do
+      get "#{host}/users/#{@user.id}",{}
+
+      expect(last_response.status).to eq 200
+      expect(json.email).to eq "josh@example.com"
+      expect(json.username).to eq "joshsmith"
+      expect(json.password).to be_nil
     end
   end
 
