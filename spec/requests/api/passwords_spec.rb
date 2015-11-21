@@ -14,7 +14,9 @@ describe "passwords API" do
         }
       }
       expect(last_response.status).to eq 200
-      expect(json.email).to eq @user.email
+
+      user_attributes = json.data.attributes
+      expect(user_attributes.email).to eq @user.email
     end
     
     it "returns an error when the email is not found" do
