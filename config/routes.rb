@@ -7,7 +7,7 @@ Rails.application.routes.draw do
 
     get 'ping', to: 'ping#index'
 
-    resources :users, only: [:create]
+    resources :users, only: [:create, :show]
     resource :users, only: [:reset_password] do
       post :reset_password
     end

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150628202953) do
+ActiveRecord::Schema.define(version: 20151119113429) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -55,6 +55,49 @@ ActiveRecord::Schema.define(version: 20150628202953) do
   end
 
   add_index "oauth_applications", ["uid"], name: "index_oauth_applications_on_uid", unique: true, using: :btree
+
+  create_table "organization_memberships", force: :cascade do |t|
+    t.string   "role",            default: "regular", null: false
+    t.datetime "created_at",                          null: false
+    t.datetime "updated_at",                          null: false
+    t.integer  "member_id"
+    t.integer  "organization_id"
+  end
+
+  add_index "organization_memberships", ["member_id", "organization_id"], name: "index_organization_memberships_on_member_id_and_organization_id", unique: true, using: :btree
+
+  create_table "organizations", force: :cascade do |t|
+    t.string   "name",       null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "projects", force: :cascade do |t|
+    t.string   "title",       null: false
+    t.string   "description"
+    t.integer  "owner_id"
+    t.string   "owner_type"
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
+  end
+
+  add_index "projects", ["owner_type", "owner_id"], name: "index_projects_on_owner_type_and_owner_id", using: :btree
+
+  create_table "team_memberships", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer  "member_id"
+    t.integer  "team_id"
+  end
+
+  add_index "team_memberships", ["member_id", "team_id"], name: "index_team_memberships_on_member_id_and_team_id", unique: true, using: :btree
+
+  create_table "teams", force: :cascade do |t|
+    t.string   "name",            null: false
+    t.datetime "created_at",      null: false
+    t.datetime "updated_at",      null: false
+    t.integer  "organization_id"
+  end
 
   create_table "users", force: :cascade do |t|
     t.datetime "created_at",                                     null: false

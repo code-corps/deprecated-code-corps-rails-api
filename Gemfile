@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
+ruby '2.2.3'
 
-
-gem 'rails', '4.2.3'
+gem 'rails', '4.2.5'
 
 gem 'rails-api'
 
@@ -31,6 +31,7 @@ end
 
 group :test do
   gem 'factory_girl_rails', '~> 4.0'
+  gem 'shoulda-matchers'
 
   gem 'oauth2'
 

@@ -13,6 +13,11 @@ class UsersController < ApplicationController
     end
   end
 
+  def show
+    user = User.find(params[:id])
+    render json: user
+  end
+
   def reset_password
     user = find_user_by_confirmation_token
     if user && user.update_password(params[:user][:password])
