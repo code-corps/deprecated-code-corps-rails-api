@@ -126,6 +126,36 @@ describe "Users API" do
     end
   end
 
+  context "POST /users/forgot_password" do
+
+    before do
+      @user = create(:user, id: 10, email: 'existing-user@mail.com', password: 'test_password')
+    end
+
+    it "returns the user when the email is found" do
+      post "#{host}/users/forgot_password", {
+        user: {
+          email: "existing-user@mail.com"
+        }
+      }
+      expect(last_response.status).to eq 200
+
+      user_attributes = json.data.attributes
+      expect(user_attributes.email).to eq @user.email
+    end
+    
+    it "returns an error when the email is not found" do
+      post "#{host}/users/forgot_password", {
+        user: {
+          email: "not-existing-user@mail.com"
+        }
+      }
+      expect(last_response.status).to eq 422
+      expect(json.errors.email).to include "doesn't exist"
+    end
+  end
+
+
   context "POST /users/reset_password" do
 
     before do
@@ -133,7 +163,7 @@ describe "Users API" do
     end
 
     it "resets the password when the authentication token is valid" do
-      post "#{host}/passwords", {
+      post "#{host}/users/forgot_password", {
         user: {
           email: "existing-user@mail.com"
         }
@@ -154,7 +184,7 @@ describe "Users API" do
     end
 
     it "doesn't reset the password when the authentication token is not valid" do
-      post "#{host}/passwords", {
+      post "#{host}/users/forgot_password", {
         user: {
           email: "existing-user@mail.com"
         }

@@ -11,6 +11,8 @@ Rails.application.routes.draw do
     resource :users, only: [:reset_password] do
       post :reset_password
     end
-    resources :passwords
+    resource :users, only: [:forgot_password] do
+      post :forgot_password
+    end
   end
 end
