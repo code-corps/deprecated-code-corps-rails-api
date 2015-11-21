@@ -15,9 +15,12 @@ describe "Users API" do
       get "#{host}/users/#{@user.id}",{}
 
       expect(last_response.status).to eq 200
-      expect(json.email).to eq "josh@example.com"
-      expect(json.username).to eq "joshsmith"
-      expect(json.password).to be_nil
+
+      user_attributes = json.data.attributes
+
+      expect(user_attributes.email).to eq "josh@example.com"
+      expect(user_attributes.username).to eq "joshsmith"
+      expect(user_attributes.password).to be_nil
     end
   end
 
@@ -34,9 +37,11 @@ describe "Users API" do
 
       expect(last_response.status).to eq 200
 
-      expect(json.email).to eq "josh@example.com"
-      expect(json.username).to eq "joshsmith"
-      expect(json.password).to be_nil
+      user_attributes = json.data.attributes
+
+      expect(user_attributes.email).to eq "josh@example.com"
+      expect(user_attributes.username).to eq "joshsmith"
+      expect(user_attributes.password).to be_nil
     end
 
     context 'with invalid data' do
