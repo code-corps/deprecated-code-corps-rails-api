@@ -11,14 +11,18 @@ class UsersController < ApplicationController
     end
   end
 
+  def show
+    user = User.find(params[:id])
+    render json: user
+  end
+
   private
 
   def permitted_params
-    params.require(:user).permit(:email, :username, :password,)
+    params.require(:user).permit(:email, :username, :password)
   end
 
   def render_validation_errors errors
     render json: {errors: errors.to_h}, status: 422
   end
-
 end
