@@ -6,7 +6,6 @@ class PingController < ApplicationController
     else
       json = {"ping" => "pong"}
     end
-
     render json: json
   end
 
