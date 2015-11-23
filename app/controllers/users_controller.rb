@@ -18,10 +18,6 @@ class UsersController < ApplicationController
     render json: user
   end
 
-  def show_authenticated_user
-    render json: current_user
-  end
-  
   def forgot_password
     user = User.find_by(email: params[:user][:email])
     if user && user.forgot_password!

@@ -29,11 +29,9 @@ describe "Users API" do
 
     context 'when unauthenticated' do
       it 'returns a 401 unauthorized' do
-        get "#{host}/user", {}
+        get "#{host}/user"
 
         expect(last_response.status).to eq 401
-
-        binding.pry
 
         expect(json).to be_a_valid_json_api_error.with_id "NOT_AUTHORIZED"
       end

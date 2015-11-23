@@ -8,7 +8,7 @@ class ErrorSerializer
     def self.serialize_error(error)
       return serialize_doorkeeper_oauth_invalid_token_response(error) if error.class == Doorkeeper::OAuth::InvalidTokenResponse
       return serialize_doorkeeper_oauth_error_response(error) if error.class == Doorkeeper::OAuth::ErrorResponse
-    end   
+    end
 
     def self.serialize_doorkeeper_oauth_invalid_token_response(error)
       return {
