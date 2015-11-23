@@ -6,9 +6,43 @@ describe "Users API" do
     ActionMailer::Base.deliveries = []
   end
 
+  context 'GET /user' do
+    let(:token) { authenticate(email: "josh@example.com", password: "password") }
+
+    before do
+      create(:user, email: "josh@example.com", username: "joshsmith", password: "password")
+    end
+
+    context 'when authenticated' do
+      it 'returns the authenticated user object' do
+        authenticated_get "user", {}, token
+
+        expect(last_response.status).to eq 200
+
+        user_attributes = json.data.attributes
+
+        expect(user_attributes.email).to eq "josh@example.com"
+        expect(user_attributes.username).to eq "joshsmith"
+        expect(user_attributes.password).to be_nil
+      end
+    end
+
+    context 'when unauthenticated' do
+      it 'returns a 401 unauthorized' do
+        get "#{host}/user", {}
+
+        expect(last_response.status).to eq 401
+
+        binding.pry
+
+        expect(json).to be_a_valid_json_api_error.with_id "NOT_AUTHORIZED"
+      end
+    end
+  end
+
   context 'GET /users' do
     before do
-        @user = create(:user, email: "josh@example.com", username: "joshsmith", password: "password")
+      @user = create(:user, email: "josh@example.com", username: "joshsmith", password: "password")
     end
 
     it 'returns a user object if the user exists' do

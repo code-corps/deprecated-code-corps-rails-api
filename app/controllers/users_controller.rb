@@ -16,6 +16,10 @@ class UsersController < ApplicationController
     render json: user
   end
 
+  def show_authenticated_user
+    render json: current_user
+  end
+
   private
 
   def permitted_params
