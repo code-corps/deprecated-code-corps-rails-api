@@ -7,8 +7,7 @@ Rails.application.routes.draw do
 
     get 'ping', to: 'ping#index'
 
-    get 'user', to: 'authenticated_users#show'
-    
+    get 'user', to: 'users#show_authenticated_user'
     resources :users, only: [:create, :show]
     resource :users, only: [:reset_password] do
       post :reset_password

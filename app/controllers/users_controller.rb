@@ -1,4 +1,7 @@
 class UsersController < ApplicationController
+
+  before_action :doorkeeper_authorize!, only: [:show_authenticated_user]
+
   skip_before_action do 
     load_and_authorize_resource param_method: :permitted_params, only: [:reset_password]
   end
@@ -16,6 +19,10 @@ class UsersController < ApplicationController
   def show
     user = User.find(params[:id])
     render json: user
+  end
+
+  def show_authenticated_user
+    render json: current_user, serializer: AuthenticatedUserSerializer
   end
 
   def forgot_password
@@ -38,23 +45,23 @@ class UsersController < ApplicationController
 
   private
 
-  def permitted_params
-    params.require(:user).permit(:email, :username, :password, :confirmation_token,)
-  end
+    def permitted_params
+      params.require(:user).permit(:email, :username, :password, :confirmation_token,)
+    end
 
-  def render_no_such_email_error
-    render json: {errors: {email: ["doesn't exist"]}}, status: 422
-  end
+    def render_no_such_email_error
+      render json: {errors: {email: ["doesn't exist"]}}, status: 422
+    end
 
-  def render_could_not_reset_password_error
-    render json: {errors: {password: ["couldn't be reset"]}}, status: 422
-  end
+    def render_could_not_reset_password_error
+      render json: {errors: {password: ["couldn't be reset"]}}, status: 422
+    end
 
-  def render_validation_errors errors
-    render json: {errors: errors.to_h}, status: 422
-  end
+    def render_validation_errors errors
+      render json: {errors: errors.to_h}, status: 422
+    end
 
-  def find_user_by_confirmation_token
-    User.find_by(confirmation_token: params[:user][:confirmation_token])
-  end
+    def find_user_by_confirmation_token
+      User.find_by(confirmation_token: params[:user][:confirmation_token])
+    end
 end
