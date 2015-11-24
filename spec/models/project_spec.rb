@@ -8,6 +8,7 @@ describe Project, :type => :model do
 
   describe "relationships" do
     it { should belong_to(:owner) }
+    it { should have_many(:posts) }
   end
 
   describe "ownership" do

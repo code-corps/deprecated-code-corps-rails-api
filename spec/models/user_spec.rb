@@ -20,6 +20,8 @@ describe User, :type => :model do
     it { should have_many(:team_memberships).with_foreign_key("member_id") }
     it { should have_many(:teams).through(:team_memberships) }
     it { should have_many(:projects) }
+    it { should have_many(:posts) }
+    it { should have_many(:comments) }
   end
 
   describe "admin state" do
