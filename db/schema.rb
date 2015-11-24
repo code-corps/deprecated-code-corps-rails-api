@@ -128,7 +128,7 @@ ActiveRecord::Schema.define(version: 20151124130007) do
     t.string   "username"
     t.boolean  "admin",                          default: false, null: false
     t.text     "website"
-    t.text     "twitter"
+    t.string   "twitter"
     t.text     "biography"
   end
 

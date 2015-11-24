@@ -9,7 +9,7 @@ describe User, :type => :model do
     it { should have_db_column(:confirmation_token).of_type(:string).with_options(limit: 128) }
     it { should have_db_column(:remember_token).of_type(:string).with_options(limit: 128, null: false) }
     it { should have_db_column(:admin).of_type(:boolean).with_options(null: false, default: false) }
-    it { should have_db_column(:twitter).of_type(:text) }
+    it { should have_db_column(:twitter).of_type(:string) }
     it { should have_db_column(:website).of_type(:text) }
     it { should have_db_column(:biography).of_type(:text) }
 
