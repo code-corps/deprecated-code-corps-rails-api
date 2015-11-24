@@ -21,6 +21,7 @@ group :development, :test do
   gem 'pry-rails'
   gem 'pry'
   gem 'pry-nav'
+  gem 'pry-stack_explorer'
 
   gem 'rspec-rails', '~> 3.0'
 end
