@@ -24,17 +24,11 @@ class UsersController < ApplicationController
   def update
     user = User.find(params[:id])
 
-    authorize! :update, user
-    user.update(update_params)
-
-    save_and_render_result user
+    update_and_render_result user
   end
 
   def update_authenticated_user
-    authorize! :update, current_user
-    current_user.update(update_params)
-
-    save_and_render_result current_user
+    update_and_render_result current_user
   end
 
   def show_authenticated_user
@@ -61,7 +55,10 @@ class UsersController < ApplicationController
 
   private
 
-    def save_and_render_result(record)
+    def update_and_render_result(record)
+      authorize! :update, record
+      record.assign_attributes update_params
+
       if record.save
         render json: record
       else

@@ -89,8 +89,8 @@ describe "Users API" do
 
         expect(last_response.status).to eq 422
 
-        expect(json.errors.password).to eq "can't be blank"
-        expect(json.errors.username).to eq "can't be blank"
+        expect(json.errors[0].detail).to eq "Password can't be blank"
+        expect(json.errors[1].detail).to eq "Username can't be blank"
       end
 
       it 'fails on a too long username' do
@@ -104,7 +104,7 @@ describe "Users API" do
 
         expect(last_response.status).to eq 422
 
-        expect(json.errors.username).to eq "is too long (maximum is 39 characters)"
+        expect(json.errors[0].detail).to eq "Username is too long (maximum is 39 characters)"
       end
 
       it 'fails on a username with invalid characters' do
@@ -118,7 +118,7 @@ describe "Users API" do
 
         expect(last_response.status).to eq 422
 
-        expect(json.errors.username).to eq "is invalid. Alphanumerics only."
+        expect(json.errors[0].detail).to eq "Username is invalid. Alphanumerics only."
       end
 
     end
@@ -139,7 +139,7 @@ describe "Users API" do
 
         expect(last_response.status).to eq 422
 
-        expect(json.errors.email).to eq "has already been taken"
+        expect(json.errors[0].detail).to eq "Email has already been taken"
       end
 
       it 'fails when the username is taken' do
@@ -152,8 +152,7 @@ describe "Users API" do
         }
 
         expect(last_response.status).to eq 422
-
-        expect(json.errors.username).to eq "has already been taken"
+        expect(json.errors[0].detail).to eq "Username has already been taken"
       end
     end
   end
@@ -287,11 +286,16 @@ describe "Users API" do
         end
 
         it "allows updating of only specific parameters" do
-          expect_any_instance_of(User).to receive(:update).with({ website: "edit.com", biography: "Edited", twitter: "@edit"}.with_indifferent_access)
+          expect_any_instance_of(User).to receive(:assign_attributes).with({ website: "edit.com", biography: "Edited", twitter: "@edit"}.with_indifferent_access)
           authenticated_patch "/users/1", @edit_params, @token
         end
 
-        it "renders validation errors if parameter values are invalid"
+        it "renders validation errors if parameter values are invalid" do
+          invalid_params = convert_to_json_api_hash({website: "multi word"}, "users")
+          authenticated_patch "/users/1", invalid_params, @token
+          expect(last_response.status).to eq 422
+          expect(json).to be_a_valid_json_api_error.with_id "VALIDATION_ERROR"
+        end
       end
 
       context "as another user" do
@@ -353,11 +357,16 @@ describe "Users API" do
       end
 
       it "allows updating of only specific parameters" do
-        expect_any_instance_of(User).to receive(:update).with({ website: "edit.com", biography: "Edited", twitter: "@edit"}.with_indifferent_access)
+        expect_any_instance_of(User).to receive(:assign_attributes).with({ website: "edit.com", biography: "Edited", twitter: "@edit"}.with_indifferent_access)
         authenticated_patch "/users/me", @edit_params, @token
       end
 
-      it "renders validation errors if parameter values are invalid"
+      it "renders validation errors if parameter values are invalid" do
+        invalid_params = convert_to_json_api_hash({website: "multi word"}, "users")
+        authenticated_patch "/users/me", invalid_params, @token
+        expect(last_response.status).to eq 422
+        expect(json).to be_a_valid_json_api_error.with_id "VALIDATION_ERROR"
+      end
     end
   end
 end
