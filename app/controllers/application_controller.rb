@@ -4,7 +4,7 @@ class ApplicationController < ActionController::API
 
   before_action :set_default_response_format
 
-  rescue_from CanCan::AccessDenied do |exception|
+  rescue_from CanCan::AccessDenied do |e|
     render nothing: true, status: :unauthorized
   end
 
@@ -28,6 +28,14 @@ class ApplicationController < ActionController::API
     render json: {errors: errors.to_h}, status: 422
   end
 
+  def record_attributes
+    params.require(:data).fetch(:attributes, {})
+  end
+
+  def record_relationships
+    params.require(:data).fetch(:relationships, {})
+  end
+
   private
 
   def current_resource_owner
@@ -37,4 +45,9 @@ class ApplicationController < ActionController::API
   def set_default_response_format
     request.format = :json unless params[:format]
   end
+
+  def render_error(error)
+    error_hash = ErrorSerializer.serialize(error)
+    render json: error_hash, status: error_hash[:errors][0][:status]
+   end
 end

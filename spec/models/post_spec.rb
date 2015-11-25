@@ -18,6 +18,12 @@ describe Post, :type => :model do
     it { should belong_to(:user) }
   end
 
+  describe "validations" do
+    it { should validate_presence_of(:user) }
+    it { should validate_presence_of(:project) }
+    it { should validate_presence_of(:title) }
+  end
+
   describe "behavior" do
     it { should define_enum_for(:status).with({ open: "open", closed: "closed" }) }
     it { should define_enum_for(:post_type).with({ idea: "idea", progress: "progress", task: "task", issue: "issue" }) }

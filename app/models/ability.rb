@@ -41,6 +41,7 @@ class Ability
 
     if signed_in
       can :manage, User, id: user.id
+      can :create, Post
     end
   end
 end
