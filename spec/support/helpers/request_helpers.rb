@@ -30,4 +30,13 @@ module RequestHelpers
   def authenticated_delete(path, args, token)
     delete "#{host}/#{path}", args, {"HTTP_AUTHORIZATION" => "Bearer #{token}"}
   end
+
+  def convert_to_json_api_hash(hash, type)
+    data = {}
+    data[:id] = hash[:id] if hash[:id].present?
+    data[:type] = type
+    data[:attributes] = hash.except(:id)
+
+    { data: data }
+  end
 end

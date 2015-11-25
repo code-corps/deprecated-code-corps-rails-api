@@ -239,16 +239,12 @@ describe "Users API" do
   context "PATCH /users/:id" do
     before do
       @edited_user = create(:user, id: 1, website: "initial.com", biography: "Initial", twitter: "@user")
-      @edit_params = {
-        data: {
-          type: "users",
-          attributes: {
-            website: "edit.com", biography: "Edited", twitter: "@edit",
-            email: "new@mail.com", encrypted_password: "bla", confirmation_token: "bla",
-            remember_token: "bla", username: "bla", admin: true
-          }
-        }
+      params = {
+        website: "edit.com", biography: "Edited", twitter: "@edit",
+        email: "new@mail.com", encrypted_password: "bla", confirmation_token: "bla",
+        remember_token: "bla", username: "bla", admin: true
       }
+      @edit_params = convert_to_json_api_hash(params, "users")
     end
 
     context "when unauthenticated" do
@@ -318,16 +314,12 @@ describe "Users API" do
 
     before do
       @current_user = create(:user, email: "current@mail.com", password: "password", website: "initial.com", biography: "Initial", twitter: "@user")
-      @edit_params = {
-        data: {
-          type: "users",
-          attributes: {
-            website: "edit.com", biography: "Edited", twitter: "@edit",
-            email: "new@mail.com", encrypted_password: "bla", confirmation_token: "bla",
-            remember_token: "bla", username: "bla", admin: true
-          }
-        }
+      params = {
+        website: "edit.com", biography: "Edited", twitter: "@edit",
+        email: "new@mail.com", encrypted_password: "bla", confirmation_token: "bla",
+        remember_token: "bla", username: "bla", admin: true
       }
+      @edit_params = convert_to_json_api_hash(params, "users")
     end
 
     context "when unauthenticated" do
