@@ -24,13 +24,12 @@ class ApplicationController < ActionController::API
     current_resource_owner
   end
 
-  def render_validation_errors errors
-    error_hash = ErrorSerializer.serialize(errors)
-    render json: error_hash, status: error_hash[:errors][0][:status]
-  end
-
   def record_attributes
     params.require(:data).fetch(:attributes, {})
+  end
+
+  def render_validation_errors errors
+    render_error errors
   end
 
   def render_error(error)

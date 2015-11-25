@@ -27,12 +27,12 @@ class UsersController < ApplicationController
     update_and_render_result user
   end
 
-  def update_authenticated_user
-    update_and_render_result current_user
-  end
-
   def show_authenticated_user
     render json: current_user, serializer: AuthenticatedUserSerializer
+  end
+
+  def update_authenticated_user
+    update_and_render_result current_user
   end
 
   def forgot_password
