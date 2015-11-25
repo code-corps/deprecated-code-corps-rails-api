@@ -59,13 +59,10 @@ describe "Users API" do
   context 'POST /users' do
 
     it 'creates a valid user' do
-      post "#{host}/users", {
-        user: {
-          email: "josh@example.com",
-          username: "joshsmith",
-          password: "password"
-        }
-      }
+      params = { email: "josh@example.com", username: "joshsmith", password: "password" }
+      json_api_params = convert_to_json_api_hash(params, "users")
+
+      post "#{host}/users", json_api_params
 
       expect(last_response.status).to eq 200
 
@@ -79,13 +76,10 @@ describe "Users API" do
     context 'with invalid data' do
 
       it 'fails on a blank password and username' do
-        post "#{host}/users", {
-          user: {
-            email: "josh@example.com",
-            password: "",
-            username: ""
-          }
-        }
+        params = { email: "josh@example.com", username: "", password: "" }
+        json_api_params = convert_to_json_api_hash(params, "users")
+
+        post "#{host}/users", json_api_params
 
         expect(last_response.status).to eq 422
 
@@ -94,13 +88,10 @@ describe "Users API" do
       end
 
       it 'fails on a too long username' do
-        post "#{host}/users", {
-          user: {
-            email: "josh@example.com",
-            password: "password",
-            username: "thisusernameiswaytoolongforusbecauseitswelloverthelimit"
-          }
-        }
+        params = { email: "josh@example.com", username: "A" * 40, password: "password" }
+        json_api_params = convert_to_json_api_hash(params, "users")
+
+        post "#{host}/users", json_api_params
 
         expect(last_response.status).to eq 422
 
@@ -108,13 +99,10 @@ describe "Users API" do
       end
 
       it 'fails on a username with invalid characters' do
-        post "#{host}/users", {
-          user: {
-            email: "josh@example.com",
-            password: "password",
-            username: "this-won't-work"
-          }
-        }
+        params = { email: "josh@example.com", username: "this-won't-work", password: "password" }
+        json_api_params = convert_to_json_api_hash(params, "users")
+
+        post "#{host}/users", json_api_params
 
         expect(last_response.status).to eq 422
 
@@ -129,13 +117,10 @@ describe "Users API" do
       end
 
       it 'fails when the email is taken' do
-        post "#{host}/users", {
-          user: {
-            email: "josh@example.com",
-            password: "password",
-            username: "joshsmith"
-          }
-        }
+        params = { email: "josh@example.com", username: "joshsmith", password: "password" }
+        json_api_params = convert_to_json_api_hash(params, "users")
+
+        post "#{host}/users", json_api_params
 
         expect(last_response.status).to eq 422
 
@@ -143,13 +128,10 @@ describe "Users API" do
       end
 
       it 'fails when the username is taken' do
-        post "#{host}/users", {
-          user: {
-            email: "newemail@gmail.com",
-            password: "password",
-            username: "joshsmith"
-          }
-        }
+        params = { email: "newemail@gmail.com", username: "joshsmith", password: "password" }
+        json_api_params = convert_to_json_api_hash(params, "users")
+
+        post "#{host}/users", json_api_params
 
         expect(last_response.status).to eq 422
         expect(json.errors[0].detail).to eq "Username has already been taken"
@@ -164,11 +146,9 @@ describe "Users API" do
     end
 
     it "returns the user when the email is found" do
-      post "#{host}/users/forgot_password", {
-        user: {
-          email: "existing-user@mail.com"
-        }
-      }
+      json_api_params = convert_to_json_api_hash({email: "existing-user@mail.com"}, "users")
+      post "#{host}/users/forgot_password", json_api_params
+
       expect(last_response.status).to eq 200
 
       user_attributes = json.data.attributes
@@ -176,11 +156,9 @@ describe "Users API" do
     end
 
     it "returns an error when the email is not found" do
-      post "#{host}/users/forgot_password", {
-        user: {
-          email: "not-existing-user@mail.com"
-        }
-      }
+      json_api_params = convert_to_json_api_hash({email: "not-existing-user@mail.com"}, "users")
+      post "#{host}/users/forgot_password", json_api_params
+
       expect(last_response.status).to eq 422
       expect(json.errors.email).to include "doesn't exist"
     end
@@ -193,20 +171,13 @@ describe "Users API" do
     end
 
     it "resets the password when the authentication token is valid" do
-      post "#{host}/users/forgot_password", {
-        user: {
-          email: "existing-user@mail.com"
-        }
-      }
+      json_api_params = convert_to_json_api_hash({email: "existing-user@mail.com"}, "users")
+      post "#{host}/users/forgot_password", json_api_params
 
       user = User.first
 
-      post "#{host}/users/reset_password", {
-        user: {
-          confirmation_token: "#{user.confirmation_token}",
-          password: "newpassword"
-        }
-      }
+      json_api_params = convert_to_json_api_hash({confirmation_token: "#{user.confirmation_token}", password: "newpassword"}, "users")
+      post "#{host}/users/reset_password", json_api_params
 
       expect(last_response.status).to eq 200
       token = authenticate(email: "existing-user@mail.com", password: "newpassword")
@@ -214,21 +185,13 @@ describe "Users API" do
     end
 
     it "doesn't reset the password when the authentication token is not valid" do
-      post "#{host}/users/forgot_password", {
-        user: {
-          email: "existing-user@mail.com"
-        }
-      }
+      json_api_params = convert_to_json_api_hash({email: "existing-user@mail.com"}, "users")
+      post "#{host}/users/forgot_password", json_api_params
 
       user = User.first
-      token = "fakeconfirmationtoken"
 
-      post "#{host}/users/reset_password", {
-        user: {
-          confirmation_token: "#{token}",
-          password: "newpassword"
-        }
-      }
+      json_api_params = convert_to_json_api_hash({confirmation_token: "fakeconfirmationtoken", password: "newpassword"}, "users")
+      post "#{host}/users/reset_password", json_api_params
 
       expect(last_response.status).to eq 422
       expect(json.errors.password).to include "couldn't be reset"
