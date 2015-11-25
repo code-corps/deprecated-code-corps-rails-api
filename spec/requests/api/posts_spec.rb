@@ -22,7 +22,7 @@ describe "Projects API" do
       create_list(:comment, 5, post: post)
     end
 
-    it "returns the specified project" do
+    it "returns the specified post, with comments included" do
       get "#{host}/posts/1", {}
       expect(last_response.status).to eq 200
 
@@ -32,11 +32,14 @@ describe "Projects API" do
       attributes = json.data.attributes
       expect(attributes.title).to eq "Post"
 
-      comment_relationships = json.data.relationships.select{ |r| r.type == "comments"}
+      comment_relationships = json.data.relationships.comments.data
       expect(comment_relationships.count).to eq 5
 
-      comment_includes = json.includes.select{ |i| i.type == "comments" }
+      expect(json.included).not_to be_nil
+
+      comment_includes = json.included.select{ |i| i.type == "comments" }
       expect(comment_includes.count).to eq 5
     end
   end
+
 end
