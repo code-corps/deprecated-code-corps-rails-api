@@ -8,7 +8,7 @@ class Post < ActiveRecord::Base
     closed: "closed"
   }
 
-  enum type: {
+  enum post_type: {
     idea: "idea",
     progress: "progress",
     task: "task",
