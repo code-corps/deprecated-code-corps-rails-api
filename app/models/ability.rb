@@ -40,6 +40,7 @@ class Ability
     end
 
     if signed_in
+      can :manage, User, id: user.id
     end
   end
 end
