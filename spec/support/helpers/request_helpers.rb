@@ -23,6 +23,10 @@ module RequestHelpers
     put "#{host}/#{path}", args, {"HTTP_AUTHORIZATION" => "Bearer #{token}"}
   end
 
+  def authenticated_patch(path, args, token)
+    patch "#{host}/#{path}", args, {"HTTP_AUTHORIZATION" => "Bearer #{token}"}
+  end
+
   def authenticated_delete(path, args, token)
     delete "#{host}/#{path}", args, {"HTTP_AUTHORIZATION" => "Bearer #{token}"}
   end
