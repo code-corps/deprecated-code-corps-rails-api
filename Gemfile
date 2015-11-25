@@ -17,6 +17,10 @@ gem 'doorkeeper'
 
 gem 'cancancan', '~> 1.10'
 
+gem 'paperclip'
+
+gem 'aws-sdk'
+
 group :development, :test do
   gem 'pry-rails'
   gem 'pry'

@@ -4,6 +4,10 @@ describe Project, :type => :model do
   describe "schema" do
     it { should have_db_column(:title).of_type(:string).with_options(null: false) }
     it { should have_db_column(:description).of_type(:string) }
+    it { should have_db_column(:icon_file_name).of_type(:string) }
+    it { should have_db_column(:icon_content_type).of_type(:string) }
+    it { should have_db_column(:icon_file_size).of_type(:integer) }
+    it { should have_db_column(:icon_updated_at).of_type(:datetime) }
   end
 
   describe "relationships" do

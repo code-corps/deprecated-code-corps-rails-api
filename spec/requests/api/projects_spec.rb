@@ -33,4 +33,29 @@ describe "Projects API" do
       expect(attributes.description).to eq "Description"
     end
   end
+
+  context "POST /projects" do
+    it 'creates a project with a user uploaded image' do
+      file = File.open("#{Rails.root}/spec/sample_data/default-avatar.png", 'r')
+      base_64_image = Base64.encode64(open(file) { |io| io.read })
+
+      post "#{host}/projects", {
+        project: {
+          title: "Test Project Title",
+          description: "Test project description",
+          base_64_icon_data: base_64_image,
+        }
+      }
+
+      expect(last_response.status).to eq 200
+
+      project = Project.last
+      expect(project.base_64_icon_data).to eq base_64_image
+      expect(project.icon.path).to be_nil
+      # expect photo saved from create action to be identical to our test photo
+      project_icon_file = File.open("#{Rails.root}/spec/sample_data/default-avatar.png", 'r')
+      base_64_saved_image = Base64.encode64(open(project_icon_file) { |io| io.read })
+      expect(base_64_saved_image).to include base_64_image
+    end
+  end
 end
