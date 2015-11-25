@@ -4,8 +4,8 @@ class ApplicationController < ActionController::API
 
   before_action :set_default_response_format
 
-  rescue_from CanCan::AccessDenied do |exception|
-    render nothing: true, status: :unauthorized
+  rescue_from CanCan::AccessDenied do |e|
+    render_error e
   end
 
   def doorkeeper_unauthorized_render_options(error: nil)
@@ -26,6 +26,15 @@ class ApplicationController < ActionController::API
 
   def render_validation_errors errors
     render json: {errors: errors.to_h}, status: 422
+  end
+
+  def record_attributes
+    params.require(:data).fetch(:attributes, {})
+  end
+
+  def render_error(error)
+    error_hash = ErrorSerializer.serialize(error)
+    render json: error_hash, status: error_hash[:errors][0][:status]
   end
 
   private

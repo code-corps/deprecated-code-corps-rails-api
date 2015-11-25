@@ -236,14 +236,20 @@ describe "Users API" do
     end
   end
 
-  context "PATCH /users" do
+  context "PATCH /users/:id" do
     before do
-      @edited_user = create(:user, website: "initial.com", biography: "Initial", twitter: "@user")
+      @edited_user = create(:user, id: 1, website: "initial.com", biography: "Initial", twitter: "@user")
     end
 
     context "when unauthenticated" do
       it "returns a 401 with a proper error message" do
-        patch "#{host}/users", { id: @edited_user.id, website: "edit.com" }
+        params = {
+          data: {
+            type: "users",
+            attributes: { website: "edit.com" }
+          }
+        }
+        patch "#{host}/users/1", params
 
         expect(last_response.status).to eq 401
         expect(json).to be_a_valid_json_api_error.with_id("NOT_AUTHORIZED")
@@ -258,7 +264,14 @@ describe "Users API" do
         end
 
         it "performs the edit" do
-          authenticated_patch "/users", { id: @edited_user.id, website: "edit.com", biography: "Edited", twitter: "@edit" }, @token
+          params = {
+            data: {
+              type: "users",
+              attributes: { website: "edit.com", biography: "Edited", twitter: "@edit" }
+            }
+          }
+
+          authenticated_patch "/users/1", params, @token
 
           expect(last_response.status).to eq 200
 
@@ -275,21 +288,21 @@ describe "Users API" do
 
         it "allows updating of only specific parameters" do
           params = {
-            id: @edited_user.id,
-            website: "edit.com",
-            biography: "Edited",
-            twitter: "@edit",
-            email: "new@mail.com",
-            encrypted_password: "bla",
-            confirmation_token: "bla",
-            remember_token: "bla",
-            username: "bla",
-            admin: true
+            data: {
+              type: "users",
+              attributes: {
+                website: "edit.com", biography: "Edited", twitter: "@edit",
+                email: "new@mail.com", encrypted_password: "bla", confirmation_token: "bla",
+                remember_token: "bla", username: "bla", admin: true
+              }
+            }
           }
 
           expect_any_instance_of(User).to receive(:update).with({ website: "edit.com", biography: "Edited", twitter: "@edit"}.with_indifferent_access)
-          authenticated_patch "/users", params, @token
+          authenticated_patch "/users/1", params, @token
         end
+
+        it "renders validation errors if parameter values are invalid"
       end
 
       context "as another user" do
@@ -297,25 +310,35 @@ describe "Users API" do
           @regular_user = create(:user, admin: false, email: "regular@mail.com", password: "password")
           @token = authenticate(email: "regular@mail.com", password: "password")
         end
+
         it "returns a 401 with a proper error message" do
-          authenticated_patch "#{host}/users", { id: @edited_user.id, website: "edit.com" }, @token
+          params = {
+            data: {
+              type: "users",
+              attributes: { website: "edit.com" }
+            }
+          }
+          authenticated_patch "/users/1", params, @token
 
           expect(last_response.status).to eq 401
-          expect(json).to be_a_valid_json_api_error.with_id("NOT_AUTHORIZED")
+          expect(json).to be_a_valid_json_api_error.with_id("ACCESS_DENIED")
         end
       end
     end
   end
 
   context "PATCH /users/me" do
-    before do
-      @edited_user = create(:user, website: "initial.com", biography: "Initial", twitter: "@user")
-      @edit_params = { id: @edited_user.id, website: "edit.com", biography: "Edited", twitter: "@edit" }
-    end
 
     context "when unauthenticated" do
       it "returns a 401 with a proper error message" do
-        patch '/users', @edit_params
+        params = {
+          data: {
+            type: "users",
+            attributes: { website: "edit.com" }
+          }
+        }
+
+        patch "#{host}/users/me", params
 
         expect(last_response.status).to eq 401
         expect(json).to be_a_valid_json_api_error.with_id("NOT_AUTHORIZED")
@@ -329,7 +352,14 @@ describe "Users API" do
       end
 
       it "performs the edit" do
-        authenticated_patch "/users/me", { website: "edit.com", biography: "Edited", twitter: "@edit" }, @token
+        params = {
+          data: {
+            type: "users",
+            attributes: { website: "edit.com", biography: "Edited", twitter: "@edit" }
+          }
+        }
+
+        authenticated_patch "/users/me", params, @token
 
         expect(last_response.status).to eq 200
 
@@ -346,20 +376,21 @@ describe "Users API" do
 
       it "allows updating of only specific parameters" do
         params = {
-          website: "edit.com",
-          biography: "Edited",
-          twitter: "@edit",
-          email: "new@mail.com",
-          encrypted_password: "bla",
-          confirmation_token: "bla",
-          remember_token: "bla",
-          username: "bla",
-          admin: true
+          data: {
+            type: "users",
+            attributes: {
+              website: "edit.com", biography: "Edited", twitter: "@edit",
+              email: "new@mail.com", encrypted_password: "bla", confirmation_token: "bla",
+              remember_token: "bla", username: "bla", admin: true
+            }
+          }
         }
 
         expect_any_instance_of(User).to receive(:update).with({ website: "edit.com", biography: "Edited", twitter: "@edit"}.with_indifferent_access)
         authenticated_patch "/users/me", params, @token
       end
+
+      it "renders validation errors if parameter values are invalid"
     end
   end
 end
