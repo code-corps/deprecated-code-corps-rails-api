@@ -18,5 +18,6 @@ Rails.application.routes.draw do
 
     resources :projects, only: [:show, :index]
     resources :posts, only: [:index, :show, :create]
+    resources :comments, only: [:create]
   end
 end

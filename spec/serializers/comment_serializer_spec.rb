@@ -47,6 +47,10 @@ describe CommentSerializer, :type => :serializer do
       it "should include 'post'" do
         expect(subject["post"]).not_to be_nil
       end
+
+      it "should include 'user'" do
+        expect(subject["user"]).not_to be_nil
+      end
     end
 
     context "included" do

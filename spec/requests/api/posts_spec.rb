@@ -48,7 +48,7 @@ describe "Posts API" do
       it "should return a 401 with a proper error" do
         post "#{host}/posts", { data: { type: "posts" } }
         expect(last_response.status).to eq 401
-        pending "uncomment and potentially fix the following when PR49 is merged"
+        pending "fix the following when PR49 is merged"
         expect(json).to be_a_valid_json_api_error.with_id "NOT_AUTHORIZED"
       end
     end
@@ -66,7 +66,7 @@ describe "Posts API" do
         authenticated_post "/posts", params, @token
 
         expect(last_response.status).to eq 422
-        pending "uncomment and potentially fix the following when PR49 is merged"
+        pending "fix the following when PR49 is merged"
         expect(json).to be_a_valid_json_api_error
         expect(json).to contain_an_error_of_type("VALIDATION_ERROR").with_message("Project is required")
       end
@@ -79,7 +79,7 @@ describe "Posts API" do
         authenticated_post "/posts", params, @token
 
         expect(last_response.status).to eq 422
-        pending "uncomment and potentially fix the following when PR49 is merged"
+        pending "fix the following when PR49 is merged"
         expect(json).to be_a_valid_json_api_error
         expect(json).to contain_an_error_of_type("VALIDATION_ERROR").with_message("Title is required")
       end
