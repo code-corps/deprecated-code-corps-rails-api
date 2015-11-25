@@ -42,4 +42,125 @@ describe "Projects API" do
     end
   end
 
+  context "POST /posts" do
+
+    context "when unauthenticated" do
+      it "should return a 401 with a proper error" do
+        post "#{host}/posts", {}
+        expect(last_response.statuss).to eq 401
+        expect(json).to be_a_valid_json_api_error.with_id "NOT_AUTHORIZED"
+      end
+    end
+
+    context "when authenticated" do
+      before do
+        @user = create(:user, id: 1, email: "test_user@mail.com", password: "password")
+        @project = create(:project, id: 2)
+        @token = authenticate(email: "test_user@mail.com", password: "password")
+      end
+
+
+      it "requires a 'project' to be specified" do
+        params = { data: { type: "posts", attributes: { title: "Post title", post_type: "issue" } } }
+        authenticated_post "/posts", params, @token
+
+        expect(last_response.status).to eq 422
+        expect(json).to be_a_valid_json_api_error
+        expect(json).to contain_an_error_of_type("VALIDATION_ERROR").with_message("Project is required")
+      end
+
+      it "requires a 'title' to be specified" do
+        params = { data: { type: "posts",
+          attributes: { post_type: "issue" },
+          relationships: { project: { id: 1 } }
+        } }
+        authenticated_post "/posts", params, @token
+
+        expect(last_response.status).to eq 422
+        expect(json).to be_a_valid_json_api_error
+        expect(json).to contain_an_error_of_type("VALIDATION_ERROR").with_message("Title is required")
+      end
+
+      it "requires a 'post_type' to be specified" do
+        params = { data: { type: "posts",
+          attributes: { title: "Post title" },
+          relationships: { project: { id: 1 } }
+        } }
+        authenticated_post "/posts", params, @token
+
+        expect(last_response.status).to eq 422
+        expect(json).to be_a_valid_json_api_error
+        expect(json).to contain_an_error_of_type("VALIDATION_ERROR").with_message("Post type is required")
+      end
+
+      it "does not require a 'body' to be specified" do
+        params = { data: { type: "posts",
+          attributes: { title: "Post title", post_type: "issue" },
+          relationships: { project: { id: 1 } }
+        } }
+        authenticated_post "/posts", params, @token
+
+        expect(last_response.status).to eq 200
+      end
+
+      it "ignores the 'status' parameter" do
+        params = { data: { type: "posts",
+          attributes: { title: "Post title", post_type: "issue", status: "closed" },
+          relationships: { project: { id: 1 } }
+        } }
+        authenticated_post "/posts", params, @token
+
+        expect(last_response.status).to eq 200
+        expect(Post.last.open?).to be true
+      end
+
+      context "when it succeeds" do
+        before do
+          create(:project, id: 1)
+          params = { data: {
+            type: "posts",
+            attributes: { title: "Post title", body: "Post body", post_type: "issue" },
+            relationships: {
+              project: { data: { id: 1, type: "projects" } }
+            }
+          }}
+          authenticated_post "/posts", params, @token
+        end
+        it "creates a post" do
+          post = Post.last
+          expect(post.title).to eq "Post title"
+          expect(post.body).to eq "Post body"
+          expect(post.issue?).to be true
+
+          expect(post.user_id).to eq 1
+          expect(post.project_id).to eq 2
+        end
+
+        it "returns the created post" do
+          post_attributes = json.data.attributes
+          expect(post_attributes.title).to eq "Post title"
+          expect(post_attributes.body).to eq "Post body"
+          expect(post_attributes.post_type).to eq "issue"
+
+          post_relationships = json.data.relationships
+          expect(post_relationships).not_to be_nil
+          expect(post_relationships.comments).to be_nil
+
+          post_includes = json.included
+          expect(post_includes).to be_nil
+        end
+
+        it "sets user to current user" do
+          post_relationships = json.data.relationships
+          expect(post_relationships.user).not_to be_nil
+          expect(post_relationships.user.id).to eq "1"
+        end
+
+        it "sets status to 'open'" do
+          post_attributes = json.data.attributes
+          expect(post_attributes.status).to eq "open"
+        end
+      end
+    end
+  end
 end

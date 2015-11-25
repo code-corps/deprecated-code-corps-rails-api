@@ -35,3 +35,23 @@ RSpec::Matchers.define :be_a_valid_json_api_error do
     @expected_id = expected_id
   end
 end
+
+RSpec::Matchers.define :contain_an_error_of_type do  |expected_type|
+  def there_is_an_error_with_id expected
+    return @errors.any? { |e| e[:id] == expected }
+  end
+
+  def there_is_an_error_with_message expected
+    return @errors.eny? { |e| e[:detail] == expected }
+  end
+
+  match do |hash, expected_type|
+    @errors = hash.with_indifferent_access[:errors].with_indifferent_access
+    result = there_is_an_error_with_id expected_type
+    result &&= there_is_an_error_with_message @expected_message unless @expected_message.nil?
+  end
+
+  chain :with_message do |expected_message|
+    @expected_message = expected_message
+  end
+end
