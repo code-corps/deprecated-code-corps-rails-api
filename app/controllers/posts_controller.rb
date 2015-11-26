@@ -1,4 +1,7 @@
 class PostsController < ApplicationController
+
+  before_action :doorkeeper_authorize!, only: [:create]
+
   def index
     posts = Post.all
     render json: posts

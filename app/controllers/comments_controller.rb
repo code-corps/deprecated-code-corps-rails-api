@@ -1,4 +1,6 @@
 class CommentsController < ApplicationController
+  before_action :doorkeeper_authorize!, only: [:create]
+
   def create
     authorize! :create, Comment
     comment = Comment.new(create_params)

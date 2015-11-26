@@ -42,11 +42,11 @@ RSpec::Matchers.define :contain_an_error_of_type do  |expected_type|
   end
 
   def there_is_an_error_with_message expected
-    return @errors.eny? { |e| e[:detail] == expected }
+    return @errors.any? { |e| e[:detail] == expected }
   end
 
-  match do |hash, expected_type|
-    @errors = hash.with_indifferent_access[:errors].with_indifferent_access
+  match do |hash|
+    @errors = hash.with_indifferent_access[:errors].map(&:with_indifferent_access)
     result = there_is_an_error_with_id expected_type
     result &&= there_is_an_error_with_message @expected_message unless @expected_message.nil?
   end

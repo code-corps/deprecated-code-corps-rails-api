@@ -7,7 +7,6 @@ describe "Comments API" do
       it "should return a 401 with a proper error" do
         post "#{host}/comments", { data: { type: "comments" } }
         expect(last_response.status).to eq 401
-        pending "fix the following when PR49 is merged"
         expect(json).to be_a_valid_json_api_error.with_id "NOT_AUTHORIZED"
       end
     end
@@ -22,12 +21,11 @@ describe "Comments API" do
 
       it "requires a 'post' to be specified" do
         params = { data: { type: "comments", attributes: { body: "Comment body" } } }
-        authenticated_post "/posts", params, @token
+        authenticated_post "/comments", params, @token
 
         expect(last_response.status).to eq 422
-        pending "fix the following when PR49 is merged"
         expect(json).to be_a_valid_json_api_error
-        expect(json).to contain_an_error_of_type("VALIDATION_ERROR").with_message("Post is required")
+        expect(json).to contain_an_error_of_type("VALIDATION_ERROR").with_message("Post can't be blank")
       end
 
       it "requires a 'body' to be specified" do
@@ -38,9 +36,8 @@ describe "Comments API" do
         authenticated_post "/comments", params, @token
 
         expect(last_response.status).to eq 422
-        pending "fix the following when PR49 is merged"
         expect(json).to be_a_valid_json_api_error
-        expect(json).to contain_an_error_of_type("VALIDATION_ERROR").with_message("Body is required")
+        expect(json).to contain_an_error_of_type("VALIDATION_ERROR").with_message("Body can't be blank")
       end
 
       context "when it succeeds" do
