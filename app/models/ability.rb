@@ -37,6 +37,7 @@ class Ability
     else
       # This is where we place non-admin management restrictions
       # cannot :read, User // for example
+      cannot :manage, User
     end
 
     if signed_in
