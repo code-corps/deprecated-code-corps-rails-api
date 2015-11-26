@@ -71,6 +71,17 @@ describe "UserSkills API" do
         end
       end
 
+      context "when there's no skill with the specified id" do
+        it "fails with a validation error" do
+          authenticated_post "/user_skills", { data: { relationships: {
+            skill: { data: { type: "skills", id: 55 } }
+          } } }, token
+
+          expect(last_response.status).to eq 422
+          expect(json).to be_a_valid_json_api_error.with_id "VALIDATION_ERROR"
+        end
+      end
+
       it "requires a skill to be specified" do
         authenticated_post "/user_skills", { data: { relationships: {} } }, token
         expect(last_response.status).to eq 422
