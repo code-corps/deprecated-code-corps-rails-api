@@ -21,6 +21,8 @@ gem 'paperclip'
 
 gem 'aws-sdk'
 
+gem 'sidekiq'
+
 group :development, :test do
   gem 'pry-rails'
   gem 'pry'
@@ -28,6 +30,8 @@ group :development, :test do
   gem 'pry-stack_explorer'
 
   gem 'rspec-rails', '~> 3.0'
+  gem 'rspec-sidekiq'
+  gem 'fakeredis', :require => "fakeredis/rspec"
 end
 
 group :development do

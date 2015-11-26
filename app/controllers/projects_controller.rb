@@ -1,7 +1,12 @@
 class ProjectsController < ApplicationController
   def create
-    project = Project.create( project_params )
-    render json: project
+    project = Project.new(permitted_params)
+
+    if project.save
+      AddProjectIconWorker.perform_async(project.id)
+      render json: project
+    else
+    end
   end
 
   def index
@@ -15,7 +20,7 @@ class ProjectsController < ApplicationController
 
   private
 
-  def project_params
-    params.require(:project).permit(:base_64_icon_data, :title, :description)
+  def permitted_params
+    record_attributes.permit(:base_64_icon_data, :title, :description)
   end
 end
