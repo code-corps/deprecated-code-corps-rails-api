@@ -31,7 +31,7 @@ module RequestHelpers
     delete "#{host}/#{path}", args, {"HTTP_AUTHORIZATION" => "Bearer #{token}"}
   end
 
-  def convert_to_json_api_hash(hash, type)
+  def json_api_params_for(type, hash)
     data = {}
     data[:id] = hash[:id] if hash[:id].present?
     data[:type] = type

@@ -60,7 +60,7 @@ describe "Users API" do
 
     it 'creates a valid user' do
       params = { email: "josh@example.com", username: "joshsmith", password: "password" }
-      json_api_params = convert_to_json_api_hash(params, "users")
+      json_api_params = json_api_params_for("users", params)
 
       post "#{host}/users", json_api_params
 
@@ -77,7 +77,7 @@ describe "Users API" do
 
       it 'fails on a blank password and username' do
         params = { email: "josh@example.com", username: "", password: "" }
-        json_api_params = convert_to_json_api_hash(params, "users")
+        json_api_params = json_api_params_for("users", params)
 
         post "#{host}/users", json_api_params
 
@@ -89,7 +89,7 @@ describe "Users API" do
 
       it 'fails on a too long username' do
         params = { email: "josh@example.com", username: "A" * 40, password: "password" }
-        json_api_params = convert_to_json_api_hash(params, "users")
+        json_api_params = json_api_params_for("users", params)
 
         post "#{host}/users", json_api_params
 
@@ -100,7 +100,7 @@ describe "Users API" do
 
       it 'fails on a username with invalid characters' do
         params = { email: "josh@example.com", username: "this-won't-work", password: "password" }
-        json_api_params = convert_to_json_api_hash(params, "users")
+        json_api_params = json_api_params_for("users", params)
 
         post "#{host}/users", json_api_params
 
@@ -118,7 +118,7 @@ describe "Users API" do
 
       it 'fails when the email is taken' do
         params = { email: "josh@example.com", username: "joshsmith", password: "password" }
-        json_api_params = convert_to_json_api_hash(params, "users")
+        json_api_params = json_api_params_for("users", params)
 
         post "#{host}/users", json_api_params
 
@@ -129,7 +129,7 @@ describe "Users API" do
 
       it 'fails when the username is taken' do
         params = { email: "newemail@gmail.com", username: "joshsmith", password: "password" }
-        json_api_params = convert_to_json_api_hash(params, "users")
+        json_api_params = json_api_params_for("users", params)
 
         post "#{host}/users", json_api_params
 
@@ -146,7 +146,7 @@ describe "Users API" do
     end
 
     it "returns the user when the email is found" do
-      json_api_params = convert_to_json_api_hash({email: "existing-user@mail.com"}, "users")
+      json_api_params = json_api_params_for("users", {email: "existing-user@mail.com"})
       post "#{host}/users/forgot_password", json_api_params
 
       expect(last_response.status).to eq 200
@@ -156,7 +156,7 @@ describe "Users API" do
     end
 
     it "returns an error when the email is not found" do
-      json_api_params = convert_to_json_api_hash({email: "not-existing-user@mail.com"}, "users")
+      json_api_params = json_api_params_for("users", {email: "not-existing-user@mail.com"})
       post "#{host}/users/forgot_password", json_api_params
 
       expect(last_response.status).to eq 422
@@ -171,12 +171,15 @@ describe "Users API" do
     end
 
     it "resets the password when the authentication token is valid" do
-      json_api_params = convert_to_json_api_hash({email: "existing-user@mail.com"}, "users")
+      json_api_params = json_api_params_for("users", {email: "existing-user@mail.com"})
       post "#{host}/users/forgot_password", json_api_params
 
       user = User.first
 
-      json_api_params = convert_to_json_api_hash({confirmation_token: "#{user.confirmation_token}", password: "newpassword"}, "users")
+      json_api_params = json_api_params_for("users", {
+        confirmation_token: "#{user.confirmation_token}",
+        password: "newpassword"
+      })
       post "#{host}/users/reset_password", json_api_params
 
       expect(last_response.status).to eq 200
@@ -185,12 +188,15 @@ describe "Users API" do
     end
 
     it "doesn't reset the password when the authentication token is not valid" do
-      json_api_params = convert_to_json_api_hash({email: "existing-user@mail.com"}, "users")
+      json_api_params = json_api_params_for("users", {email: "existing-user@mail.com"})
       post "#{host}/users/forgot_password", json_api_params
 
       user = User.first
 
-      json_api_params = convert_to_json_api_hash({confirmation_token: "fakeconfirmationtoken", password: "newpassword"}, "users")
+      json_api_params = json_api_params_for("users", {
+        confirmation_token: "fakeconfirmationtoken",
+        password: "newpassword"
+        })
       post "#{host}/users/reset_password", json_api_params
 
       expect(last_response.status).to eq 422
@@ -206,7 +212,7 @@ describe "Users API" do
         email: "new@mail.com", encrypted_password: "bla", confirmation_token: "bla",
         remember_token: "bla", username: "bla", admin: true
       }
-      @edit_params = convert_to_json_api_hash(params, "users")
+      @edit_params = json_api_params_for("users", params)
     end
 
     context "when unauthenticated" do
@@ -254,7 +260,7 @@ describe "Users API" do
         end
 
         it "renders validation errors if parameter values are invalid" do
-          invalid_params = convert_to_json_api_hash({website: "multi word"}, "users")
+          invalid_params = json_api_params_for("users", {website: "multi word"})
           authenticated_patch "/users/1", invalid_params, @token
           expect(last_response.status).to eq 422
           expect(json).to be_a_valid_json_api_error.with_id "VALIDATION_ERROR"
@@ -286,7 +292,7 @@ describe "Users API" do
         email: "new@mail.com", encrypted_password: "bla", confirmation_token: "bla",
         remember_token: "bla", username: "bla", admin: true
       }
-      @edit_params = convert_to_json_api_hash(params, "users")
+      @edit_params = json_api_params_for("users", params)
     end
 
     context "when unauthenticated" do
@@ -325,7 +331,7 @@ describe "Users API" do
       end
 
       it "renders validation errors if parameter values are invalid" do
-        invalid_params = convert_to_json_api_hash({website: "multi word"}, "users")
+        invalid_params = json_api_params_for("users", {website: "multi word"})
         authenticated_patch "/users/me", invalid_params, @token
         expect(last_response.status).to eq 422
         expect(json).to be_a_valid_json_api_error.with_id "VALIDATION_ERROR"
