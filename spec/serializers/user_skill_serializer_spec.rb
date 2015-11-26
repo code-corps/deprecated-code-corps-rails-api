@@ -51,12 +51,40 @@ describe UserSkillSerializer, :type => :serializer do
     end
 
     context "included" do
-      subject do
-        JSON.parse(serialization.to_json)["included"]
+      context "when not including anything" do
+        subject do
+          JSON.parse(serialization.to_json)["included"]
+        end
+
+        it "should be empty" do
+          expect(subject).to be_nil
+        end
       end
 
-      it "should be empty" do
-        expect(subject).to be_nil
+      context "when including 'user'" do
+        let(:serialization) { ActiveModel::Serializer::Adapter.create(serializer, include: ["user"]) }
+
+        subject do
+          JSON.parse(serialization.to_json)["included"]
+        end
+
+        it "should not be empty" do
+          expect(subject).not_to be_nil
+          expect(subject.select{ |i| i["type"] == "users"}.length).to eq 1
+        end
+      end
+
+      context "when including 'skill'" do
+        let(:serialization) { ActiveModel::Serializer::Adapter.create(serializer, include: ["skill"]) }
+
+        subject do
+          JSON.parse(serialization.to_json)["included"]
+        end
+
+        it "should not be empty" do
+          expect(subject).not_to be_nil
+          expect(subject.select{ |i| i["type"] == "skills"}.length).to eq 1
+        end
       end
     end
   end

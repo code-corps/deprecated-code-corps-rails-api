@@ -3,7 +3,7 @@ class UserSkillsController < ApplicationController
 
   def create
     user_skill = UserSkill.create(create_params)
-    render json: user_skill
+    render json: user_skill, include: [:user, :skill]
   end
 
   def destroy

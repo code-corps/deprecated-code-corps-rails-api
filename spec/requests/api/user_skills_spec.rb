@@ -43,8 +43,19 @@ describe "UserSkills API" do
           expect(UserSkill.last.skill).to eq @skill
         end
 
-        it "includes user in the response"
-        it "includes skill in the response"
+        it "includes user in the response" do
+          expect(json.included).not_to be_nil
+
+          included_users = json.included.select{ |i| i.type == "users" }
+          expect(included_users.count).to eq 1
+        end
+
+        it "includes skill in the response" do
+          expect(json.included).not_to be_nil
+
+          included_users = json.included.select{ |i| i.type == "skills" }
+          expect(included_users.count).to eq 1
+        end
       end
 
       context "when there's a user_skill with that pair of user_id and skill_id already" do
