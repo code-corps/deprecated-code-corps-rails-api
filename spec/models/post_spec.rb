@@ -17,6 +17,7 @@ describe Post, :type => :model do
     it { should have_many(:comments) }
     it { should belong_to(:project) }
     it { should belong_to(:user) }
+    it { should have_many(:post_likes) }
   end
 
   describe "behavior" do
