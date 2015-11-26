@@ -18,5 +18,6 @@ Rails.application.routes.draw do
     end
 
     resources :projects, only: [:show, :index]
+    resources :post_likes, only: [:create, :destroy]
   end
 end
