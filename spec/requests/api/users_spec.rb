@@ -161,7 +161,7 @@ describe "Users API" do
 
       expect(last_response.status).to eq 422
       expect(json).to be_a_valid_json_api_error.with_id "VALIDATION_ERROR"
-      expect(json).to contain_an_error_of_type("VALIDATION_ERROR").with_message "User doesn't exist"
+      expect(json).to contain_an_error_of_type("VALIDATION_ERROR").with_message "Email doesn't exist in the database"
     end
   end
 
