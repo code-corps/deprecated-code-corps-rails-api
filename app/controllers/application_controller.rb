@@ -54,9 +54,4 @@ class ApplicationController < ActionController::API
   def set_default_response_format
     request.format = :json unless params[:format]
   end
-
-  def render_error(error)
-    error_hash = ErrorSerializer.serialize(error)
-    render json: error_hash, status: error_hash[:errors][0][:status]
-   end
 end
