@@ -14,5 +14,6 @@ describe UserSkill, type: :model do
   describe "validations" do
     it { should validate_presence_of :user }
     it { should validate_presence_of :skill }
+    it { should validate_uniqueness_of(:user_id).scoped_to(:skill_id) }
   end
 end
