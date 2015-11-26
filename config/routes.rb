@@ -18,5 +18,6 @@ Rails.application.routes.draw do
     end
 
     resources :projects, only: [:show, :index]
+    resources :user_skills, only: [:create, :destroy]
   end
 end
