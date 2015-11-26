@@ -12,6 +12,10 @@ class UserSkillsController < ApplicationController
   end
 
   def destroy
+    user_skill = UserSkill.find(params[:id])
+    authorize! :destroy, user_skill
+    user_skill.destroy!
+    render json: :nothing, status: :no_content
   end
 
   private
