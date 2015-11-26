@@ -25,7 +25,11 @@ class ApplicationController < ActionController::API
   end
 
   def record_attributes
-    params.require(:data).fetch(:attributes, {})
+    params.fetch(:data, {}).fetch(:attributes, {})
+  end
+
+  def record_relationships
+    params.fetch(:data, {}).fetch(:relationships, {})
   end
 
   def render_validation_errors errors
@@ -35,10 +39,6 @@ class ApplicationController < ActionController::API
   def render_error(error)
     error_hash = ErrorSerializer.serialize(error)
     render json: error_hash, status: error_hash[:errors][0][:status]
-  end
-
-  def record_relationships
-    params.require(:data).fetch(:relationships, {})
   end
 
   private

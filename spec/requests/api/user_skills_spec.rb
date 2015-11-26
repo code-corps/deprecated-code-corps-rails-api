@@ -24,7 +24,6 @@ describe "UserSkills API" do
       context "when creation is succesful" do
         before do
           authenticated_post "/user_skills", { data: { relationships: {
-            user: { data: { type: "users", id: @user.id } },
             skill: { data: { type: "skills", id: @skill.id } }
           } } }, token
         end
@@ -59,10 +58,24 @@ describe "UserSkills API" do
       end
 
       context "when there's a user_skill with that pair of user_id and skill_id already" do
-        it "cannot create a duplicate user_skill"
+        before do
+          create(:user_skill, user: @user, skill: @skill)
+          authenticated_post "/user_skills", { data: { relationships: {
+            skill: { data: { type: "skills", id: @skill.id } }
+          } } }, token
+        end
+
+        it "fails with a validation error" do
+          expect(last_response.status).to eq 422
+          expect(json).to be_a_valid_json_api_error.with_id "VALIDATION_ERROR"
+        end
       end
 
-      it "can create a new skill"
+      it "requires a skill to be specified" do
+        authenticated_post "/user_skills", { data: { relationships: {} } }, token
+        expect(last_response.status).to eq 422
+        expect(json).to be_a_valid_json_api_error.with_id "VALIDATION_ERROR"
+      end
     end
   end
 

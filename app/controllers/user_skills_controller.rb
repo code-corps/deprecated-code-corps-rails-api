@@ -2,8 +2,13 @@ class UserSkillsController < ApplicationController
   before_action :doorkeeper_authorize!
 
   def create
-    user_skill = UserSkill.create(create_params)
-    render json: user_skill, include: [:user, :skill]
+    user_skill = UserSkill.new(create_params)
+    if user_skill.valid?
+      user_skill.save!
+      render json: user_skill, include: [:user, :skill]
+    else
+      render_validation_errors user_skill.errors
+    end
   end
 
   def destroy
