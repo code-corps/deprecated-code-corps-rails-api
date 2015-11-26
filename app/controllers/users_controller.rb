@@ -37,10 +37,11 @@ class UsersController < ApplicationController
 
   def forgot_password
     user = User.find_by(email: forgot_password_params[:email])
+
     if user && user.forgot_password!
       render json: user
     else
-      render_no_such_email_error
+      render_no_such_email_error user
     end
   end
 
@@ -49,7 +50,7 @@ class UsersController < ApplicationController
     if user && user.update_password(reset_password_params[:password])
       render json: user
     else
-      render_could_not_reset_password_error
+      render_could_not_reset_password_error user
     end
   end
 
@@ -82,12 +83,24 @@ class UsersController < ApplicationController
       record_attributes.permit(:website, :biography, :twitter)
     end
 
-    def render_no_such_email_error
-      render json: {errors: {email: ["doesn't exist"]}}, status: 422
+    def render_no_such_email_error user
+      if user
+        render_validation_errors user.errors
+      else
+        errors = ActiveModel::Errors.new(User.new)
+        errors.add(:email, "doesn't exist in the database")
+        render_error errors
+      end
     end
 
-    def render_could_not_reset_password_error
-      render json: {errors: {password: ["couldn't be reset"]}}, status: 422
+    def render_could_not_reset_password_error user
+      if user
+        render_validation_errors user.errors
+      else
+        errors = ActiveModel::Errors.new(User.new)
+        errors.add(:password, "couldn't be reset")
+        render_error errors
+      end
     end
 
     def find_user_by_confirmation_token
