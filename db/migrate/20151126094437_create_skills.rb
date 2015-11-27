@@ -4,7 +4,7 @@ class CreateSkills < ActiveRecord::Migration
       t.string :title, null: false
       t.string :description
 
-      t.belongs_to :category
+      t.belongs_to :skill_category
 
       t.timestamps null: false
     end

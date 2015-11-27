@@ -1,6 +1,6 @@
-class CreateCategories < ActiveRecord::Migration
+class CreateSkillCategories < ActiveRecord::Migration
   def change
-    create_table :categories do |t|
+    create_table :skill_categories do |t|
       t.string :title, null: false
 
       t.timestamps null: false
