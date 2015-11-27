@@ -1,12 +1,9 @@
 # Load the Rails application.
 require File.expand_path('../application', __FILE__)
 
-# Initialize the Rails application.
-Rails.application.initialize!
-
+# Application-wide configuration
 Rails.application.configure do
 
-  # Paperclip Defaults
   config.paperclip_defaults = {
     storage: :s3,
     s3_protocol: :https,
@@ -20,3 +17,6 @@ Rails.application.configure do
     url: ':s3_alias_url'
   }
 end
+
+# Initialize the Rails application.
+Rails.application.initialize!

@@ -34,5 +34,28 @@ describe Project, :type => :model do
       expect(project.owner_type).to eq "Organization"
     end
   end
+
+  context 'paperclip' do
+    context 'without cloudfront' do
+      it { should have_attached_file(:icon) }
+      it { should validate_attachment_content_type(:icon)
+          .allowing('image/png', 'image/gif', 'image/jpeg')
+          .rejecting('text/plain', 'text/xml') }
+    end
+
+    context 'with cloudfront' do
+
+      let(:project) { create(:project, :with_s3_icon) }
+
+      it 'should have cloudfront in the URL' do
+        expect(project.icon.url(:thumb)).to include 'cloudfront'
+      end
+
+      it 'should have the right path' do
+        expect(project.icon.url(:thumb)).to include "projects/#{project.id}/thumb"
+      end
+    end
+  end
+
 end
 

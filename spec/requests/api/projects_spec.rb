@@ -45,7 +45,7 @@ describe "Projects API" do
           }
         }
       }
-        
+
       expect(last_response.status).to eq 422
       expect(json.errors.title).to eq "can't be blank"
     end
@@ -161,6 +161,8 @@ describe "Projects API" do
         }
 
         project.reload
+
+        binding.pry
 
         expect(project.base_64_icon_data).to be_nil
         expect(project.icon.path).to_not be_nil
