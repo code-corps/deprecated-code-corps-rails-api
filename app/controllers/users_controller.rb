@@ -37,6 +37,7 @@ class UsersController < ApplicationController
 
   def forgot_password
     user = User.find_by(email: forgot_password_params[:email])
+
     if user && user.forgot_password!
       render json: user
     else
@@ -83,11 +84,17 @@ class UsersController < ApplicationController
     end
 
     def render_no_such_email_error
-      render json: {errors: {email: ["doesn't exist"]}}, status: 422
+      render_custom_validation_errors :email, "doesn't exist in the database"
     end
 
     def render_could_not_reset_password_error
-      render json: {errors: {password: ["couldn't be reset"]}}, status: 422
+      render_custom_validation_errors :password, "couldn't be reset"
+    end
+
+    def render_custom_validation_errors field, message
+      errors = ActiveModel::Errors.new(User.new)
+      errors.add field, message
+      render_error errors
     end
 
     def find_user_by_confirmation_token
