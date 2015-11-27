@@ -11,16 +11,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151126133741) do
+ActiveRecord::Schema.define(version: 20151126100212) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
-
-  create_table "categories", force: :cascade do |t|
-    t.string   "title",      null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
 
   create_table "comments", force: :cascade do |t|
     t.text     "body"
@@ -86,23 +80,15 @@ ActiveRecord::Schema.define(version: 20151126133741) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "post_likes", force: :cascade do |t|
-    t.integer  "post_id"
-    t.integer  "user_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
   create_table "posts", force: :cascade do |t|
-    t.string   "status",           default: "open"
-    t.string   "type",             default: "task"
-    t.string   "title",                             null: false
+    t.string   "status",     default: "open"
+    t.string   "type",       default: "task"
+    t.string   "title",                       null: false
     t.text     "body"
     t.integer  "user_id"
     t.integer  "project_id"
-    t.datetime "created_at",                        null: false
-    t.datetime "updated_at",                        null: false
-    t.integer  "post_likes_count"
+    t.datetime "created_at",                  null: false
+    t.datetime "updated_at",                  null: false
   end
 
   create_table "projects", force: :cascade do |t|
@@ -116,12 +102,18 @@ ActiveRecord::Schema.define(version: 20151126133741) do
 
   add_index "projects", ["owner_type", "owner_id"], name: "index_projects_on_owner_type_and_owner_id", using: :btree
 
+  create_table "skill_categories", force: :cascade do |t|
+    t.string   "title",      null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "skills", force: :cascade do |t|
-    t.string   "title",       null: false
+    t.string   "title",             null: false
     t.string   "description"
-    t.integer  "category_id"
-    t.datetime "created_at",  null: false
-    t.datetime "updated_at",  null: false
+    t.integer  "skill_category_id"
+    t.datetime "created_at",        null: false
+    t.datetime "updated_at",        null: false
   end
 
   create_table "team_memberships", force: :cascade do |t|
