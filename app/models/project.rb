@@ -9,9 +9,10 @@ class Project < ActiveRecord::Base
                     },
                     path: "project/:id/:style.:extension"
   
+  validates :title, presence: true
   validates_attachment_content_type :icon,
                                     content_type: %r{^image\/(png|gif|jpeg)}
-  
+
   def decode_image_data
     return unless base_64_icon_data.present?
     data = StringIO.new(Base64.decode64(base_64_icon_data))

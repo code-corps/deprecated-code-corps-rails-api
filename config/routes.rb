@@ -16,6 +16,6 @@ Rails.application.routes.draw do
       post :forgot_password
     end
 
-    resources :projects, only: [:show, :index, :create]
+    resources :projects, only: [:show, :index, :create, :update]
   end
 end

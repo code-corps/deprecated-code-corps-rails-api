@@ -35,6 +35,18 @@ describe "Projects API" do
   end
 
   context "POST /projects" do
+    it 'returns an error if title is left blank' do
+      post "#{host}/projects", {
+          data: {
+            attributes: {
+              description: "Test project description"
+            }
+          }
+        }
+      expect(last_response.status).to eq 422
+      expect(json.errors.title).to eq "can't be blank"
+    end
+
     it 'creates a project with a user uploaded image' do
       Sidekiq::Testing.inline! do
         file = File.open("#{Rails.root}/spec/sample_data/default-avatar.png", 'r')
@@ -56,11 +68,91 @@ describe "Projects API" do
 
         expect(project.base_64_icon_data).to be_nil
         expect(project.icon.path).to_not be_nil
-        # expect photo saved from create action to be identical to our test photo
+        expect(project.title).to eq "Test Project Title"
+        expect(project.description).to eq "Test project description"
+        # expect icon saved from create action to be identical to our test photor
         project_icon_file = File.open("#{Rails.root}/spec/sample_data/default-avatar.png", 'r')
         base_64_saved_image = Base64.encode64(open(project_icon_file) { |io| io.read })
         expect(base_64_saved_image).to include base_64_image
       end
+    end
+
+    it 'creates a project without a user uploaded image' do
+      post "#{host}/projects", {
+          data: {
+            attributes: {
+              title: "Test Project Title",
+              description: "Test project description",
+            }
+          }
+        }
+
+        expect(last_response.status).to eq 200
+        project = Project.last
+        expect(project.icon.path).to be_nil
+        expect(project.title).to eq "Test Project Title"
+        expect(project.description).to eq "Test project description"
+    end
+  end
+
+  context 'PATCH /projects/:id' do
+    it 'Updates a project icon for a project without an icon' do
+      post "#{host}/projects", {
+          data: {
+            attributes: {
+              title: "Test Project Title",
+              description: "Test project description",
+            }
+          }
+        }
+
+      Sidekiq::Testing.inline! do
+        file = File.open("#{Rails.root}/spec/sample_data/default-avatar.png", 'r')
+        base_64_image = Base64.encode64(open(file) { |io| io.read })
+        project = Project.last
+
+        patch "#{host}/projects/#{project.id}", {
+          data: {
+            attributes: {
+              base_64_icon_data: base_64_image
+            }
+          }
+        }
+
+        project = Project.last
+        expect(project.base_64_icon_data).to be_nil
+        expect(project.icon.path).to_not be_nil
+        expect(project.title).to eq "Test Project Title"
+        expect(project.description).to eq "Test project description"
+        project_icon_file = File.open("#{Rails.root}/spec/sample_data/default-avatar.png", 'r')
+        base_64_saved_image = Base64.encode64(open(project_icon_file) { |io| io.read })
+        expect(base_64_saved_image).to include base_64_image
+      end
+    end
+
+    it 'returns an error when updating a project to a nil title' do
+      post "#{host}/projects", {
+          data: {
+            attributes: {
+              title: "Test Project Title",
+              description: "Test project description",
+            }
+          }
+        }
+
+      project = Project.last
+
+      patch "#{host}/projects/#{project.id}", {
+          data: {
+            attributes: {
+              title: nil,
+              description: "Test project description update"
+            }
+          }
+        }
+
+      expect(last_response.status).to eq 422
+      expect(json.errors.title).to eq "can't be blank"
     end
   end
 end
