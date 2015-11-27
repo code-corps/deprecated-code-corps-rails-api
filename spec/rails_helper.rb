@@ -5,7 +5,9 @@ require File.expand_path("../../config/environment", __FILE__)
 require 'rspec/rails'
 # Add additional requires below this line. Rails is not loaded until this point!
 
+require 'sidekiq/testing'
 require 'clearance/rspec'
+require 'paperclip/matchers'
 
 # Requires supporting ruby files with custom matchers and macros, etc, in
 # spec/support/ and its subdirectories. Files matching `spec/**/*_spec.rb` are
@@ -57,6 +59,13 @@ RSpec.configure do |config|
 
   # Mix in FactoryGirl methods
   config.include FactoryGirl::Syntax::Methods
+
+  # Mix in Paperclip
+  config.include Paperclip::Shoulda::Matchers
+
+  config.before(:each) do
+    allow_any_instance_of(Paperclip::Attachment).to receive(:save).and_return(true)
+  end
 
   Shoulda::Matchers.configure do |config|
     config.integrate do |with|
