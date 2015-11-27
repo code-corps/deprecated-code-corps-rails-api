@@ -38,6 +38,37 @@ describe "Users API" do
     end
   end
 
+  context 'GET /users/:id' do
+    before do
+      user = create(:user, id: 1, username: "user", twitter: "@user", website: "example.com", biography: "bio")
+      create_list(:user_skill, 10, user: user)
+      get "#{host}/users/1"
+    end
+
+    it "retrieves the user with the specified id" do
+
+      expect(last_response.status).to eq 200
+
+      user_attributes = json.data.attributes
+      expect(user_attributes.username).to eq "user"
+      expect(user_attributes.twitter).to eq "@user"
+      expect(user_attributes.website).to eq "example.com"
+      expect(user_attributes.biography).to eq "bio"
+
+
+      user_relationships = json.data.relationships
+      expect(user_relationships).not_to be_nil
+      expect(user_relationships.skills).not_to be_nil
+      expect(user_relationships.skills.data.count).to eq 10
+    end
+
+    it "includes users skills in the response" do
+      expect(json.included).not_to be_nil
+      included_skills = json.included.select{|i| i.type == "skills"}
+      expect(included_skills.count).to eq 10
+    end
+  end
+
   context 'GET /users' do
     before do
       @user = create(:user, email: "josh@example.com", username: "joshsmith", password: "password")
