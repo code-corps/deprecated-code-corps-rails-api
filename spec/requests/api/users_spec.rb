@@ -191,7 +191,8 @@ describe "Users API" do
       post "#{host}/users/forgot_password", json_api_params
 
       expect(last_response.status).to eq 422
-      expect(json.errors.email).to include "doesn't exist"
+      expect(json).to be_a_valid_json_api_error.with_id "VALIDATION_ERROR"
+      expect(json).to contain_an_error_of_type("VALIDATION_ERROR").with_message "Email doesn't exist in the database"
     end
   end
 
@@ -231,7 +232,8 @@ describe "Users API" do
       post "#{host}/users/reset_password", json_api_params
 
       expect(last_response.status).to eq 422
-      expect(json.errors.password).to include "couldn't be reset"
+      expect(json).to be_a_valid_json_api_error.with_id "VALIDATION_ERROR"
+      expect(json).to contain_an_error_of_type("VALIDATION_ERROR").with_message "Password couldn't be reset"
     end
   end
 
