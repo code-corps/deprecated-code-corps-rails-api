@@ -162,8 +162,6 @@ describe "Projects API" do
 
         project.reload
 
-        binding.pry
-
         expect(project.base_64_icon_data).to be_nil
         expect(project.icon.path).to_not be_nil
         project_icon_file = File.open("#{Rails.root}/spec/sample_data/default-avatar.png", 'r')
