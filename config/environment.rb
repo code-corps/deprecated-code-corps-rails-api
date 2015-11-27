@@ -4,7 +4,7 @@ require File.expand_path('../application', __FILE__)
 # Initialize the Rails application.
 Rails.application.initialize!
 
-Rails.application.configure do |config|
+Rails.application.configure do
 
   # Paperclip Defaults
   config.paperclip_defaults = {
