@@ -51,12 +51,12 @@ describe User, :type => :model do
       it { should allow_value("code-corps").for(:username) }
       it { should allow_value("code-corps-corps").for(:username) }
       it { should allow_value("code_corps_corps").for(:username) }
+      it { should allow_value("_codecorps").for(:username) }
+      it { should allow_value("codecorps_").for(:username) }
       it { should allow_value("c").for(:username) }
       it { should_not allow_value("code----corps").for(:username) }
       it { should_not allow_value("-codecorps").for(:username) }
       it { should_not allow_value("codecorps-").for(:username) }
-      it { should_not allow_value("_codecorps").for(:username) }
-      it { should_not allow_value("codecorps_").for(:username) }
       it { should_not allow_value("@codecorps").for(:username) }
       it { should_not allow_value("code/corps").for(:username) }
       it { should_not allow_value("code//corps").for(:username) }
