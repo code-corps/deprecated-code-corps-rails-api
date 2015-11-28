@@ -50,10 +50,10 @@ describe SkillSerializer, :type => :serializer do
         JSON.parse(serialization.to_json)["data"]["relationships"]
       end
 
-      it "contains a 'category' relationship" do
-        expect(subject["category"]).not_to be_nil
-        expect(subject["category"]["data"]["type"]).to eq "categories"
-        expect(subject["category"]["data"]["id"]).to eq resource.category.id.to_s
+      it "contains a 'skill_category' relationship" do
+        expect(subject["skill_category"]).not_to be_nil
+        expect(subject["skill_category"]["data"]["type"]).to eq "skill_categories"
+        expect(subject["skill_category"]["data"]["id"]).to eq resource.skill_category.id.to_s
       end
     end
 

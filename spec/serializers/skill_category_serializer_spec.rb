@@ -1,11 +1,11 @@
 require "rails_helper"
 
-describe CategorySerializer, :type => :serializer do
+describe SkillCategorySerializer, :type => :serializer do
 
   context "individual resource representation" do
-    let(:resource) { create(:category) }
+    let(:resource) { create(:skill_category) }
 
-    let(:serializer) { CategorySerializer.new(resource) }
+    let(:serializer) { SkillCategorySerializer.new(resource) }
     let(:serialization) { ActiveModel::Serializer::Adapter.create(serializer) }
 
     context "root" do
@@ -26,7 +26,7 @@ describe CategorySerializer, :type => :serializer do
       end
 
       it "has a type set to 'projects'" do
-        expect(subject["type"]).to eq "categories"
+        expect(subject["type"]).to eq "skill_categories"
       end
     end
 

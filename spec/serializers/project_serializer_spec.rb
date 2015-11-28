@@ -6,7 +6,7 @@ describe ProjectSerializer, :type => :serializer do
     let(:resource) {
       create(:project,
         title: "Project title",
-        description: "Poject description")
+        description: "Project description")
     }
 
     let(:serializer) { ProjectSerializer.new(resource) }

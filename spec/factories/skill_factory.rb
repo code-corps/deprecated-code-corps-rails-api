@@ -4,7 +4,7 @@ FactoryGirl.define do
     sequence(:title) { |n| "Skill #{n}" }
     sequence(:description) { |n| "Skill description #{n}" }
 
-    association :category
+    association :skill_category
   end
 
 end
