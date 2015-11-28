@@ -17,13 +17,23 @@ gem 'doorkeeper'
 
 gem 'cancancan', '~> 1.10'
 
+gem 'paperclip'
+
+gem 'aws-sdk'
+
+gem 'sidekiq'
+
 group :development, :test do
+  gem 'dotenv-rails'
+  
   gem 'pry-rails'
   gem 'pry'
   gem 'pry-nav'
   gem 'pry-stack_explorer'
 
   gem 'rspec-rails', '~> 3.0'
+  gem 'rspec-sidekiq'
+  gem 'fakeredis', :require => "fakeredis/rspec"
 end
 
 group :development do
