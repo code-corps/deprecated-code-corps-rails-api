@@ -41,6 +41,32 @@ describe User, :type => :model do
       it { should_not allow_value("spaces in url").for(:website) }
       it { should_not allow_value("singleword").for(:website) }
     end
+
+    describe "username" do
+      it { should allow_value("code_corps").for(:username) }
+      it { should allow_value("codecorps").for(:username) }
+      it { should allow_value("codecorps12345").for(:username) }
+      it { should allow_value("code12345corps").for(:username) }
+      it { should allow_value("code____corps").for(:username) }
+      it { should allow_value("code-corps").for(:username) }
+      it { should allow_value("code----corps").for(:username) }
+      it { should allow_value("code-corps-corps").for(:username) }
+      it { should allow_value("code_corps_corps").for(:username) }
+      it { should allow_value("code/corps").for(:username) }
+      it { should allow_value("code-corps-corps/code_corps_corps").for(:username) }
+      it { should allow_value("code_corps/code_corps").for(:username) }
+      it { should allow_value("c").for(:username) }
+      it { should allow_value("cc").for(:username) }
+      it { should_not allow_value("-codecorps").for(:username) }
+      it { should_not allow_value("_codecorps").for(:username) }
+      it { should_not allow_value("codecorps-").for(:username) }
+      it { should_not allow_value("codecorps_").for(:username) }
+      it { should_not allow_value("@codecorps").for(:username) }
+      it { should_not allow_value("code//corps").for(:username) }
+      it { should_not allow_value("code///corps").for(:username) }
+      it { should_not allow_value("@code/corps/code").for(:username) }
+      it { should_not allow_value("@code/corps/code/corps").for(:username) }
+    end
   end
 
   describe "admin state" do
