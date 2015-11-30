@@ -3,8 +3,8 @@ class PostsController < ApplicationController
   before_action :doorkeeper_authorize!, only: [:create]
 
   def index
-    posts = Post.all.includes [:comments, :user, :project]
-    render json: posts
+    posts = Post.page(page_number).per(page_size).includes [:comments, :user, :project]
+    render json: posts, meta: meta_for(Post)
   end
 
   def show
@@ -23,6 +23,7 @@ class PostsController < ApplicationController
   end
 
   private
+
     def create_params
       record_attributes.permit(:body, :title, :post_type).merge(relationships)
     end
