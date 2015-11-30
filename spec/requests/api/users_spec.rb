@@ -137,7 +137,7 @@ describe "Users API" do
 
         expect(last_response.status).to eq 422
 
-        expect(json.errors[0].detail).to eq "Username is invalid. Alphanumerics only."
+        expect(json.errors[0].detail).to eq "Username is invalid."
       end
 
     end
