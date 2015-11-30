@@ -83,7 +83,7 @@ describe "Posts API" do
 
       it "does not require a 'post_type' to be specified" do
         params = { data: { type: "posts",
-          attributes: { title: "Post title" },
+          attributes: { title: "Post title", body: "Post body" },
           relationships: { project: { data: { id: 2 } } }
         } }
         authenticated_post "/posts", params, @token
@@ -91,19 +91,21 @@ describe "Posts API" do
         expect(last_response.status).to eq 200
       end
 
-      it "does not require a 'body' to be specified" do
+      it "requires a 'body' to be specified" do
         params = { data: { type: "posts",
           attributes: { title: "Post title", post_type: "issue" },
           relationships: { project: { data: { id: 2 } } }
         } }
         authenticated_post "/posts", params, @token
 
-        expect(last_response.status).to eq 200
+        expect(last_response.status).to eq 422
+        expect(json).to be_a_valid_json_api_error
+        expect(json).to contain_an_error_of_type("VALIDATION_ERROR").with_message("Body can't be blank")
       end
 
       it "ignores the 'status' parameter" do
         params = { data: { type: "posts",
-          attributes: { title: "Post title", post_type: "issue", status: "closed" },
+          attributes: { title: "Post title", post_type: "issue", status: "closed", body: "Post body" },
           relationships: { project: { data: { id: 2 } } }
         } }
         authenticated_post "/posts", params, @token

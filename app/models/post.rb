@@ -6,6 +6,7 @@ class Post < ActiveRecord::Base
   validates_presence_of :project
   validates_presence_of :user
   validates_presence_of :title
+  validates_presence_of :body
 
   enum status: {
     open: "open",
