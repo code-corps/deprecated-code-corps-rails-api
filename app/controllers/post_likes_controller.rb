@@ -5,7 +5,7 @@ class PostLikesController < ApplicationController
     post_like = PostLike.new(create_params)
     if post_like.valid?
       post_like.save!
-      render json: post_like, include: [:user, :skill]
+      render json: post_like, include: [:user, :post]
     else
       render_validation_errors post_like.errors
     end

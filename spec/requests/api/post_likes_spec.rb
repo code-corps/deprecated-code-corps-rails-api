@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe "PostLikees API" do
+describe "PostLikes API" do
 
 
   describe "POST /post_likes" do
@@ -52,7 +52,7 @@ describe "PostLikees API" do
         it "includes post in the response" do
           expect(json.included).not_to be_nil
 
-          included_users = json.included.select{ |i| i.type == "skills" }
+          included_users = json.included.select{ |i| i.type == "posts" }
           expect(included_users.count).to eq 1
         end
       end
@@ -120,7 +120,8 @@ describe "PostLikees API" do
 
       context "when deletion is successful" do
         before do
-          create(:post_like, id: 1, user: @user)
+          @post = create(:post)
+          @like = create(:post_like, id: 1, user: @user)
           authenticated_delete "/post_likes/1", {}, token
         end
 
@@ -129,12 +130,12 @@ describe "PostLikees API" do
         end
 
         it "deletes the post_like" do
-          expect(PostLike.count).to eq 0
+          expect(PostLike.exists?(@like.id)).to be false
         end
 
         it "leaves user and skill untouched" do
-          expect(User.count).to eq 1
-          expect(Post.count).to eq 1
+          expect(User.exists?(@user.id)).to be true
+          expect(Post.exists?(@post.id)).to be true
         end
       end
     end
