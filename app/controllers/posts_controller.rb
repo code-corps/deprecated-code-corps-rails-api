@@ -3,13 +3,13 @@ class PostsController < ApplicationController
   before_action :doorkeeper_authorize!, only: [:create]
 
   def index
-    posts = Post.all
+    posts = Post.all.includes [:comments, :user, :project]
     render json: posts
   end
 
   def show
-    post = Post.find(params[:id])
-    render json: post, include: ["comments"]
+    post = Post.includes(comments: [:user]).find(params[:id])
+    render json: post, include: [:comments]
   end
 
   def create

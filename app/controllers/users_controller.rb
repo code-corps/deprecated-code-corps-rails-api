@@ -17,7 +17,7 @@ class UsersController < ApplicationController
   end
 
   def show
-    user = User.find(params[:id])
+    user = User.includes(skills: [:skill_category]).find(params[:id])
     render json: user, include: ["skills"]
   end
 

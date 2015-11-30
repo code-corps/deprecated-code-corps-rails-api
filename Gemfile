@@ -25,11 +25,13 @@ gem 'sidekiq'
 
 group :development, :test do
   gem 'dotenv-rails'
-  
+
   gem 'pry-rails'
   gem 'pry'
   gem 'pry-nav'
   gem 'pry-stack_explorer'
+
+  gem 'bullet'
 
   gem 'rspec-rails', '~> 3.0'
   gem 'rspec-sidekiq'
