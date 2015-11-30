@@ -1,7 +1,7 @@
 class TokensController < Doorkeeper::TokensController
   def create
     user_id = authenticate_with_credentials
-    
+
   rescue Doorkeeper::Errors::DoorkeeperError,
          Doorkeeper::Errors::InvalidGrantReuse,
          Doorkeeper::OAuth::Error,

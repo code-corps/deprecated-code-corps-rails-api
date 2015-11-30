@@ -8,6 +8,8 @@ class User < ActiveRecord::Base
   has_many :projects, as: :owner
   has_many :posts
   has_many :comments
+  has_many :user_skills
+  has_many :skills, through: :user_skills
 
   validates :username, presence: { message: "can't be blank" }
   validates :username, uniqueness: { case_sensitive: false }

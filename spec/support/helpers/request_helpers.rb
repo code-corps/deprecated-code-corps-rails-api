@@ -23,7 +23,20 @@ module RequestHelpers
     put "#{host}/#{path}", args, {"HTTP_AUTHORIZATION" => "Bearer #{token}"}
   end
 
+  def authenticated_patch(path, args, token)
+    patch "#{host}/#{path}", args, {"HTTP_AUTHORIZATION" => "Bearer #{token}"}
+  end
+
   def authenticated_delete(path, args, token)
     delete "#{host}/#{path}", args, {"HTTP_AUTHORIZATION" => "Bearer #{token}"}
+  end
+
+  def json_api_params_for(type, hash)
+    data = {}
+    data[:id] = hash[:id] if hash[:id].present?
+    data[:type] = type
+    data[:attributes] = hash.except(:id)
+
+    { data: data }
   end
 end

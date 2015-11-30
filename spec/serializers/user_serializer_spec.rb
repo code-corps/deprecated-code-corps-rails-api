@@ -4,12 +4,14 @@ describe UserSerializer, :type => :serializer do
 
   context "individual resource representation" do
     let(:resource) {
-      create(:user,
+      user = create(:user,
         email: "user@mail.com",
         username: "user",
         website: "example.com",
         twitter: "@user",
         biography: "Lorem ipsum")
+      create_list(:user_skill, 10, user: user)
+      user
     }
 
     let(:serializer) { UserSerializer.new(resource) }
@@ -21,7 +23,11 @@ describe UserSerializer, :type => :serializer do
       end
 
       it "has an attributes object" do
-        expect(subject["attributes"]).not_to be nil
+        expect(subject["attributes"]).not_to be_nil
+      end
+
+      it "has a relationships object" do
+        expect(subject["relationships"]).not_to be_nil
       end
 
       it "has an id" do
@@ -64,18 +70,34 @@ describe UserSerializer, :type => :serializer do
         JSON.parse(serialization.to_json)["data"]["relationships"]
       end
 
-      it "should be empty" do
-        expect(subject).to be_nil
+      it "has a 'skills' relationship" do
+        expect(subject["skills"]).not_to be_nil
+        expect(subject["skills"]["data"].count).to eq 10
       end
     end
 
     context "included" do
-      subject do
-        JSON.parse(serialization.to_json)["included"]
+      context "when not including anything" do
+        subject do
+          JSON.parse(serialization.to_json)["included"]
+        end
+
+        it "should be empty" do
+          expect(subject).to be_nil
+        end
       end
 
-      it "should be empty" do
-        expect(subject).to be_nil
+      context "when including skills" do
+        let(:serialization) { ActiveModel::Serializer::Adapter.create(serializer, include: ["skills"]) }
+
+        subject do
+          JSON.parse(serialization.to_json)["included"]
+        end
+
+        it "should contain the user's skills" do
+          expect(subject).not_to be_nil
+          expect(subject.select{ |i| i["type"] == "skills"}.length).to eq 10
+        end
       end
     end
   end
