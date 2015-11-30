@@ -31,4 +31,14 @@ describe Post, :type => :model do
     it { should define_enum_for(:status).with({ open: "open", closed: "closed" }) }
     it { should define_enum_for(:post_type).with({ idea: "idea", progress: "progress", task: "task", issue: "issue" }) }
   end
+
+  describe ".post_like_counts" do
+    let(:user) { create(:user) }
+    let(:post) { create(:post) }
+
+    it "should have the correct counter cache" do
+      create(:post_like, user: user, post: post)
+      expect(post.post_likes_count).to eq 1
+    end
+  end
 end
