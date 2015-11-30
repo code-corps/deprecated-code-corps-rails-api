@@ -51,6 +51,10 @@ describe PostSerializer, :type => :serializer do
       it "has a 'post_type'" do
         expect(subject["post_type"]).to eql resource.post_type
       end
+
+      it "has a 'likes_count'" do
+        expect(subject["likes_count"]).to eql resource.likes_count
+      end
     end
 
     context "relationships" do

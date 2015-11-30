@@ -80,15 +80,23 @@ ActiveRecord::Schema.define(version: 20151130085255) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "post_likes", force: :cascade do |t|
+    t.integer  "post_id"
+    t.integer  "user_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "posts", force: :cascade do |t|
-    t.string   "status",     default: "open"
-    t.string   "post_type",  default: "task"
-    t.string   "title",                       null: false
-    t.text     "body",                        null: false
-    t.integer  "user_id",                     null: false
-    t.integer  "project_id",                  null: false
-    t.datetime "created_at",                  null: false
-    t.datetime "updated_at",                  null: false
+    t.string   "status",           default: "open"
+    t.string   "post_type",        default: "task"
+    t.string   "title",                             null: false
+    t.text     "body",                              null: false
+    t.integer  "user_id",                           null: false
+    t.integer  "project_id",                        null: false
+    t.datetime "created_at",                        null: false
+    t.datetime "updated_at",                        null: false
+    t.integer  "post_likes_count", default: 0
   end
 
   create_table "projects", force: :cascade do |t|

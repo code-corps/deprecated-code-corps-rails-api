@@ -22,7 +22,8 @@ Rails.application.routes.draw do
     resource :users, only: [:forgot_password] do
       post :forgot_password
     end
-
+    resources :post_likes, only: [:create, :destroy]
     resources :user_skills, only: [:create, :destroy]
+    resources :projects, only: [:show, :index, :create, :update]
   end
 end

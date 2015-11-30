@@ -2,6 +2,7 @@ class Post < ActiveRecord::Base
   belongs_to :user
   belongs_to :project
   has_many :comments
+  has_many :post_likes
 
   validates_presence_of :project
   validates_presence_of :user
@@ -19,4 +20,8 @@ class Post < ActiveRecord::Base
     task: "task",
     issue: "issue"
   }
+
+  def likes_count
+    self.post_likes_count
+  end
 end
