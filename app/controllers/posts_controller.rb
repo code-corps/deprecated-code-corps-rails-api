@@ -4,7 +4,7 @@ class PostsController < ApplicationController
 
   def index
     posts = Post.page(page_number).per(page_size)
-    render json: posts
+    render json: posts, meta: meta_for(Post)
   end
 
   def show

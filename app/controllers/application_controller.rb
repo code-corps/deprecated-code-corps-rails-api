@@ -32,6 +32,10 @@ class ApplicationController < ActionController::API
     params.fetch(:page, {}).fetch(:number, 1).to_i
   end
 
+  def meta_for collection
+    { total: collection.count }
+  end
+
   def record_attributes
     params.fetch(:data, {}).fetch(:attributes, {})
   end

@@ -37,6 +37,12 @@ describe "Posts API" do
       expect(json.links.last).not_to be_nil
       expect(json.links.last).not_to be_nil
     end
+
+    it "renders a meta in the response" do
+      get "#{host}/posts"
+      expect(json.meta).not_to be_nil
+      expect(json.meta.total).to eq 13
+    end
   end
 
   context "GET /posts/:id" do
