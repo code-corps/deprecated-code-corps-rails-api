@@ -118,7 +118,7 @@ describe "Users API" do
 
         expect(last_response.status).to eq 422
 
-        expect(json.errors.username).to eq "is invalid. Alphanumerics only."
+        expect(json.errors.username).to eq "Username may only contain alphanumeric characters, underscores, or single hyphens, and cannot begin or end with a hyphen or underscore"
       end
 
     end
