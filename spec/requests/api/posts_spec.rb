@@ -115,7 +115,7 @@ describe "Posts API" do
 
       it "does not require a 'post_type' to be specified" do
         params = { data: { type: "posts",
-          attributes: { title: "Post title", markdown: "<p>Post body</p>\n" },
+          attributes: { title: "Post title", markdown: "Post body" },
           relationships: { project: { data: { id: 2 } } }
         } }
         authenticated_post "/posts", params, @token
