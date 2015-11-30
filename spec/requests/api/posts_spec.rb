@@ -4,15 +4,28 @@ describe "Posts API" do
 
   context "GET /posts" do
     before do
-      create_list(:post, 10)
+      create_list(:post, 13)
     end
 
-    it "returns a list of posts" do
+    it "returns the first page of 10 records of no page number or size is specified" do
       get "#{host}/posts"
-
       expect(last_response.status).to eq 200
       expect(json.data.length).to eq 10
       expect(json.data.all? { |item| item.type == "posts" }).to be true
+    end
+
+    it "accepts different page numbers" do
+      get "#{host}/posts", { page: { number: 0, size: 5 }}
+      expect(json.data.length).to eq 5
+      get "#{host}/posts", { page: { number: 2, size: 3 }}
+      expect(json.data.length).to eq 3
+    end
+
+    it "accepts different page sizes" do
+      get "#{host}/posts", { page: { number: 0, size: 3 }}
+      expect(json.data.length).to eq 3
+      get "#{host}/posts", { page: { number: 0, size: 4 }}
+      expect(json.data.length).to eq 4
     end
   end
 

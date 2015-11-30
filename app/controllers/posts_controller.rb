@@ -3,7 +3,7 @@ class PostsController < ApplicationController
   before_action :doorkeeper_authorize!, only: [:create]
 
   def index
-    posts = Post.all
+    posts = retrieve_page_for Post
     render json: posts
   end
 
@@ -23,6 +23,22 @@ class PostsController < ApplicationController
   end
 
   private
+    def retrieve_page_for collection
+      collection.limit(page_size).offset(offset)
+    end
+
+    def page_size
+      params.fetch(:page, {}).fetch(:size, 10).to_i
+    end
+
+    def page_number
+      params.fetch(:page, {}).fetch(:number, 0).to_i
+    end
+
+    def offset
+      page_size * page_number
+    end
+
     def create_params
       record_attributes.permit(:body, :title, :post_type).merge(relationships)
     end
