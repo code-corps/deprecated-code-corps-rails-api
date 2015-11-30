@@ -39,9 +39,12 @@ describe "Posts API" do
     end
 
     it "renders a meta in the response" do
-      get "#{host}/posts"
+      get "#{host}/posts", { page: { number: 2, size: 5 } }
       expect(json.meta).not_to be_nil
-      expect(json.meta.total).to eq 13
+      expect(json.meta.total_records).to eq 13
+      expect(json.meta.total_pages).to eq 3
+      expect(json.meta.page_size).to eq 5
+      expect(json.meta.current_page).to eq 2
     end
   end
 

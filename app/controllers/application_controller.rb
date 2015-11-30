@@ -32,8 +32,13 @@ class ApplicationController < ActionController::API
     params.fetch(:page, {}).fetch(:number, 1).to_i
   end
 
-  def meta_for collection
-    { total: collection.count }
+  def meta_for object
+    return {
+      total_records: object.count,
+      total_pages: (object.count.to_f / page_size).ceil,
+      page_size: page_size,
+      current_page: page_number
+    }
   end
 
   def record_attributes
