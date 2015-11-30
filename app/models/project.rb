@@ -7,7 +7,7 @@ class Project < ActiveRecord::Base
                       large: "500x500#", 
                       thumb: "100x100#"
                     },
-                    path: "project/:id/:style.:extension"
+                    path: "projects/:id/:style.:extension"
   
   validates :title, presence: true
   validates_attachment_content_type :icon,

@@ -12,7 +12,7 @@ class SlugValidator < ActiveModel::Validator
 
     def validate_username(record)
       unless valid_slug?(record.username)
-        record.errors[:username] = "Username may only contain alphanumeric characters, underscores, or single hyphens, and cannot begin or end with a hyphen or underscore"
+        record.errors[:username] = "may only contain alphanumeric characters, underscores, or single hyphens, and cannot begin or end with a hyphen or underscore"
       end
     end
 

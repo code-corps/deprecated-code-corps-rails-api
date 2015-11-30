@@ -14,7 +14,7 @@ describe 'SlugValidator' do
       context 'due to preceding dashes' do
         it 'returns the error text' do
           user = User.new(username: "-joshsmith")
-          expect(SlugValidator.new.validate(user)).to eq "Username may only contain alphanumeric characters, underscores, or single hyphens, and cannot begin or end with a hyphen or underscore"
+          expect(SlugValidator.new.validate(user)).to eq "may only contain alphanumeric characters, underscores, or single hyphens, and cannot begin or end with a hyphen or underscore"
         end
       end
     end
