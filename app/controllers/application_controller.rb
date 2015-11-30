@@ -24,6 +24,14 @@ class ApplicationController < ActionController::API
     current_resource_owner
   end
 
+  def page_size
+    params.fetch(:page, {}).fetch(:size, 10).to_i
+  end
+
+  def page_number
+    params.fetch(:page, {}).fetch(:number, 1).to_i
+  end
+
   def record_attributes
     params.fetch(:data, {}).fetch(:attributes, {})
   end
