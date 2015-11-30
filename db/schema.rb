@@ -16,12 +16,6 @@ ActiveRecord::Schema.define(version: 20151126133741) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
-  create_table "categories", force: :cascade do |t|
-    t.string   "title",      null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
   create_table "comments", force: :cascade do |t|
     t.text     "body"
     t.integer  "user_id"
@@ -106,22 +100,33 @@ ActiveRecord::Schema.define(version: 20151126133741) do
   end
 
   create_table "projects", force: :cascade do |t|
-    t.string   "title",       null: false
+    t.string   "title",             null: false
     t.string   "description"
     t.integer  "owner_id"
     t.string   "owner_type"
-    t.datetime "created_at",  null: false
-    t.datetime "updated_at",  null: false
+    t.datetime "created_at",        null: false
+    t.datetime "updated_at",        null: false
+    t.string   "icon_file_name"
+    t.string   "icon_content_type"
+    t.integer  "icon_file_size"
+    t.datetime "icon_updated_at"
+    t.text     "base_64_icon_data"
   end
 
   add_index "projects", ["owner_type", "owner_id"], name: "index_projects_on_owner_type_and_owner_id", using: :btree
 
+  create_table "skill_categories", force: :cascade do |t|
+    t.string   "title",      null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "skills", force: :cascade do |t|
-    t.string   "title",       null: false
+    t.string   "title",             null: false
     t.string   "description"
-    t.integer  "category_id"
-    t.datetime "created_at",  null: false
-    t.datetime "updated_at",  null: false
+    t.integer  "skill_category_id"
+    t.datetime "created_at",        null: false
+    t.datetime "updated_at",        null: false
   end
 
   create_table "team_memberships", force: :cascade do |t|

@@ -25,6 +25,8 @@ describe User, :type => :model do
     it { should have_many(:projects) }
     it { should have_many(:posts) }
     it { should have_many(:comments) }
+    it { should have_many(:user_skills) }
+    it { should have_many(:skills).through(:user_skills) }
   end
 
   describe "validations" do
