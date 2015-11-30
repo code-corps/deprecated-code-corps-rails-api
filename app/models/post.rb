@@ -10,7 +10,7 @@ class Post < ActiveRecord::Base
   validates_presence_of :body
   validates_presence_of :markdown
 
-  before_save :render_markdown_to_body
+  before_validation :render_markdown_to_body
 
   enum status: {
     open: "open",
@@ -31,8 +31,10 @@ class Post < ActiveRecord::Base
   private
 
     def render_markdown_to_body
-      html = parser.render(markdown)
-      self.body = html
+      if markdown.present?
+        html = parser.render(markdown)
+        self.body = html
+      end
     end
 
     def parser
