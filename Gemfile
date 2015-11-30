@@ -33,6 +33,8 @@ group :development, :test do
   gem 'pry-nav'
   gem 'pry-stack_explorer'
 
+  gem 'bullet'
+
   gem 'rspec-rails', '~> 3.0'
   gem 'rspec-sidekiq'
   gem 'fakeredis', :require => "fakeredis/rspec"

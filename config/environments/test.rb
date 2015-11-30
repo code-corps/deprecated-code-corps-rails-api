@@ -41,4 +41,9 @@ Rails.application.configure do
   # config.action_view.raise_on_missing_translations = true
 
   Paperclip::Attachment.default_options[:path] = "#{Rails.root}/spec/test_files/:class/:id_partition/:style.:extension"
+
+  config.after_initialize do
+    Bullet.enable = true
+    Bullet.raise = true # raise an error if n+1 query occurs
+  end
 end
