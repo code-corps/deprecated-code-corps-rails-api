@@ -42,6 +42,9 @@ class Ability
 
     if signed_in
       can :manage, User, id: user.id
+      can :create, Post
+      can :create, Comment
+
       # a signed in user can destroy their own user_skills
       can :destroy, UserSkill, user_id: user.id
     end

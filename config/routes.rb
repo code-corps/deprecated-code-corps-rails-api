@@ -7,6 +7,12 @@ Rails.application.routes.draw do
 
     get 'ping', to: 'ping#index'
 
+    resources :comments, only: [:create]
+
+    resources :posts, only: [:index, :show, :create]
+
+    resources :projects, only: [:show, :index, :create, :update]
+
     get 'user', to: 'users#show_authenticated_user'
     patch 'users/me', to: 'users#update_authenticated_user'
     resources :users, only: [:create, :show, :update]
@@ -16,8 +22,6 @@ Rails.application.routes.draw do
     resource :users, only: [:forgot_password] do
       post :forgot_password
     end
-
-    resources :projects, only: [:show, :index]
     resources :post_likes, only: [:create, :destroy]
     resources :user_skills, only: [:create, :destroy]
     resources :projects, only: [:show, :index, :create, :update]
