@@ -23,9 +23,11 @@ gem 'aws-sdk'
 
 gem 'sidekiq'
 
+gem 'kaminari'
+
 group :development, :test do
   gem 'dotenv-rails'
-  
+
   gem 'pry-rails'
   gem 'pry'
   gem 'pry-nav'
