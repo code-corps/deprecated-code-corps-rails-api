@@ -6,6 +6,7 @@ describe Post, :type => :model do
     it { should have_db_column(:post_type).of_type(:string) }
     it { should have_db_column(:title).of_type(:string).with_options(null: false) }
     it { should have_db_column(:body).of_type(:text).with_options(null: false) }
+    it { should have_db_column(:markdown).of_type(:text).with_options(null: false) }
     it { should have_db_column(:project_id).of_type(:integer).with_options(null: false) }
     it { should have_db_column(:user_id).of_type(:integer).with_options(null: false) }
     it { should have_db_column(:updated_at) }
@@ -25,6 +26,7 @@ describe Post, :type => :model do
     it { should validate_presence_of(:project) }
     it { should validate_presence_of(:title) }
     it { should validate_presence_of(:body) }
+    it { should validate_presence_of(:markdown) }
   end
 
   describe "behavior" do
@@ -47,6 +49,16 @@ describe Post, :type => :model do
         create(:post_like, user: user, post: post)
         expect(post.likes_count).to eq 1
       end
+    end
+  end
+
+  describe "before_save" do
+    it "converts markdown to html for the body" do
+      post = create(:post, markdown: "# Hello World\n\nHello, world.")
+      post.save
+
+      post.reload
+      expect(post.body).to eq "<h1>Hello World</h1>\n\n<p>Hello, world.</p>\n"
     end
   end
 end

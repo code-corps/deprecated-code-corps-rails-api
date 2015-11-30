@@ -8,6 +8,9 @@ class Post < ActiveRecord::Base
   validates_presence_of :user
   validates_presence_of :title
   validates_presence_of :body
+  validates_presence_of :markdown
+
+  before_save :render_markdown_to_body
 
   enum status: {
     open: "open",
@@ -24,4 +27,19 @@ class Post < ActiveRecord::Base
   def likes_count
     self.post_likes_count
   end
+
+  private
+
+    def render_markdown_to_body
+      html = parser.render(markdown)
+      self.body = html
+    end
+
+    def parser
+      @parser ||= Redcarpet::Markdown.new(renderer, extensions = {})
+    end
+
+    def renderer
+      @renderer ||= Redcarpet::Render::HTML.new(render_options = {})
+    end
 end
