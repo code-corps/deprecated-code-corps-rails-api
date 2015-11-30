@@ -96,7 +96,7 @@ ActiveRecord::Schema.define(version: 20151130085255) do
     t.integer  "project_id",                        null: false
     t.datetime "created_at",                        null: false
     t.datetime "updated_at",                        null: false
-    t.integer  "post_likes_count"
+    t.integer  "post_likes_count", default: 0
   end
 
   create_table "projects", force: :cascade do |t|

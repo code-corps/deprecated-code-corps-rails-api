@@ -36,9 +36,17 @@ describe Post, :type => :model do
     let(:user) { create(:user) }
     let(:post) { create(:post) }
 
-    it "should have the correct counter cache" do
-      create(:post_like, user: user, post: post)
-      expect(post.post_likes_count).to eq 1
+    context "when there is no PostLike" do
+      it "should have the correct counter cache" do
+        expect(post.likes_count).to eq 0
+      end
+    end
+
+    context "when there is a PostLike" do
+      it "should have the correct counter cache" do
+        create(:post_like, user: user, post: post)
+        expect(post.likes_count).to eq 1
+      end
     end
   end
 end

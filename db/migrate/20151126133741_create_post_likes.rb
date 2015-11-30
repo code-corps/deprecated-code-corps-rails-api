@@ -7,6 +7,6 @@ class CreatePostLikes < ActiveRecord::Migration
       t.timestamps null: false
     end
 
-    add_column :posts, :post_likes_count, :integer
+    add_column :posts, :post_likes_count, :integer, default: 0
   end
 end

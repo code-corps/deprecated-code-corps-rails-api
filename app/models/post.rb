@@ -20,4 +20,8 @@ class Post < ActiveRecord::Base
     task: "task",
     issue: "issue"
   }
+
+  def likes_count
+    self.post_likes_count
+  end
 end
