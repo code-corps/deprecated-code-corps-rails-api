@@ -18,11 +18,16 @@ class UsersController < ApplicationController
 
   def show
     user = User.includes(skills: [:skill_category]).find(params[:id])
+
+    authorize user
+
     render json: user, include: ["skills"]
   end
 
   def update
     user = User.find(params[:id])
+
+    authorize user
 
     update_and_render_result user
   end
@@ -36,6 +41,8 @@ class UsersController < ApplicationController
   end
 
   def forgot_password
+    authorize User
+
     user = User.find_by(email: forgot_password_params[:email])
 
     if user && user.forgot_password!
@@ -47,6 +54,9 @@ class UsersController < ApplicationController
 
   def reset_password
     user = find_user_by_confirmation_token
+
+    authorize User
+
     if user && user.update_password(reset_password_params[:password])
       render json: user
     else
@@ -57,7 +67,6 @@ class UsersController < ApplicationController
   private
 
     def update_and_render_result(record)
-      authorize! :update, record
       record.assign_attributes update_params
 
       if record.save

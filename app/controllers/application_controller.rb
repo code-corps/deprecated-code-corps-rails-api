@@ -1,12 +1,10 @@
 class ApplicationController < ActionController::API
-  include CanCan::ControllerAdditions
   include Clearance::Controller
+  include Pundit
 
   before_action :set_default_response_format
 
-  rescue_from CanCan::AccessDenied do |e|
-    render_error e
-  end
+  rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
 
   def doorkeeper_unauthorized_render_options(error: nil)
     { json: ErrorSerializer.serialize(error) }
@@ -60,11 +58,15 @@ class ApplicationController < ActionController::API
 
   private
 
-  def current_resource_owner
-    User.find(doorkeeper_token.resource_owner_id) if doorkeeper_token
-  end
+    def user_not_authorized error
+      render_error error
+    end
 
-  def set_default_response_format
-    request.format = :json unless params[:format]
-  end
+    def current_resource_owner
+      User.find(doorkeeper_token.resource_owner_id) if doorkeeper_token
+    end
+
+    def set_default_response_format
+      request.format = :json unless params[:format]
+    end
 end
