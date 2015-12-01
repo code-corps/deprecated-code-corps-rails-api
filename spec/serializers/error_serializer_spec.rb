@@ -44,5 +44,19 @@ describe ErrorSerializer do
       expect(error[:detail]).to eq "You are not authorized to perform this action on users."
       expect(error[:status]).to eq 401
     end
+
+    it "can serialize ActionController::ParameterMissing" do
+      error = ActionController::ParameterMissing.new(:user_id)
+      result = ErrorSerializer.serialize(error)
+
+      expect(result[:errors]).not_to be_nil
+      expect(result[:errors].length).to eq 1
+
+      error = result[:errors].first
+      expect(error[:id]).to eq "PARAMETER_MISSING"
+      expect(error[:title]).to eq "User is missing"
+      expect(error[:detail]).to eq "You must specify a User."
+      expect(error[:status]).to eq 400
+    end
   end
 end

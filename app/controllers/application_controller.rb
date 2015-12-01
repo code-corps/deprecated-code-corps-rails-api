@@ -4,7 +4,8 @@ class ApplicationController < ActionController::API
 
   before_action :set_default_response_format
 
-  rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
+  rescue_from Pundit::NotAuthorizedError, with: :render_error
+  rescue_from ActionController::ParameterMissing, with: :render_error
 
   def doorkeeper_unauthorized_render_options(error: nil)
     { json: ErrorSerializer.serialize(error) }
@@ -57,10 +58,6 @@ class ApplicationController < ActionController::API
   end
 
   private
-
-    def user_not_authorized error
-      render_error error
-    end
 
     def current_resource_owner
       User.find(doorkeeper_token.resource_owner_id) if doorkeeper_token
