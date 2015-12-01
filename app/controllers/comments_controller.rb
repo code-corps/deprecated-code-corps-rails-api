@@ -13,7 +13,7 @@ class CommentsController < ApplicationController
 
   private
     def create_params
-      record_attributes.permit(:body).merge(relationships)
+      record_attributes.permit(:markdown).merge(relationships)
     end
 
     def post_id
