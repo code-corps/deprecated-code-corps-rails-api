@@ -1,5 +1,5 @@
 class ContributorsController < ApplicationController
-  before_action :doorkeeper_authorize!, only: [:create]
+  before_action :doorkeeper_authorize!, only: [:create, :update]
 
   def index
     authorize Contributor
@@ -10,6 +10,21 @@ class ContributorsController < ApplicationController
   def create
     authorize Contributor
     contributor = Contributor.new(create_params)
+
+    if contributor.valid?
+      contributor.save!
+      render json: contributor, include: [:user, :project]
+    else
+      render_validation_errors contributor.errors
+    end
+  end
+
+  def update
+    contributor = Contributor.find(params[:id])
+    contributor.assign_attributes(update_params)
+    # need to assign attributes, so we know what changed, since policy depends
+    # on what specific changes are happening
+    authorize contributor
 
     if contributor.valid?
       contributor.save!
@@ -38,5 +53,9 @@ class ContributorsController < ApplicationController
 
     def user_id
       current_user.id
+    end
+
+    def update_params
+      record_attributes.permit(:status)
     end
 end

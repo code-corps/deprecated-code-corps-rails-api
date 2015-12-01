@@ -6,6 +6,7 @@ class ApplicationController < ActionController::API
 
   rescue_from Pundit::NotAuthorizedError, with: :render_error
   rescue_from ActionController::ParameterMissing, with: :render_error
+  rescue_from ActiveRecord::RecordNotFound, with: :render_error
 
   def doorkeeper_unauthorized_render_options(error: nil)
     { json: ErrorSerializer.serialize(error) }

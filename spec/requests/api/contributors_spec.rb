@@ -135,26 +135,53 @@ describe "Contributors API" do
   end
 
   context 'PATCH /contributors/:id' do
-    it "requires authentication"
+    before do
+      @user = create(:user, email: "test_user@mail.com", password: "password")
+      @project = create(:project)
+    end
 
-    it "allows a project admin to change 'pending' to 'collaborator'"
+    context "when unauthenticated" do
+      it "should return a 401 with a proper error" do
+        patch "#{host}/contributors/1", { data: { type: "contributors" } }
+        expect(last_response.status).to eq 401
+        expect(json).to be_a_valid_json_api_error.with_id "NOT_AUTHORIZED"
+      end
+    end
 
-    it "does not allow a project admin to change anything to 'admin'"
-    it "does not allow a project admin to change anything to 'owner'"
-    it "does not allow a project admin to change anything to 'pending'"
-    it "does not allow a project admin to change to anything from 'admin'"
-    it "does not allow a project admin to change to anything from 'owner'"
-    it "does not allow a project admin to change to anything from 'collaborator'"
+    context "when authenticated" do
 
-    it "allows a project owner to change 'pending' to 'collaborator'"
-    it "allows a project owner to change 'collaborator' to 'admin'"
-    it "allows a project owner to change 'admin' to 'collaborator'"
+      before do
+        @token = authenticate(email: "test_user@mail.com", password: "password")
+      end
 
-    it "does not allow a project owner to change anything to 'pending'"
+      context "when attempting to update a non-existing record" do
+        it "responds with a 404" do
+          authenticated_patch "/contributors/invalid", { data: {
+            type: "contributors"
+          } }, @token
 
-    it "does not allow a project owner to change anything to 'owner'"
-    it "does not allow a project owner to change to anything from 'owner'"
+          expect(last_response.status).to eq 404
+          expect(json).to be_a_valid_json_api_error.with_id "RECORD_NOT_FOUND"
+        end
+      end
 
-    it "returns the updated contributor"
+      context "when it's succesful" do
+
+        it "returns the updated contributor" do
+          create(:contributor, user: @user, project: @project, status: "admin")
+          contributor = create(:contributor, project: @project)
+          authenticated_patch "/contributors/#{contributor.id}", { data: {
+            type: "contributors",
+            attributes: { status: "collaborator" }
+          } }, @token
+
+          expect(last_response.status).to eq 200
+          expect(json.data.id).to eq contributor.id.to_s
+          expect(json.data.type).to eq "contributors"
+          expect(json.data.attributes.status).to eq "collaborator"
+        end
+      end
+    end
+
   end
 end

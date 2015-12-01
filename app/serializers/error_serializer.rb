@@ -5,6 +5,7 @@ class ErrorSerializer
     error_hash = serialize_validation_errors(error) if error.class == ActiveModel::Errors
     error_hash = serialize_pundit_not_authorized_error(error) if error.class == Pundit::NotAuthorizedError
     error_hash = serialize_parameter_missing(error) if error.class == ActionController::ParameterMissing
+    error_hash = serialize_record_not_found(error) if error.class == ActiveRecord::RecordNotFound
     { errors: Array.wrap(error_hash) }
   end
 
@@ -53,6 +54,15 @@ class ErrorSerializer
         title: "#{subject_name} is missing",
         detail: "You must specify a #{subject_name}.",
         status: 400
+      }
+    end
+
+    def self.serialize_record_not_found(error)
+      return {
+        id: "RECORD_NOT_FOUND",
+        title: "Record not found",
+        detail: error.message,
+        status: 404
       }
     end
 end
