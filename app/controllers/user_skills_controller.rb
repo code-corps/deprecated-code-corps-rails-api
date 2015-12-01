@@ -2,7 +2,10 @@ class UserSkillsController < ApplicationController
   before_action :doorkeeper_authorize!
 
   def create
+    authorize UserSkill
+
     user_skill = UserSkill.new(create_params)
+
     if user_skill.valid?
       user_skill.save!
       render json: user_skill, include: [:user, :skill]
@@ -13,8 +16,11 @@ class UserSkillsController < ApplicationController
 
   def destroy
     user_skill = UserSkill.find(params[:id])
-    authorize! :destroy, user_skill
+
+    authorize user_skill
+
     user_skill.destroy!
+
     render json: :nothing, status: :no_content
   end
 
