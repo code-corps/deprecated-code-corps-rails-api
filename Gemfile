@@ -15,7 +15,7 @@ gem 'clearance'
 
 gem 'doorkeeper'
 
-gem 'cancancan', '~> 1.10'
+gem 'pundit'
 
 gem 'paperclip'
 

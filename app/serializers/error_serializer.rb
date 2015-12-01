@@ -2,7 +2,6 @@ class ErrorSerializer
   def self.serialize(error)
     error_hash = serialize_doorkeeper_oauth_invalid_token_response(error) if error.class == Doorkeeper::OAuth::InvalidTokenResponse
     error_hash = serialize_doorkeeper_oauth_error_response(error) if error.class == Doorkeeper::OAuth::ErrorResponse
-    error_hash = serialize_cancan_access_denied(error) if error.class == CanCan::AccessDenied
     error_hash = serialize_validation_errors(error) if error.class == ActiveModel::Errors
 
     { errors: Array.wrap(error_hash) }

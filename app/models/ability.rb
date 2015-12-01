@@ -1,5 +1,5 @@
 class Ability
-  include CanCan::Ability
+  # include CanCan::Ability
 
   def initialize(user)
     # The first argument to `can` is the action you are giving the user
