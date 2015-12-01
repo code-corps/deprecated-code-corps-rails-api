@@ -5,6 +5,7 @@ class Contributor < ActiveRecord::Base
   validates_presence_of :user
   validates_presence_of :project
   validates_presence_of :status
+  validates_uniqueness_of :user_id, scope: :project_id
 
   enum status: {
     pending: "pending",

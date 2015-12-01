@@ -41,14 +41,89 @@ describe "Contributors API" do
   end
 
   context "POST /contributors" do
-    it "requires authentication"
-    it "requires a project to be specified"
+    context "when unauthenticated" do
+      it "should return a 401 with a proper error" do
+        post "#{host}/contributors", { data: { type: "contributors" } }
+        expect(last_response.status).to eq 401
+        expect(json).to be_a_valid_json_api_error.with_id "NOT_AUTHORIZED"
+      end
+    end
 
-    context "when successful" do
-      it "returns the created contributor"
-      it "sets contributor user to current user"
-      it "sets contributor project to specified project"
-      it "sets contributor status to 'pending'"
+    context "when authenticated" do
+      before do
+        @user = create(:user, email: "test_user@mail.com", password: "password")
+        @token = authenticate(email: "test_user@mail.com", password: "password")
+        @project = create(:project)
+      end
+
+      it "requires a project to be specified" do
+        authenticated_post "/contributors", { data: {
+          type: "contributors"
+        } }, @token
+
+        expect(last_response.status).to eq 422
+        expect(json).to be_a_valid_json_api_error
+        expect(json).to contain_an_error_of_type("VALIDATION_ERROR").with_message("Project can't be blank")
+      end
+
+      context "when contributor record for project and user already exists" do
+        before do
+          create(:contributor, user: @user, project: @project)
+        end
+
+        it "fails with a 422" do
+          authenticated_post "/contributors", { data: {
+            type: "contributors",
+            relationships: {
+              project: { data: { id: @project.id, type: "projects" } }
+            }
+          } }, @token
+
+          expect(last_response.status).to eq 422
+          expect(json).to be_a_valid_json_api_error
+          expect(json).to contain_an_error_of_type("VALIDATION_ERROR").with_message("User has already been taken")
+        end
+
+      end
+
+      context "when successful" do
+        before do
+          authenticated_post "/contributors", { data: {
+            type: "contributors",
+            relationships: {
+              project: { data: { id: @project.id, type: "projects" } }
+            }
+          } }, @token
+        end
+
+        it "responds with a 200" do
+          expect(last_response.status).to eq 200
+        end
+
+        it "returns the created contributor" do
+          expect(json.data.attributes).not_to be_nil
+          expect(json.data.type).to eq "contributors"
+        end
+
+        it "sets contributor user to current user" do
+          contributor_user = json.data.relationships.user
+          expect(contributor_user).not_to be_nil
+          expect(contributor_user.data.id).to eq @user.id.to_s
+        end
+
+        it "sets contributor project to specified project" do
+          contributor_project = json.data.relationships.project
+          expect(contributor_project).not_to be_nil
+          expect(contributor_project.data.id).to eq @project.id.to_s
+        end
+
+        it "sets contributor status to 'pending'" do
+          expect(json.data.attributes.status).to eq "pending"
+        end
+
+        it "includes the user"
+        it "includes the project"
+      end
     end
   end
 
