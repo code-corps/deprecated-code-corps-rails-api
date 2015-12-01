@@ -41,7 +41,7 @@ describe PostLikeSerializer, :type => :serializer do
         expect(subject["user"]["data"]["id"]).to eq resource.user.id.to_s
       end
 
-      it "should contain a 'post' relationship" do
+      it "should contain a 'post' relationship without comments" do
         expect(subject["post"]).not_to be_nil
         expect(subject["post"]["data"]["type"]).to eq "posts"
         expect(subject["post"]["data"]["id"]).to eq resource.post.id.to_s

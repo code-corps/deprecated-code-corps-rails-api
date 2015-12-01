@@ -115,7 +115,7 @@ describe "Posts API" do
 
       it "does not require a 'post_type' to be specified" do
         params = { data: { type: "posts",
-          attributes: { title: "Post title", body: "Post body" },
+          attributes: { title: "Post title", markdown: "Post body" },
           relationships: { project: { data: { id: 2 } } }
         } }
         authenticated_post "/posts", params, @token
@@ -137,7 +137,7 @@ describe "Posts API" do
 
       it "ignores the 'status' parameter" do
         params = { data: { type: "posts",
-          attributes: { title: "Post title", post_type: "issue", status: "closed", body: "Post body" },
+          attributes: { title: "Post title", post_type: "issue", status: "closed", markdown: "Post body" },
           relationships: { project: { data: { id: 2 } } }
         } }
         authenticated_post "/posts", params, @token
@@ -151,17 +151,18 @@ describe "Posts API" do
           create(:project, id: 1)
           params = { data: {
             type: "posts",
-            attributes: { title: "Post title", body: "Post body", post_type: "issue" },
+            attributes: { title: "Post title", markdown: "Post body", post_type: "issue" },
             relationships: {
               project: { data: { id: 2, type: "projects" } }
             }
           }}
           authenticated_post "/posts", params, @token
         end
+
         it "creates a post" do
           post = Post.last
           expect(post.title).to eq "Post title"
-          expect(post.body).to eq "Post body"
+          expect(post.body).to eq "<p>Post body</p>\n"
           expect(post.issue?).to be true
 
           expect(post.user_id).to eq 1
@@ -171,7 +172,7 @@ describe "Posts API" do
         it "returns the created post" do
           post_attributes = json.data.attributes
           expect(post_attributes.title).to eq "Post title"
-          expect(post_attributes.body).to eq "Post body"
+          expect(post_attributes.body).to eq "<p>Post body</p>\n"
           expect(post_attributes.post_type).to eq "issue"
 
           post_relationships = json.data.relationships

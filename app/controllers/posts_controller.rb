@@ -25,7 +25,7 @@ class PostsController < ApplicationController
   private
 
     def create_params
-      record_attributes.permit(:body, :title, :post_type).merge(relationships)
+      record_attributes.permit(:markdown, :title, :post_type).merge(relationships)
     end
 
     def project_id

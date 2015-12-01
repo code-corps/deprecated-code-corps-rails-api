@@ -25,6 +25,8 @@ gem 'sidekiq'
 
 gem 'kaminari'
 
+gem 'redcarpet'
+
 group :development, :test do
   gem 'dotenv-rails'
 
