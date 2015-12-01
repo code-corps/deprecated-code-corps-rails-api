@@ -121,8 +121,15 @@ describe "Contributors API" do
           expect(json.data.attributes.status).to eq "pending"
         end
 
-        it "includes the user"
-        it "includes the project"
+        it "includes the user" do
+          user_includes = json.included.select { |i| i.type == "users" }
+          expect(user_includes.count).to eq 1
+        end
+
+        it "includes the project" do
+          project_includes = json.included.select { |i| i.type == "projects" }
+          expect(project_includes.count).to eq 1
+        end
       end
     end
   end
