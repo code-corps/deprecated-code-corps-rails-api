@@ -3,7 +3,7 @@ class ErrorSerializer
     error_hash = serialize_doorkeeper_oauth_invalid_token_response(error) if error.class == Doorkeeper::OAuth::InvalidTokenResponse
     error_hash = serialize_doorkeeper_oauth_error_response(error) if error.class == Doorkeeper::OAuth::ErrorResponse
     error_hash = serialize_validation_errors(error) if error.class == ActiveModel::Errors
-
+    error_hash = serialize_pundit_not_authorized_error(error) if error.class == Pundit::NotAuthorizedError
     { errors: Array.wrap(error_hash) }
   end
 
@@ -27,13 +27,12 @@ class ErrorSerializer
       }
     end
 
-    def self.serialize_cancan_access_denied(error)
-      action_name = error.action.to_s.pluralize
-      subject_name = error.subject.class.to_s.downcase
+    def self.serialize_pundit_not_authorized_error(error)
+      subject_name = error.record.class.to_s.pluralize.underscore.humanize.downcase
       return {
         id: "ACCESS_DENIED",
         title: "Access denied",
-        detail: "You are not authorized to perform #{action_name} on this #{subject_name}.",
+        detail: "You are not authorized to perform this action on #{subject_name}.",
         status: 401
       }
     end

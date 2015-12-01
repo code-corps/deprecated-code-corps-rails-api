@@ -31,18 +31,18 @@ describe ErrorSerializer do
       expect(error[:status]).to eq 401
     end
 
-    it "can serialize CanCan::AccessDenied" do
-      # error = CanCan::AccessDenied.new(nil, :delete, User.new)
-      # result = ErrorSerializer.serialize(error)
+    it "can serialize Pundit::NotAuthorizedError" do
+      error = Pundit::NotAuthorizedError.new(record: User.new)
+      result = ErrorSerializer.serialize(error)
 
-      # expect(result[:errors]).not_to be_nil
-      # expect(result[:errors].length).to eq 1
+      expect(result[:errors]).not_to be_nil
+      expect(result[:errors].length).to eq 1
 
-      # error = result[:errors].first
-      # expect(error[:id]).to eq "ACCESS_DENIED"
-      # expect(error[:title]).to eq "Access denied"
-      # expect(error[:detail]).to eq "You are not authorized to perform deletes on this user."
-      # expect(error[:status]).to eq 401
+      error = result[:errors].first
+      expect(error[:id]).to eq "ACCESS_DENIED"
+      expect(error[:title]).to eq "Access denied"
+      expect(error[:detail]).to eq "You are not authorized to perform this action on users."
+      expect(error[:status]).to eq 401
     end
   end
 end

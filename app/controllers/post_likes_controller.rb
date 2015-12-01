@@ -2,7 +2,10 @@ class PostLikesController < ApplicationController
   before_action :doorkeeper_authorize!
 
   def create
+    authorize PostLike
+
     post_like = PostLike.new(create_params)
+
     if post_like.valid?
       post_like.save!
       render json: post_like, include: [:user, :post]
@@ -13,8 +16,11 @@ class PostLikesController < ApplicationController
 
   def destroy
     post_like = PostLike.find(params[:id])
-    authorize! :destroy, post_like
+
+    authorize post_like
+
     post_like.destroy!
+
     render json: :nothing, status: :no_content
   end
 

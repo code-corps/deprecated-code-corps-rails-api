@@ -59,7 +59,6 @@ class ApplicationController < ActionController::API
   private
 
     def user_not_authorized error
-      pp error
       render_error error
     end
 
