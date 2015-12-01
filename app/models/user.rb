@@ -12,8 +12,8 @@ class User < ActiveRecord::Base
   has_many :skills, through: :user_skills
 
   validates :username, presence: { message: "can't be blank" }
+  validates :username, slug: true
   validates :username, uniqueness: { case_sensitive: false }
-  validates :username, format: { with: /\A[a-zA-Z0-9_]+\Z/, message: "is invalid. Alphanumerics only." }, allow_blank: true
   validates :username, length: { maximum: 39 } # This is GitHub's maximum username limit
 
   validates :website, format: { with: /\A((http|https):\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,}(([0-9]{1,5})?\/.*)?#=\z/ix }, allow_blank: true

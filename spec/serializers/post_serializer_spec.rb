@@ -44,6 +44,14 @@ describe PostSerializer, :type => :serializer do
         expect(subject["title"]).to eql resource.title
       end
 
+      it "has a 'body'" do
+        expect(subject["body"]).to eql resource.body
+      end
+
+      it "has 'markdown'" do
+        expect(subject["markdown"]).to eql resource.markdown
+      end
+
       it "has a 'status'" do
         expect(subject["status"]).to eql resource.status
       end

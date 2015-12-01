@@ -20,7 +20,7 @@ describe "Comments API" do
 
 
       it "requires a 'post' to be specified" do
-        params = { data: { type: "comments", attributes: { body: "Comment body" } } }
+        params = { data: { type: "comments", attributes: { markdown: "Comment body" } } }
         authenticated_post "/comments", params, @token
 
         expect(last_response.status).to eq 422
@@ -44,7 +44,7 @@ describe "Comments API" do
         before do
           params = { data: {
             type: "comments",
-            attributes: { body: "Comment body" },
+            attributes: { markdown: "Comment body" },
             relationships: {
               post: { data: { id: 2, type: "posts" } }
             }
@@ -54,7 +54,7 @@ describe "Comments API" do
 
         it "creates a comment" do
           comment = Comment.last
-          expect(comment.body).to eq "Comment body"
+          expect(comment.body).to eq "<p>Comment body</p>\n"
 
           expect(comment.user_id).to eq 1
           expect(comment.post_id).to eq 2
@@ -62,7 +62,7 @@ describe "Comments API" do
 
         it "returns the created comment" do
           comment_attributes = json.data.attributes
-          expect(comment_attributes.body).to eq "Comment body"
+          expect(comment_attributes.body).to eq "<p>Comment body</p>\n"
 
           comment_relationships = json.data.relationships
           expect(comment_relationships.post).not_to be_nil

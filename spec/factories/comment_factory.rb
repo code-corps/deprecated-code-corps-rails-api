@@ -1,7 +1,7 @@
 FactoryGirl.define do
 
   factory :comment do
-    sequence(:body) { |n| "Comment #{n}" }
+    sequence(:markdown) { |n| "Comment #{n}" }
 
     association :post
     association :user

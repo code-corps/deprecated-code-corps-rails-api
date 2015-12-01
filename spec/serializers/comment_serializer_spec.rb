@@ -37,6 +37,10 @@ describe CommentSerializer, :type => :serializer do
       it "has a 'body'" do
         expect(subject["body"]).to eql resource.body
       end
+
+      it "has 'markdown'" do
+        expect(subject["markdown"]).to eql resource.markdown
+      end
     end
 
     context "relationships" do
