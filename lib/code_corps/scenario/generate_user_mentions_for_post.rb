@@ -32,8 +32,6 @@ module CodeCorps
             PostUserMention.create(post: @post, user: m.first, start_index: m[1], end_index: m[2], username: m.first.username)
           end
         end
-
-        @post
       end
     end 
   end

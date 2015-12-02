@@ -14,10 +14,8 @@ module CodeCorps
         
 
         it "creates user mentions" do
-          original_post = create(:post, markdown: "Mentioning @joshsmith")
-          post = GenerateUserMentionsForPost.new(original_post).call
-
-          expect(post.id).to eq original_post.id
+          post = create(:post, markdown: "Mentioning @joshsmith")
+          GenerateUserMentionsForPost.new(post).call
 
           mention = PostUserMention.last
           expect(mention.post).to eq post
