@@ -14,6 +14,29 @@ describe Organization, :type => :model do
 
   describe "validations" do
     it { should validate_presence_of(:name) }
+    it { should validate_uniqueness_of(:name).case_insensitive }
+    it { should validate_length_of(:name).is_at_most(39)}
+
+    describe "name" do
+      it { should allow_value("code_corps").for(:name) }
+      it { should allow_value("codecorps").for(:name) }
+      it { should allow_value("codecorps12345").for(:name) }
+      it { should allow_value("code12345corps").for(:name) }
+      it { should allow_value("code____corps").for(:name) }
+      it { should allow_value("code-corps").for(:name) }
+      it { should allow_value("code-corps-corps").for(:name) }
+      it { should allow_value("code_corps_corps").for(:name) }
+      it { should allow_value("c").for(:name) }
+      it { should_not allow_value("-codecorps").for(:name) }
+      it { should_not allow_value("codecorps-").for(:name) }
+      it { should_not allow_value("@codecorps").for(:name) }
+      it { should_not allow_value("code----corps").for(:name) }
+      it { should_not allow_value("code/corps").for(:name) }
+      it { should_not allow_value("code_corps/code_corps").for(:name) }
+      it { should_not allow_value("code///corps").for(:name) }
+      it { should_not allow_value("@code/corps/code").for(:name) }
+      it { should_not allow_value("@code/corps/code/corps").for(:name) }
+    end
   end
 
   describe "instance methods" do
@@ -34,6 +57,9 @@ describe Organization, :type => :model do
   end
 
   describe "slug" do
-    it "should be auto-set from username"
+    it "should be auto-set from name" do
+      create(:organization, name: "SluggableOrganization")
+      expect(Organization.last.slug).to eq "sluggableorganization"
+    end
   end
 end

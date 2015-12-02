@@ -26,4 +26,20 @@ describe 'SlugValidator' do
       expect(SlugValidator.new.validate(comment)).to be_nil
     end
   end
+
+  context "when the record is an organization" do
+    context "when the name is valid" do
+      it 'returns nil' do
+        organization = Organization.new(name: "coderly")
+        expect(SlugValidator.new.validate(organization)).to be_nil
+      end
+    end
+
+    context "when the name is invalid" do
+      it 'returns the error text' do
+        organization = Organization.new(name: "-coderly")
+        expect(SlugValidator.new.validate(organization)).to eq "may only contain alphanumeric characters, underscores, or single hyphens, and cannot begin or end with a hyphen or underscore"
+      end
+    end
+  end
 end

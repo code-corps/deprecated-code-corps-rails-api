@@ -6,6 +6,9 @@ class Organization < ActiveRecord::Base
   has_many :projects, as: :owner
 
   validates_presence_of :name
+  validates :name, slug: true
+  validates :name, uniqueness: { case_sensitive: false }
+  validates :name, length: { maximum: 39 } # This is GitHub's maximum username limit
 
   def admins
     admin_memberships.map(&:member)

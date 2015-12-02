@@ -78,7 +78,10 @@ describe User, :type => :model do
   end
 
   describe "slug" do
-    it "should be auto-set from username"
+    it "should be auto-set from username" do
+      create(:user, username: "SluggableUser")
+      expect(User.last.slug).to eq "sluggableuser"
+    end
   end
 
 end
