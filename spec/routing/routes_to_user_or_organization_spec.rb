@@ -6,7 +6,7 @@ describe "routes to user or organization" do
     end
 
     it "routes to the organization controller" do
-      expect(:get => "/test").to route_to(:controller => "organizations", :slug => "test")
+      expect(:get => "#{host}/test").to route_to(subdomain: "api", controller: "organizations", slug: "test", action: "show")
     end
   end
 
@@ -16,7 +16,7 @@ describe "routes to user or organization" do
     end
 
     it "routes to the organization controller" do
-      expect(:get => "/test").to route_to(:controller => "users", :slug => "test")
+      expect(:get => "#{host}/test").to route_to(subdomain: "api", controller: "users", slug: "test", action: "show")
     end
   end
 
@@ -27,7 +27,7 @@ describe "routes to user or organization" do
     end
 
     it "routes to the organization controller" do
-      expect(:get => "/test").to route_to(:controller => "users", :slug => "test")
+      expect(:get => "#{host}/test").to route_to(subdomain: "api", controller: "organizations", slug: "test", action: "show")
     end
   end
 end

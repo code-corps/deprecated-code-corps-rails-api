@@ -25,5 +25,28 @@ Rails.application.routes.draw do
     resources :post_likes, only: [:create, :destroy]
     resources :user_skills, only: [:create, :destroy]
     resources :projects, only: [:show, :index, :create, :update]
+
+    class OrganizationUrlConstrainer
+      def matches?(request)
+        slug = request.path.gsub("/", "")
+        Organization.find_by_slug(slug)
+      end
+    end
+
+    constraints(OrganizationUrlConstrainer.new) do
+      get '/:slug', to: "organizations#show", as: 'short_organization'
+    end
+
+    class UserUrlConstrainer
+      def matches?(request)
+        slug = request.path.gsub("/", "")
+        User.find_by_slug(slug)
+      end
+    end
+
+    constraints(UserUrlConstrainer.new) do
+      get '/:slug', to: "users#show", as: 'short_user'
+    end
+
   end
 end
