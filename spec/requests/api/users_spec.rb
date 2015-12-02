@@ -129,7 +129,7 @@ describe "Users API" do
         end
 
         it "returns the created user using UserSerializer", vcr: { cassette_name: "requests/api/users/valid_facebook_request" } do
-          expect(json).to serialize_object(User.last).with(UserSerializer)
+          expect(json).to serialize_object(User.last).with(UserSerializer).with_includes("skills")
         end
 
       end
