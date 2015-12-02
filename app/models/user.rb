@@ -1,5 +1,8 @@
 class User < ActiveRecord::Base
   include Clearance::User
+  extend FriendlyId
+
+  friendly_id :username, use: :slugged
 
   has_many :organization_memberships, foreign_key: "member_id"
   has_many :organizations, through: :organization_memberships
@@ -18,10 +21,5 @@ class User < ActiveRecord::Base
 
   validates :website, format: { with: /\A((http|https):\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,}(([0-9]{1,5})?\/.*)?#=\z/ix }, allow_blank: true
 
-  before_save :generate_slug
-
-  private
-    def generate_slug
-      self.slug = username.downcase
-    end
+  validates_presence_of :slug
 end

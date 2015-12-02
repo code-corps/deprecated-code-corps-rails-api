@@ -31,6 +31,7 @@ describe User, :type => :model do
   end
 
   describe "validations" do
+
     describe "website" do
       it { should allow_value("www.example.com").for(:website) }
       it { should allow_value("http://www.example.com").for(:website) }
@@ -46,6 +47,15 @@ describe User, :type => :model do
     end
 
     describe "username" do
+      describe "base validations" do
+        # visit the following to understand why this is tested in a separate context
+        # https://github.com/thoughtbot/shoulda-matchers/blob/master/lib/shoulda/matchers/active_record/validate_uniqueness_of_matcher.rb#L50
+        subject { create(:user) }
+        it { should validate_presence_of(:username) }
+        it { should validate_uniqueness_of(:username).case_insensitive }
+        it { should validate_length_of(:username).is_at_most(39) }
+      end
+
       it { should allow_value("code_corps").for(:username) }
       it { should allow_value("codecorps").for(:username) }
       it { should allow_value("codecorps12345").for(:username) }
@@ -65,6 +75,9 @@ describe User, :type => :model do
       it { should_not allow_value("@code/corps/code").for(:username) }
       it { should_not allow_value("@code/corps/code/corps").for(:username) }
     end
+
+
+    it { should validate_presence_of(:slug) }
   end
 
   describe "admin state" do

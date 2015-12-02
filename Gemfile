@@ -27,6 +27,8 @@ gem 'kaminari'
 
 gem 'redcarpet'
 
+gem 'friendly_id'
+
 group :development, :test do
   gem 'dotenv-rails'
 

@@ -13,11 +13,20 @@ describe Organization, :type => :model do
   end
 
   describe "validations" do
-    it { should validate_presence_of(:name) }
-    it { should validate_uniqueness_of(:name).case_insensitive }
-    it { should validate_length_of(:name).is_at_most(39)}
+
+    it { should validate_presence_of(:slug) }
 
     describe "name" do
+
+      describe "base validations" do
+        # visit the following to understand why this is tested in a separate context
+        # https://github.com/thoughtbot/shoulda-matchers/blob/master/lib/shoulda/matchers/active_record/validate_uniqueness_of_matcher.rb#L50
+        subject { create(:organization) }
+        it { should validate_presence_of(:name) }
+        it { should validate_uniqueness_of(:name).case_insensitive }
+        it { should validate_length_of(:name).is_at_most(39) }
+      end
+
       it { should allow_value("code_corps").for(:name) }
       it { should allow_value("codecorps").for(:name) }
       it { should allow_value("codecorps12345").for(:name) }

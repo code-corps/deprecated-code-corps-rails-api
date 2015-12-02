@@ -6,11 +6,15 @@ class AddSlugToUsersAndOrganizations < ActiveRecord::Migration
     end
     change_column_null :users, :slug, false
 
+    add_index :users, :slug, :unique => true
+
 
     add_column :organizations, :slug, :string
     Organization.all.each do |organization|
       organization.update_attributes(slug: organization.name.downcase)
     end
     change_column_null :organizations, :slug, false
+
+    add_index :organizations, :slug, :unique => true
   end
 end

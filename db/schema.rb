@@ -90,6 +90,8 @@ ActiveRecord::Schema.define(version: 20151202101754) do
     t.string   "slug",       null: false
   end
 
+  add_index "organizations", ["slug"], name: "index_organizations_on_slug", unique: true, using: :btree
+
   create_table "post_likes", force: :cascade do |t|
     t.integer  "post_id"
     t.integer  "user_id"
@@ -182,6 +184,7 @@ ActiveRecord::Schema.define(version: 20151202101754) do
 
   add_index "users", ["email"], name: "index_users_on_email", using: :btree
   add_index "users", ["remember_token"], name: "index_users_on_remember_token", using: :btree
+  add_index "users", ["slug"], name: "index_users_on_slug", unique: true, using: :btree
 
   add_foreign_key "comments", "posts"
   add_foreign_key "comments", "users"
