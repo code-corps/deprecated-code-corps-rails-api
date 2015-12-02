@@ -12,6 +12,7 @@ describe User, :type => :model do
     it { should have_db_column(:twitter).of_type(:string) }
     it { should have_db_column(:website).of_type(:text) }
     it { should have_db_column(:biography).of_type(:text) }
+    it { should have_db_column(:slug).of_type(:string).with_options(null: false) }
 
     it { should have_db_index(:email) }
     it { should have_db_index(:remember_token) }
@@ -74,6 +75,10 @@ describe User, :type => :model do
       user.save
       expect(user.admin?).to eq true
     end
+  end
+
+  describe "slug" do
+    it "should be auto-set from username"
   end
 
 end

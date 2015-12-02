@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151201175725) do
+ActiveRecord::Schema.define(version: 20151202101754) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -23,6 +23,14 @@ ActiveRecord::Schema.define(version: 20151201175725) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.text     "markdown",   null: false
+  end
+
+  create_table "contributors", force: :cascade do |t|
+    t.integer  "user_id"
+    t.integer  "project_id"
+    t.string   "status",     default: "pending", null: false
+    t.datetime "created_at",                     null: false
+    t.datetime "updated_at",                     null: false
   end
 
   create_table "oauth_access_grants", force: :cascade do |t|
@@ -79,6 +87,7 @@ ActiveRecord::Schema.define(version: 20151201175725) do
     t.string   "name",       null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string   "slug",       null: false
   end
 
   create_table "post_likes", force: :cascade do |t|
@@ -155,17 +164,20 @@ ActiveRecord::Schema.define(version: 20151201175725) do
   end
 
   create_table "users", force: :cascade do |t|
-    t.datetime "created_at",                                     null: false
-    t.datetime "updated_at",                                     null: false
-    t.string   "email",                                          null: false
-    t.string   "encrypted_password", limit: 128,                 null: false
-    t.string   "confirmation_token", limit: 128
-    t.string   "remember_token",     limit: 128,                 null: false
+    t.datetime "created_at",                                        null: false
+    t.datetime "updated_at",                                        null: false
+    t.string   "email",                                             null: false
+    t.string   "encrypted_password",    limit: 128,                 null: false
+    t.string   "confirmation_token",    limit: 128
+    t.string   "remember_token",        limit: 128,                 null: false
     t.string   "username"
-    t.boolean  "admin",                          default: false, null: false
+    t.boolean  "admin",                             default: false, null: false
     t.text     "website"
     t.string   "twitter"
     t.text     "biography"
+    t.string   "facebook_id"
+    t.string   "facebook_access_token"
+    t.string   "slug",                                              null: false
   end
 
   add_index "users", ["email"], name: "index_users_on_email", using: :btree

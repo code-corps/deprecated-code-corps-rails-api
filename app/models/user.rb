@@ -17,4 +17,11 @@ class User < ActiveRecord::Base
   validates :username, length: { maximum: 39 } # This is GitHub's maximum username limit
 
   validates :website, format: { with: /\A((http|https):\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,}(([0-9]{1,5})?\/.*)?#=\z/ix }, allow_blank: true
+
+  before_save :generate_slug
+
+  private
+    def generate_slug
+      self.slug = username.downcase
+    end
 end

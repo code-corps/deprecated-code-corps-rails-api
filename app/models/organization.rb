@@ -5,6 +5,8 @@ class Organization < ActiveRecord::Base
   has_many :teams
   has_many :projects, as: :owner
 
+  validates_presence_of :name
+
   def admins
     admin_memberships.map(&:member)
   end
@@ -13,4 +15,10 @@ class Organization < ActiveRecord::Base
     organization_memberships.admin
   end
 
+  before_save :generate_slug
+
+  private
+    def generate_slug
+      self.slug = name.downcase
+    end
 end
