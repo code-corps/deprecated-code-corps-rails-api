@@ -12,12 +12,14 @@ class ProjectsController < ApplicationController
   end
 
   def index
+    authorize Project
     projects = Project.all.includes(:github_repositories)
     render json: projects
   end
 
   def show
     project = Project.includes(:github_repositories).find(params[:id])
+    authorize project
     render json: project, include: :github_repositories
   end
 
