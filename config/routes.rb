@@ -25,7 +25,10 @@ Rails.application.routes.draw do
     resources :post_likes, only: [:create, :destroy]
     resources :user_skills, only: [:create, :destroy]
     resources :projects, only: [:show, :index, :create, :update]
+
     resources :organizations, only: [:show]
+
+    resources :skill_categories, only: [:index]
 
     # class OrganizationUrlConstrainer
     #   def matches?(request)
@@ -48,6 +51,5 @@ Rails.application.routes.draw do
     # constraints(UserUrlConstrainer.new) do
     #   get '/:slug', to: "users#show", as: 'short_user'
     # end
-
   end
 end
