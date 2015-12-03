@@ -1,3 +1,5 @@
+require "dispatchers/slug_dispatcher"
+
 Rails.application.routes.draw do
   use_doorkeeper do
     controllers tokens: 'tokens'
@@ -33,12 +35,13 @@ Rails.application.routes.draw do
     # class OrganizationUrlConstrainer
     #   def matches?(request)
     #     slug = request.path.gsub("/", "")
-    #     Organization.find_by_slug(slug)
+    #     route_slug = SlugRoute.find_by_slug(slug)
+    #     request.path.gsub!("#{slug}", "#{route_slug.owner_id}")
     #   end
     # end
 
     # constraints(OrganizationUrlConstrainer.new) do
-    #   get '/:slug', to: "organizations#show", as: 'short_organization'
+    #   get '/:id', to: "organizations#show", as: 'short_organization'
     # end
 
     # class UserUrlConstrainer
@@ -51,5 +54,7 @@ Rails.application.routes.draw do
     # constraints(UserUrlConstrainer.new) do
     #   get '/:slug', to: "users#show", as: 'short_user'
     # end
+
+    get '/:slug', to: SlugDispatcher.new(self)
   end
 end
