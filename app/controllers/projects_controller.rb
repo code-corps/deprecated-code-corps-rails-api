@@ -1,5 +1,5 @@
 class ProjectsController < ApplicationController
-  
+
   def create
     project = Project.new(permitted_params)
 
@@ -12,12 +12,13 @@ class ProjectsController < ApplicationController
   end
 
   def index
-    render json: Project.all
+    projects = Project.all.includes(:github_repositories)
+    render json: projects
   end
 
   def show
-    project = Project.find(params[:id])
-    render json: project
+    project = Project.includes(:github_repositories).find(params[:id])
+    render json: project, include: :github_repositories
   end
 
   def update

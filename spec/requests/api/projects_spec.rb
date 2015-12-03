@@ -4,36 +4,45 @@ describe "Projects API" do
 
   context "GET /projects" do
     before do
-      create_list(:project, 10)
+      @projects = create_list(:project, 10)
     end
 
-    it "returns a list of projects" do
-      get "#{host}/projects"
+    context "when successful" do
+      before do
+        get "#{host}/projects"
+      end
 
-      expect(last_response.status).to eq 200
+      it "responds with a 200" do
+        expect(last_response.status).to eq 200
+      end
 
-      expect(json.data.length).to eq 10
-      expect(json.data.all? { |item| item.type == "projects" }).to be true
+      it "returns a list of projects, serialized with ProjectSerializer, with nothing included" do
+        expect(json).to serialize_collection(@projects).with(ProjectSerializer)
+      end
     end
+
   end
 
   context "GET /projects/:id" do
     before do
-      create(:project, id: 1, title: "Project", description: "Description")
+      @project = create(:project)
+      github_repositories = create_list(:github_repository, 10, project: @project)
     end
 
-    it "returns the specified project" do
-      get "#{host}/projects/1", {}
+    context "when successful" do
+      before do
+        get "#{host}/projects/#{@project.id}"
+      end
 
-      expect(last_response.status).to eq 200
+      it "responds with a 200" do
+        expect(last_response.status).to eq 200
+      end
 
-      expect(json.data.id).to eq "1"
-      expect(json.data.type).to eq "projects"
-
-      attributes = json.data.attributes
-      expect(attributes.title).to eq "Project"
-      expect(attributes.description).to eq "Description"
+      it "returns the specified project, serialized with ProjectSerializer, with github repositories included" do
+        expect(json).to serialize_object(@project).with(ProjectSerializer).with_includes(:github_repositories)
+      end
     end
+
   end
 
   context "POST /projects" do
@@ -93,7 +102,7 @@ describe "Projects API" do
         expect(last_response.status).to eq 200
 
         project = Project.last
-      
+
         expect(project.icon.path).to be_nil
         expect(project.title).to eq "Test Project Title"
         expect(project.description).to eq "Test project description"
