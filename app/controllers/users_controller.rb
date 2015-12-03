@@ -17,7 +17,7 @@ class UsersController < ApplicationController
   end
 
   def show
-    user = User.includes(skills: [:skill_category]).friendly.find(friendly_id)
+    user = User.includes(skills: [:skill_category]).find(params[:id])
 
     authorize user
 
@@ -108,9 +108,5 @@ class UsersController < ApplicationController
 
     def find_user_by_confirmation_token
       User.find_by(confirmation_token: reset_password_params[:confirmation_token])
-    end
-
-    def friendly_id
-      params[:id] || params[:slug]
     end
 end

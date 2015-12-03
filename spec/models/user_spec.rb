@@ -12,7 +12,6 @@ describe User, :type => :model do
     it { should have_db_column(:twitter).of_type(:string) }
     it { should have_db_column(:website).of_type(:text) }
     it { should have_db_column(:biography).of_type(:text) }
-    it { should have_db_column(:slug).of_type(:string).with_options(null: false) }
 
     it { should have_db_index(:email) }
     it { should have_db_index(:remember_token) }
@@ -75,9 +74,6 @@ describe User, :type => :model do
       it { should_not allow_value("@code/corps/code").for(:username) }
       it { should_not allow_value("@code/corps/code/corps").for(:username) }
     end
-
-
-    it { should validate_presence_of(:slug) }
   end
 
   describe "admin state" do
@@ -87,13 +83,6 @@ describe User, :type => :model do
       user.admin = true
       user.save
       expect(user.admin?).to eq true
-    end
-  end
-
-  describe "slug" do
-    it "should be auto-set from username" do
-      create(:user, username: "SluggableUser")
-      expect(User.last.slug).to eq "sluggableuser"
     end
   end
 

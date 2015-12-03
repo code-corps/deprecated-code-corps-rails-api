@@ -27,27 +27,27 @@ Rails.application.routes.draw do
     resources :projects, only: [:show, :index, :create, :update]
     resources :organizations, only: [:show]
 
-    class OrganizationUrlConstrainer
-      def matches?(request)
-        slug = request.path.gsub("/", "")
-        Organization.find_by_slug(slug)
-      end
-    end
+    # class OrganizationUrlConstrainer
+    #   def matches?(request)
+    #     slug = request.path.gsub("/", "")
+    #     Organization.find_by_slug(slug)
+    #   end
+    # end
 
-    constraints(OrganizationUrlConstrainer.new) do
-      get '/:slug', to: "organizations#show", as: 'short_organization'
-    end
+    # constraints(OrganizationUrlConstrainer.new) do
+    #   get '/:slug', to: "organizations#show", as: 'short_organization'
+    # end
 
-    class UserUrlConstrainer
-      def matches?(request)
-        slug = request.path.gsub("/", "")
-        User.find_by_slug(slug)
-      end
-    end
+    # class UserUrlConstrainer
+    #   def matches?(request)
+    #     slug = request.path.gsub("/", "")
+    #     User.find_by_slug(slug)
+    #   end
+    # end
 
-    constraints(UserUrlConstrainer.new) do
-      get '/:slug', to: "users#show", as: 'short_user'
-    end
+    # constraints(UserUrlConstrainer.new) do
+    #   get '/:slug', to: "users#show", as: 'short_user'
+    # end
 
   end
 end

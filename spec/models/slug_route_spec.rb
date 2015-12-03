@@ -1,30 +1,28 @@
-require "rails_helper"
+require 'rails_helper'
 
-describe Organization, :type => :model do
+RSpec.describe SlugRoute, type: :model do
   describe "schema" do
-    it { should have_db_column(:name).of_type(:string) }
     it { should have_db_column(:slug).of_type(:string).with_options(null: false) }
+    it { should have_db_column(:owner_type).of_type(:string) }
+    it { should have_db_column(:owner_id).of_type(:integer) }
+
+    it { should have_db_index(:slug).unique(true) }
+    it { should have_db_index([:owner_id, :owner_type]).unique(true) }
   end
 
   describe "relationships" do
-    it { should have_many(:members).through(:organization_memberships) }
-    it { should have_many(:projects) }
-    it { should have_many(:teams) }
+    it { should belong_to(:owner) }
   end
 
   describe "validations" do
-
-    it { should validate_presence_of(:slug) }
-
-    describe "name" do
-
+    describe "slug" do
       describe "base validations" do
         # visit the following to understand why this is tested in a separate context
         # https://github.com/thoughtbot/shoulda-matchers/blob/master/lib/shoulda/matchers/active_record/validate_uniqueness_of_matcher.rb#L50
-        subject { create(:organization) }
-        it { should validate_presence_of(:name) }
+        let(:user) { create(:user) }
+        subject { SlugRoute.create(owner: user, slug: "test-slug") }
+        it { should validate_presence_of(:slug) }
         it { should validate_uniqueness_of(:slug).case_insensitive }
-        it { should validate_length_of(:slug).is_at_most(39) }
       end
 
       it { should allow_value("code_corps").for(:slug) }
@@ -48,27 +46,4 @@ describe Organization, :type => :model do
     end
   end
 
-  describe "instance methods" do
-    describe "#admins" do
-      it "should return users with membership role 'admin'" do
-        organization = create(:organization)
-        create_list(:organization_membership, 10, role: "admin", organization: organization)
-        create_list(:organization_membership, 10, role: "regular", organization: organization)
-
-        organization.reload
-
-        expect(organization.admins.length).to eq 10
-        expect(organization.members.length).to eq 20
-
-        expect(organization.admins.all? { |admin| admin.class == User }).to be true
-      end
-    end
-  end
-
-  describe "slug" do
-    it "should be auto-set from name" do
-      create(:organization, name: "Sluggable Organization")
-      expect(Organization.last.slug).to eq "sluggable-organization"
-    end
-  end
 end

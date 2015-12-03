@@ -54,22 +54,6 @@ describe "Users API" do
     end
   end
 
-  context 'GET /users/:slug' do
-    before do
-      @user = create(:user, username: "user")
-      create_list(:user_skill, 10, user: @user)
-      get "#{host}/users/#{@user.slug}"
-    end
-
-    it "responds with a 200" do
-      expect(last_response.status).to eq 200
-    end
-
-    it "retrieves the specified user by slug using UserSerializer, including skills" do
-      expect(json).to serialize_object(User.find(@user.id)).with(UserSerializer).with_includes("skills")
-    end
-  end
-
   context 'GET /users' do
     before do
       @user = create(:user, email: "josh@example.com", username: "joshsmith", password: "password")

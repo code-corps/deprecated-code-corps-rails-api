@@ -8,7 +8,11 @@ class SlugValidator < ActiveModel::Validator
     end
 
     if record.instance_of? Organization
-      return validate_property(record, :name)
+      return validate_property(record, :slug)
+    end
+
+    if record.instance_of? SlugRoute
+      return validate_property(record, :slug)
     end
   end
 

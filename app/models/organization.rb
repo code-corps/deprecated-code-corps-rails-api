@@ -1,19 +1,17 @@
 class Organization < ActiveRecord::Base
-
-  extend FriendlyId
-  friendly_id :name, use: :slugged
-
   has_many :organization_memberships
   has_many :members, through: :organization_memberships
   has_many :teams
   has_many :projects, as: :owner
 
+  before_validation :add_slug_if_blank
+
   validates_presence_of :name
-  validates :name, slug: true
-  validates :name, uniqueness: { case_sensitive: false }
-  validates :name, length: { maximum: 39 } # This is GitHub's maximum username limit
 
   validates_presence_of :slug
+  validates :slug, slug: true
+  validates :slug, uniqueness: { case_sensitive: false }
+  validates :slug, length: { maximum: 39 } # This is GitHub's maximum username limit
 
   def admins
     admin_memberships.map(&:member)
@@ -22,4 +20,12 @@ class Organization < ActiveRecord::Base
   def admin_memberships
     organization_memberships.admin
   end
+
+  private
+
+    def add_slug_if_blank
+      unless self.slug.present?
+        self.slug = self.name.try(:parameterize)
+      end
+    end
 end

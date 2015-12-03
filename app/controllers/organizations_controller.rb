@@ -1,15 +1,10 @@
 class OrganizationsController < ApplicationController
 
   def show
-    organization = Organization.friendly.find(friendly_id)
+    organization = Organization.find(params[:id])
 
     authorize Organization
     render json: organization
   end
-
-  private
-
-    def friendly_id
-      params[:id] || params[:slug]
-    end
+  
 end
