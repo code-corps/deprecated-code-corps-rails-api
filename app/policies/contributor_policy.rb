@@ -3,7 +3,10 @@ class ContributorPolicy
 
   def initialize(user, contributor)
     @user = user
-    @contributor = contributor
+    if contributor.is_a? Contributor
+      @contributor = contributor
+      @project = contributor.project if contributor.is_a? Contributor
+    end
   end
 
   def index?
@@ -11,7 +14,7 @@ class ContributorPolicy
   end
 
   def create?
-    return unless @contributor_for_user.present?
+    return unless contributor_for_user.present?
 
     return true if @contributor.status == "owner" && current_user_is_owner_of_project?
     return true if current_user_is_at_least_admin_on_project?
@@ -19,9 +22,7 @@ class ContributorPolicy
   end
 
   def update?
-    return unless @contributor_for_user.present?
-
-    @project = @contributor.project
+    return unless contributor_for_user.present?
 
     if current_user_is_at_least_admin_on_project?
       # Approve pending contributor to become a collaborator
@@ -38,9 +39,22 @@ class ContributorPolicy
     return false
   end
 
+  def delete?
+    return false unless contributor_for_user.present?
+    return false unless current_user_is_at_least_admin_on_project?
+
+    if current_user_is_at_least_admin_on_project?
+      return true if contributor.pending? or contributor.collaborator?
+    end
+
+    if current_user_is_owner_of_project?
+      return true if contributor.admin?
+    end
+  end
+
   private
     def contributor_for_user
-      @contributor_for_user ||= Contributor.find_by(user: @user, project: @project)
+      @contributor_for_user ||= Contributor.find_by(user: user, project: project)
     end
 
     def current_user_is_at_least_admin_on_project?
