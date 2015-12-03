@@ -25,6 +25,14 @@ ActiveRecord::Schema.define(version: 20151201175725) do
     t.text     "markdown",   null: false
   end
 
+  create_table "contributors", force: :cascade do |t|
+    t.integer  "user_id"
+    t.integer  "project_id"
+    t.string   "status",     default: "pending", null: false
+    t.datetime "created_at",                     null: false
+    t.datetime "updated_at",                     null: false
+  end
+
   create_table "oauth_access_grants", force: :cascade do |t|
     t.integer  "resource_owner_id", null: false
     t.integer  "application_id",    null: false
