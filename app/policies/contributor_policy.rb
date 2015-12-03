@@ -7,22 +7,31 @@ class ContributorPolicy
   end
 
   def index?
-    true
+    return true
   end
 
   def create?
-    @user.present?
+    return unless @contributor_for_user.present?
+
+    return true if @contributor.status == "owner" && current_user_is_owner_of_project?
+    return true if current_user_is_at_least_admin_on_project?
+    return true if @contributor.status == "pending"
   end
 
   def update?
+    return unless @contributor_for_user.present?
+
     @project = @contributor.project
 
     if current_user_is_at_least_admin_on_project?
+      # Approve pending contributor to become a collaborator
       return true if contributor.status_was == "pending" and contributor.collaborator?
     end
 
     if current_user_is_owner_of_project?
+      # Promote a collaborator to admin
       return true if contributor.status_was == "collaborator" and contributor.admin?
+      # Demote an admin to collaborator
       return true if contributor.status_was == "admin" and contributor.collaborator?
     end
 
