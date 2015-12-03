@@ -26,5 +26,6 @@ Rails.application.routes.draw do
     resources :user_skills, only: [:create, :destroy]
     resources :projects, only: [:show, :index, :create, :update]
     resources :contributors, only: [:index, :create, :update]
+    resources :skill_categories, only: [:index]
   end
 end

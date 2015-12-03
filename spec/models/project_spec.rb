@@ -8,11 +8,13 @@ describe Project, :type => :model do
     it { should have_db_column(:icon_content_type).of_type(:string) }
     it { should have_db_column(:icon_file_size).of_type(:integer) }
     it { should have_db_column(:icon_updated_at).of_type(:datetime) }
+    it { should have_db_column(:contributors_count).of_type(:integer) }
   end
 
   describe "relationships" do
     it { should belong_to(:owner) }
     it { should have_many(:posts) }
+    it { should have_many(:contributors) }
   end
 
   describe "ownership" do
