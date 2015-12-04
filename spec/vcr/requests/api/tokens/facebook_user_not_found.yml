@@ -2,7 +2,7 @@
 http_interactions:
 - request:
     method: get
-    uri: https://graph.facebook.com/me?access_token=non-existant-token&appsecret_proof=5e5d417feb25ea91af8c7ee07a1fce3f2fecf3f6711f1f33009aa5ee379fac31&fields=email,first_name,last_name
+    uri: https://graph.facebook.com/me?access_token=non-existant-token&appsecret_proof=5cf87f35920bd647d216415adffce7dc04ba652ed43a23a23e7b63fb496715ae&fields=email,first_name,last_name
     body:
       encoding: US-ASCII
       string: ''
@@ -25,9 +25,9 @@ http_interactions:
       Content-Type:
       - application/json; charset=UTF-8
       X-Fb-Trace-Id:
-      - AWwW6NLjfH2
+      - A6PepT920Ec
       X-Fb-Rev:
-      - '2067909'
+      - '2073942'
       Pragma:
       - no-cache
       Cache-Control:
@@ -35,16 +35,16 @@ http_interactions:
       Expires:
       - Sat, 01 Jan 2000 00:00:00 GMT
       X-Fb-Debug:
-      - zUkHWK/gtxoq/eHWrX3E1Nq3MqXvVgJElP3WgD3tfnDKMOwlu8hjTLv6rQisG1+kFMoXH27IZWF1oPk5YZSQHA==
+      - c2CUl6sOqHTSvVAl8YUGGBu4MsWbDBa0+9mYbIJz58T7Tq5LdFjFznCVwdwDy06XMQST/VV/BscgLyWlQYzJgQ==
       Date:
-      - Wed, 02 Dec 2015 09:02:03 GMT
+      - Fri, 04 Dec 2015 23:11:49 GMT
       Connection:
       - keep-alive
       Content-Length:
       - '113'
     body:
       encoding: UTF-8
-      string: '{"error":{"message":"Invalid OAuth access token.","type":"OAuthException","code":190,"fbtrace_id":"AWwW6NLjfH2"}}'
+      string: '{"error":{"message":"Invalid OAuth access token.","type":"OAuthException","code":190,"fbtrace_id":"A6PepT920Ec"}}'
     http_version: 
-  recorded_at: Wed, 02 Dec 2015 09:02:14 GMT
+  recorded_at: Fri, 04 Dec 2015 23:11:49 GMT
 recorded_with: VCR 3.0.0
