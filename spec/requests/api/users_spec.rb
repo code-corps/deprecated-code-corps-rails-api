@@ -1,4 +1,5 @@
 require 'rails_helper'
+require "code_corps/scenario/save_user"
 
 describe "Users API" do
 
@@ -38,6 +39,24 @@ describe "Users API" do
     end
   end
 
+  context 'GET /:username' do
+    before do
+      @user = create(:user, username: "joshsmith")
+      CodeCorps::Scenario::SaveUser.new(@user).call
+      create_list(:user_skill, 10, user: @user)
+      get "#{host}/#{@user.username}"
+    end
+
+    it "responds with a 200" do
+      expect(last_response.status).to eq 200
+    end
+
+    it "retrieves the specified user by username using UserSerializer, including skills" do
+      expect(json).to serialize_object(User.find(@user.id)).with(UserSerializer).with_includes("skills")
+      expect(json.data.id).to eq @user.id.to_s
+    end
+  end
+
   context 'GET /users/:id' do
     before do
       @user = create(:user, username: "user")
@@ -51,6 +70,7 @@ describe "Users API" do
 
     it "retrieves the specified user by id using UserSerializer, including skills" do
       expect(json).to serialize_object(User.find(@user.id)).with(UserSerializer).with_includes("skills")
+      expect(json.data.id).to eq @user.id.to_s
     end
   end
 
