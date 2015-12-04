@@ -17,9 +17,9 @@ class ContributorPolicy
   def create?
     return unless contributor_for_user.present?
 
-    return true if @contributor.status == "owner" && current_user_is_owner_of_project?
-    return true if current_user_is_at_least_admin_on_project?
-    return true if @contributor.status == "pending"
+    return true if @contributor.owner? && current_user_is_owner_of_project?
+    return true if current_user_is_at_least_admin_on_project? && !contributor.owner?
+    return true if @contributor.pending?
   end
 
   def update?

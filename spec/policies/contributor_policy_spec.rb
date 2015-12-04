@@ -4,22 +4,6 @@ describe ContributorPolicy do
 
   subject { described_class }
 
-    let(:non_user)                              { nil }
-    let(:regular_user)                          { create(:user) }
-    let(:collaborator_user)                     { create(:user) }
-    let(:admin_user)                            { create(:user) }
-    let(:owner_user)                            { create(:user) }
-    let(:admin)                                 { create(:user, admin: true) }
-    let(:project)                               { create(:project) }
-    let(:contributor_regular_user)              { create(:contributor, status: "pending", user: create(:user), project: project) }
-    let(:contributor_collaborator_user)         { create(:contributor, status: "collaborator", user: create(:user), project: project) }
-    let(:contributor_admin_user)                { create(:contributor, status: "admin", user: create(:user), project: project) }
-    let(:contributor_owner_user)                { create(:contributor, status: "owner", user: create(:user), project: project) }
-
-    let(:contributor_regular_user_as_self)      { create(:contributor, status: "pending", user: regular_user, project: project) }
-    let(:contributor_collaborator_user_as_self) { create(:contributor, status: "collaborator", user: collaborator_user, project: project) }
-    let(:contributor_admin_user_as_self)        { create(:contributor, status: "admin", user: admin_user, project: project) }
-    let(:contributor_owner_user_as_self)        { create(:contributor, status: "owner", user: owner_user, project: project) }
 
   before do
     @project = create(:project)
@@ -64,7 +48,7 @@ describe ContributorPolicy do
 
     context "when 'admin' user is performing the action" do
       it "is allowed"  do
-        expect(subject).to permit(@admin_userm, nil)
+        expect(subject).to permit(@admin_user, nil)
       end
     end
 
@@ -78,48 +62,43 @@ describe ContributorPolicy do
   permissions :create? do
     context 'when they are a non-user they can' do
       it 'not change any contributors'  do
-        expect(subject).to_not permit(nil, contributor_regular_user)
-        expect(subject).to_not permit(nil, contributor_collaborator_user)
-        expect(subject).to_not permit(nil, contributor_admin_user)
-        expect(subject).to_not permit(nil, contributor_owner_user)
+        expect(subject).to_not permit(nil, @contributor_pending)
+        expect(subject).to_not permit(nil, @contributor_collaborator)
+        expect(subject).to_not permit(nil, @contributor_admin)
+        expect(subject).to_not permit(nil, @contributor_owner)
       end
     end
 
     context 'when they are a regular user they can' do
       it 'change only themselves to pending' do
-        expect(subject).to     permit(regular_user, contributor_regular_user_as_self)
-        expect(subject).to_not permit(regular_user, contributor_collaborator_user)
-        expect(subject).to_not permit(regular_user, contributor_admin_user)
-        expect(subject).to_not permit(regular_user, contributor_owner_user)
+        expect(subject).to_not permit(@pending_user, @contributor_collaborator)
+        expect(subject).to_not permit(@pending_user, @contributor_admin)
+        expect(subject).to_not permit(@pending_user, @contributor_owner)
       end
     end
 
     context 'when they are a contributor user they can' do
       it 'change only themselves' do
-        expect(subject).to_not permit(collaborator_user, contributor_collaborator_user)
-        expect(subject).to_not permit(collaborator_user, contributor_admin_user)
-        expect(subject).to_not permit(collaborator_user, contributor_owner_user)
+        expect(subject).to_not permit(@collaborator_user, @contributor_collaborator)
+        expect(subject).to_not permit(@collaborator_user, @contributor_admin)
+        expect(subject).to_not permit(@collaborator_user, @contributor_owner)
       end
     end
 
     context 'when they are an admin user they can' do
       it 'change admin and collaborator users' do
-        expect(subject).to     permit(admin_user, contributor_collaborator_user)
-        expect(subject).to     permit(admin_user, contributor_admin_user)
-        expect(subject).to_not permit(admin_user, contributor_owner_user)
+        expect(subject).to     permit(@admin_user, @contributor_collaborator)
+        expect(subject).to     permit(@admin_user, @contributor_admin)
+        expect(subject).to_not permit(@admin_user, @contributor_owner)
       end
     end
 
     context 'when they are an owner user they can' do
       it 'change every type of user' do
-        expect(subject).to     permit(owner_user, contributor_collaborator_user)
-        expect(subject).to     permit(owner_user, contributor_admin_user)
-        expect(subject).to_not permit(owner_user, contributor_owner_user)
+        expect(subject).to     permit(@owner_user, @contributor_collaborator)
+        expect(subject).to     permit(@owner_user, @contributor_admin)
+        expect(subject).to     permit(@owner_user, @contributor_owner)
       end
-    end
-
-    context 'when they are an admin they can' do
-
     end
   end
 
@@ -373,7 +352,7 @@ describe ContributorPolicy do
         expect(subject).to_not permit(nil, @contributor_pending)
         expect(subject).to_not permit(nil, @contributor_collaborator)
         expect(subject).to_not permit(nil, @contributor_admin)
-        expect(subject).to_not permit(nil, contributor_owner_user)
+        expect(subject).to_not permit(nil, @contributor_owner)
       end
     end
 
@@ -382,7 +361,7 @@ describe ContributorPolicy do
         expect(subject).to_not permit(@pending_user, @contributor_pending)
         expect(subject).to_not permit(@pending_user, @contributor_collaborator)
         expect(subject).to_not permit(@pending_user, @contributor_admin)
-        expect(subject).to_not permit(@pending_user, contributor_owner_user)
+        expect(subject).to_not permit(@pending_user, @contributor_owner)
       end
     end
 
@@ -391,7 +370,7 @@ describe ContributorPolicy do
         expect(subject).to_not permit(@collaborator_user, @contributor_pending)
         expect(subject).to_not permit(@collaborator_user, @contributor_collaborator)
         expect(subject).to_not permit(@collaborator_user, @contributor_admin)
-        expect(subject).to_not permit(@collaborator_user, contributor_owner_user)
+        expect(subject).to_not permit(@collaborator_user, @contributor_owner)
       end
     end
 
@@ -403,7 +382,7 @@ describe ContributorPolicy do
 
       it "is not allowed on 'admin' and 'owner' records" do
         expect(subject).to_not permit(@admin_user, @contributor_admin)
-        expect(subject).to_not permit(@admin_user, contributor_owner_user)
+        expect(subject).to_not permit(@admin_user, @contributor_owner)
       end
     end
 
