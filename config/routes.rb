@@ -32,29 +32,6 @@ Rails.application.routes.draw do
 
     resources :skill_categories, only: [:index]
 
-    # class OrganizationUrlConstrainer
-    #   def matches?(request)
-    #     slug = request.path.gsub("/", "")
-    #     route_slug = SlugRoute.find_by_slug(slug)
-    #     request.path.gsub!("#{slug}", "#{route_slug.owner_id}")
-    #   end
-    # end
-
-    # constraints(OrganizationUrlConstrainer.new) do
-    #   get '/:id', to: "organizations#show", as: 'short_organization'
-    # end
-
-    # class UserUrlConstrainer
-    #   def matches?(request)
-    #     slug = request.path.gsub("/", "")
-    #     User.find_by_slug(slug)
-    #   end
-    # end
-
-    # constraints(UserUrlConstrainer.new) do
-    #   get '/:slug', to: "users#show", as: 'short_user'
-    # end
-
     get '/:slug', to: SlugDispatcher.new(self)
   end
 end
