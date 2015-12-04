@@ -19,8 +19,9 @@ class SlugDispatcher
     end
 
     def call(router, env)
-      controller = "#{@model.owner.class.to_s.pluralize}Controller".constantize 
+      controller = "#{@model.owner.class.to_s.pluralize}Controller".constantize
       env["action_dispatch.request.path_parameters"][:id] = @model.owner_id
+      env["action_dispatch.request.path_parameters"][:action] = "show"
       controller.action("show").call(env)
     end
   end
