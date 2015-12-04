@@ -73,6 +73,9 @@ describe User, :type => :model do
       it { should_not allow_value("code///corps").for(:username) }
       it { should_not allow_value("@code/corps/code").for(:username) }
       it { should_not allow_value("@code/corps/code/corps").for(:username) }
+
+      # Checks reserved routes
+      it { should_not allow_value("help").for(:username) }
     end
   end
 

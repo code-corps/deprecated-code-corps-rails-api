@@ -9,6 +9,7 @@ class Organization < ActiveRecord::Base
   validates_presence_of :name
 
   validates_presence_of :slug
+  validates :slug, exclusion: { in: Rails.configuration.x.reserved_routes }
   validates :slug, slug: true
   validates :slug, uniqueness: { case_sensitive: false }
   validates :slug, length: { maximum: 39 } # This is GitHub's maximum username limit

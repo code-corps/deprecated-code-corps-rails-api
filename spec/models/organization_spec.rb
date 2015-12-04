@@ -45,6 +45,9 @@ describe Organization, :type => :model do
       it { should_not allow_value("code///corps").for(:slug) }
       it { should_not allow_value("@code/corps/code").for(:slug) }
       it { should_not allow_value("@code/corps/code/corps").for(:slug) }
+
+      # Checks reserved routes
+      it { should_not allow_value("help").for(:slug) }
     end
   end
 

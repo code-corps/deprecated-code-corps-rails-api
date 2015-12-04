@@ -12,6 +12,7 @@ class User < ActiveRecord::Base
   has_many :skills, through: :user_skills
 
   validates :username, presence: { message: "can't be blank" }
+  validates :username, exclusion: { in: Rails.configuration.x.reserved_routes }
   validates :username, slug: true
   validates :username, uniqueness: { case_sensitive: false }
   validates :username, length: { maximum: 39 } # This is GitHub's maximum username limit
