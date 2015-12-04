@@ -5,8 +5,7 @@ describe "Slugs API" do
   describe "GET /:slug" do
     context "when an organization with specified slug exists" do
       before do
-        organization = build(:organization, name: "Test")
-        CodeCorps::Scenario::SaveOrganization.new(organization).call
+        create(:organization, name: "Test")
       end
 
       it "calls the OrganizationsController#show action" do
@@ -17,8 +16,7 @@ describe "Slugs API" do
 
     context "when a user wth specified slug exists" do
       before do
-        user = build(:user, username: "test")
-        CodeCorps::Scenario::SaveUser.new(user).call
+        create(:user, username: "test")
       end
 
       it "calls the UsersController#show action" do

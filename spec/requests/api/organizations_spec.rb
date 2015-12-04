@@ -1,12 +1,10 @@
 require 'rails_helper'
-require "code_corps/scenario/save_organization"
 
 describe "Organizations API" do
 
   context 'GET /:slug' do
     before do
       @organization = create(:organization, name: "Code Corps")
-      CodeCorps::Scenario::SaveOrganization.new(@organization).call
       get "#{host}/#{@organization.slug}"
     end
 

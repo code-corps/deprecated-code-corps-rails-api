@@ -48,6 +48,28 @@ describe Organization, :type => :model do
 
       # Checks reserved routes
       it { should_not allow_value("help").for(:slug) }
+
+      describe "duplicate slug validation" do
+        context "when a user with a different cased slug exists" do
+          before do
+            create(:user, username: "CodeCorps")
+          end
+
+          it { should_not allow_value("codecorps").for(:slug).with_message(
+            "has already been taken by a user"
+            ) }
+        end
+
+        context "when a user with the same slug exists" do
+          before do
+            create(:user, username: "codecorps")
+          end
+
+          it { should_not allow_value("codecorps").for(:slug).with_message(
+            "has already been taken by a user"
+            ) }
+        end
+      end
     end
   end
 

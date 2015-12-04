@@ -16,15 +16,9 @@ RSpec.describe SlugRoute, type: :model do
 
   describe "validations" do
     describe "slug" do
-      describe "base validations" do
-        # visit the following to understand why this is tested in a separate context
-        # https://github.com/thoughtbot/shoulda-matchers/blob/master/lib/shoulda/matchers/active_record/validate_uniqueness_of_matcher.rb#L50
-        let(:user) { create(:user) }
-        subject { SlugRoute.create(owner: user, slug: "test-slug") }
-        it { should validate_presence_of(:slug) }
-        it { should validate_uniqueness_of(:slug).case_insensitive }
-      end
 
+      it { should validate_presence_of(:slug) }
+      it { should validate_uniqueness_of(:slug).case_insensitive }
       it { should allow_value("code_corps").for(:slug) }
       it { should allow_value("codecorps").for(:slug) }
       it { should allow_value("codecorps12345").for(:slug) }
@@ -46,6 +40,15 @@ RSpec.describe SlugRoute, type: :model do
 
       # Checks reserved routes
       it { should_not allow_value("help").for(:slug) }
+    end
+
+    it "should not create slugs with different case" do
+      SlugRoute.create(owner_id: 1, owner_type: "User", slug: "codecorps")
+
+      route = SlugRoute.new(owner_id: 2, owner_type: "User", slug: "CodeCorps")
+
+      expect(route).to be_invalid
+      expect(route.errors[:slug]).to include "has already been taken"
     end
   end
 

@@ -1,13 +1,10 @@
 require "rails_helper"
-require "code_corps/scenario/save_organization"
-require "code_corps/scenario/save_user"
 
 describe "routes to user or organization" do
 
   context "when an organization with the specified slug exists" do
     before do
-      organization = build(:organization, name: "Test")
-      CodeCorps::Scenario::SaveOrganization.new(organization).call
+      create(:organization, name: "Test")
     end
 
     it "routes to the organization controller" do
@@ -17,8 +14,7 @@ describe "routes to user or organization" do
 
   context "when a user with the specified slug exists" do
     before do
-      user = build(:user, username: "test")
-      CodeCorps::Scenario::SaveUser.new(user).call
+      create(:user, username: "test")
     end
 
     it "routes to the organization controller" do

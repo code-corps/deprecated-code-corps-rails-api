@@ -1,5 +1,4 @@
 require 'rails_helper'
-require "code_corps/scenario/save_user"
 
 describe "Users API" do
 
@@ -42,7 +41,6 @@ describe "Users API" do
   context 'GET /:username' do
     before do
       @user = create(:user, username: "joshsmith")
-      CodeCorps::Scenario::SaveUser.new(@user).call
       create_list(:user_skill, 10, user: @user)
       get "#{host}/#{@user.username}"
     end
@@ -110,6 +108,19 @@ describe "Users API" do
     end
 
     context 'with invalid data' do
+
+      it 'fails when an organization has a slug matching the username' do
+        create(:organization, name: "Code Corps")
+
+        params = { email: "josh@example.com", username: "code-corps", password: "password" }
+        json_api_params = json_api_params_for("users", params)
+
+        post "#{host}/users", json_api_params
+
+        expect(last_response.status).to eq 422
+
+        expect(json.errors[0].detail).to eq "Username has already been taken by an organization"
+      end
 
       it 'fails on a blank password and username' do
         params = { email: "josh@example.com", username: "", password: "" }
@@ -218,7 +229,7 @@ describe "Users API" do
         password: "newpassword"
       })
       post "#{host}/users/reset_password", json_api_params
-
+      
       expect(last_response.status).to eq 200
       token = authenticate(email: "existing-user@mail.com", password: "newpassword")
       expect(token).to_not be_nil

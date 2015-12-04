@@ -76,6 +76,29 @@ describe User, :type => :model do
 
       # Checks reserved routes
       it { should_not allow_value("help").for(:username) }
+
+      describe "duplicate slug validation" do
+        context "when an organization with a different cased slug exists" do
+          before do
+            create(:organization, name: "CodeCorps")
+          end
+
+          it { should_not allow_value("codecorps").for(:username).with_message(
+            "has already been taken by an organization"
+            ) }
+        end
+
+        context "when an organization with the same slug exists" do
+          before do
+            create(:organization, name: "CodeCorps")
+          end
+
+          it { should_not allow_value("codecorps").for(:username).with_message(
+            "has already been taken by an organization"
+            ) }
+        end
+      end
+      
     end
   end
 
@@ -86,6 +109,17 @@ describe User, :type => :model do
       user.admin = true
       user.save
       expect(user.admin?).to eq true
+    end
+  end
+
+  describe "updating the username" do
+    let(:user) { create(:user, username: "joshsmith") }
+
+    it "should allow the username to be updated" do
+      user.username = "new_name"
+      user.save
+
+      expect(user.username).to eq "new_name"
     end
   end
 
