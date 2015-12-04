@@ -85,7 +85,7 @@ class UsersController < ApplicationController
     end
 
     def create_params
-      record_attributes.permit(:email, :username, :password)
+      record_attributes.permit(:email, :username, :password, :facebook_id, :facebook_access_token)
     end
 
     def update_params
