@@ -4,7 +4,7 @@ Rails.configuration.x.reserved_routes =
     developer developers discover donate engineering enterprise explore
     facebook favorites feed followers following github help home image images
     integration integrations invite invitations ios issue issues jobs learn
-    likes lists log-in log-out login logout mention mentions music new news
+    likes lists log-in log-out login logout mention mentions new news
     notification notifications oauth oauth_clients organization organizations
     ping popular post_like post_likes post posts press pricing privacy
     project projects repositories rules search security session sessions

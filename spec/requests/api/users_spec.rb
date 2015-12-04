@@ -59,7 +59,7 @@ describe "Users API" do
 
   context 'GET /users/:id' do
     before do
-      @user = create(:user, username: "user")
+      @user = create(:user, username: "joshsmith")
       create_list(:user_skill, 10, user: @user)
       get "#{host}/users/#{@user.id}"
     end

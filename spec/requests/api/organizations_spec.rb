@@ -22,7 +22,7 @@ describe "Organizations API" do
 
   context 'GET /organizations/:id' do
     before do
-      @organization = create(:organization, name: "organization")
+      @organization = create(:organization, name: "Code Corps")
       get "#{host}/organizations/#{@organization.id}"
     end
 

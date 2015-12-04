@@ -6,7 +6,7 @@ describe UserSerializer, :type => :serializer do
     let(:resource) {
       user = create(:user,
         email: "user@mail.com",
-        username: "user",
+        username: "joshsmith",
         website: "example.com",
         twitter: "@user",
         biography: "Lorem ipsum")
