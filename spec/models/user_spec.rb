@@ -12,6 +12,8 @@ describe User, :type => :model do
     it { should have_db_column(:twitter).of_type(:string) }
     it { should have_db_column(:website).of_type(:text) }
     it { should have_db_column(:biography).of_type(:text) }
+    it { should have_db_column(:facebook_id).of_type(:string) }
+    it { should have_db_column(:facebook_access_token).of_type(:string) }
 
     it { should have_db_index(:email) }
     it { should have_db_index(:remember_token) }

@@ -25,6 +25,14 @@ ActiveRecord::Schema.define(version: 20151203181837) do
     t.text     "markdown",   null: false
   end
 
+  create_table "contributors", force: :cascade do |t|
+    t.integer  "user_id"
+    t.integer  "project_id"
+    t.string   "status",     default: "pending", null: false
+    t.datetime "created_at",                     null: false
+    t.datetime "updated_at",                     null: false
+  end
+
   create_table "oauth_access_grants", force: :cascade do |t|
     t.integer  "resource_owner_id", null: false
     t.integer  "application_id",    null: false
@@ -169,17 +177,19 @@ ActiveRecord::Schema.define(version: 20151203181837) do
   end
 
   create_table "users", force: :cascade do |t|
-    t.datetime "created_at",                                     null: false
-    t.datetime "updated_at",                                     null: false
-    t.string   "email",                                          null: false
-    t.string   "encrypted_password", limit: 128,                 null: false
-    t.string   "confirmation_token", limit: 128
-    t.string   "remember_token",     limit: 128,                 null: false
+    t.datetime "created_at",                                        null: false
+    t.datetime "updated_at",                                        null: false
+    t.string   "email",                                             null: false
+    t.string   "encrypted_password",    limit: 128,                 null: false
+    t.string   "confirmation_token",    limit: 128
+    t.string   "remember_token",        limit: 128,                 null: false
     t.string   "username"
-    t.boolean  "admin",                          default: false, null: false
+    t.boolean  "admin",                             default: false, null: false
     t.text     "website"
     t.string   "twitter"
     t.text     "biography"
+    t.string   "facebook_id"
+    t.string   "facebook_access_token"
   end
 
   add_index "users", ["email"], name: "index_users_on_email", using: :btree

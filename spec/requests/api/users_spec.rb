@@ -92,19 +92,69 @@ describe "Users API" do
 
   context 'POST /users' do
 
-    it 'creates a valid user' do
-      params = { email: "josh@example.com", username: "joshsmith", password: "password" }
-      json_api_params = json_api_params_for("users", params)
+    context "when registering through Facebook" do
+      before do
+        oauth = Koala::Facebook::OAuth.new(ENV["FACEBOOK_APP_ID"], ENV["FACEBOOK_APP_SECRET"], ENV["FACEBOOK_REDIRECT_URL"])
+        test_users = Koala::Facebook::TestUsers.new(app_id: ENV["FACEBOOK_APP_ID"], secret: ENV["FACEBOOK_APP_SECRET"])
+        facebook_user = test_users.create(true, "email,user_friends")
 
-      post "#{host}/users", json_api_params
+        short_lived_token = facebook_user["access_token"]
+        long_lived_token_info = oauth.exchange_access_token_info(short_lived_token)
+        facebook_auth_code = oauth.generate_client_code(long_lived_token_info["access_token"])
+        access_token_info = oauth.get_access_token_info(facebook_auth_code)
 
-      expect(last_response.status).to eq 200
+        @facebook_access_token = access_token_info["access_token"] || JSON.parse(access_token_info.keys[0])["access_token"]
+        @facebook_id = facebook_user["id"]
+      end
 
-      user_attributes = json.data.attributes
+      context "when parameters are valid" do
+        before do
+          params = {
+            email: "josh@example.com",
+            username: "joshsmith",
+            password: "password",
+            facebook_id: @facebook_id,
+            facebook_access_token: @facebook_access_token
+          }
+          json_api_params = json_api_params_for("users", params)
+          post "#{host}/users", json_api_params
+        end
 
-      expect(user_attributes.email).to eq "josh@example.com"
-      expect(user_attributes.username).to eq "joshsmith"
-      expect(user_attributes.password).to be_nil
+        it "creates a valid user", vcr: { cassette_name: "requests/api/users/valid_facebook_request" } do
+          expect(User.last.email).to eq "josh@example.com"
+          expect(User.last.username).to eq "joshsmith"
+          expect(User.last.facebook_id).to eq @facebook_id
+          expect(User.last.facebook_access_token).to eq @facebook_access_token
+        end
+
+        it "responds with a 200", vcr: { cassette_name: "requests/api/users/valid_facebook_request" } do
+          expect(last_response.status).to eq 200
+        end
+
+        it "returns the created user using UserSerializer", vcr: { cassette_name: "requests/api/users/valid_facebook_request" } do
+          expect(json).to serialize_object(User.last).with(UserSerializer).with_includes("skills")
+        end
+
+      end
+
+    end
+
+    context "when registering directly" do
+
+      it 'creates a valid user' do
+        params = { email: "josh@example.com", username: "joshsmith", password: "password" }
+        json_api_params = json_api_params_for("users", params)
+
+        post "#{host}/users", json_api_params
+
+        expect(last_response.status).to eq 200
+
+        user_attributes = json.data.attributes
+
+        expect(user_attributes.email).to eq "josh@example.com"
+        expect(user_attributes.username).to eq "joshsmith"
+        expect(user_attributes.password).to be_nil
+      end
     end
 
     context 'with invalid data' do
@@ -155,7 +205,6 @@ describe "Users API" do
 
         expect(json.errors[0].detail).to eq "Username may only contain alphanumeric characters, underscores, or single hyphens, and cannot begin or end with a hyphen or underscore"
       end
-
     end
 
     context 'when user accounts are taken' do
