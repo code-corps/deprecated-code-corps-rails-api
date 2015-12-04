@@ -1,4 +1,4 @@
-require "dispatchers/slug_dispatcher"
+require "constraints/slug_constraint"
 
 Rails.application.routes.draw do
   use_doorkeeper do
@@ -32,6 +32,8 @@ Rails.application.routes.draw do
 
     resources :skill_categories, only: [:index]
 
-    get '/:slug', to: SlugDispatcher.new(self)
+    get '/:slug', to: 'organizations#show', constraints: SlugConstraint.new(Organization)
+    get '/:slug', to: 'users#show', constraints: SlugConstraint.new(User)
+    get '*unmatched_route', :to => 'application#raise_not_found!'
   end
 end

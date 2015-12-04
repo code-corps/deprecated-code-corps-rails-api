@@ -44,5 +44,19 @@ describe ErrorSerializer do
       expect(error[:detail]).to eq "You are not authorized to perform this action on users."
       expect(error[:status]).to eq 401
     end
+
+    it "can serialize ActionController::RoutingError" do
+      error_instance = ActionController::RoutingError.new("No route matches test route")
+      result = ErrorSerializer.serialize(error_instance)
+
+      expect(result[:errors]).not_to be_nil
+      expect(result[:errors].length).to eq 1
+
+      error = result[:errors].first
+      expect(error[:id]).to eq "ROUTE_NOT_FOUND"
+      expect(error[:title]).to eq "Route not found"
+      expect(error[:detail]).to eq error_instance.message
+      expect(error[:status]).to eq 404
+    end
   end
 end

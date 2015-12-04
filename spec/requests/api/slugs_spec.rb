@@ -31,7 +31,7 @@ describe "Slugs API" do
       it "responds with a 404" do
         get "#{host}/test"
         expect(last_response.status).to eq 404
-        expect(json).to be_a_valid_json_api_error.with_id "RECORD_NOT_FOUND"
+        expect(json).to be_a_valid_json_api_error.with_id "ROUTE_NOT_FOUND"
       end
     end
   end
