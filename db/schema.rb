@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151202083431) do
+ActiveRecord::Schema.define(version: 20151203181837) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -87,7 +87,10 @@ ActiveRecord::Schema.define(version: 20151202083431) do
     t.string   "name",       null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string   "slug",       null: false
   end
+
+  add_index "organizations", ["slug"], name: "index_organizations_on_slug", unique: true, using: :btree
 
   create_table "post_likes", force: :cascade do |t|
     t.integer  "post_id"
@@ -138,6 +141,17 @@ ActiveRecord::Schema.define(version: 20151202083431) do
     t.datetime "created_at",        null: false
     t.datetime "updated_at",        null: false
   end
+
+  create_table "slug_routes", force: :cascade do |t|
+    t.string   "slug",       null: false
+    t.integer  "owner_id"
+    t.string   "owner_type"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  add_index "slug_routes", ["owner_id", "owner_type"], name: "index_slug_routes_on_owner_id_and_owner_type", unique: true, using: :btree
+  add_index "slug_routes", ["slug"], name: "index_slug_routes_on_slug", unique: true, using: :btree
 
   create_table "team_memberships", force: :cascade do |t|
     t.datetime "created_at", null: false

@@ -45,6 +45,20 @@ describe ErrorSerializer do
       expect(error[:status]).to eq 401
     end
 
+    it "can serialize ActionController::RoutingError" do
+      error_instance = ActionController::RoutingError.new("No route matches test route")
+      result = ErrorSerializer.serialize(error_instance)
+
+      expect(result[:errors]).not_to be_nil
+      expect(result[:errors].length).to eq 1
+
+      error = result[:errors].first
+      expect(error[:id]).to eq "ROUTE_NOT_FOUND"
+      expect(error[:title]).to eq "Route not found"
+      expect(error[:detail]).to eq error_instance.message
+      expect(error[:status]).to eq 404
+    end
+
     it "can serialize Koala::Facebook::AuthenticationError" do
       facebook_authentication_error = Koala::Facebook::AuthenticationError.new(400, nil, { "message" => "A message" })
       result = ErrorSerializer.serialize(facebook_authentication_error)
@@ -62,6 +76,7 @@ describe ErrorSerializer do
     it "can serialize ActiveRecord::RecordNotFound error" do
       record_not_found_error = ActiveRecord::RecordNotFound.new("A message")
       result = ErrorSerializer.serialize(record_not_found_error)
+
       expect(result[:errors]).not_to be_nil
       expect(result[:errors].length).to eq 1
 

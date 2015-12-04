@@ -38,34 +38,37 @@ describe "Users API" do
     end
   end
 
+  context 'GET /:username' do
+    before do
+      @user = create(:user, username: "joshsmith")
+      create_list(:user_skill, 10, user: @user)
+      get "#{host}/#{@user.username}"
+    end
+
+    it "responds with a 200" do
+      expect(last_response.status).to eq 200
+    end
+
+    it "retrieves the specified user by username using UserSerializer, including skills" do
+      expect(json).to serialize_object(User.find(@user.id)).with(UserSerializer).with_includes("skills")
+      expect(json.data.id).to eq @user.id.to_s
+    end
+  end
+
   context 'GET /users/:id' do
     before do
-      user = create(:user, id: 1, username: "user", twitter: "@user", website: "example.com", biography: "bio")
-      create_list(:user_skill, 10, user: user)
-      get "#{host}/users/1"
+      @user = create(:user, username: "joshsmith")
+      create_list(:user_skill, 10, user: @user)
+      get "#{host}/users/#{@user.id}"
     end
 
-    it "retrieves the user with the specified id" do
-
+    it "responds with a 200" do
       expect(last_response.status).to eq 200
-
-      user_attributes = json.data.attributes
-      expect(user_attributes.username).to eq "user"
-      expect(user_attributes.twitter).to eq "@user"
-      expect(user_attributes.website).to eq "example.com"
-      expect(user_attributes.biography).to eq "bio"
-
-
-      user_relationships = json.data.relationships
-      expect(user_relationships).not_to be_nil
-      expect(user_relationships.skills).not_to be_nil
-      expect(user_relationships.skills.data.count).to eq 10
     end
 
-    it "includes users skills in the response" do
-      expect(json.included).not_to be_nil
-      included_skills = json.included.select{|i| i.type == "skills"}
-      expect(included_skills.count).to eq 10
+    it "retrieves the specified user by id using UserSerializer, including skills" do
+      expect(json).to serialize_object(User.find(@user.id)).with(UserSerializer).with_includes("skills")
+      expect(json.data.id).to eq @user.id.to_s
     end
   end
 
@@ -155,6 +158,19 @@ describe "Users API" do
     end
 
     context 'with invalid data' do
+
+      it 'fails when an organization has a slug matching the username' do
+        create(:organization, name: "Code Corps")
+
+        params = { email: "josh@example.com", username: "code-corps", password: "password" }
+        json_api_params = json_api_params_for("users", params)
+
+        post "#{host}/users", json_api_params
+
+        expect(last_response.status).to eq 422
+
+        expect(json.errors[0].detail).to eq "Username has already been taken by an organization"
+      end
 
       it 'fails on a blank password and username' do
         params = { email: "josh@example.com", username: "", password: "" }
@@ -262,7 +278,7 @@ describe "Users API" do
         password: "newpassword"
       })
       post "#{host}/users/reset_password", json_api_params
-
+      
       expect(last_response.status).to eq 200
       token = authenticate(email: "existing-user@mail.com", password: "newpassword")
       expect(token).to_not be_nil

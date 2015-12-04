@@ -4,6 +4,7 @@ class ErrorSerializer
     error_hash = serialize_doorkeeper_oauth_error_response(error) if error.class == Doorkeeper::OAuth::ErrorResponse
     error_hash = serialize_validation_errors(error) if error.class == ActiveModel::Errors
     error_hash = serialize_pundit_not_authorized_error(error) if error.class == Pundit::NotAuthorizedError
+    error_hash = serialize_action_controller_routing_error(error) if error.class == ActionController::RoutingError
     error_hash = serialize_facebook_authentication_error(error) if error.class == Koala::Facebook::AuthenticationError
     error_hash = serialize_record_not_found_error(error) if error.class == ActiveRecord::RecordNotFound
 
@@ -46,6 +47,15 @@ class ErrorSerializer
           { id: "VALIDATION_ERROR", title: "#{k.capitalize} error", detail: msg, status: 422 }
         end
       end.flatten
+    end
+
+    def self.serialize_action_controller_routing_error(error)
+      return {
+        id: "ROUTE_NOT_FOUND",
+        title: "Route not found",
+        detail: error.message,
+        status: 404
+      }
     end
 
     def self.serialize_facebook_authentication_error(error)
