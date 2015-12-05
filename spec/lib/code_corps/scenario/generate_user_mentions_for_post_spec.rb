@@ -11,10 +11,12 @@ module CodeCorps
         before do
           @mentioned_user = create(:user, username: mentioned_username)
         end
-        
 
         it "creates user mentions" do
+          project = create(:project)
+          user = create(:user)
           post = create(:post, markdown: "Mentioning @joshsmith")
+
           GenerateUserMentionsForPost.new(post).call
 
           mention = PostUserMention.last

@@ -54,7 +54,7 @@ describe "Comments API" do
 
         it "creates a comment" do
           comment = Comment.last
-          expect(comment.body).to eq "<p>Comment body</p>\n"
+          expect(comment.body).to eq "<p>Comment body</p>"
 
           expect(comment.user_id).to eq 1
           expect(comment.post_id).to eq 2
@@ -62,7 +62,7 @@ describe "Comments API" do
 
         it "returns the created comment" do
           comment_attributes = json.data.attributes
-          expect(comment_attributes.body).to eq "<p>Comment body</p>\n"
+          expect(comment_attributes.body).to eq "<p>Comment body</p>"
 
           comment_relationships = json.data.relationships
           expect(comment_relationships.post).not_to be_nil

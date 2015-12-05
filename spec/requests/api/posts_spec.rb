@@ -174,7 +174,7 @@ describe "Posts API" do
         it "creates a post" do
           post = Post.last
           expect(post.title).to eq "Post title"
-          expect(post.body).to eq "<p>Post body</p>\n"
+          expect(post.body).to eq "<p>Post body</p>"
           expect(post.issue?).to be true
 
           expect(post.user_id).to eq 1
@@ -184,7 +184,7 @@ describe "Posts API" do
         it "returns the created post" do
           post_attributes = json.data.attributes
           expect(post_attributes.title).to eq "Post title"
-          expect(post_attributes.body).to eq "<p>Post body</p>\n"
+          expect(post_attributes.body).to eq "<p>Post body</p>"
           expect(post_attributes.post_type).to eq "issue"
 
           post_relationships = json.data.relationships

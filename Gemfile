@@ -27,7 +27,9 @@ gem 'kaminari'
 
 gem 'koala'
 
-gem 'redcarpet'
+gem 'github-markdown'
+
+gem 'html-pipeline'
 
 gem 'sequenced'
 

@@ -1,3 +1,5 @@
+require 'html/pipeline'
+
 class Comment < ActiveRecord::Base
   belongs_to :user
   belongs_to :post
@@ -13,16 +15,16 @@ class Comment < ActiveRecord::Base
 
     def render_markdown_to_body
       if markdown.present?
-        html = parser.render(markdown)
-        self.body = html
+        html = pipeline.call(markdown)
+        self.body = html[:output].to_s
       end
     end
 
-    def parser
-      @parser ||= Redcarpet::Markdown.new(renderer, extensions = {})
-    end
-
-    def renderer
-      @renderer ||= Redcarpet::Render::HTML.new(render_options = {})
+    def pipeline
+      @pipeline ||= HTML::Pipeline.new [
+        HTML::Pipeline::MarkdownFilter
+      ], {
+        gfm: true # Github-flavored markdown
+      }
     end
 end

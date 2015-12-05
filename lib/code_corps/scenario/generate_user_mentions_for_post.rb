@@ -27,9 +27,12 @@ module CodeCorps
         end
 
         ActiveRecord::Base.transaction do
-          PostUserMention.where(post: @post).destroy_all
+          existing_mentions = PostUserMention.where(post: @post)
+          if existing_mentions.present?
+            existing_mentions.destroy_all
+          end
           mentions.each do |m|
-            PostUserMention.create(post: @post, user: m.first, start_index: m[1], end_index: m[2], username: m.first.username)
+            PostUserMention.create!(post: @post, user: m[0], start_index: m[1], end_index: m[2], username: m[0].username)
           end
         end
       end
