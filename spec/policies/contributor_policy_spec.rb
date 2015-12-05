@@ -90,15 +90,21 @@ describe ContributorPolicy do
     end
 
     context "as an admin user" do
-      it "change admin and collaborator users" do
+      it "permits collaborator contributors to be created" do
         expect(subject).to     permit(@admin_user, @contributor_collaborator)
+      end
+
+      it "permits admin contributors to be created" do
         expect(subject).to     permit(@admin_user, @contributor_admin)
+      end
+
+      it "does not permit owner contributors to be created" do
         expect(subject).to_not permit(@admin_user, @contributor_owner)
       end
     end
 
-    context "when they are an owner user they can" do
-      it "change every type of user" do
+    context "as an owner user" do
+      it "permits all contributors to be created" do
         expect(subject).to     permit(@owner_user, @contributor_collaborator)
         expect(subject).to     permit(@owner_user, @contributor_admin)
         expect(subject).to     permit(@owner_user, @contributor_owner)
