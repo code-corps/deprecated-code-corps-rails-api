@@ -1,8 +1,11 @@
 class Post < ActiveRecord::Base
   belongs_to :user
   belongs_to :project
+
   has_many :comments
   has_many :post_likes
+
+  acts_as_sequenced scope: :project_id, column: :number
 
   validates_presence_of :project
   validates_presence_of :user

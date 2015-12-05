@@ -29,6 +29,8 @@ gem 'koala'
 
 gem 'redcarpet'
 
+gem 'sequenced'
+
 group :development, :test do
   gem 'dotenv-rails'
 
