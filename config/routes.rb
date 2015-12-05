@@ -32,9 +32,12 @@ Rails.application.routes.draw do
 
     resources :skill_categories, only: [:index]
 
+    resources :members, :path => '', :only => [:show] do
+      resources :projects, :path => '', :only => [:show]
+    end
     # Users goes before organizations since there are vastly more users to match
-    get '/:slug', to: 'users#show', constraints: SlugConstraint.new(User)
-    get '/:slug', to: 'organizations#show', constraints: SlugConstraint.new(Organization)
-    get '*unmatched_route', :to => 'application#raise_not_found!'
+    # get '/:slug', to: 'users#show', constraints: SlugConstraint.new(User)
+    # get '/:slug', to: 'organizations#show', constraints: SlugConstraint.new(Organization)
+    # get '*unmatched_route', :to => 'application#raise_not_found!'
   end
 end

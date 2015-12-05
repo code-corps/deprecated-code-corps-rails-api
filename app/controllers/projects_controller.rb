@@ -1,4 +1,15 @@
 class ProjectsController < ApplicationController
+
+  def index
+    render json: Project.all
+  end
+
+  def show
+    member = Member.find_by_slug(params[:member_id])
+    project = Project.find_by!(id: params[:id], owner: member.model)
+
+    render json: project
+  end
   
   def create
     project = Project.new(permitted_params)
@@ -9,15 +20,6 @@ class ProjectsController < ApplicationController
     else
       render_validation_errors(project.errors)
     end
-  end
-
-  def index
-    render json: Project.all
-  end
-
-  def show
-    project = Project.find(params[:id])
-    render json: project
   end
 
   def update
