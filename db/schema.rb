@@ -102,16 +102,6 @@ ActiveRecord::Schema.define(version: 20151205223211) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "post_user_mentions", force: :cascade do |t|
-    t.integer  "user_id",     null: false
-    t.integer  "post_id",     null: false
-    t.string   "username",    null: false
-    t.integer  "start_index", null: false
-    t.integer  "end_index",   null: false
-    t.datetime "created_at",  null: false
-    t.datetime "updated_at",  null: false
-  end
-
   create_table "posts", force: :cascade do |t|
     t.string   "status",           default: "open"
     t.string   "post_type",        default: "task"
