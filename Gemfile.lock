@@ -209,6 +209,9 @@ GEM
     seed-fu (2.3.5)
       activerecord (>= 3.1, < 4.3)
       activesupport (>= 3.1, < 4.3)
+    sequenced (3.0.0)
+      activerecord (>= 3.0)
+      activesupport (>= 3.0)
     shoulda-matchers (3.0.1)
       activesupport (>= 4.0.0)
     sidekiq (4.0.1)
@@ -264,6 +267,7 @@ DEPENDENCIES
   rspec-rails (~> 3.0)
   rspec-sidekiq
   seed-fu
+  sequenced
   shoulda-matchers
   sidekiq
   spring
