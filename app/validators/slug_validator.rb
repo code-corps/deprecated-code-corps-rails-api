@@ -11,7 +11,7 @@ class SlugValidator < ActiveModel::Validator
       return validate_property(record, :slug)
     end
 
-    if record.instance_of? SlugRoute
+    if record.instance_of? Member
       return validate_property(record, :slug)
     end
   end
