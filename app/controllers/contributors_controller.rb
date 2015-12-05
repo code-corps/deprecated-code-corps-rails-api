@@ -2,14 +2,15 @@ class ContributorsController < ApplicationController
   before_action :doorkeeper_authorize!, only: [:create, :update]
 
   def index
-    authorize Contributor
     contributors = Contributor.where(filter_params).includes([:project, :user])
+    authorize contributors
     render json: contributors, include: [:user, :project]
   end
 
   def create
-    authorize Contributor
     contributor = Contributor.new(create_params)
+
+    authorize contributor
 
     if contributor.valid?
       contributor.save!

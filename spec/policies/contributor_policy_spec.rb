@@ -8,6 +8,8 @@ describe ContributorPolicy do
   before do
     @project = create(:project)
 
+    @regular_user = create(:user)
+
     @pending_user = create(:user)
     create(:contributor, user: @pending_user, project: @project, status: "pending")
 
@@ -60,8 +62,8 @@ describe ContributorPolicy do
   end
 
   permissions :create? do
-    context 'when they are a non-user they can' do
-      it 'not change any contributors'  do
+    context "as a non-user" do
+      it "does not permit any type of contributor to be created"  do
         expect(subject).to_not permit(nil, @contributor_pending)
         expect(subject).to_not permit(nil, @contributor_collaborator)
         expect(subject).to_not permit(nil, @contributor_admin)
@@ -69,32 +71,34 @@ describe ContributorPolicy do
       end
     end
 
-    context 'when they are a regular user they can' do
-      it 'change only themselves to pending' do
-        expect(subject).to_not permit(@pending_user, @contributor_collaborator)
-        expect(subject).to_not permit(@pending_user, @contributor_admin)
-        expect(subject).to_not permit(@pending_user, @contributor_owner)
+    context "as a regular user" do
+      it "permits pending contributors to be created" do
+        expect(subject).to permit(@regular_user, @contributor_pending)
+      end
+
+      it "does not permit admin contributors to be created" do
+        expect(subject).to_not permit(@regular_user, @contributor_admin)
+      end
+
+      it "does not permit collaborator contributors to be created" do
+        expect(subject).to_not permit(@regular_user, @contributor_collaborator)
+      end
+
+      it "does not permit owner contributors to be created" do
+        expect(subject).to_not permit(@regular_user, @contributor_owner)
       end
     end
 
-    context 'when they are a contributor user they can' do
-      it 'change only themselves' do
-        expect(subject).to_not permit(@collaborator_user, @contributor_collaborator)
-        expect(subject).to_not permit(@collaborator_user, @contributor_admin)
-        expect(subject).to_not permit(@collaborator_user, @contributor_owner)
-      end
-    end
-
-    context 'when they are an admin user they can' do
-      it 'change admin and collaborator users' do
+    context "as an admin user" do
+      it "change admin and collaborator users" do
         expect(subject).to     permit(@admin_user, @contributor_collaborator)
         expect(subject).to     permit(@admin_user, @contributor_admin)
         expect(subject).to_not permit(@admin_user, @contributor_owner)
       end
     end
 
-    context 'when they are an owner user they can' do
-      it 'change every type of user' do
+    context "when they are an owner user they can" do
+      it "change every type of user" do
         expect(subject).to     permit(@owner_user, @contributor_collaborator)
         expect(subject).to     permit(@owner_user, @contributor_admin)
         expect(subject).to     permit(@owner_user, @contributor_owner)

@@ -15,7 +15,7 @@ class ContributorPolicy
   end
 
   def create?
-    return unless contributor_for_user.present?
+    return unless @user.present?
 
     return true if @contributor.owner? && current_user_is_owner_of_project?
     return true if current_user_is_at_least_admin_on_project? && !contributor.owner?
