@@ -5,9 +5,7 @@ class ProjectsController < ApplicationController
   end
 
   def show
-    member = Member.find_by_slug(member_slug)
-    project = Project.find_by!(slug: project_slug, owner: member.model)
-
+    project = fetch_project!
     render json: project
   end
 
@@ -23,7 +21,7 @@ class ProjectsController < ApplicationController
   end
 
   def update
-    project = Project.find(params[:id])
+    project = fetch_project!
     project.update(permitted_params)
 
     if project.save
@@ -46,5 +44,14 @@ class ProjectsController < ApplicationController
 
   def project_slug
     params[:id]
+  end
+
+  def fetch_project!
+    member = fetch_member!
+    Project.find_by!(slug: project_slug, owner: member.model)
+  end
+
+  def fetch_member!
+    Member.find_by_slug!(member_slug)
   end
 end

@@ -131,73 +131,69 @@ describe "Projects API" do
     end
   end
 
-  context 'PATCH /projects/:id' do
+  context 'PATCH /:slug/:project_slug' do
+    before do
+      @valid_attributes = { data: { attributes: { title: "NewTitle", description: "New description" } } }
+      @invalid_attributes = { data: { attributes: { title: "New title", description: "New description" } } }
+    end
 
-    let(:project) { create(:project) }
-
-    context 'when updating the title' do
-      it 'updates a project title' do
-        patch "#{host}/projects/#{project.id}", {
-          data: {
-            attributes: {
-              title: "New title"
-            }
-          }
-        }
-
-        project.reload
-
-        expect(project.title).to eq "New title"
-      end
-
-      it 'returns an error when with a nil title' do
-        patch "#{host}/projects/#{project.id}", {
-            data: {
-              attributes: {
-                title: nil
-              }
-            }
-          }
-
-        expect(last_response.status).to eq 422
-        expect(json.errors.title).to eq "can't be blank"
+    context "when the owner doesn't exist" do
+      it "responds with a 404" do
+        patch "#{host}/random_slug_1/random_slug_2", @valid_attributes
+        expect(last_response.status).to eq 404
+        expect(json).to be_a_valid_json_api_error.with_id "RECORD_NOT_FOUND"
       end
     end
 
-    it 'updates a project description' do
-      patch "#{host}/projects/#{project.id}", {
-        data: {
-          attributes: {
-            description: "New description"
-          }
-        }
-      }
+    context "when the project doesn't exist" do
+      before do
+        @member = create(:organization).member
+      end
 
-      project.reload
-
-      expect(project.description).to eq "New description"
+      it "responds with a 404" do
+        patch "#{host}/#{@member.slug}/random_slug", @valid_attributes
+        expect(last_response.status).to eq 404
+        expect(json).to be_a_valid_json_api_error.with_id "RECORD_NOT_FOUND"
+      end
     end
 
-    it 'updates a project icon for a project without an icon' do
-      Sidekiq::Testing.inline! do
-        file = File.open("#{Rails.root}/spec/sample_data/default-avatar.png", 'r')
-        base_64_image = Base64.encode64(open(file) { |io| io.read })
+    context "when the project exists" do
+      before do
+        @project = create(:project, owner: create(:organization))
+      end
 
-        patch "#{host}/projects/#{project.id}", {
-          data: {
-            attributes: {
-              base_64_icon_data: base_64_image
-            }
-          }
-        }
+      context "when patching with valid attributes" do
+        before do
+          patch "#{host}/#{@project.owner.member.slug}/#{@project.slug}", @valid_attributes
+        end
 
-        project.reload
+        it "responds with a 200" do
+          expect(last_response.status).to eq 200
+        end
 
-        expect(project.base_64_icon_data).to be_nil
-        expect(project.icon.path).to_not be_nil
-        project_icon_file = File.open("#{Rails.root}/spec/sample_data/default-avatar.png", 'r')
-        base_64_saved_image = Base64.encode64(open(project_icon_file) { |io| io.read })
-        expect(base_64_saved_image).to include base_64_image
+        it "patches the project record" do
+          project = @project.reload
+          expect(project.title).to eq "NewTitle"
+          expect(project.description).to eq "New description"
+        end
+
+        it "returns the patched project, serialized with ProjectSerializer" do
+          expect(json).to serialize_object(@project.reload).with(ProjectSerializer)
+        end
+      end
+
+      context "when patching with invalid attributes" do
+        before do
+          patch "#{host}/#{@project.owner.member.slug}/#{@project.slug}", @invalid_attributes
+        end
+
+        it "responds with a 422" do
+          expect(last_response.status).to eq 422
+        end
+
+        it "returns  JSON API validation error" do
+          expect(json).to be_a_valid_json_api_error.with_id "VALIDATION_ERROR"
+        end
       end
     end
   end
