@@ -2,22 +2,10 @@ require "rails_helper"
 
 describe "Posts API" do
 
-  context "GET /:slug/:project_slug/posts/" do
-    context "when the project owner doesn't exist" do
-      it "responds with a 404" do
-        get "#{host}/some_slug/some_other_slug/posts"
-        expect(last_response.status).to eq 404
-        expect(json).to be_a_valid_json_api_error.with_id "RECORD_NOT_FOUND"
-      end
-    end
-
+  context "GET /projects/:id/posts" do
     context "when the project doesn't exist" do
-      before do
-        @owner = create(:organization).member
-      end
-
       it "responds with a 404" do
-        get "#{host}/#{@owner.slug}/some_other_slug/posts"
+        get "#{host}/projects/1/posts"
         expect(last_response.status).to eq 404
         expect(json).to be_a_valid_json_api_error.with_id "RECORD_NOT_FOUND"
       end
@@ -29,7 +17,7 @@ describe "Posts API" do
       end
 
       it "responds with a 404" do
-        get "#{host}/#{@project.owner.slug}/#{@project.slug}/posts"
+        get "#{host}/projects/#{@project.id}/posts/1"
         expect(last_response.status).to eq 404
         expect(json).to be_a_valid_json_api_error.with_id "RECORD_NOT_FOUND"
       end
@@ -43,7 +31,7 @@ describe "Posts API" do
 
       context "when no page is specified" do
         before do
-          get "#{host}/#{@project.owner.slug}/#{@project.slug}/posts/"
+          get "#{host}/projects/#{@project.id}/posts"
         end
 
         it "responds with a 200" do
@@ -57,21 +45,21 @@ describe "Posts API" do
 
       describe "specifying page parameters" do
         it "accepts different page numbers" do
-          get "#{host}/#{@project.owner.slug}/#{@project.slug}/posts/", { page: { number: 1, size: 5 }}
+          get "#{host}/projects/#{@project.id}/posts/", { page: { number: 1, size: 5 }}
           expect(json.data.length).to eq 5
-          get "#{host}/#{@project.owner.slug}/#{@project.slug}/posts/", { page: { number: 3, size: 3 }}
+          get "#{host}/projects/#{@project.id}/posts/", { page: { number: 3, size: 3 }}
           expect(json.data.length).to eq 3
         end
 
         it "accepts different page sizes" do
-          get "#{host}/#{@project.owner.slug}/#{@project.slug}/posts/", { page: { number: 1, size: 3 }}
+          get "#{host}/projects/#{@project.id}/posts/", { page: { number: 1, size: 3 }}
           expect(json.data.length).to eq 3
-          get "#{host}/#{@project.owner.slug}/#{@project.slug}/posts/", { page: { number: 1, size: 4 }}
+          get "#{host}/projects/#{@project.id}/posts/", { page: { number: 1, size: 4 }}
           expect(json.data.length).to eq 4
         end
 
         it "renders links in the response" do
-          get "#{host}/#{@project.owner.slug}/#{@project.slug}/posts/", { page: { number: 2, size: 5 } }
+          get "#{host}/projects/#{@project.id}/posts/", { page: { number: 2, size: 5 } }
           expect(json.links).not_to be_nil
           expect(json.links.self).not_to be_nil
           expect(json.links.first).not_to be_nil
@@ -81,7 +69,7 @@ describe "Posts API" do
         end
 
         it "renders a meta in the response" do
-          get "#{host}/#{@project.owner.slug}/#{@project.slug}/posts/", { page: { number: 2, size: 5 } }
+          get "#{host}/projects/#{@project.id}/posts/", { page: { number: 2, size: 5 } }
           expect(json.meta).not_to be_nil
           expect(json.meta.total_records).to eq 13
           expect(json.meta.total_pages).to eq 3
@@ -92,22 +80,10 @@ describe "Posts API" do
     end
   end
 
-  context "GET /:slug/:project_slug/posts/:id" do
-    context "when the project owner doesn't exist" do
-      it "responds with a 404" do
-        get "#{host}/some_slug/some_other_slug/posts/1"
-        expect(last_response.status).to eq 404
-        expect(json).to be_a_valid_json_api_error.with_id "RECORD_NOT_FOUND"
-      end
-    end
-
+  context "GET /projects/:project_id/posts/:number" do
     context "when the project doesn't exist" do
-      before do
-        @owner = create(:organization).member
-      end
-
       it "responds with a 404" do
-        get "#{host}/#{@owner.slug}/some_other_slug/posts/1"
+        get "#{host}/projects/1/posts/1"
         expect(last_response.status).to eq 404
         expect(json).to be_a_valid_json_api_error.with_id "RECORD_NOT_FOUND"
       end
@@ -119,7 +95,7 @@ describe "Posts API" do
       end
 
       it "responds with a 404" do
-        get "#{host}/#{@project.owner.slug}/#{@project.slug}/posts/1"
+        get "#{host}/projects/#{@project.id}/posts/1"
         expect(last_response.status).to eq 404
         expect(json).to be_a_valid_json_api_error.with_id "RECORD_NOT_FOUND"
       end
@@ -130,7 +106,7 @@ describe "Posts API" do
         @project = create(:project, owner: create(:organization))
         @post = create(:post, project: @project)
         create_list(:comment, 5, post: @post)
-        get "#{host}/#{@project.owner.slug}/#{@project.slug}/posts/#{@post.id}"
+        get "#{host}/projects/#{@project.id}/posts/#{@post.number}"
       end
 
       it "responds with a 200" do
