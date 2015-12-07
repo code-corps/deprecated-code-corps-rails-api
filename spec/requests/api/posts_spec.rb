@@ -2,56 +2,97 @@ require "rails_helper"
 
 describe "Posts API" do
 
-  context "GET /posts" do
-    before do
-      create_list(:post, 13)
+  context "GET /:slug/:project_slug/posts/" do
+    context "when the project owner doesn't exist" do
+      it "responds with a 404" do
+        get "#{host}/some_slug/some_other_slug/posts"
+        expect(last_response.status).to eq 404
+        expect(json).to be_a_valid_json_api_error.with_id "RECORD_NOT_FOUND"
+      end
     end
 
-    it "returns the first page of 10 records of no page number or size is specified" do
-      get "#{host}/posts"
-      expect(last_response.status).to eq 200
-      expect(json.data.length).to eq 10
-      expect(json.data.all? { |item| item.type == "posts" }).to be true
+    context "when the project doesn't exist" do
+      before do
+        @owner = create(:organization).member
+      end
+
+      it "responds with a 404" do
+        get "#{host}/#{@owner.slug}/some_other_slug/posts"
+        expect(last_response.status).to eq 404
+        expect(json).to be_a_valid_json_api_error.with_id "RECORD_NOT_FOUND"
+      end
     end
 
-    it "accepts different page numbers" do
-      get "#{host}/posts", { page: { number: 1, size: 5 }}
-      expect(json.data.length).to eq 5
-      get "#{host}/posts", { page: { number: 3, size: 3 }}
-      expect(json.data.length).to eq 3
+    context "when the post doesn't exist" do
+      before do
+        @project = create(:project, owner: create(:organization))
+      end
+
+      it "responds with a 404" do
+        get "#{host}/#{@project.owner.slug}/#{@project.slug}/posts"
+        expect(last_response.status).to eq 404
+        expect(json).to be_a_valid_json_api_error.with_id "RECORD_NOT_FOUND"
+      end
     end
 
-    it "accepts different page sizes" do
-      get "#{host}/posts", { page: { number: 1, size: 3 }}
-      expect(json.data.length).to eq 3
-      get "#{host}/posts", { page: { number: 1, size: 4 }}
-      expect(json.data.length).to eq 4
-    end
+    context "when successful" do
+      before do
+        @project = create(:project, owner: create(:organization))
+        create_list(:post, 13, project: @project)
+      end
 
-    it "renders links in the response" do
-      get "#{host}/posts", { page: { number: 2, size: 5 } }
-      expect(json.links).not_to be_nil
-      expect(json.links.self).not_to be_nil
-      expect(json.links.first).not_to be_nil
-      expect(json.links.prev).not_to be_nil
-      expect(json.links.last).not_to be_nil
-      expect(json.links.last).not_to be_nil
-    end
+      context "when no page is specified" do
+        before do
+          get "#{host}/#{@project.owner.slug}/#{@project.slug}/posts/"
+        end
 
-    it "renders a meta in the response" do
-      get "#{host}/posts", { page: { number: 2, size: 5 } }
-      expect(json.meta).not_to be_nil
-      expect(json.meta.total_records).to eq 13
-      expect(json.meta.total_pages).to eq 3
-      expect(json.meta.page_size).to eq 5
-      expect(json.meta.current_page).to eq 2
+        it "responds with a 200" do
+          expect(last_response.status).to eq 200
+        end
+
+        it "returns a list of Post records, serialized with PostSerializer" do
+          expect(json).to serialize_collection(Post.all).with(PostSerializer)
+        end
+      end
+
+      describe "specifying page parameters" do
+        it "accepts different page numbers" do
+          get "#{host}/#{@project.owner.slug}/#{@project.slug}/posts/", { page: { number: 1, size: 5 }}
+          expect(json.data.length).to eq 5
+          get "#{host}/#{@project.owner.slug}/#{@project.slug}/posts/", { page: { number: 3, size: 3 }}
+          expect(json.data.length).to eq 3
+        end
+
+        it "accepts different page sizes" do
+          get "#{host}/#{@project.owner.slug}/#{@project.slug}/posts/", { page: { number: 1, size: 3 }}
+          expect(json.data.length).to eq 3
+          get "#{host}/#{@project.owner.slug}/#{@project.slug}/posts/", { page: { number: 1, size: 4 }}
+          expect(json.data.length).to eq 4
+        end
+
+        it "renders links in the response" do
+          get "#{host}/#{@project.owner.slug}/#{@project.slug}/posts/", { page: { number: 2, size: 5 } }
+          expect(json.links).not_to be_nil
+          expect(json.links.self).not_to be_nil
+          expect(json.links.first).not_to be_nil
+          expect(json.links.prev).not_to be_nil
+          expect(json.links.last).not_to be_nil
+          expect(json.links.last).not_to be_nil
+        end
+
+        it "renders a meta in the response" do
+          get "#{host}/#{@project.owner.slug}/#{@project.slug}/posts/", { page: { number: 2, size: 5 } }
+          expect(json.meta).not_to be_nil
+          expect(json.meta.total_records).to eq 13
+          expect(json.meta.total_pages).to eq 3
+          expect(json.meta.page_size).to eq 5
+          expect(json.meta.current_page).to eq 2
+        end
+      end
     end
   end
 
   context "GET /:slug/:project_slug/posts/:id" do
-    before do
-    end
-
     context "when the project owner doesn't exist" do
       it "responds with a 404" do
         get "#{host}/some_slug/some_other_slug/posts/1"
@@ -100,7 +141,6 @@ describe "Posts API" do
         expect(json).to serialize_object(Post.last).with(PostSerializer).with_includes("comments")
       end
     end
-
   end
 
   context "POST /posts" do
