@@ -120,6 +120,7 @@ GEM
       multi_json (~> 1.3)
       multi_xml (~> 0.5)
       rack (~> 1.2)
+    obscenity (1.0.2)
     paperclip (4.3.2)
       activemodel (>= 3.2.0)
       activesupport (>= 3.2.0)
@@ -236,6 +237,7 @@ DEPENDENCIES
   hashie
   kaminari
   oauth2
+  obscenity
   paperclip
   pg
   pry

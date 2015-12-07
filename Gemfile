@@ -27,6 +27,8 @@ gem 'kaminari'
 
 gem 'redcarpet'
 
+gem 'obscenity'
+
 group :development, :test do
   gem 'dotenv-rails'
 
