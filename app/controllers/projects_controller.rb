@@ -1,5 +1,7 @@
 class ProjectsController < ApplicationController
 
+  before_action :doorkeeper_authorize!, only: [:create, :update]
+
   def index
     render json: Project.all
   end
