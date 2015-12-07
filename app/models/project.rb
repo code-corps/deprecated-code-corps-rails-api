@@ -1,5 +1,6 @@
 class Project < ActiveRecord::Base
   belongs_to :owner, polymorphic: true
+
   has_many :posts
 
   has_attached_file :icon,
@@ -13,11 +14,13 @@ class Project < ActiveRecord::Base
 
   validates :title, presence: true
 
-  # validates :title, slug: true
-  # validates :title, uniqueness: { case_sensitive: false }
+  validates :slug, slug: true
+
+  validate :slug_is_not_duplicate
 
   validates_attachment_content_type :icon,
                                     content_type: %r{^image\/(png|gif|jpeg)}
+
 
   def decode_image_data
     return unless base_64_icon_data.present?
@@ -28,9 +31,17 @@ class Project < ActiveRecord::Base
     self.icon = data
   end
 
-  def add_slug_if_blank
-    unless self.slug.present?
-      self.slug = self.title.try(:parameterize)
+  private
+
+    def slug_is_not_duplicate
+      if Project.where.not(id: self.id).where(owner: self.owner).where('lower(slug) = ?', slug.try(:downcase)).present?
+        errors.add(:slug, "has already been taken")
+      end
     end
-  end
+
+    def add_slug_if_blank
+      unless self.slug.present?
+        self.slug = self.title.try(:parameterize)
+      end
+    end
 end

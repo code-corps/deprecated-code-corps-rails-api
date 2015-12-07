@@ -57,7 +57,7 @@ class ProjectsController < ApplicationController
     end
 
     def permitted_params
-      record_attributes.permit(:base_64_icon_data, :title, :description)
+      record_attributes.permit(:base_64_icon_data, :title, :description, :slug)
     end
 
     def member_slug

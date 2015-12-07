@@ -40,7 +40,6 @@ describe Member, type: :model do
       Rails.configuration.x.reserved_routes.each do |route|
         it { should_not allow_value(route).for(:slug) }
       end
-
     end
   end
 end

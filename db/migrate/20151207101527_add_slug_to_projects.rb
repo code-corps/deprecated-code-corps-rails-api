@@ -6,6 +6,6 @@ class AddSlugToProjects < ActiveRecord::Migration
     end
     change_column_null :projects, :slug, false
 
-    add_index :projects, :slug, :unique => true
+    add_index :projects, [:slug, :owner_id], unique: true
   end
 end

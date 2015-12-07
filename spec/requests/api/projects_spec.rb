@@ -76,6 +76,7 @@ describe "Projects API" do
               data: {
                 attributes: {
                   title: "Test Project Title",
+                  slug: "test-project",
                   description: "Test project description",
                   base_64_icon_data: base_64_image
                 }

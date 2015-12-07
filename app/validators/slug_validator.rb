@@ -1,30 +1,16 @@
 require "code_corps/slug_matcher"
 
-class SlugValidator < ActiveModel::Validator
+class SlugValidator < ActiveModel::EachValidator
 
-  def validate(record)
-    if record.instance_of? User
-      return validate_property(record, :username)
-    end
-
-    if record.instance_of? Organization
-      return validate_property(record, :slug)
-    end
-
-    if record.instance_of? Member
-      return validate_property(record, :slug)
-    end
-
-    if record.instance_of? Project
-      return validate_property(record, :title)
-    end
+  def validate_each(record, attribute, value)
+    return validate_property(record, attribute, value)
   end
 
   private
 
-    def validate_property(record, property)
-      unless valid_slug?(record.send(property))
-        record.errors[property] = "may only contain alphanumeric characters, underscores, or single hyphens, and cannot begin or end with a hyphen or underscore"
+    def validate_property(record, attribute, value)
+      unless valid_slug?(value)
+        record.errors[attribute] = "may only contain alphanumeric characters, underscores, or single hyphens, and cannot begin or end with a hyphen or underscore"
       end
     end
 
