@@ -12,7 +12,8 @@ class ProjectsController < ApplicationController
   end
 
   def create
-    project = Project.new(permitted_params)
+    member = fetch_member!
+    project = Project.new(permitted_params.merge(owner: member.model))
 
     if project.save
       AddProjectIconWorker.perform_async(project.id)
