@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151203191921) do
+ActiveRecord::Schema.define(version: 20151204234343) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -87,7 +87,10 @@ ActiveRecord::Schema.define(version: 20151203191921) do
     t.string   "name",       null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string   "slug",       null: false
   end
+
+  add_index "organizations", ["slug"], name: "index_organizations_on_slug", unique: true, using: :btree
 
   create_table "post_likes", force: :cascade do |t|
     t.integer  "post_id"
@@ -107,7 +110,10 @@ ActiveRecord::Schema.define(version: 20151203191921) do
     t.datetime "updated_at",                        null: false
     t.integer  "post_likes_count", default: 0
     t.text     "markdown",                          null: false
+    t.integer  "number",                            null: false
   end
+
+  add_index "posts", ["number", "project_id"], name: "index_posts_on_number_and_project_id", unique: true, using: :btree
 
   create_table "projects", force: :cascade do |t|
     t.string   "title",              null: false
@@ -140,6 +146,17 @@ ActiveRecord::Schema.define(version: 20151203191921) do
     t.datetime "updated_at",        null: false
   end
 
+  create_table "slug_routes", force: :cascade do |t|
+    t.string   "slug",       null: false
+    t.integer  "owner_id"
+    t.string   "owner_type"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  add_index "slug_routes", ["owner_id", "owner_type"], name: "index_slug_routes_on_owner_id_and_owner_type", unique: true, using: :btree
+  add_index "slug_routes", ["slug"], name: "index_slug_routes_on_slug", unique: true, using: :btree
+
   create_table "team_memberships", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -164,17 +181,19 @@ ActiveRecord::Schema.define(version: 20151203191921) do
   end
 
   create_table "users", force: :cascade do |t|
-    t.datetime "created_at",                                     null: false
-    t.datetime "updated_at",                                     null: false
-    t.string   "email",                                          null: false
-    t.string   "encrypted_password", limit: 128,                 null: false
-    t.string   "confirmation_token", limit: 128
-    t.string   "remember_token",     limit: 128,                 null: false
+    t.datetime "created_at",                                        null: false
+    t.datetime "updated_at",                                        null: false
+    t.string   "email",                                             null: false
+    t.string   "encrypted_password",    limit: 128,                 null: false
+    t.string   "confirmation_token",    limit: 128
+    t.string   "remember_token",        limit: 128,                 null: false
     t.string   "username"
-    t.boolean  "admin",                          default: false, null: false
+    t.boolean  "admin",                             default: false, null: false
     t.text     "website"
     t.string   "twitter"
     t.text     "biography"
+    t.string   "facebook_id"
+    t.string   "facebook_access_token"
   end
 
   add_index "users", ["email"], name: "index_users_on_email", using: :btree

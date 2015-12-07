@@ -1,3 +1,5 @@
+require "constraints/slug_constraint"
+
 Rails.application.routes.draw do
   use_doorkeeper do
     controllers tokens: 'tokens'
@@ -26,6 +28,12 @@ Rails.application.routes.draw do
     resources :user_skills, only: [:create, :destroy]
     resources :projects, only: [:show, :index, :create, :update]
     resources :contributors, only: [:index, :create, :update]
+    resources :organizations, only: [:show]
     resources :skill_categories, only: [:index]
+
+    # Users goes before organizations since there are vastly more users to match
+    get '/:slug', to: 'users#show', constraints: SlugConstraint.new(User)
+    get '/:slug', to: 'organizations#show', constraints: SlugConstraint.new(Organization)
+    get '*unmatched_route', :to => 'application#raise_not_found!'
   end
 end

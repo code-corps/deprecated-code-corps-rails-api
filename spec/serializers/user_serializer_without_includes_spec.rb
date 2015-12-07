@@ -6,7 +6,7 @@ describe UserSerializerWithoutIncludes, :type => :serializer do
     let(:resource) {
       user = create(:user,
         email: "user@mail.com",
-        username: "user",
+        username: "randomer",
         website: "example.com",
         twitter: "@user",
         biography: "Lorem ipsum")

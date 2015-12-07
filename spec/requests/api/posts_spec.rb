@@ -113,6 +113,18 @@ describe "Posts API" do
         expect(json).to contain_an_error_of_type("VALIDATION_ERROR").with_message("Title can't be blank")
       end
 
+      it "does not accept a 'number' to be set directly" do
+        params = { data: { type: "posts",
+          attributes: { title: "Post title", markdown: "Post body", number: 3 },
+          relationships: { project: { data: { id: 2 } } }
+        } }
+        authenticated_post "/posts", params, @token
+
+        expect(last_response.status).to eq 200
+        
+        expect(json.data.attributes.number).to eq 1
+      end
+
       it "does not require a 'post_type' to be specified" do
         params = { data: { type: "posts",
           attributes: { title: "Post title", markdown: "Post body" },
