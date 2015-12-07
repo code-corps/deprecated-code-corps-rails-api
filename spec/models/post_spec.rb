@@ -61,4 +61,21 @@ describe Post, :type => :model do
       expect(post.body).to eq "<h1>Hello World</h1>\n\n<p>Hello, world.</p>\n"
     end
   end
+
+  describe "sequencing" do
+    it "numbers posts for each project" do
+      project = create(:project)
+      first_post = create(:post, project: project)
+      second_post = create(:post, project: project)
+
+      expect(first_post.number).to eq 1
+      expect(second_post.number).to eq 2
+    end
+
+    it "should not allow a duplicate number to be set for the same project" do
+      project = create(:project)
+      first_post = create(:post, project: project)
+      expect { create(:post, project: project, number: 1) }.to raise_error ActiveRecord::RecordNotUnique
+    end
+  end
 end

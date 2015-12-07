@@ -12,6 +12,8 @@ describe User, :type => :model do
     it { should have_db_column(:twitter).of_type(:string) }
     it { should have_db_column(:website).of_type(:text) }
     it { should have_db_column(:biography).of_type(:text) }
+    it { should have_db_column(:facebook_id).of_type(:string) }
+    it { should have_db_column(:facebook_access_token).of_type(:string) }
 
     it { should have_db_index(:email) }
     it { should have_db_index(:remember_token) }
@@ -30,6 +32,7 @@ describe User, :type => :model do
   end
 
   describe "validations" do
+
     describe "website" do
       it { should allow_value("www.example.com").for(:website) }
       it { should allow_value("http://www.example.com").for(:website) }
@@ -46,6 +49,15 @@ describe User, :type => :model do
 
     describe "username" do
       let(:user) { User.create(email: "joshdotsmith@gmail.com", username: "joshsmith", password: "password") }
+
+      describe "base validations" do
+        # visit the following to understand why this is tested in a separate context
+        # https://github.com/thoughtbot/shoulda-matchers/blob/master/lib/shoulda/matchers/active_record/validate_uniqueness_of_matcher.rb#L50
+        subject { create(:user) }
+        it { should validate_presence_of(:username) }
+        it { should validate_uniqueness_of(:username).case_insensitive }
+        it { should validate_length_of(:username).is_at_most(39) }
+      end
       
       it { should allow_value("code_corps").for(:username) }
       it { should allow_value("codecorps").for(:username) }
@@ -66,6 +78,31 @@ describe User, :type => :model do
       it { should_not allow_value("@code/corps/code").for(:username) }
       it { should_not allow_value("@code/corps/code/corps").for(:username) }
       it { expect(user.username).to_not be_profane }
+
+      # Checks reserved routes
+      it { should_not allow_value("help").for(:username) }
+
+      describe "duplicate slug validation" do
+        context "when an organization with a different cased slug exists" do
+          before do
+            create(:organization, name: "CodeCorps")
+          end
+
+          it { should_not allow_value("codecorps").for(:username).with_message(
+            "has already been taken by an organization"
+            ) }
+        end
+
+        context "when an organization with the same slug exists" do
+          before do
+            create(:organization, name: "CodeCorps")
+          end
+
+          it { should_not allow_value("codecorps").for(:username).with_message(
+            "has already been taken by an organization"
+            ) }
+        end
+      end
     end
   end
 
@@ -79,4 +116,14 @@ describe User, :type => :model do
     end
   end
 
+  describe "updating the username" do
+    let(:user) { create(:user, username: "joshsmith") }
+
+    it "should allow the username to be updated" do
+      user.username = "new_name"
+      user.save
+
+      expect(user.username).to eq "new_name"
+    end
+  end
 end
