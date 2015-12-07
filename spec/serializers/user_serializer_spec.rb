@@ -6,10 +6,12 @@ describe UserSerializer, :type => :serializer do
     let(:resource) {
       user = create(:user,
         email: "user@mail.com",
-        username: "user",
+        username: "joshsmith",
         website: "example.com",
         twitter: "@user",
-        biography: "Lorem ipsum")
+        biography: "Lorem ipsum",
+        facebook_id: "some_id",
+        facebook_access_token: "some_token")
       create_list(:user_skill, 10, user: user)
       user
     }
@@ -62,6 +64,14 @@ describe UserSerializer, :type => :serializer do
 
       it "has a 'biography'" do
         expect(subject["biography"]).to eq resource.biography
+      end
+
+      it "has a 'facebook_id'" do
+        expect(subject["facebook_id"]).to eq resource.facebook_id
+      end
+
+      it "has a 'facebook_access_token'" do
+        expect(subject["facebook_access_token"]).to eq resource.facebook_access_token
       end
     end
 

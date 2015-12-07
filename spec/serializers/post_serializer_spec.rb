@@ -63,6 +63,10 @@ describe PostSerializer, :type => :serializer do
       it "has a 'likes_count'" do
         expect(subject["likes_count"]).to eql resource.likes_count
       end
+
+      it "has a 'number'" do
+        expect(subject["number"]).to eql resource.number
+      end
     end
 
     context "relationships" do

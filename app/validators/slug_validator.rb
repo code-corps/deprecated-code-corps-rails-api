@@ -4,15 +4,23 @@ class SlugValidator < ActiveModel::Validator
 
   def validate(record)
     if record.instance_of? User
-      validate_username(record)
+      return validate_property(record, :username)
+    end
+
+    if record.instance_of? Organization
+      return validate_property(record, :slug)
+    end
+
+    if record.instance_of? SlugRoute
+      return validate_property(record, :slug)
     end
   end
 
   private
 
-    def validate_username(record)
-      unless valid_slug?(record.username)
-        record.errors[:username] = "may only contain alphanumeric characters, underscores, or single hyphens, and cannot begin or end with a hyphen or underscore"
+    def validate_property(record, property)
+      unless valid_slug?(record.send(property))
+        record.errors[property] = "may only contain alphanumeric characters, underscores, or single hyphens, and cannot begin or end with a hyphen or underscore"
       end
     end
 

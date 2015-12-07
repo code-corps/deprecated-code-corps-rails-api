@@ -5,6 +5,10 @@ class ErrorSerializer
     error_hash = serialize_validation_errors(error) if error.class == ActiveModel::Errors
     error_hash = serialize_pundit_not_authorized_error(error) if error.class == Pundit::NotAuthorizedError
     error_hash = serialize_action_controller_parameter_missing_error(error) if error.class == ActionController::ParameterMissing
+    error_hash = serialize_action_controller_routing_error(error) if error.class == ActionController::RoutingError
+    error_hash = serialize_facebook_authentication_error(error) if error.class == Koala::Facebook::AuthenticationError
+    error_hash = serialize_record_not_found_error(error) if error.class == ActiveRecord::RecordNotFound
+
     { errors: Array.wrap(error_hash) }
   end
 
@@ -52,6 +56,33 @@ class ErrorSerializer
         title: "A parameter is missing",
         detail: error.message.capitalize,
         status: 400
+      }
+    end
+
+    def self.serialize_action_controller_routing_error(error)
+      return {
+        id: "ROUTE_NOT_FOUND",
+        title: "Route not found",
+        detail: error.message,
+        status: 404
+      }
+    end
+
+    def self.serialize_facebook_authentication_error(error)
+      return {
+        id: "FACEBOOK_AUTHENTICATION_ERROR",
+        title: "Facebook authentication error",
+        detail: error.fb_error_message,
+        status: error.http_status
+      }
+    end
+
+    def self.serialize_record_not_found_error(error)
+      return {
+        id: "RECORD_NOT_FOUND",
+        title: "Record not found",
+        detail: error.message,
+        status: 404
       }
     end
 end
