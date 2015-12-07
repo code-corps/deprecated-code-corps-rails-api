@@ -17,27 +17,29 @@ describe "Projects API" do
     end
   end
 
-  context "GET /projects/:id" do
+  context "GET /:slug/:project_slug" do
     before do
-      create(:project, id: 1, title: "Project", description: "Description")
+      @project = create(:project, owner: create(:organization))
     end
 
-    it "returns the specified project" do
-      get "#{host}/projects/1", {}
+    context "when successful" do
+      before do
+        get "#{host}/#{@project.owner.member.slug}/#{@project.slug}"
+      end
 
-      expect(last_response.status).to eq 200
+      it "responds with a 200" do
+        expect(last_response.status).to eq 200
+      end
 
-      expect(json.data.id).to eq "1"
-      expect(json.data.type).to eq "projects"
-
-      attributes = json.data.attributes
-      expect(attributes.title).to eq "Project"
-      expect(attributes.description).to eq "Description"
+      it "returns the specified project" do
+        expect(json).to serialize_object(@project).with(ProjectSerializer)
+      end
     end
+
   end
 
   context "POST /projects" do
-    it 'returns an error if title is left blank' do
+    it 'responds with a validation error if title is left blank' do
       post "#{host}/projects", {
         data: {
           attributes: {
@@ -46,57 +48,86 @@ describe "Projects API" do
         }
       }
 
-      expect(last_response.status).to eq 422
-      expect(json.errors.title).to eq "can't be blank"
+      expect(json).to be_a_valid_json_api_error
+      expect(json).to contain_an_error_of_type("VALIDATION_ERROR")
+                        .with_message "Title may only contain alphanumeric characters, underscores, or single hyphens, and cannot begin or end with a hyphen or underscore"
     end
 
-    it 'creates a project with a user uploaded image' do
-      Sidekiq::Testing.inline! do
-        file = File.open("#{Rails.root}/spec/sample_data/default-avatar.png", 'r')
-        base_64_image = Base64.encode64(open(file) { |io| io.read })
+    context "when succesful" do
+      context "when there's icon data in the request" do
+        before do
+          file = File.open("#{Rails.root}/spec/sample_data/default-avatar.png", 'r')
+          @base_64_image = Base64.encode64(open(file) { |io| io.read })
 
-        post "#{host}/projects", {
-          data: {
-            attributes: {
-              title: "Test Project Title",
-              description: "Test project description",
-              base_64_icon_data: base_64_image
+          attributes = {
+            data: {
+              attributes: {
+                title: "TestProject",
+                description: "Test project description",
+                base_64_icon_data: @base_64_image
+              }
             }
           }
-        }
 
-        expect(last_response.status).to eq 200
+          Sidekiq::Testing.inline! do
+            post "#{host}/projects", attributes
+          end
+        end
 
-        project = Project.last
+        it "creates a project" do
+          project = Project.last
+          expect(project.title).to eq "TestProject"
+          expect(project.description).to eq "Test project description"
+        end
 
-        expect(project.base_64_icon_data).to be_nil
-        expect(project.icon.path).to_not be_nil
-        expect(project.title).to eq "Test Project Title"
-        expect(project.description).to eq "Test project description"
-        # expect icon saved from create action to be identical to our test photor
-        project_icon_file = File.open("#{Rails.root}/spec/sample_data/default-avatar.png", 'r')
-        base_64_saved_image = Base64.encode64(open(project_icon_file) { |io| io.read })
-        expect(base_64_saved_image).to include base_64_image
+        it "stores and assigns the user-uploaded image" do
+          project = Project.last
+
+          expect(project.base_64_icon_data).to be_nil
+          expect(project.icon.path).to_not be_nil
+          project_icon_file = File.open("#{Rails.root}/spec/sample_data/default-avatar.png", 'r')
+          base_64_saved_image = Base64.encode64(open(project_icon_file) { |io| io.read })
+          expect(base_64_saved_image).to include @base_64_image
+        end
       end
-    end
 
-    it 'creates a project without a user uploaded image' do
-      post "#{host}/projects", {
-          data: {
-            attributes: {
-              title: "Test Project Title",
-              description: "Test project description",
+      context "when there's no icon data in the request" do
+        before do
+          attributes = {
+            data: {
+              attributes: {
+                title: "TestProject",
+                description: "Test project description",
+              }
             }
           }
-        }
 
-        expect(last_response.status).to eq 200
+          Sidekiq::Testing.inline! do
+            post "#{host}/projects", attributes
+          end
+        end
 
-        project = Project.last
-      
-        expect(project.icon.path).to be_nil
-        expect(project.title).to eq "Test Project Title"
-        expect(project.description).to eq "Test project description"
+        it "responds with a 200" do
+          expect(last_response.status).to eq 200
+        end
+
+        it "returns the project serialized with ProjectSerializer" do
+          expect(json).to serialize_object(Project.last).with(ProjectSerializer)
+        end
+
+        it "creates a project" do
+          project = Project.last
+          expect(project.title).to eq "TestProject"
+          expect(project.description).to eq "Test project description"
+        end
+
+        it "stores no image data" do
+          project = Project.last
+
+          expect(project.base_64_icon_data).to be_nil
+          expect(project.icon.path).to be_nil
+        end
+      end
     end
   end
 

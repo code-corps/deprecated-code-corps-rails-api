@@ -5,12 +5,12 @@ class ProjectsController < ApplicationController
   end
 
   def show
-    member = Member.find_by_slug(params[:member_id])
-    project = Project.find_by!(id: params[:id], owner: member.model)
+    member = Member.find_by_slug(member_slug)
+    project = Project.find_by!(slug: project_slug, owner: member.model)
 
     render json: project
   end
-  
+
   def create
     project = Project.new(permitted_params)
 
@@ -40,7 +40,11 @@ class ProjectsController < ApplicationController
     record_attributes.permit(:base_64_icon_data, :title, :description)
   end
 
-  def render_validation_errors errors
-    render json: {errors: errors.to_h}, status: 422
+  def member_slug
+    params[:member_id]
+  end
+
+  def project_slug
+    params[:id]
   end
 end
