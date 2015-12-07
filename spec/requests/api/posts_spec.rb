@@ -48,30 +48,59 @@ describe "Posts API" do
     end
   end
 
-  context "GET /posts/:id" do
+  context "GET /:slug/:project_slug/posts/:id" do
     before do
-      post = create(:post, id: 1, title: "Post")
-      create_list(:comment, 5, post: post)
     end
 
-    it "returns the specified post, with comments included" do
-      get "#{host}/posts/1", {}
-      expect(last_response.status).to eq 200
-
-      expect(json.data.id).to eq "1"
-      expect(json.data.type).to eq "posts"
-
-      attributes = json.data.attributes
-      expect(attributes.title).to eq "Post"
-
-      comment_relationships = json.data.relationships.comments.data
-      expect(comment_relationships.count).to eq 5
-
-      expect(json.included).not_to be_nil
-
-      comment_includes = json.included.select{ |i| i.type == "comments" }
-      expect(comment_includes.count).to eq 5
+    context "when the project owner doesn't exist" do
+      it "responds with a 404" do
+        get "#{host}/some_slug/some_other_slug/posts/1"
+        expect(last_response.status).to eq 404
+        expect(json).to be_a_valid_json_api_error.with_id "RECORD_NOT_FOUND"
+      end
     end
+
+    context "when the project doesn't exist" do
+      before do
+        @owner = create(:organization).member
+      end
+
+      it "responds with a 404" do
+        get "#{host}/#{@owner.slug}/some_other_slug/posts/1"
+        expect(last_response.status).to eq 404
+        expect(json).to be_a_valid_json_api_error.with_id "RECORD_NOT_FOUND"
+      end
+    end
+
+    context "when the post doesn't exist" do
+      before do
+        @project = create(:project, owner: create(:organization))
+      end
+
+      it "responds with a 404" do
+        get "#{host}/#{@project.owner.slug}/#{@project.slug}/posts/1"
+        expect(last_response.status).to eq 404
+        expect(json).to be_a_valid_json_api_error.with_id "RECORD_NOT_FOUND"
+      end
+    end
+
+    context "when successful" do
+      before do
+        @project = create(:project, owner: create(:organization))
+        @post = create(:post, project: @project)
+        create_list(:comment, 5, post: @post)
+        get "#{host}/#{@project.owner.slug}/#{@project.slug}/posts/#{@post.id}"
+      end
+
+      it "responds with a 200" do
+        expect(last_response.status).to eq 200
+      end
+
+      it "returns the post, serialized with PostSerializer, with comments included" do
+        expect(json).to serialize_object(Post.last).with(PostSerializer).with_includes("comments")
+      end
+    end
+
   end
 
   context "POST /posts" do
@@ -121,7 +150,7 @@ describe "Posts API" do
         authenticated_post "/posts", params, @token
 
         expect(last_response.status).to eq 200
-        
+
         expect(json.data.attributes.number).to eq 1
       end
 
