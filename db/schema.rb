@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151205223211) do
+ActiveRecord::Schema.define(version: 20151207101527) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -23,6 +23,14 @@ ActiveRecord::Schema.define(version: 20151205223211) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.text     "markdown",   null: false
+  end
+
+  create_table "github_repositories", force: :cascade do |t|
+    t.string   "repository_name", null: false
+    t.string   "owner_name",      null: false
+    t.integer  "project_id",      null: false
+    t.datetime "created_at",      null: false
+    t.datetime "updated_at",      null: false
   end
 
   create_table "members", force: :cascade do |t|
@@ -130,9 +138,11 @@ ActiveRecord::Schema.define(version: 20151205223211) do
     t.integer  "icon_file_size"
     t.datetime "icon_updated_at"
     t.text     "base_64_icon_data"
+    t.string   "slug",              null: false
   end
 
   add_index "projects", ["owner_type", "owner_id"], name: "index_projects_on_owner_type_and_owner_id", using: :btree
+  add_index "projects", ["slug"], name: "index_projects_on_slug", unique: true, using: :btree
 
   create_table "skill_categories", force: :cascade do |t|
     t.string   "title",      null: false

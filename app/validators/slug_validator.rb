@@ -14,6 +14,10 @@ class SlugValidator < ActiveModel::Validator
     if record.instance_of? Member
       return validate_property(record, :slug)
     end
+
+    if record.instance_of? Project
+      return validate_property(record, :title)
+    end
   end
 
   private
