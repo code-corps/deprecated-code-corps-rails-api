@@ -7,13 +7,12 @@ class ProjectsController < ApplicationController
   end
 
   def show
-    project = fetch_project!
+    project = find_project!
     render json: project
   end
 
   def create
-    member = fetch_member!
-    project = Project.new(permitted_params.merge(owner: member.model))
+    project = Project.new(create_params)
 
     if project.save
       AddProjectIconWorker.perform_async(project.id)
@@ -24,8 +23,8 @@ class ProjectsController < ApplicationController
   end
 
   def update
-    project = fetch_project!
-    project.update(permitted_params)
+    project = find_project!
+    project.update(update_params)
 
     if project.save
       AddProjectIconWorker.perform_async(project.id)
@@ -37,24 +36,32 @@ class ProjectsController < ApplicationController
 
   private
 
-  def permitted_params
-    record_attributes.permit(:base_64_icon_data, :title, :description)
-  end
+    def create_params
+      permitted_params.merge(owner: find_member!)
+    end
 
-  def member_slug
-    params[:member_id]
-  end
+    def update_params
+      permitted_params
+    end
 
-  def project_slug
-    params[:id]
-  end
+    def permitted_params
+      record_attributes.permit(:base_64_icon_data, :title, :description)
+    end
 
-  def fetch_project!
-    member = fetch_member!
-    Project.find_by!(slug: project_slug, owner: member.model)
-  end
+    def member_slug
+      params[:member_id]
+    end
 
-  def fetch_member!
-    Member.find_by_slug!(member_slug)
-  end
+    def project_slug
+      params[:id]
+    end
+
+    def find_project!
+      member = find_member!
+      Project.find_by!(slug: project_slug, owner: member.model)
+    end
+
+    def find_member!
+      Member.find_by_slug!(member_slug)
+    end
 end
