@@ -11,6 +11,8 @@ class User < ActiveRecord::Base
   has_many :user_skills
   has_many :skills, through: :user_skills
 
+  has_one :member, as: :model
+
   validates :username, presence: { message: "can't be blank" }
   validates :username, exclusion: { in: Rails.configuration.x.reserved_routes }
   validates :username, slug: true

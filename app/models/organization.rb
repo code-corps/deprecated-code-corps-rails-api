@@ -4,6 +4,8 @@ class Organization < ActiveRecord::Base
   has_many :teams
   has_many :projects, as: :owner
 
+  has_one :member, as: :model
+
   before_validation :add_slug_if_blank
 
   validates_presence_of :name

@@ -29,6 +29,7 @@ describe User, :type => :model do
     it { should have_many(:comments) }
     it { should have_many(:user_skills) }
     it { should have_many(:skills).through(:user_skills) }
+    it { should have_one(:member) }
   end
 
   describe "validations" do
@@ -85,7 +86,8 @@ describe User, :type => :model do
             create(:organization, name: "CodeCorps")
           end
 
-          it { should_not allow_value("codecorps").for(:username).with_message(
+          it {
+            should_not allow_value("codecorps").for(:username).with_message(
             "has already been taken by an organization"
             ) }
         end
@@ -100,7 +102,7 @@ describe User, :type => :model do
             ) }
         end
       end
-      
+
     end
   end
 
