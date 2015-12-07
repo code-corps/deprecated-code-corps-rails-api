@@ -1,7 +1,7 @@
 class MembersController < ApplicationController
 
   def show
-    member = Member.find_by_slug(params[:id])
+    member = Member.includes(model: :members).find_by_slug(params[:id])
 
     # authorize member
 
