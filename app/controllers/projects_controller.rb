@@ -7,7 +7,7 @@ class ProjectsController < ApplicationController
   end
 
   def show
-    project = find_project!
+    project = find_project_with_member!
     render json: project
   end
 
@@ -23,7 +23,7 @@ class ProjectsController < ApplicationController
   end
 
   def update
-    project = find_project!
+    project = Project.find(params[:id])
     project.update(update_params)
 
     if project.save
@@ -37,11 +37,23 @@ class ProjectsController < ApplicationController
   private
 
     def create_params
-      permitted_params.merge(owner: find_member!)
+      permitted_params.merge(relationships)
     end
 
     def update_params
       permitted_params
+    end
+
+    def relationships
+      { owner_id: owner_id, owner_type: owner_type }
+    end
+
+    def owner_id
+      record_relationships.fetch(:owner, {}).fetch(:data, {})[:id]
+    end
+
+    def owner_type
+      record_relationships.fetch(:owner, {}).fetch(:data, {})[:type]
     end
 
     def permitted_params
@@ -56,7 +68,7 @@ class ProjectsController < ApplicationController
       params[:id]
     end
 
-    def find_project!
+    def find_project_with_member!
       member = find_member!
       Project.find_by!(slug: project_slug, owner: member.model)
     end

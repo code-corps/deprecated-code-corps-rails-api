@@ -13,8 +13,8 @@ class Project < ActiveRecord::Base
 
   validates :title, presence: true
 
-  validates :title, slug: true
-  validates :title, uniqueness: { case_sensitive: false }
+  # validates :title, slug: true
+  # validates :title, uniqueness: { case_sensitive: false }
 
   validates_attachment_content_type :icon,
                                     content_type: %r{^image\/(png|gif|jpeg)}
