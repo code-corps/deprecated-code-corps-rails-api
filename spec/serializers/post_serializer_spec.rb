@@ -10,6 +10,8 @@ describe PostSerializer, :type => :serializer do
         project: create(:project))
 
       create_list(:comment, 10, post: post)
+      create_list(:post_user_mention, 10, post: post)
+      create_list(:comment_user_mention, 10, post: post)
       post.reload
     }
 
@@ -109,6 +111,32 @@ describe PostSerializer, :type => :serializer do
         it "should not be empty" do
           expect(subject).not_to be_nil
           expect(subject.select{ |i| i["type"] == "comments"}.length).to eq 10
+        end
+      end
+
+      context "when including 'post_user_mentions'" do
+        let(:serialization) { ActiveModel::Serializer::Adapter.create(serializer, include: ["post_user_mentions"]) }
+
+        subject do
+          JSON.parse(serialization.to_json)["included"]
+        end
+
+        it "should not be empty" do
+          expect(subject).not_to be_nil
+          expect(subject.select{ |i| i["type"] == "post_user_mentions"}.length).to eq 10
+        end
+      end
+
+      context "when including 'comment_user_mentions'" do
+        let(:serialization) { ActiveModel::Serializer::Adapter.create(serializer, include: ["comment_user_mentions"]) }
+
+        subject do
+          JSON.parse(serialization.to_json)["included"]
+        end
+
+        it "should not be empty" do
+          expect(subject).not_to be_nil
+          expect(subject.select{ |i| i["type"] == "comment_user_mentions"}.length).to eq 10
         end
       end
     end

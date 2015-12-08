@@ -4,6 +4,7 @@ RSpec.describe CommentUserMention, type: :model do
   describe "schema" do
     it { should have_db_column(:comment_id).of_type(:integer).with_options(null: false) }
     it { should have_db_column(:user_id).of_type(:integer).with_options(null: false) }
+    it { should have_db_column(:post_id).of_type(:integer).with_options(null: false) }
     it { should have_db_column(:username).of_type(:string).with_options(null: false) }
     it { should have_db_column(:start_index).of_type(:integer).with_options(null: false) }
     it { should have_db_column(:end_index).of_type(:integer).with_options(null: false) }
@@ -14,11 +15,13 @@ RSpec.describe CommentUserMention, type: :model do
   describe "relationships" do
     it { should belong_to(:user) }
     it { should belong_to(:comment) }
+    it { should belong_to(:post) }
   end
 
   describe "validations" do
     it { should validate_presence_of(:user) }
     it { should validate_presence_of(:comment) }
+    it { should validate_presence_of(:post) }
     it { should validate_presence_of(:username) }
     it { should validate_presence_of(:start_index) }
     it { should validate_presence_of(:end_index) }

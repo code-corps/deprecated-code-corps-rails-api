@@ -3,6 +3,7 @@ module CodeCorps
     class GenerateUserMentionsForComment
       def initialize(comment)
         @comment = comment
+        @post = comment.post
       end
 
       def call
@@ -32,7 +33,7 @@ module CodeCorps
             existing_mentions.destroy_all
           end
           mentions.each do |m|
-            CommentUserMention.create!(comment: @comment, user: m[0], start_index: m[1], end_index: m[2], username: m[0].username)
+            CommentUserMention.create!(comment: @comment, post: @post, user: m[0], start_index: m[1], end_index: m[2], username: m[0].username)
           end
         end
       end

@@ -21,6 +21,9 @@ module CodeCorps
           expect(mention.comment).to eq comment
           expect(mention.user).to eq @mentioned_user
           expect(mention.username).to eq mentioned_username
+
+          post = comment.post
+          expect(post.comment_user_mentions).to include mention
         end
       end
     end 

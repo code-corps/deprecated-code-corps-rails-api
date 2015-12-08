@@ -19,6 +19,7 @@ ActiveRecord::Schema.define(version: 20151208214105) do
   create_table "comment_user_mentions", force: :cascade do |t|
     t.integer  "user_id",     null: false
     t.integer  "comment_id",  null: false
+    t.integer  "post_id",     null: false
     t.string   "username",    null: false
     t.integer  "start_index", null: false
     t.integer  "end_index",   null: false

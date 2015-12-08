@@ -19,6 +19,8 @@ describe Post, :type => :model do
     it { should belong_to(:project) }
     it { should belong_to(:user) }
     it { should have_many(:post_likes) }
+    it { should have_many(:post_user_mentions) }
+    it { should have_many(:comment_user_mentions) }
   end
 
   describe "validations" do
@@ -79,7 +81,7 @@ describe Post, :type => :model do
     end
   end
 
-  describe "user mentions" do
+  describe "post user mentions" do
     context "when saving a post" do
       it "creates mentions only for existing users" do
         real_user = create(:user, username: "joshsmith")

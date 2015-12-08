@@ -105,7 +105,7 @@ describe "Posts API" do
       end
 
       it "returns the post, serialized with PostSerializer, with comments and mentions included" do
-        expect(json).to serialize_object(Post.last).with(PostSerializer).with_includes(["comments","post_user_mentions"])
+        expect(json).to serialize_object(Post.last).with(PostSerializer).with_includes(["comments","post_user_mentions","comment_user_mentions"])
       end
     end
   end
