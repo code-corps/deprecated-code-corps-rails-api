@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151207101527) do
+ActiveRecord::Schema.define(version: 20151208115704) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -138,8 +138,8 @@ ActiveRecord::Schema.define(version: 20151207101527) do
     t.integer  "icon_file_size"
     t.datetime "icon_updated_at"
     t.text     "base_64_icon_data"
-    t.string   "slug",               null: false
     t.integer  "contributors_count"
+    t.string   "slug",               null: false
   end
 
   add_index "projects", ["owner_type", "owner_id"], name: "index_projects_on_owner_type_and_owner_id", using: :btree
@@ -175,6 +175,16 @@ ActiveRecord::Schema.define(version: 20151207101527) do
     t.integer  "organization_id"
   end
 
+  create_table "user_relationships", force: :cascade do |t|
+    t.integer  "follower_id"
+    t.integer  "following_id"
+    t.datetime "created_at",   null: false
+    t.datetime "updated_at",   null: false
+  end
+
+  add_index "user_relationships", ["follower_id"], name: "index_user_relationships_on_follower_id", using: :btree
+  add_index "user_relationships", ["following_id"], name: "index_user_relationships_on_following_id", using: :btree
+
   create_table "user_skills", force: :cascade do |t|
     t.integer  "user_id"
     t.integer  "skill_id"
@@ -196,6 +206,11 @@ ActiveRecord::Schema.define(version: 20151207101527) do
     t.text     "biography"
     t.string   "facebook_id"
     t.string   "facebook_access_token"
+    t.string   "base_64_photo_data"
+    t.string   "photo_file_name"
+    t.string   "photo_content_type"
+    t.integer  "photo_file_size"
+    t.datetime "photo_updated_at"
   end
 
   add_index "users", ["email"], name: "index_users_on_email", using: :btree
