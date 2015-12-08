@@ -18,6 +18,8 @@ class Project < ActiveRecord::Base
 
   validate :slug_is_not_duplicate
 
+  validates_presence_of :owner
+
   validates_attachment_content_type :icon,
                                     content_type: %r{^image\/(png|gif|jpeg)}
 

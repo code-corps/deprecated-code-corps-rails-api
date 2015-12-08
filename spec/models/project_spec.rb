@@ -75,6 +75,8 @@ describe Project, :type => :model do
   end
 
   describe "ownership" do
+    it { should validate_presence_of :owner }
+
     it "can have a user as an owner" do
       user = create(:user)
       project = create(:project, owner: user)
