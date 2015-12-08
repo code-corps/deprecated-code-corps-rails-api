@@ -16,17 +16,6 @@ ActiveRecord::Schema.define(version: 20151208225204) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
-  create_table "comment_user_mentions", force: :cascade do |t|
-    t.integer  "user_id",     null: false
-    t.integer  "comment_id",  null: false
-    t.integer  "post_id",     null: false
-    t.string   "username",    null: false
-    t.integer  "start_index", null: false
-    t.integer  "end_index",   null: false
-    t.datetime "created_at",  null: false
-    t.datetime "updated_at",  null: false
-  end
-
   create_table "comments", force: :cascade do |t|
     t.text     "body",       null: false
     t.integer  "user_id",    null: false
