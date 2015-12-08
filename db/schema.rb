@@ -25,6 +25,25 @@ ActiveRecord::Schema.define(version: 20151208115704) do
     t.text     "markdown",   null: false
   end
 
+  create_table "contributors", force: :cascade do |t|
+    t.integer  "user_id"
+    t.integer  "project_id"
+    t.string   "status",     default: "pending", null: false
+    t.datetime "created_at",                     null: false
+    t.datetime "updated_at",                     null: false
+  end
+
+  create_table "members", force: :cascade do |t|
+    t.string   "slug",       null: false
+    t.integer  "model_id"
+    t.string   "model_type"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  add_index "members", ["model_id", "model_type"], name: "index_members_on_model_id_and_model_type", unique: true, using: :btree
+  add_index "members", ["slug"], name: "index_members_on_slug", unique: true, using: :btree
+
   create_table "oauth_access_grants", force: :cascade do |t|
     t.integer  "resource_owner_id", null: false
     t.integer  "application_id",    null: false
@@ -108,20 +127,23 @@ ActiveRecord::Schema.define(version: 20151208115704) do
   add_index "posts", ["number", "project_id"], name: "index_posts_on_number_and_project_id", unique: true, using: :btree
 
   create_table "projects", force: :cascade do |t|
-    t.string   "title",             null: false
+    t.string   "title",              null: false
     t.string   "description"
     t.integer  "owner_id"
     t.string   "owner_type"
-    t.datetime "created_at",        null: false
-    t.datetime "updated_at",        null: false
+    t.datetime "created_at",         null: false
+    t.datetime "updated_at",         null: false
     t.string   "icon_file_name"
     t.string   "icon_content_type"
     t.integer  "icon_file_size"
     t.datetime "icon_updated_at"
     t.text     "base_64_icon_data"
+    t.integer  "contributors_count"
+    t.string   "slug",               null: false
   end
 
   add_index "projects", ["owner_type", "owner_id"], name: "index_projects_on_owner_type_and_owner_id", using: :btree
+  add_index "projects", ["slug", "owner_id"], name: "index_projects_on_slug_and_owner_id", unique: true, using: :btree
 
   create_table "skill_categories", force: :cascade do |t|
     t.string   "title",      null: false
@@ -136,17 +158,6 @@ ActiveRecord::Schema.define(version: 20151208115704) do
     t.datetime "created_at",        null: false
     t.datetime "updated_at",        null: false
   end
-
-  create_table "slug_routes", force: :cascade do |t|
-    t.string   "slug",       null: false
-    t.integer  "owner_id"
-    t.string   "owner_type"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
-  add_index "slug_routes", ["owner_id", "owner_type"], name: "index_slug_routes_on_owner_id_and_owner_type", unique: true, using: :btree
-  add_index "slug_routes", ["slug"], name: "index_slug_routes_on_slug", unique: true, using: :btree
 
   create_table "team_memberships", force: :cascade do |t|
     t.datetime "created_at", null: false
@@ -195,6 +206,11 @@ ActiveRecord::Schema.define(version: 20151208115704) do
     t.text     "biography"
     t.string   "facebook_id"
     t.string   "facebook_access_token"
+    t.string   "base_64_photo_data"
+    t.string   "photo_file_name"
+    t.string   "photo_content_type"
+    t.integer  "photo_file_size"
+    t.datetime "photo_updated_at"
   end
 
   add_index "users", ["email"], name: "index_users_on_email", using: :btree

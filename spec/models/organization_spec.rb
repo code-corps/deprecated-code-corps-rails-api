@@ -10,6 +10,7 @@ describe Organization, :type => :model do
     it { should have_many(:members).through(:organization_memberships) }
     it { should have_many(:projects) }
     it { should have_many(:teams) }
+    it { should have_one(:member) }
   end
 
   describe "validations" do

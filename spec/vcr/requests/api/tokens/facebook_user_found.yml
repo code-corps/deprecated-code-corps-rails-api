@@ -47,7 +47,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: access_token=488082234697424|3Ni5iU_mYlazCYz4FpvhnW03RZg
-    http_version: 
+    http_version:
   recorded_at: Fri, 04 Dec 2015 23:11:50 GMT
 - request:
     method: post
@@ -96,7 +96,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: '{"id":"100300777009168","access_token":"CAAG76IA4ZAtABAENyUBjopcCOaQZALiNrnKzIGLrklrsB7TSCxFTZAYvZAqWFCJqZAY8ZBrVVP6eoIr6FZAZCMpKXjj7EzTFCHtTqQciKlkRL795MYReZBBdNvVlcMSlfhhsZCcZAMZAwr6svPGg5PinDLwCvcKEhhzcfYYFHMHlvsz0cIzhWDKOQYvaZBjmnZCLZB0EMIZD","login_url":"https:\/\/developers.facebook.com\/checkpoint\/test-user-login\/100300777009168\/","email":"ppquksu_wongwitz_1449270710\u0040tfbnw.net","password":"1783960566"}'
-    http_version: 
+    http_version:
   recorded_at: Fri, 04 Dec 2015 23:11:55 GMT
 - request:
     method: post
@@ -145,7 +145,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: access_token=CAAG76IA4ZAtABADNUdpz6IuNgeWYVZBBzvTe7hpgWK4yCofJWRe3nUZCZAbAAS9k3uNrC8Jv0tscq9oOmYId4AauXk6sfCqqcYbJGWIIpZC7PcMrNfgEluc1hITadK5oEVKWq86CwmFm0qJOftEk6if4Gc5RXZAQUJcZAB0awSgZARWHZAYp3NoQ8B02eCzUo8CoZD&expires=5184000
-    http_version: 
+    http_version:
   recorded_at: Fri, 04 Dec 2015 23:11:55 GMT
 - request:
     method: get
@@ -192,7 +192,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: '{"code":"AQB6log31_LGEnQemYKcVM1nuL6rlKHk8_htvMofhW5Ef47-WXUBfphkceiwREusLfRLkCB8-5EMMUGXp4S_w3tSpHUFJnwKiulnNfQmvKprKI24P6pDwCAICJPTMgqLnbdzewlYFbYIqCEFvbi_Yy_QHXdYcoQFND1F_s_SZ022czuUpcRqUbW4pLEer2Y_U_oHI9spG0oxpRaVtQbJcChcEL4NkAKVoNMcnWFoZjHmd2c70T4vr1yriHVkQUYx3ba6tt_dNPbDeOhmtvQA8TEEFjHqtOLHaMg0gpX2RoYXqy_bOAYUKFdOQoIaki3QwMn973bdCBn7q4sOw-JALu0HWXApPPfco_KDxV9tBB2ykA"}'
-    http_version: 
+    http_version:
   recorded_at: Fri, 04 Dec 2015 23:11:55 GMT
 - request:
     method: get
@@ -239,7 +239,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: '{"access_token":"CAAG76IA4ZAtABAOJSOAfa3L9NJFZADuGo9x8ttE2iIKCjkIUo05R3ZBrBHDTyuPJJD2XtqGFMeFnXIXUVoYqvBTgqYvwNd5CxP7g5DysXafDSPQqWaZCbd8zRyyQefNn49KWVZB5Oc88Bj8b6sOWtPnKDxcIugpV4zMdKaoMVkZBB9TbSJCMh9","machine_id":"ux1iVjevV-4mmM6qjp3FAdT2","expires_in":5184000}'
-    http_version: 
+    http_version:
   recorded_at: Fri, 04 Dec 2015 23:11:55 GMT
 - request:
     method: get
@@ -288,6 +288,6 @@ http_interactions:
     body:
       encoding: UTF-8
       string: '{"email":"ppquksu_wongwitz_1449270710\u0040tfbnw.net","first_name":"Maria","last_name":"Wongwitz","id":"100300777009168"}'
-    http_version: 
+    http_version:
   recorded_at: Fri, 04 Dec 2015 23:11:56 GMT
 recorded_with: VCR 3.0.0

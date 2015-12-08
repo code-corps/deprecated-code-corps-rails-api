@@ -1,24 +1,23 @@
 require 'rails_helper'
 
-RSpec.describe SlugRoute, type: :model do
+describe Member, type: :model do
   describe "schema" do
-    it { should have_db_column(:slug).of_type(:string).with_options(null: false) }
-    it { should have_db_column(:owner_type).of_type(:string) }
-    it { should have_db_column(:owner_id).of_type(:integer) }
-
-    it { should have_db_index(:slug).unique(true) }
-    it { should have_db_index([:owner_id, :owner_type]).unique(true) }
+    it { should have_db_column(:slug).of_type(:string) }
+    it { should have_db_column(:model_id).of_type(:integer) }
+    it { should have_db_column(:model_type).of_type(:string) }
   end
 
   describe "relationships" do
-    it { should belong_to(:owner) }
+    it { should belong_to(:model) }
   end
 
   describe "validations" do
-    describe "slug" do
 
+    describe "slug" do
       it { should validate_presence_of(:slug) }
       it { should validate_uniqueness_of(:slug).case_insensitive }
+      it { should validate_exclusion_of(:slug).in_array(Rails.configuration.x.reserved_routes) }
+
       it { should allow_value("code_corps").for(:slug) }
       it { should allow_value("codecorps").for(:slug) }
       it { should allow_value("codecorps12345").for(:slug) }
@@ -38,18 +37,9 @@ RSpec.describe SlugRoute, type: :model do
       it { should_not allow_value("@code/corps/code").for(:slug) }
       it { should_not allow_value("@code/corps/code/corps").for(:slug) }
 
-      # Checks reserved routes
-      it { should_not allow_value("help").for(:slug) }
-    end
-
-    it "should not create slugs with different case" do
-      SlugRoute.create(owner_id: 1, owner_type: "User", slug: "codecorps")
-
-      route = SlugRoute.new(owner_id: 2, owner_type: "User", slug: "CodeCorps")
-
-      expect(route).to be_invalid
-      expect(route.errors[:slug]).to include "has already been taken"
+      Rails.configuration.x.reserved_routes.each do |route|
+        it { should_not allow_value(route).for(:slug) }
+      end
     end
   end
-
 end
