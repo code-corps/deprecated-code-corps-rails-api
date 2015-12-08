@@ -82,12 +82,12 @@ describe Post, :type => :model do
   describe "user mentions" do
     context "when saving a post" do
       it "creates mentions only for existing users" do
-        real_user = create(:user, username: "a_real_username")
+        real_user = create(:user, username: "joshsmith")
 
         post = Post.create(
           project: create(:project),
           user: create(:user),
-          markdown: "Hello @a_real_username and @not_a_real_username",
+          markdown: "Hello @joshsmith and @someone_who_doesnt_exist",
           title: "Test"
         )
 
@@ -96,6 +96,25 @@ describe Post, :type => :model do
 
         expect(mentions.count).to eq 1
         expect(mentions.first.user).to eq real_user
+      end
+
+      context "when usernames contain underscores" do
+        it "creates mentions and not <em> tags" do
+          underscored_user = create(:user, username: "a_real_username")
+
+          post = Post.create(
+            project: create(:project),
+            user: create(:user),
+            markdown: "Hello @a_real_username and @not_a_real_username",
+            title: "Test"
+          )
+
+          post.reload
+          mentions = post.post_user_mentions
+
+          expect(mentions.count).to eq 1
+          expect(mentions.first.user).to eq underscored_user
+        end
       end
     end
   end
