@@ -166,13 +166,13 @@ ActiveRecord::Schema.define(version: 20151208115704) do
 
   create_table "user_relationships", force: :cascade do |t|
     t.integer  "follower_id"
-    t.integer  "followed_id"
-    t.datetime "created_at",  null: false
-    t.datetime "updated_at",  null: false
+    t.integer  "following_id"
+    t.datetime "created_at",   null: false
+    t.datetime "updated_at",   null: false
   end
 
-  add_index "user_relationships", ["followed_id"], name: "index_user_relationships_on_followed_id", using: :btree
   add_index "user_relationships", ["follower_id"], name: "index_user_relationships_on_follower_id", using: :btree
+  add_index "user_relationships", ["following_id"], name: "index_user_relationships_on_following_id", using: :btree
 
   create_table "user_skills", force: :cascade do |t|
     t.integer  "user_id"

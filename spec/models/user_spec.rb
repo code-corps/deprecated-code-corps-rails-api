@@ -32,7 +32,7 @@ describe User, :type => :model do
 
     it { should have_many(:active_relationships).class_name("UserRelationship").dependent(:destroy) }
     it { should have_many(:passive_relationships).class_name("UserRelationship").dependent(:destroy) }
-    it { should have_many(:followed).through(:active_relationships).source(:followed) }
+    it { should have_many(:followed).through(:active_relationships).source(:following) }
     it { should have_many(:followers).through(:passive_relationships).source(:follower) }
   end
 

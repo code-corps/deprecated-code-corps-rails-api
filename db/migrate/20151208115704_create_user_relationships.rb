@@ -3,7 +3,7 @@ class CreateUserRelationships < ActiveRecord::Migration
     create_table :user_relationships do |t|
 
       t.belongs_to :follower, index: true
-      t.belongs_to :followed, index: true
+      t.belongs_to :following, index: true
 
       t.timestamps null: false
     end
