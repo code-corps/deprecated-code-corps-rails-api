@@ -11,7 +11,7 @@ class User < ActiveRecord::Base
   has_many :user_skills
   has_many :skills, through: :user_skills
 
-  validates :username, presence: { message: "can't be blank" }, obscenity: {message: "Do you talk to your mother that way?"}
+  validates :username, presence: { message: "can't be blank" }, obscenity: {message: "may not be obscene"}
   validates :username, exclusion: { in: Rails.configuration.x.reserved_routes }
   validates :username, slug: true
   validates :username, uniqueness: { case_sensitive: false }
