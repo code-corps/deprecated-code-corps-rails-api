@@ -53,6 +53,8 @@ describe User, :type => :model do
     end
 
     describe "username" do
+      let(:user) { User.create(email: "joshdotsmith@gmail.com", username: "joshsmith", password: "password") }
+
       describe "base validations" do
         # visit the following to understand why this is tested in a separate context
         # https://github.com/thoughtbot/shoulda-matchers/blob/master/lib/shoulda/matchers/active_record/validate_uniqueness_of_matcher.rb#L50
@@ -61,7 +63,7 @@ describe User, :type => :model do
         it { should validate_uniqueness_of(:username).case_insensitive }
         it { should validate_length_of(:username).is_at_most(39) }
       end
-
+      
       it { should allow_value("code_corps").for(:username) }
       it { should allow_value("codecorps").for(:username) }
       it { should allow_value("codecorps12345").for(:username) }
@@ -80,6 +82,7 @@ describe User, :type => :model do
       it { should_not allow_value("code///corps").for(:username) }
       it { should_not allow_value("@code/corps/code").for(:username) }
       it { should_not allow_value("@code/corps/code/corps").for(:username) }
+      it { expect(user.username).to_not be_profane }
 
       # Checks reserved routes
       it { should_not allow_value("help").for(:username) }
@@ -106,7 +109,6 @@ describe User, :type => :model do
             ) }
         end
       end
-
     end
   end
 
@@ -130,5 +132,4 @@ describe User, :type => :model do
       expect(user.username).to eq "new_name"
     end
   end
-
 end

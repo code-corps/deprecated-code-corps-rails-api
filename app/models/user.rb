@@ -18,7 +18,7 @@ class User < ActiveRecord::Base
 
   has_one :member, as: :model
 
-  validates :username, presence: { message: "can't be blank" }
+  validates :username, presence: { message: "can't be blank" }, obscenity: {message: "may not be obscene"}
   validates :username, exclusion: { in: Rails.configuration.x.reserved_routes }
   validates :username, slug: true
   validates :username, uniqueness: { case_sensitive: false }
