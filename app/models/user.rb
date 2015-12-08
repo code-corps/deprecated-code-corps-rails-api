@@ -18,6 +18,16 @@ class User < ActiveRecord::Base
 
   has_one :member, as: :model
 
+  has_attached_file :photo,
+                    styles: {
+                      large: "500x500#", 
+                      thumb: "100x100#"
+                    },
+                    path: "users/:id/:style.:extension"
+
+  validates_attachment_content_type :photo,
+                                    content_type: %r{^image\/(png|gif|jpeg)}
+
   validates :username, presence: { message: "can't be blank" }, obscenity: {message: "may not be obscene"}
   validates :username, exclusion: { in: Rails.configuration.x.reserved_routes }
   validates :username, slug: true
@@ -29,6 +39,15 @@ class User < ActiveRecord::Base
   validate :slug_is_not_duplicate
 
   after_save :create_or_update_member
+
+  def decode_image_data
+    return unless base_64_photo_data.present?
+    data = StringIO.new(Base64.decode64(base_64_photo_data))
+    data.class.class_eval { attr_accessor :original_filename, :content_type }
+    data.original_filename = SecureRandom.hex + '.png'
+    data.content_type = 'image/png'
+    self.photo = data
+  end
 
   private
 
