@@ -27,7 +27,7 @@ describe PostPolicy do
     @issue_post = create(:post, post_type: "issue", project: @project)
   end
 
-  permissions :index? do
+  permissions :index?, :show? do
     context "as an anonymous user" do
       it "is permitted to view any post" do
         expect(subject).to permit(nil, @issue_post)
