@@ -25,6 +25,14 @@ ActiveRecord::Schema.define(version: 20151207101527) do
     t.text     "markdown",   null: false
   end
 
+  create_table "contributors", force: :cascade do |t|
+    t.integer  "user_id"
+    t.integer  "project_id"
+    t.string   "status",     default: "pending", null: false
+    t.datetime "created_at",                     null: false
+    t.datetime "updated_at",                     null: false
+  end
+
   create_table "members", force: :cascade do |t|
     t.string   "slug",       null: false
     t.integer  "model_id"
@@ -119,18 +127,19 @@ ActiveRecord::Schema.define(version: 20151207101527) do
   add_index "posts", ["number", "project_id"], name: "index_posts_on_number_and_project_id", unique: true, using: :btree
 
   create_table "projects", force: :cascade do |t|
-    t.string   "title",             null: false
+    t.string   "title",              null: false
     t.string   "description"
     t.integer  "owner_id"
     t.string   "owner_type"
-    t.datetime "created_at",        null: false
-    t.datetime "updated_at",        null: false
+    t.datetime "created_at",         null: false
+    t.datetime "updated_at",         null: false
     t.string   "icon_file_name"
     t.string   "icon_content_type"
     t.integer  "icon_file_size"
     t.datetime "icon_updated_at"
     t.text     "base_64_icon_data"
-    t.string   "slug",              null: false
+    t.string   "slug",               null: false
+    t.integer  "contributors_count"
   end
 
   add_index "projects", ["owner_type", "owner_id"], name: "index_projects_on_owner_type_and_owner_id", using: :btree

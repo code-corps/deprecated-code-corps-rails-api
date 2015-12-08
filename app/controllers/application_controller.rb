@@ -5,6 +5,8 @@ class ApplicationController < ActionController::API
   before_action :set_default_response_format
 
   rescue_from Pundit::NotAuthorizedError, with: :render_error
+  rescue_from ActionController::ParameterMissing, with: :render_error
+  rescue_from ActiveRecord::RecordNotFound, with: :render_error
   rescue_from ActionController::RoutingError, with: :render_error
   rescue_from ActiveRecord::RecordNotFound, with: :render_error
 
