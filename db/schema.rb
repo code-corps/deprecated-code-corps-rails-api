@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151204234343) do
+ActiveRecord::Schema.define(version: 20151207101527) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -32,6 +32,17 @@ ActiveRecord::Schema.define(version: 20151204234343) do
     t.datetime "created_at",                     null: false
     t.datetime "updated_at",                     null: false
   end
+
+  create_table "members", force: :cascade do |t|
+    t.string   "slug",       null: false
+    t.integer  "model_id"
+    t.string   "model_type"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  add_index "members", ["model_id", "model_type"], name: "index_members_on_model_id_and_model_type", unique: true, using: :btree
+  add_index "members", ["slug"], name: "index_members_on_slug", unique: true, using: :btree
 
   create_table "oauth_access_grants", force: :cascade do |t|
     t.integer  "resource_owner_id", null: false
@@ -116,20 +127,23 @@ ActiveRecord::Schema.define(version: 20151204234343) do
   add_index "posts", ["number", "project_id"], name: "index_posts_on_number_and_project_id", unique: true, using: :btree
 
   create_table "projects", force: :cascade do |t|
-    t.string   "title",             null: false
+    t.string   "title",              null: false
     t.string   "description"
     t.integer  "owner_id"
     t.string   "owner_type"
-    t.datetime "created_at",        null: false
-    t.datetime "updated_at",        null: false
+    t.datetime "created_at",         null: false
+    t.datetime "updated_at",         null: false
     t.string   "icon_file_name"
     t.string   "icon_content_type"
     t.integer  "icon_file_size"
     t.datetime "icon_updated_at"
     t.text     "base_64_icon_data"
+    t.string   "slug",               null: false
+    t.integer  "contributors_count"
   end
 
   add_index "projects", ["owner_type", "owner_id"], name: "index_projects_on_owner_type_and_owner_id", using: :btree
+  add_index "projects", ["slug", "owner_id"], name: "index_projects_on_slug_and_owner_id", unique: true, using: :btree
 
   create_table "skill_categories", force: :cascade do |t|
     t.string   "title",      null: false
@@ -144,17 +158,6 @@ ActiveRecord::Schema.define(version: 20151204234343) do
     t.datetime "created_at",        null: false
     t.datetime "updated_at",        null: false
   end
-
-  create_table "slug_routes", force: :cascade do |t|
-    t.string   "slug",       null: false
-    t.integer  "owner_id"
-    t.string   "owner_type"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
-  add_index "slug_routes", ["owner_id", "owner_type"], name: "index_slug_routes_on_owner_id_and_owner_type", unique: true, using: :btree
-  add_index "slug_routes", ["slug"], name: "index_slug_routes_on_slug", unique: true, using: :btree
 
   create_table "team_memberships", force: :cascade do |t|
     t.datetime "created_at", null: false

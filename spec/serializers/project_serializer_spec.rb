@@ -3,11 +3,7 @@ require "rails_helper"
 describe ProjectSerializer, :type => :serializer do
 
   context "individual resource representation" do
-    let(:resource) {
-      create(:project,
-        title: "Project title",
-        description: "Project description")
-    }
+    let(:resource) { create(:project) }
 
     let(:serializer) { ProjectSerializer.new(resource) }
     let(:serialization) { ActiveModel::Serializer::Adapter.create(serializer) }
