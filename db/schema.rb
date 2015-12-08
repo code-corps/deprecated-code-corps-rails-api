@@ -134,7 +134,7 @@ ActiveRecord::Schema.define(version: 20151207101527) do
   end
 
   add_index "projects", ["owner_type", "owner_id"], name: "index_projects_on_owner_type_and_owner_id", using: :btree
-  add_index "projects", ["slug"], name: "index_projects_on_slug", unique: true, using: :btree
+  add_index "projects", ["slug", "owner_id"], name: "index_projects_on_slug_and_owner_id", unique: true, using: :btree
 
   create_table "skill_categories", force: :cascade do |t|
     t.string   "title",      null: false
