@@ -127,6 +127,10 @@ describe "Users API" do
           expect(User.last.facebook_access_token).to eq @facebook_access_token
         end
 
+        it "uses their Facebook photo", vcr: { cassette_name: "requests/api/users/valid_facebook_request" } do
+          expect(AddFacebookProfilePictureWorker.jobs.size).to eq 1
+        end
+
         it "responds with a 200", vcr: { cassette_name: "requests/api/users/valid_facebook_request" } do
           expect(last_response.status).to eq 200
         end
@@ -249,6 +253,7 @@ describe "Users API" do
             }
           }
         }
+
         expect(last_response.status).to eq 200
 
         user = User.last
