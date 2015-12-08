@@ -11,6 +11,11 @@ class User < ActiveRecord::Base
   has_many :user_skills
   has_many :skills, through: :user_skills
 
+  has_many :active_relationships, class_name: "UserRelationship", foreign_key: "follower_id", dependent: :destroy
+  has_many :passive_relationships, class_name: "UserRelationship", foreign_key: "following_id", dependent: :destroy
+  has_many :following, through: :active_relationships, source: :following
+  has_many :followers, through: :passive_relationships, source: :follower
+
   has_one :member, as: :model
 
   has_attached_file :photo,
@@ -23,7 +28,7 @@ class User < ActiveRecord::Base
   validates_attachment_content_type :photo,
                                     content_type: %r{^image\/(png|gif|jpeg)}
 
-  validates :username, presence: { message: "can't be blank" }
+  validates :username, presence: { message: "can't be blank" }, obscenity: {message: "may not be obscene"}
   validates :username, exclusion: { in: Rails.configuration.x.reserved_routes }
   validates :username, slug: true
   validates :username, uniqueness: { case_sensitive: false }

@@ -29,6 +29,8 @@ gem 'koala'
 
 gem 'redcarpet'
 
+gem 'obscenity'
+
 gem 'sequenced'
 
 group :development, :test do

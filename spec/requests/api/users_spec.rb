@@ -190,6 +190,17 @@ describe "Users API" do
 
         expect(json.errors[0].detail).to eq "Username may only contain alphanumeric characters, underscores, or single hyphens, and cannot begin or end with a hyphen or underscore"
       end
+      
+      it 'fails on a username with profane content' do
+        params = { email: "josh@example.com", username: "shit", password: "password" }
+        json_api_params = json_api_params_for("users", params)
+
+        post "#{host}/users", json_api_params
+
+        expect(last_response.status).to eq 422
+
+        expect(json.errors[0].detail).to eq "Username may not be obscene"
+      end
     end
 
     context 'when user accounts are taken' do
