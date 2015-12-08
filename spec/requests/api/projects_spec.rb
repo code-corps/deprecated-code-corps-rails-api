@@ -35,6 +35,35 @@ describe "Projects API" do
         expect(json).to serialize_object(@project).with(ProjectSerializer)
       end
     end
+
+    context "when there's no owner" do
+      before do
+        get "#{host}/slug_1/slug_2"
+      end
+
+      it "responds with a 404" do
+        expect(last_response.status).to eq 404
+      end
+
+      it "returns an error response" do
+        expect(json).to be_a_valid_json_api_error.with_id "RECORD_NOT_FOUND"
+      end
+    end
+
+    context "when there's no project" do
+      before do
+        member = create(:organization).member
+        get "#{host}/#{member.slug}/slug_2"
+      end
+
+      it "responds with a 404" do
+        expect(last_response.status).to eq 404
+      end
+
+      it "returns an error response" do
+        expect(json).to be_a_valid_json_api_error.with_id "RECORD_NOT_FOUND"
+      end
+    end
   end
 
   context "POST /projects" do
@@ -113,7 +142,7 @@ describe "Projects API" do
             expect(last_response.status).to eq 200
 
             project = Project.last
-          
+
             expect(project.icon.path).to be_nil
             expect(project.title).to eq "Test Project Title"
             expect(project.description).to eq "Test project description"

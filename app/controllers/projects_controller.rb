@@ -3,16 +3,23 @@ class ProjectsController < ApplicationController
   before_action :doorkeeper_authorize!, only: [:create, :update]
 
   def index
+    authorize Project
+
     render json: Project.all
   end
 
   def show
     project = find_project_with_member!
+
+    authorize project
+
     render json: project
   end
 
   def create
     project = Project.new(create_params)
+
+    authorize project
 
     if project.save
       AddProjectIconWorker.perform_async(project.id)
@@ -24,6 +31,9 @@ class ProjectsController < ApplicationController
 
   def update
     project = Project.find(params[:id])
+
+    authorize project
+
     project.update(update_params)
 
     if project.save
