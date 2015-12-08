@@ -1,6 +1,7 @@
 class Project < ActiveRecord::Base
   belongs_to :owner, polymorphic: true
   has_many :posts
+  has_many :contributors
 
   has_attached_file :icon,
                     styles: {
