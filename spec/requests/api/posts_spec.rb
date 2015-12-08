@@ -38,8 +38,10 @@ describe "Posts API" do
           expect(last_response.status).to eq 200
         end
 
-        xit "returns a list of Post records, serialized with PostSerializer" do
-          expect(json).to serialize_collection(Post.all).with(PostSerializer)
+        it "returns the first page of 10 Post records, serialized with PostSerializer" do
+          expect(json).to serialize_collection(Post.page(1).per(10)).with(PostSerializer)
+                            .with_links_to("#{host}/projects/#{@project.id}/posts")
+                            .with_meta(total_records: 13, total_pages: 2, page_size: 10, current_page: 1)
         end
       end
 
