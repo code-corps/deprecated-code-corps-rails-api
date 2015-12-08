@@ -1,9 +1,9 @@
 require "rails_helper"
-require "code_corps/scenario/generate_user_mentions_for_post"
+require "code_corps/scenario/generate_user_mentions_for_comment"
 
 module CodeCorps
   module Scenario
-    describe GenerateUserMentionsForPost do
+    describe GenerateUserMentionsForComment do
       describe "#call" do
 
         let(:mentioned_username) { "joshsmith" }
@@ -13,12 +13,12 @@ module CodeCorps
         end
 
         it "creates user mentions" do
-          post = create(:post, markdown: "Mentioning @joshsmith")
+          comment = create(:comment, markdown: "Mentioning @joshsmith")
 
-          GenerateUserMentionsForPost.new(post).call
+          GenerateUserMentionsForComment.new(comment).call
 
-          mention = PostUserMention.last
-          expect(mention.post).to eq post
+          mention = CommentUserMention.last
+          expect(mention.comment).to eq comment
           expect(mention.user).to eq @mentioned_user
           expect(mention.username).to eq mentioned_username
         end
