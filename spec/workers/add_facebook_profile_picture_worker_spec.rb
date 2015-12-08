@@ -9,7 +9,7 @@ describe AddFacebookProfilePictureWorker do
     @user = create(:user, facebook_id: facebook_user["id"], facebook_access_token: facebook_user["access_token"])
   end
 
-  it 'adds a profile picture from facebook', vcr: { cassette_name: 'workers/add profile pic/add_profile_pic_from_facebook' } do
+  it 'adds a profile picture from facebook', vcr: { cassette_name: 'workers/add facebook profile picture worker/adds a profile picture from facebook' } do
     AddFacebookProfilePictureWorker.new.perform(@user.id)
     @user.reload
     expect(@user.photo.path).to_not be_nil
