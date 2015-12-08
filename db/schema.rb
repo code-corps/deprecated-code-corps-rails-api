@@ -16,6 +16,17 @@ ActiveRecord::Schema.define(version: 20151208225204) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
+  create_table "comment_user_mentions", force: :cascade do |t|
+    t.integer  "user_id",     null: false
+    t.integer  "comment_id",  null: false
+    t.integer  "post_id",     null: false
+    t.string   "username",    null: false
+    t.integer  "start_index", null: false
+    t.integer  "end_index",   null: false
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
+  end
+
   create_table "comments", force: :cascade do |t|
     t.text     "body",       null: false
     t.integer  "user_id",    null: false
@@ -45,13 +56,15 @@ ActiveRecord::Schema.define(version: 20151208225204) do
   add_index "members", ["slug"], name: "index_members_on_slug", unique: true, using: :btree
 
   create_table "notifications", force: :cascade do |t|
-    t.integer  "notifiable_id"
-    t.string   "notifiable_type"
+    t.integer  "notifiable_id",   null: false
+    t.string   "notifiable_type", null: false
+    t.integer  "user_id",         null: false
     t.datetime "created_at",      null: false
     t.datetime "updated_at",      null: false
   end
 
-  add_index "notifications", ["notifiable_id", "notifiable_type"], name: "index_notifications_on_notifiable_id_and_notifiable_type", unique: true, using: :btree
+  add_index "notifications", ["user_id", "notifiable_id", "notifiable_type"], name: "index_notifications_on_user_id_and_notifiable", unique: true, using: :btree
+  add_index "notifications", ["user_id"], name: "index_notifications_on_user_id", using: :btree
 
   create_table "oauth_access_grants", force: :cascade do |t|
     t.integer  "resource_owner_id", null: false
