@@ -3,7 +3,8 @@ class CreateNotifications < ActiveRecord::Migration
     create_table :notifications do |t|
       t.references :notifiable, polymorphic: true, null: false
       t.references :user, null: false
-
+      t.string :aasm_state
+      
       t.timestamps null: false
     end
 
