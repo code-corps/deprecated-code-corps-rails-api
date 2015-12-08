@@ -31,6 +31,8 @@ gem 'github-markdown'
 
 gem 'html-pipeline'
 
+gem 'obscenity'
+
 gem 'sequenced'
 
 group :development, :test do

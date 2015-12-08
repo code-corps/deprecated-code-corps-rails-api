@@ -38,23 +38,6 @@ describe "Users API" do
     end
   end
 
-  context 'GET /:username' do
-    before do
-      @user = create(:user, username: "joshsmith")
-      create_list(:user_skill, 10, user: @user)
-      get "#{host}/#{@user.username}"
-    end
-
-    it "responds with a 200" do
-      expect(last_response.status).to eq 200
-    end
-
-    it "retrieves the specified user by username using UserSerializer, including skills" do
-      expect(json).to serialize_object(User.find(@user.id)).with(UserSerializer).with_includes("skills")
-      expect(json.data.id).to eq @user.id.to_s
-    end
-  end
-
   context 'GET /users/:id' do
     before do
       @user = create(:user, username: "joshsmith")
@@ -205,6 +188,17 @@ describe "Users API" do
 
         expect(json.errors[0].detail).to eq "Username may only contain alphanumeric characters, underscores, or single hyphens, and cannot begin or end with a hyphen or underscore"
       end
+      
+      it 'fails on a username with profane content' do
+        params = { email: "josh@example.com", username: "shit", password: "password" }
+        json_api_params = json_api_params_for("users", params)
+
+        post "#{host}/users", json_api_params
+
+        expect(last_response.status).to eq 422
+
+        expect(json.errors[0].detail).to eq "Username may not be obscene"
+      end
     end
 
     context 'when user accounts are taken' do
@@ -278,7 +272,7 @@ describe "Users API" do
         password: "newpassword"
       })
       post "#{host}/users/reset_password", json_api_params
-      
+
       expect(last_response.status).to eq 200
       token = authenticate(email: "existing-user@mail.com", password: "newpassword")
       expect(token).to_not be_nil

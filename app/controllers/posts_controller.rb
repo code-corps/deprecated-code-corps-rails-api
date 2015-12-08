@@ -4,13 +4,14 @@ class PostsController < ApplicationController
 
   def index
     authorize Post
-    posts = Post.page(page_number).per(page_size).includes [:comments, :user, :project]
+    posts = find_posts!
     render json: posts, meta: meta_for(Post)
   end
 
   def show
-    post = Post.includes(comments: [:user]).find(params[:id])
-    authorize Post
+    post = find_post!
+    authorize post
+
     render json: post, include: [:comments]
   end
 
@@ -30,7 +31,7 @@ class PostsController < ApplicationController
       record_attributes.permit(:markdown, :title, :post_type).merge(relationships)
     end
 
-    def project_id
+    def project_relationship_id
       record_relationships.fetch(:project, {}).fetch(:data, {})[:id]
     end
 
@@ -39,6 +40,28 @@ class PostsController < ApplicationController
     end
 
     def relationships
-      { project_id: project_id, user_id: user_id }
+      { project_id: project_relationship_id, user_id: user_id }
+    end
+
+    def project_id
+      params[:project_id]
+    end
+
+    def post_id
+      params[:id]
+    end
+
+    def find_project!
+      Project.find(project_id)
+    end
+
+    def find_post!
+      project = find_project!
+      Post.includes(comments: :user).find_by!(project: project, number: post_id)
+    end
+
+    def find_posts!
+      project = find_project!
+      Post.where(project: project).page(page_number).per(page_size).includes [:comments, :user, :project]
     end
 end

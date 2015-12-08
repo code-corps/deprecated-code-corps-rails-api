@@ -29,6 +29,11 @@ describe User, :type => :model do
     it { should have_many(:comments) }
     it { should have_many(:user_skills) }
     it { should have_many(:skills).through(:user_skills) }
+    it { should have_many(:active_relationships).class_name("UserRelationship").dependent(:destroy) }
+    it { should have_many(:passive_relationships).class_name("UserRelationship").dependent(:destroy) }
+    it { should have_many(:following).through(:active_relationships).source(:following) }
+    it { should have_many(:followers).through(:passive_relationships).source(:follower) }
+    it { should have_one(:member) }
   end
 
   describe "validations" do
@@ -48,6 +53,8 @@ describe User, :type => :model do
     end
 
     describe "username" do
+      let(:user) { User.create(email: "joshdotsmith@gmail.com", username: "joshsmith", password: "password") }
+
       describe "base validations" do
         # visit the following to understand why this is tested in a separate context
         # https://github.com/thoughtbot/shoulda-matchers/blob/master/lib/shoulda/matchers/active_record/validate_uniqueness_of_matcher.rb#L50
@@ -56,7 +63,7 @@ describe User, :type => :model do
         it { should validate_uniqueness_of(:username).case_insensitive }
         it { should validate_length_of(:username).is_at_most(39) }
       end
-
+      
       it { should allow_value("code_corps").for(:username) }
       it { should allow_value("codecorps").for(:username) }
       it { should allow_value("codecorps12345").for(:username) }
@@ -75,6 +82,7 @@ describe User, :type => :model do
       it { should_not allow_value("code///corps").for(:username) }
       it { should_not allow_value("@code/corps/code").for(:username) }
       it { should_not allow_value("@code/corps/code/corps").for(:username) }
+      it { expect(user.username).to_not be_profane }
 
       # Checks reserved routes
       it { should_not allow_value("help").for(:username) }
@@ -85,7 +93,8 @@ describe User, :type => :model do
             create(:organization, name: "CodeCorps")
           end
 
-          it { should_not allow_value("codecorps").for(:username).with_message(
+          it {
+            should_not allow_value("codecorps").for(:username).with_message(
             "has already been taken by an organization"
             ) }
         end
@@ -100,7 +109,6 @@ describe User, :type => :model do
             ) }
         end
       end
-      
     end
   end
 
@@ -124,5 +132,4 @@ describe User, :type => :model do
       expect(user.username).to eq "new_name"
     end
   end
-
 end
