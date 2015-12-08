@@ -3,6 +3,8 @@ class PostSerializer < ActiveModel::Serializer
     :number
 
   has_many :comments
+  has_many :post_user_mentions
+  
   belongs_to :user
   belongs_to :project
 end
