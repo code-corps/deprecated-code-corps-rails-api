@@ -11,6 +11,8 @@ class User < ActiveRecord::Base
   has_many :user_skills
   has_many :skills, through: :user_skills
 
+  has_one :member, as: :model
+
   has_attached_file :photo,
                     styles: {
                       large: "500x500#", 
@@ -31,7 +33,7 @@ class User < ActiveRecord::Base
 
   validate :slug_is_not_duplicate
 
-  after_save :create_or_update_slug
+  after_save :create_or_update_member
 
   def decode_image_data
     return unless base_64_photo_data.present?
@@ -45,19 +47,19 @@ class User < ActiveRecord::Base
   private
 
     def slug_is_not_duplicate
-      if SlugRoute.where.not(owner: self).where('lower(slug) = ?', username.try(:downcase)).present?
+      if Member.where.not(model: self).where('lower(slug) = ?', username.try(:downcase)).present?
         errors.add(:username, "has already been taken by an organization")
       end
     end
 
-    def create_or_update_slug
+    def create_or_update_member
       if username_was
         slug = username_was
       else
         slug = username
       end
 
-      SlugRoute.lock.find_or_create_by!(owner: self, slug: slug).tap do |r|
+      Member.lock.find_or_create_by!(model: self, slug: slug).tap do |r|
         r.slug = username
         r.save!
       end

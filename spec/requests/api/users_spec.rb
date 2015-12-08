@@ -38,23 +38,6 @@ describe "Users API" do
     end
   end
 
-  context 'GET /:username' do
-    before do
-      @user = create(:user, username: "joshsmith")
-      create_list(:user_skill, 10, user: @user)
-      get "#{host}/#{@user.username}"
-    end
-
-    it "responds with a 200" do
-      expect(last_response.status).to eq 200
-    end
-
-    it "retrieves the specified user by username using UserSerializer, including skills" do
-      expect(json).to serialize_object(User.find(@user.id)).with(UserSerializer).with_includes("skills")
-      expect(json.data.id).to eq @user.id.to_s
-    end
-  end
-
   context 'GET /users/:id' do
     before do
       @user = create(:user, username: "joshsmith")
@@ -328,7 +311,7 @@ describe "Users API" do
         password: "newpassword"
       })
       post "#{host}/users/reset_password", json_api_params
-      
+
       expect(last_response.status).to eq 200
       token = authenticate(email: "existing-user@mail.com", password: "newpassword")
       expect(token).to_not be_nil
