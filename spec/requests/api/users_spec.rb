@@ -134,9 +134,7 @@ describe "Users API" do
         it "returns the created user using UserSerializer", vcr: { cassette_name: "requests/api/users/valid_facebook_request" } do
           expect(json).to serialize_object(User.last).with(UserSerializer).with_includes("skills")
         end
-
       end
-
     end
 
     context "when registering directly" do
@@ -231,6 +229,55 @@ describe "Users API" do
 
         expect(last_response.status).to eq 422
         expect(json.errors[0].detail).to eq "Username has already been taken"
+      end
+    end
+
+    context 'when creating a user' do
+      it 'creates a user with a user uploaded image' do
+        file = File.open("#{Rails.root}/spec/sample_data/default-avatar.png", 'r')
+        base_64_image = Base64.encode64(open(file) { |io| io.read })
+
+        post "#{host}/users", {
+          data: {
+            attributes: {
+              email: "josh@example.com",
+              username: "joshsmith",
+              password: "password",
+              facebook_id: @facebook_id,
+              facebook_access_token: @facebook_access_token,
+              base_64_photo_data: base_64_image
+            }
+          }
+        }
+        expect(last_response.status).to eq 200
+
+        user = User.last
+
+        expect(UpdateProfilePictureWorker.jobs.size).to eq 1
+        expect(user.username).to eq "joshsmith"
+        expect(user.email).to eq "josh@example.com"
+      end
+
+      it 'creates a user without a user uploaded image' do
+        post "#{host}/users", {
+            data: {
+              attributes: {
+                email: "josh@example.com",
+                username: "joshsmith",
+                password: "password",
+                facebook_id: @facebook_id,
+                facebook_access_token: @facebook_access_token
+              }
+            }
+          }
+
+          expect(last_response.status).to eq 200
+
+          user = User.last
+        
+          expect(user.photo.path).to be_nil
+          expect(user.username).to eq "joshsmith"
+          expect(user.email).to eq "josh@example.com"
       end
     end
   end
