@@ -236,7 +236,7 @@ describe "Users API" do
       end
     end
 
-    context 'when creating a user' do
+    context 'when registering with an email and password' do
       it 'creates a user with a user uploaded image' do
         file = File.open("#{Rails.root}/spec/sample_data/default-avatar.png", 'r')
         base_64_image = Base64.encode64(open(file) { |io| io.read })
@@ -247,8 +247,6 @@ describe "Users API" do
               email: "josh@example.com",
               username: "joshsmith",
               password: "password",
-              facebook_id: @facebook_id,
-              facebook_access_token: @facebook_access_token,
               base_64_photo_data: base_64_image
             }
           }
@@ -258,31 +256,31 @@ describe "Users API" do
 
         user = User.last
 
-        expect(UpdateProfilePictureWorker.jobs.size).to eq 1
         expect(user.username).to eq "joshsmith"
         expect(user.email).to eq "josh@example.com"
+
+        expect(UpdateProfilePictureWorker.jobs.size).to eq 1
       end
 
       it 'creates a user without a user uploaded image' do
         post "#{host}/users", {
-            data: {
-              attributes: {
-                email: "josh@example.com",
-                username: "joshsmith",
-                password: "password",
-                facebook_id: @facebook_id,
-                facebook_access_token: @facebook_access_token
-              }
+          data: {
+            attributes: {
+              email: "josh@example.com",
+              username: "joshsmith",
+              password: "password"
             }
           }
+        }
 
-          expect(last_response.status).to eq 200
+        expect(last_response.status).to eq 200
 
-          user = User.last
+        user = User.last
+      
+        expect(user.username).to eq "joshsmith"
+        expect(user.email).to eq "josh@example.com"
         
-          expect(user.photo.path).to be_nil
-          expect(user.username).to eq "joshsmith"
-          expect(user.email).to eq "josh@example.com"
+        expect(UpdateProfilePictureWorker.jobs.size).to eq 0
       end
     end
   end
