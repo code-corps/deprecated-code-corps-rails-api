@@ -16,8 +16,10 @@ class PostsController < ApplicationController
   end
 
   def create
-    authorize Post
     post = Post.new(create_params)
+
+    authorize post
+
     if post.save
       render json: post
     else

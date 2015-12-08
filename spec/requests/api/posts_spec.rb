@@ -123,6 +123,7 @@ describe "Posts API" do
       before do
         @user = create(:user, id: 1, email: "test_user@mail.com", password: "password")
         @project = create(:project, id: 2)
+        @contributor = create(:contributor, user: @user, status: "collaborator", project: @project)
         @token = authenticate(email: "test_user@mail.com", password: "password")
       end
 
@@ -154,7 +155,7 @@ describe "Posts API" do
           relationships: { project: { data: { id: 2 } } }
         } }
         authenticated_post "/posts", params, @token
-
+        
         expect(last_response.status).to eq 200
 
         expect(json.data.attributes.number).to eq 1
