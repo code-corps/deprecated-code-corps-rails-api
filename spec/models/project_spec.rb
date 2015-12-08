@@ -17,10 +17,72 @@ describe Project, :type => :model do
     it { should have_many(:contributors) }
   end
 
+  describe "validations" do
+
+    describe "title" do
+      describe "base validations" do
+        # visit the following to understand why this is tested in a separate context
+        # https://github.com/thoughtbot/shoulda-matchers/blob/master/lib/shoulda/matchers/active_record/validate_uniqueness_of_matcher.rb#L50
+        subject { create(:project) }
+        it { should validate_presence_of(:title) }
+      end
+
+      it { should allow_value("code_corps").for(:slug) }
+      it { should allow_value("codecorps").for(:slug) }
+      it { should allow_value("codecorps12345").for(:slug) }
+      it { should allow_value("code12345corps").for(:slug) }
+      it { should allow_value("code____corps").for(:slug) }
+      it { should allow_value("code-corps").for(:slug) }
+      it { should allow_value("code-corps-corps").for(:slug) }
+      it { should allow_value("code_corps_corps").for(:slug) }
+      it { should allow_value("c").for(:slug) }
+      it { should_not allow_value("-codecorps").for(:slug) }
+      it { should_not allow_value("codecorps-").for(:slug) }
+      it { should_not allow_value("@codecorps").for(:slug) }
+      it { should_not allow_value("code----corps").for(:slug) }
+      it { should_not allow_value("code/corps").for(:slug) }
+      it { should_not allow_value("code_corps/code_corps").for(:slug) }
+      it { should_not allow_value("code///corps").for(:slug) }
+      it { should_not allow_value("@code/corps/code").for(:slug) }
+      it { should_not allow_value("@code/corps/code/corps").for(:slug) }
+    end
+
+    describe "duplicate slug validation" do
+      context "when an project with a different cased slug exists" do
+        before do
+          @organization = create(:organization)
+          create(:project, owner: @organization, title: "CodeCorps")
+        end
+
+        it "should have the right errors" do
+          project = Project.create(owner: @organization, title: "codecorps")
+          expect(project.errors.messages.count).to eq 1
+          expect(project.errors.messages[:slug].first).to eq "has already been taken"
+        end
+      end
+
+      context "when a project with the same slug exists" do
+        before do
+          @organization = create(:organization)
+          create(:project, owner: @organization, title: "CodeCorps")
+        end
+
+        it "should have the right errors" do
+          project = Project.create(owner: @organization, title: "CodeCorps")
+          expect(project.errors.messages.count).to eq 1
+          expect(project.errors.messages[:slug].first).to eq "has already been taken"
+        end
+      end
+    end
+  end
+
   describe "ownership" do
+    it { should validate_presence_of :owner }
+
     it "can have a user as an owner" do
       user = create(:user)
       project = create(:project, owner: user)
+      project.reload
       expect(project).to be_persisted
       expect(project).to be_valid
       expect(project.owner).to be_a User
@@ -30,6 +92,7 @@ describe Project, :type => :model do
     it "can have an organization as an owner" do
       organization = create(:organization)
       project = create(:project, owner: organization)
+      project.reload
       expect(project).to be_persisted
       expect(project).to be_valid
       expect(project.owner).to be_an Organization
