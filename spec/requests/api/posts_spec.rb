@@ -2,75 +2,110 @@ require "rails_helper"
 
 describe "Posts API" do
 
-  context "GET /posts" do
-    before do
-      create_list(:post, 13)
+  context "GET /projects/:id/posts" do
+    context "when the project doesn't exist" do
+      it "responds with a 404" do
+        get "#{host}/projects/1/posts"
+        expect(last_response.status).to eq 404
+        expect(json).to be_a_valid_json_api_error.with_id "RECORD_NOT_FOUND"
+      end
     end
 
-    it "returns the first page of 10 records of no page number or size is specified" do
-      get "#{host}/posts"
-      expect(last_response.status).to eq 200
-      expect(json.data.length).to eq 10
-      expect(json.data.all? { |item| item.type == "posts" }).to be true
-    end
+    context "when successful" do
+      before do
+        @project = create(:project, owner: create(:organization))
+        create_list(:post, 13, project: @project)
+      end
 
-    it "accepts different page numbers" do
-      get "#{host}/posts", { page: { number: 1, size: 5 }}
-      expect(json.data.length).to eq 5
-      get "#{host}/posts", { page: { number: 3, size: 3 }}
-      expect(json.data.length).to eq 3
-    end
+      context "when no page is specified" do
+        before do
+          get "#{host}/projects/#{@project.id}/posts"
+        end
 
-    it "accepts different page sizes" do
-      get "#{host}/posts", { page: { number: 1, size: 3 }}
-      expect(json.data.length).to eq 3
-      get "#{host}/posts", { page: { number: 1, size: 4 }}
-      expect(json.data.length).to eq 4
-    end
+        it "responds with a 200" do
+          expect(last_response.status).to eq 200
+        end
 
-    it "renders links in the response" do
-      get "#{host}/posts", { page: { number: 2, size: 5 } }
-      expect(json.links).not_to be_nil
-      expect(json.links.self).not_to be_nil
-      expect(json.links.first).not_to be_nil
-      expect(json.links.prev).not_to be_nil
-      expect(json.links.last).not_to be_nil
-      expect(json.links.last).not_to be_nil
-    end
+        it "returns the first page of 10 Post records, serialized with PostSerializer" do
+          expect(json).to serialize_collection(Post.page(1).per(10)).with(PostSerializer)
+                            .with_links_to("#{host}/projects/#{@project.id}/posts")
+                            .with_meta(total_records: 13, total_pages: 2, page_size: 10, current_page: 1)
+        end
+      end
 
-    it "renders a meta in the response" do
-      get "#{host}/posts", { page: { number: 2, size: 5 } }
-      expect(json.meta).not_to be_nil
-      expect(json.meta.total_records).to eq 13
-      expect(json.meta.total_pages).to eq 3
-      expect(json.meta.page_size).to eq 5
-      expect(json.meta.current_page).to eq 2
+      describe "specifying page parameters" do
+        it "accepts different page numbers" do
+          get "#{host}/projects/#{@project.id}/posts/", { page: { number: 1, size: 5 }}
+          expect(json.data.length).to eq 5
+          get "#{host}/projects/#{@project.id}/posts/", { page: { number: 3, size: 3 }}
+          expect(json.data.length).to eq 3
+        end
+
+        it "accepts different page sizes" do
+          get "#{host}/projects/#{@project.id}/posts/", { page: { number: 1, size: 3 }}
+          expect(json.data.length).to eq 3
+          get "#{host}/projects/#{@project.id}/posts/", { page: { number: 1, size: 4 }}
+          expect(json.data.length).to eq 4
+        end
+
+        it "renders links in the response" do
+          get "#{host}/projects/#{@project.id}/posts/", { page: { number: 2, size: 5 } }
+          expect(json.links).not_to be_nil
+          expect(json.links.self).not_to be_nil
+          expect(json.links.first).not_to be_nil
+          expect(json.links.prev).not_to be_nil
+          expect(json.links.last).not_to be_nil
+          expect(json.links.last).not_to be_nil
+        end
+
+        it "renders a meta in the response" do
+          get "#{host}/projects/#{@project.id}/posts/", { page: { number: 2, size: 5 } }
+          expect(json.meta).not_to be_nil
+          expect(json.meta.total_records).to eq 13
+          expect(json.meta.total_pages).to eq 3
+          expect(json.meta.page_size).to eq 5
+          expect(json.meta.current_page).to eq 2
+        end
+      end
     end
   end
 
-  context "GET /posts/:id" do
-    before do
-      post = create(:post, id: 1, title: "Post")
-      create_list(:comment, 5, post: post)
+  context "GET /projects/:project_id/posts/:number" do
+    context "when the project doesn't exist" do
+      it "responds with a 404" do
+        get "#{host}/projects/1/posts/1"
+        expect(last_response.status).to eq 404
+        expect(json).to be_a_valid_json_api_error.with_id "RECORD_NOT_FOUND"
+      end
     end
 
-    it "returns the specified post, with comments included" do
-      get "#{host}/posts/1", {}
-      expect(last_response.status).to eq 200
+    context "when the post doesn't exist" do
+      before do
+        @project = create(:project, owner: create(:organization))
+      end
 
-      expect(json.data.id).to eq "1"
-      expect(json.data.type).to eq "posts"
+      it "responds with a 404" do
+        get "#{host}/projects/#{@project.id}/posts/1"
+        expect(last_response.status).to eq 404
+        expect(json).to be_a_valid_json_api_error.with_id "RECORD_NOT_FOUND"
+      end
+    end
 
-      attributes = json.data.attributes
-      expect(attributes.title).to eq "Post"
+    context "when successful" do
+      before do
+        @project = create(:project, owner: create(:organization))
+        @post = create(:post, project: @project)
+        create_list(:comment, 5, post: @post)
+        get "#{host}/projects/#{@project.id}/posts/#{@post.number}"
+      end
 
-      comment_relationships = json.data.relationships.comments.data
-      expect(comment_relationships.count).to eq 5
+      it "responds with a 200" do
+        expect(last_response.status).to eq 200
+      end
 
-      expect(json.included).not_to be_nil
-
-      comment_includes = json.included.select{ |i| i.type == "comments" }
-      expect(comment_includes.count).to eq 5
+      it "returns the post, serialized with PostSerializer, with comments included" do
+        expect(json).to serialize_object(Post.last).with(PostSerializer).with_includes("comments")
+      end
     end
   end
 
@@ -121,7 +156,7 @@ describe "Posts API" do
         authenticated_post "/posts", params, @token
 
         expect(last_response.status).to eq 200
-        
+
         expect(json.data.attributes.number).to eq 1
       end
 
@@ -181,28 +216,16 @@ describe "Posts API" do
           expect(post.project_id).to eq 2
         end
 
-        it "returns the created post" do
-          post_attributes = json.data.attributes
-          expect(post_attributes.title).to eq "Post title"
-          expect(post_attributes.body).to eq "<p>Post body</p>\n"
-          expect(post_attributes.post_type).to eq "issue"
-
-          post_relationships = json.data.relationships
-          expect(post_relationships.comments.data.length).to eq 0
-
-          post_includes = json.included
-          expect(post_includes).to be_nil
+        it "returns the created post, serialized with PostSerializer" do
+          expect(json).to serialize_object(Post.last).with(PostSerializer)
         end
 
         it "sets user to current user" do
-          post_relationships = json.data.relationships
-          expect(post_relationships.user).not_to be_nil
-          expect(post_relationships.user.data.id).to eq "1"
+          expect(Post.last.user_id).to eq @user.id
         end
 
         it "sets status to 'open'" do
-          post_attributes = json.data.attributes
-          expect(post_attributes.status).to eq "open"
+          expect(Post.last.open?).to be true
         end
       end
     end

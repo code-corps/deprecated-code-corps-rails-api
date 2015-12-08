@@ -46,20 +46,19 @@ describe ErrorSerializer do
     end
 
     it "can serialize ActionController::ParameterMissing" do
-      error = ActionController::ParameterMissing.new("A parameter")
+      error = ActionController::ParameterMissing.new(:user_id)
       result = ErrorSerializer.serialize(error)
 
       expect(result[:errors]).not_to be_nil
       expect(result[:errors].length).to eq 1
 
-      expected_message = error.message.capitalize
-
       error = result[:errors].first
-      expect(error[:id]).to eq "PARAMETER_IS_MISSING"
-      expect(error[:title]).to eq "A parameter is missing"
-      expect(error[:detail]).to eq expected_message
+      expect(error[:id]).to eq "PARAMETER_MISSING"
+      expect(error[:title]).to eq "User is missing"
+      expect(error[:detail]).to eq "You must specify a User."
       expect(error[:status]).to eq 400
     end
+
     it "can serialize ActionController::RoutingError" do
       error_instance = ActionController::RoutingError.new("No route matches test route")
       result = ErrorSerializer.serialize(error_instance)
@@ -73,6 +72,7 @@ describe ErrorSerializer do
       expect(error[:detail]).to eq error_instance.message
       expect(error[:status]).to eq 404
     end
+
 
     it "can serialize Koala::Facebook::AuthenticationError" do
       facebook_authentication_error = Koala::Facebook::AuthenticationError.new(400, nil, { "message" => "A message" })

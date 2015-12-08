@@ -50,7 +50,7 @@ describe "GithubRepositories API" do
             relationships: {}
           } }, token
           expect(last_response.status).to eq 400
-          expect(json).to be_a_valid_json_api_error.with_id "PARAMETER_IS_MISSING"
+          expect(json).to be_a_valid_json_api_error.with_id "PARAMETER_MISSING"
         end
       end
 
@@ -60,7 +60,7 @@ describe "GithubRepositories API" do
             relationships: { project: { data: { type: "projects", id: @project.id } } }
           } }, token
           expect(last_response.status).to eq 400
-          expect(json).to be_a_valid_json_api_error.with_id "PARAMETER_IS_MISSING"
+          expect(json).to be_a_valid_json_api_error.with_id "PARAMETER_MISSING"
         end
       end
     end
