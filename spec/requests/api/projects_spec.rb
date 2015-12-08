@@ -84,15 +84,26 @@ describe "Projects API" do
       it 'returns an error if title is left blank' do
         authenticated_post "/projects", {
           data: {
-            attributes: {
-              description: "Test project description",
-              relationships: { owner: { data: { id: @user.id, type: "User" } } }
-            }
+            attributes: { description: "Test project description" },
+            relationships: { owner: { data: { id: @user.id, type: "User" } } }
           }
         }, @token
 
         expect(last_response.status).to eq 422
-        expect(json.errors[0].detail).to eq "Title can't be blank"
+        expect(json).to be_a_valid_json_api_error.with_id "VALIDATION_ERROR"
+        expect(json).to contain_an_error_of_type("VALIDATION_ERROR").with_message("Title can't be blank")
+      end
+
+      it "returns an error if owner is left blank" do
+        authenticated_post "/projects", {
+          data: {
+            attributes: { title: "Test title", description: "Test project description" }
+          }
+        }, @token
+
+        expect(last_response.status).to eq 422
+        expect(json).to be_a_valid_json_api_error.with_id "VALIDATION_ERROR"
+        expect(json).to contain_an_error_of_type("VALIDATION_ERROR").with_message("Owner can't be blank")
       end
 
       context 'with a user uploaded image' do
@@ -108,7 +119,8 @@ describe "Projects API" do
                   slug: "test-project",
                   description: "Test project description",
                   base_64_icon_data: base_64_image
-                }
+                },
+                relationships: { owner: { data: { id: @user.id, type: "User" } } }
               }
             }, @token
 
@@ -135,7 +147,8 @@ describe "Projects API" do
                 attributes: {
                   title: "Test Project Title",
                   description: "Test project description",
-                }
+                },
+                relationships: { owner: { data: { id: @user.id, type: "User" } } }
               }
             }, @token
 
