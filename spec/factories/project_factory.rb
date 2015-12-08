@@ -3,6 +3,8 @@ FactoryGirl.define do
   factory :project do
     sequence(:title) { |n| "Project#{n}" }
 
+    association :owner, factory: :organization
+
     trait :with_s3_icon do
       after(:build) do |project, evaluator|
         project.icon_file_name = 'project.jpg'

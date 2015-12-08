@@ -35,6 +35,35 @@ describe "Projects API" do
         expect(json).to serialize_object(@project).with(ProjectSerializer)
       end
     end
+
+    context "when there's no owner" do
+      before do
+        get "#{host}/slug_1/slug_2"
+      end
+
+      it "responds with a 404" do
+        expect(last_response.status).to eq 404
+      end
+
+      it "returns an error response" do
+        expect(json).to be_a_valid_json_api_error.with_id "RECORD_NOT_FOUND"
+      end
+    end
+
+    context "when there's no project" do
+      before do
+        member = create(:organization).member
+        get "#{host}/#{member.slug}/slug_2"
+      end
+
+      it "responds with a 404" do
+        expect(last_response.status).to eq 404
+      end
+
+      it "returns an error response" do
+        expect(json).to be_a_valid_json_api_error.with_id "RECORD_NOT_FOUND"
+      end
+    end
   end
 
   context "POST /projects" do
@@ -55,15 +84,38 @@ describe "Projects API" do
       it 'returns an error if title is left blank' do
         authenticated_post "/projects", {
           data: {
-            attributes: {
-              description: "Test project description",
-              relationships: { owner: { data: { id: @user.id, type: "User" } } }
-            }
+            attributes: { description: "Test project description" },
+            relationships: { owner: { data: { id: @user.id, type: "User" } } }
           }
         }, @token
 
         expect(last_response.status).to eq 422
-        expect(json.errors[0].detail).to eq "Title can't be blank"
+        expect(json).to be_a_valid_json_api_error.with_id "VALIDATION_ERROR"
+        expect(json).to contain_an_error_of_type("VALIDATION_ERROR").with_message("Title can't be blank")
+      end
+
+      it "returns an error if owner is left blank" do
+        authenticated_post "/projects", {
+          data: {
+            attributes: { title: "Test title", description: "Test project description" }
+          }
+        }, @token
+
+        expect(last_response.status).to eq 422
+        expect(json).to be_a_valid_json_api_error.with_id "VALIDATION_ERROR"
+        expect(json).to contain_an_error_of_type("VALIDATION_ERROR").with_message("Owner can't be blank")
+      end
+
+      it "returns a 404 if the owner doesn't exist" do
+        authenticated_post "/projects", {
+          data: {
+            attributes: { title: "Project", description: "Test project description" },
+            relationships: { owner: { data: { id: 222, type: "Organization" } } }
+          }
+        }, @token
+
+        expect(last_response.status).to eq 404
+        expect(json).to be_a_valid_json_api_error.with_id "RECORD_NOT_FOUND"
       end
 
       context 'with a user uploaded image' do
@@ -79,7 +131,8 @@ describe "Projects API" do
                   slug: "test-project",
                   description: "Test project description",
                   base_64_icon_data: base_64_image
-                }
+                },
+                relationships: { owner: { data: { id: @user.id, type: "User" } } }
               }
             }, @token
 
@@ -106,14 +159,15 @@ describe "Projects API" do
                 attributes: {
                   title: "Test Project Title",
                   description: "Test project description",
-                }
+                },
+                relationships: { owner: { data: { id: @user.id, type: "User" } } }
               }
             }, @token
 
             expect(last_response.status).to eq 200
 
             project = Project.last
-          
+
             expect(project.icon.path).to be_nil
             expect(project.title).to eq "Test Project Title"
             expect(project.description).to eq "Test project description"
@@ -138,6 +192,17 @@ describe "Projects API" do
       before do
         @user = create(:user, email: "test_user@mail.com", password: "password")
         @token = authenticate(email: "test_user@mail.com", password: "password")
+      end
+
+      it "returns a 404 if the project doesn't exist" do
+        authenticated_patch "/projects/22", {
+          data: {
+            attributes: { title: "Project", description: "Test project description" },
+          }
+        }, @token
+
+        expect(last_response.status).to eq 404
+        expect(json).to be_a_valid_json_api_error.with_id "RECORD_NOT_FOUND"
       end
 
       context 'when updating the title' do

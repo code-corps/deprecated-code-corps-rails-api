@@ -11,18 +11,6 @@ describe "Posts API" do
       end
     end
 
-    context "when the post doesn't exist" do
-      before do
-        @project = create(:project, owner: create(:organization))
-      end
-
-      it "responds with a 404" do
-        get "#{host}/projects/#{@project.id}/posts/1"
-        expect(last_response.status).to eq 404
-        expect(json).to be_a_valid_json_api_error.with_id "RECORD_NOT_FOUND"
-      end
-    end
-
     context "when successful" do
       before do
         @project = create(:project, owner: create(:organization))
@@ -38,8 +26,10 @@ describe "Posts API" do
           expect(last_response.status).to eq 200
         end
 
-        xit "returns a list of Post records, serialized with PostSerializer" do
-          expect(json).to serialize_collection(Post.all).with(PostSerializer)
+        it "returns the first page of 10 Post records, serialized with PostSerializer" do
+          expect(json).to serialize_collection(Post.page(1).per(10)).with(PostSerializer)
+                            .with_links_to("#{host}/projects/#{@project.id}/posts")
+                            .with_meta(total_records: 13, total_pages: 2, page_size: 10, current_page: 1)
         end
       end
 
@@ -226,28 +216,16 @@ describe "Posts API" do
           expect(post.project_id).to eq 2
         end
 
-        it "returns the created post" do
-          post_attributes = json.data.attributes
-          expect(post_attributes.title).to eq "Post title"
-          expect(post_attributes.body).to eq "<p>Post body</p>\n"
-          expect(post_attributes.post_type).to eq "issue"
-
-          post_relationships = json.data.relationships
-          expect(post_relationships.comments.data.length).to eq 0
-
-          post_includes = json.included
-          expect(post_includes).to be_nil
+        it "returns the created post, serialized with PostSerializer" do
+          expect(json).to serialize_object(Post.last).with(PostSerializer)
         end
 
         it "sets user to current user" do
-          post_relationships = json.data.relationships
-          expect(post_relationships.user).not_to be_nil
-          expect(post_relationships.user.data.id).to eq "1"
+          expect(Post.last.user_id).to eq @user.id
         end
 
         it "sets status to 'open'" do
-          post_attributes = json.data.attributes
-          expect(post_attributes.status).to eq "open"
+          expect(Post.last.open?).to be true
         end
       end
     end
