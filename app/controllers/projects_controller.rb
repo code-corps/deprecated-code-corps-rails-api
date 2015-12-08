@@ -55,7 +55,12 @@ class ProjectsController < ApplicationController
     end
 
     def relationships
-      { owner_id: owner_id, owner_type: owner_type }
+      #{ owner_id: owner_id, owner_type: owner_type }
+      { owner: owner }
+    end
+
+    def owner
+      owner_type.constantize.find(owner_id) if owner_type.present?
     end
 
     def owner_id

@@ -106,6 +106,18 @@ describe "Projects API" do
         expect(json).to contain_an_error_of_type("VALIDATION_ERROR").with_message("Owner can't be blank")
       end
 
+      it "returns a 404 if the owner doesn't exist" do
+        authenticated_post "/projects", {
+          data: {
+            attributes: { title: "Project", description: "Test project description" },
+            relationships: { owner: { data: { id: 222, type: "Organization" } } }
+          }
+        }, @token
+
+        expect(last_response.status).to eq 404
+        expect(json).to be_a_valid_json_api_error.with_id "RECORD_NOT_FOUND"
+      end
+
       context 'with a user uploaded image' do
         it 'creates a project' do
           Sidekiq::Testing.inline! do
@@ -180,6 +192,17 @@ describe "Projects API" do
       before do
         @user = create(:user, email: "test_user@mail.com", password: "password")
         @token = authenticate(email: "test_user@mail.com", password: "password")
+      end
+
+      it "returns a 404 if the project doesn't exist" do
+        authenticated_patch "/projects/22", {
+          data: {
+            attributes: { title: "Project", description: "Test project description" },
+          }
+        }, @token
+
+        expect(last_response.status).to eq 404
+        expect(json).to be_a_valid_json_api_error.with_id "RECORD_NOT_FOUND"
       end
 
       context 'when updating the title' do
