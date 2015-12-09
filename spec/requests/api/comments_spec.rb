@@ -101,4 +101,137 @@ describe "Comments API" do
       end
     end
   end
+
+  context "PATCH /comments/:id" do
+    context "when unauthenticated" do
+      it "should return a 401 with a proper error" do
+        patch "#{host}/comments/1", { data: { type: "comments" } }
+        expect(last_response.status).to eq 401
+        expect(json).to be_a_valid_json_api_error.with_id "NOT_AUTHORIZED"
+      end
+    end
+
+    context "when authenticated" do
+      before do
+        @user = create(:user, id: 1, email: "test_user@mail.com", password: "password")
+        @post = create(:post, id: 2)
+        @token = authenticate(email: "test_user@mail.com", password: "password")
+      end
+
+      context "when the comment doesn't exist" do
+        it "responds with a 404" do
+          authenticated_patch "/comments/1", { data: { type: "comments" } }, @token
+
+          expect(last_response.status).to eq 404
+          expect(json).to be_a_valid_json_api_error.with_id "RECORD_NOT_FOUND"
+        end
+      end
+
+      context "when the comment does exist" do
+        before do
+          @comment = create(:comment, post: @post, user: @user)
+        end
+
+        context "when the attributes are valid" do
+          context "when updating a draft" do
+            before do
+              valid_attributes = {
+                data: {
+                  attributes: {
+                    markdown: "Edited body"
+                  },
+                  relationships: {
+                    post: { data: { id: @post.id, type: "posts" } }
+                  }
+                }
+              }
+              authenticated_patch "/comments/#{@comment.id}", valid_attributes, @token
+            end
+
+            it "responds with a 200" do
+              expect(last_response.status).to eq 200
+            end
+
+            it "responds with the comment, serialized with CommentSerializer" do
+              expect(json).to serialize_object(@comment.reload).with(CommentSerializer)
+            end
+
+            it "updates the comment" do
+              @comment.reload
+
+              expect(@comment.markdown).to eq "Edited body"
+              expect(@comment.body).to eq "<p>Edited body</p>"
+            end
+          end
+
+          context "when publishing a comment" do
+            before do
+              valid_attributes = {
+                data: {
+                  attributes: {
+                    markdown: "Edited body", state: "published"
+                  },
+                  relationships: {
+                    post: { data: { id: @post.id, type: "posts" } }
+                  }
+                }
+              }
+              authenticated_patch "/comments/#{@comment.id}", valid_attributes, @token
+            end
+
+            it "updates the comment" do
+              @comment.reload
+
+              expect(@comment).to be_published
+            end
+          end
+
+          context "when editing a published comment" do
+            before do
+              @comment.publish!
+
+              valid_attributes = {
+                data: {
+                  attributes: {
+                    markdown: "Edited body"
+                  },
+                  relationships: {
+                    post: { data: { id: @post.id, type: "posts" } }
+                  }
+                }
+              }
+              authenticated_patch "/comments/#{@comment.id}", valid_attributes, @token
+            end
+
+            it "updates the comment" do
+              @comment.reload
+
+              expect(@comment).to be_edited
+            end
+          end
+        end
+
+        context "when the attributes are invalid" do
+          before do
+            invalid_attributes = {
+              data: {
+                attributes: {
+                  markdown: ""
+                },
+                relationships: {
+                  post: { data: { id: @post.id, type: "posts" } }
+                }
+              }
+            }
+            authenticated_patch "/comments/#{@comment.id}", invalid_attributes, @token
+          end
+
+          it "responds with a 422 validation error" do
+            expect(last_response.status).to eq 422
+            expect(json).to be_a_valid_json_api_error.with_id "VALIDATION_ERROR"
+          end
+        end
+      end
+    end
+  end
 end
