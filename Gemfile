@@ -64,4 +64,6 @@ group :test do
   gem 'oauth2'
 
   gem 'hashie'
+
+  gem 'database_cleaner'
 end
