@@ -1,6 +1,6 @@
 class PostsController < ApplicationController
 
-  before_action :doorkeeper_authorize!, only: [:create]
+  before_action :doorkeeper_authorize!, only: [:create, :update]
 
   def index
     authorize Post
@@ -25,10 +25,27 @@ class PostsController < ApplicationController
     end
   end
 
+  def update
+    post = Post.find(params[:id])
+    authorize post
+
+    post.assign_attributes(update_params)
+
+    if post.update!
+      render json: post
+    else
+      render_validation_errors post.errors
+    end
+  end
+
   private
 
+    def update_params
+      record_attributes.permit(:markdown, :title, :state)
+    end
+
     def create_params
-      record_attributes.permit(:markdown, :title, :post_type).merge(relationships)
+      record_attributes.permit(:markdown, :title, :state, :post_type).merge(relationships)
     end
 
     def project_relationship_id

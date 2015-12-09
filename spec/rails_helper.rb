@@ -8,7 +8,8 @@ require 'rspec/rails'
 require 'sidekiq/testing'
 require 'clearance/rspec'
 require 'paperclip/matchers'
-require "pundit/rspec"
+require 'pundit/rspec'
+require 'aasm/rspec'
 require 'database_cleaner'
 
 # Requires supporting ruby files with custom matchers and macros, etc, in

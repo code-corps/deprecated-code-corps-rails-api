@@ -35,6 +35,8 @@ gem 'obscenity'
 
 gem 'sequenced'
 
+gem 'aasm'
+
 group :development, :test do
   gem 'dotenv-rails'
 
