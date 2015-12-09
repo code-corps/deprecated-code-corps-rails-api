@@ -95,7 +95,7 @@ describe "Posts API" do
       before do
         @project = create(:project, owner: create(:organization))
         create(:user, username: "joshsmith")
-        @post = create(:post, project: @project, markdown: "Mentioning @joshsmith")
+        @post = create(:post, :published, project: @project, markdown: "Mentioning @joshsmith")
         create_list(:comment, 5, post: @post)
         get "#{host}/projects/#{@project.id}/posts/#{@post.number}"
       end
@@ -157,7 +157,7 @@ describe "Posts API" do
 
         expect(last_response.status).to eq 200
 
-        expect(json.data.attributes.number).to eq 1
+        expect(json.data.attributes.number).to eq nil
       end
 
       it "does not require a 'post_type' to be specified" do
