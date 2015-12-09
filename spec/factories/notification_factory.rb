@@ -2,7 +2,7 @@ FactoryGirl.define do
 
   factory :notification do
     association :user
-    association :notifiable
+    association :notifiable, factory: :post
   end
 
 end
