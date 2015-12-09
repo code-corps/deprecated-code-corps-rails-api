@@ -8,19 +8,22 @@ class GithubRepositoryPolicy
 
   def create?
     return false unless @user.present?
-    return false unless @github_repository.present?
-
-    project = @github_repository.project
-
-    return false unless project.present?
-
-    return user_allowed_to_add_repos_to_project? @user, project
+    return true if user_is_at_least_admin_on_project?
   end
 
   def user_allowed_to_add_repos_to_project? user, project
-    # TODO: user has a role in the organization or an organization team, which would
-    # also allow him to add repos to project
-    # TODO: user has a collaborator status on project which would allow him to add repos
-    project.owner_id == user.id
+    user_is_at_least_admin_on_project?
+  end
+
+  def contributor_for_user
+    @contributor_for_user ||= Contributor.find_by(user: user, project: project)
+  end
+
+  def project
+    @project ||= @github_repository.project
+  end
+
+  def user_is_at_least_admin_on_project?
+    contributor_for_user.present? and (contributor_for_user.admin? or contributor_for_user.owner?)
   end
 end
