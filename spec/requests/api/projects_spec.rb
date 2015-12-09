@@ -4,22 +4,29 @@ describe "Projects API" do
 
   context "GET /projects" do
     before do
-      create_list(:project, 10)
+      @projects = create_list(:project, 10)
     end
 
-    it "returns a list of projects" do
-      get "#{host}/projects"
+    context "when successful" do
+      before do
+        get "#{host}/projects"
+      end
 
-      expect(last_response.status).to eq 200
+      it "responds with a 200" do
+        expect(last_response.status).to eq 200
+      end
 
-      expect(json.data.length).to eq 10
-      expect(json.data.all? { |item| item.type == "projects" }).to be true
+      it "returns a list of projects, serialized with ProjectSerializer, with nothing included" do
+        expect(json).to serialize_collection(@projects).with(ProjectSerializer)
+      end
     end
+
   end
 
   context "GET /:slug/:project_slug" do
     before do
       @project = create(:project, owner: create(:organization))
+      github_repositories = create_list(:github_repository, 10, project: @project)
     end
 
     context "when successful" do
@@ -32,7 +39,7 @@ describe "Projects API" do
       end
 
       it "returns the specified project" do
-        expect(json).to serialize_object(@project).with(ProjectSerializer)
+        expect(json).to serialize_object(@project).with(ProjectSerializer).with_includes(:github_repositories)
       end
     end
 
@@ -64,6 +71,7 @@ describe "Projects API" do
         expect(json).to be_a_valid_json_api_error.with_id "RECORD_NOT_FOUND"
       end
     end
+
   end
 
   context "POST /projects" do

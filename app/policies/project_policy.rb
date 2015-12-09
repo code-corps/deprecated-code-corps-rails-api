@@ -1,5 +1,7 @@
 class ProjectPolicy
-  def initialize (user, project)
+  attr_reader :user, :project
+
+  def initialize(user, project)
     @user = user
     @project = project
   end

@@ -4,7 +4,6 @@ describe ContributorPolicy do
 
   subject { described_class }
 
-
   before do
     @project = create(:project)
 
@@ -409,34 +408,3 @@ describe ContributorPolicy do
     end
   end
 end
-
-
-
-# non_user
-# - can view collaborators
-# - can not add themselves to pending on any project
-# - can not change the status of any other user
-
-# regular_user
-# - can view collaborators
-# - can add themselves to pending on any project
-# - can remove themselves from their position
-# - can not change the status of any other user
-
-# collaborator_user
-# - can view collaborators
-# - can remove themselves from their position
-# - can not change the status of any other user
-
-# admin_user
-# - can view collaborators
-# - can change a user from pending to collaborator
-# - can change a user from collaborator to admin
-# - can remove themselves from their position
-# - can not make themselves admin
-
-# owner_user
-# - can view collaborators
-# - can change a user from pending to collaborator
-# - can change a user from collaborator to admin
-# - can not remove themselves from their position
