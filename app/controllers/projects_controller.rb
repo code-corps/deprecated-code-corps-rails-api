@@ -3,7 +3,7 @@ class ProjectsController < ApplicationController
 
   def index
     authorize Project
-    projects = Project.all.includes(:github_repositories)
+    projects = Project.all.includes(:contributors, :github_repositories)
     render json: projects
   end
 
@@ -84,7 +84,7 @@ class ProjectsController < ApplicationController
 
     def find_project_with_member!
       member = find_member!
-      Project.includes(:github_repositories).find_by!(slug: project_slug, owner: member.model)
+      Project.includes(:contributors, :github_repositories).find_by!(slug: project_slug, owner: member.model)
     end
 
     def find_member!

@@ -29,7 +29,7 @@ class ContributorsController < ApplicationController
 
     if contributor.valid?
       contributor.save!
-      render json: contributor, include: [:user, :project]
+      render json: contributor
     else
       render_validation_errors contributor.errors
     end

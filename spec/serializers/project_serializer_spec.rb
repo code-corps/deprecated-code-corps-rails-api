@@ -4,7 +4,7 @@ describe ProjectSerializer, :type => :serializer do
 
   context "individual resource representation" do
     let(:resource) {
-      project = create(:project)
+      project = create(:project, :with_contributors, contributors_count: 5)
       create_list(:github_repository, 10, project: project)
       project
     }
@@ -47,11 +47,20 @@ describe ProjectSerializer, :type => :serializer do
       it "has a 'description'" do
         expect(subject["description"]).to eql resource.description
       end
+
+      it "has a 'contributors_count'" do
+        expect(subject["contributors_count"]).to eql resource.contributors_count
+      end
     end
 
     context "relationships" do
       subject do
         JSON.parse(serialization.to_json)["data"]["relationships"]
+      end
+
+      it "should contain a 'contributors' relationship" do
+        expect(subject["contributors"]).not_to be_nil
+        expect(subject["contributors"]["data"].count).to eq 5
       end
 
       it "should have a 'github_repositories' relationship" do
