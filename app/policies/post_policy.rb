@@ -40,5 +40,4 @@ class PostPolicy
     def current_user_is_at_least_admin_on_project?
       return true if contributor_for_user.admin? or contributor_for_user.owner?
     end
-  end
 end
