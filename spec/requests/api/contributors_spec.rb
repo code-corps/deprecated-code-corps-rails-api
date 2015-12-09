@@ -100,7 +100,7 @@ describe "Contributors API" do
           expect(last_response.status).to eq 200
         end
 
-        it "returns the created contributor" do
+        it "returns the created contributor, serialized with ContributorSerializer" do
           expect(json).to serialize_object(Contributor.last).with(ContributorSerializer)
         end
 

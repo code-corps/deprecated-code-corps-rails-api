@@ -1,11 +1,10 @@
 class ProjectsController < ApplicationController
-
   before_action :doorkeeper_authorize!, only: [:create, :update]
 
   def index
     authorize Project
-
-    render json: Project.includes(:contributors).all
+    projects = Project.all.includes(:contributors, :github_repositories)
+    render json: projects
   end
 
   def show
@@ -13,7 +12,7 @@ class ProjectsController < ApplicationController
 
     authorize project
 
-    render json: project
+    render json: project, include: :github_repositories
   end
 
   def create
@@ -85,7 +84,7 @@ class ProjectsController < ApplicationController
 
     def find_project_with_member!
       member = find_member!
-      Project.includes(:contributors).find_by!(slug: project_slug, owner: member.model)
+      Project.includes(:contributors, :github_repositories).find_by!(slug: project_slug, owner: member.model)
     end
 
     def find_member!

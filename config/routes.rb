@@ -18,6 +18,7 @@ Rails.application.routes.draw do
     end
     resources :post_likes, only: [:create, :destroy]
     resources :user_skills, only: [:create, :destroy]
+    resources :github_repositories, only: [:create]
 
     resources :contributors, only: [:index, :create, :update]
 

@@ -3,6 +3,8 @@ class ProjectSerializer < ActiveModel::Serializer
 
   has_many :contributors
 
+  has_many :github_repositories
+
   def icon_thumb_url
     object.icon.url(:thumb)
   end
