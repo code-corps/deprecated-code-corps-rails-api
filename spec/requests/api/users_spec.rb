@@ -110,6 +110,10 @@ describe "Users API" do
           expect(User.last.facebook_access_token).to eq @facebook_access_token
         end
 
+        it "uses their Facebook photo", vcr: { cassette_name: "requests/api/users/valid_facebook_request" } do
+          expect(AddFacebookProfilePictureWorker.jobs.size).to eq 1
+        end
+
         it "responds with a 200", vcr: { cassette_name: "requests/api/users/valid_facebook_request" } do
           expect(last_response.status).to eq 200
         end
@@ -117,9 +121,7 @@ describe "Users API" do
         it "returns the created user using UserSerializer", vcr: { cassette_name: "requests/api/users/valid_facebook_request" } do
           expect(json).to serialize_object(User.last).with(UserSerializer).with_includes("skills")
         end
-
       end
-
     end
 
     context "when registering directly" do
@@ -188,6 +190,17 @@ describe "Users API" do
 
         expect(json.errors[0].detail).to eq "Username may only contain alphanumeric characters, underscores, or single hyphens, and cannot begin or end with a hyphen or underscore"
       end
+      
+      it 'fails on a username with profane content' do
+        params = { email: "josh@example.com", username: "shit", password: "password" }
+        json_api_params = json_api_params_for("users", params)
+
+        post "#{host}/users", json_api_params
+
+        expect(last_response.status).to eq 422
+
+        expect(json.errors[0].detail).to eq "Username may not be obscene"
+      end
     end
 
     context 'when user accounts are taken' do
@@ -214,6 +227,54 @@ describe "Users API" do
 
         expect(last_response.status).to eq 422
         expect(json.errors[0].detail).to eq "Username has already been taken"
+      end
+    end
+
+    context 'when registering with an email and password' do
+      it 'creates a user with a user uploaded image' do
+        file = File.open("#{Rails.root}/spec/sample_data/default-avatar.png", 'r')
+        base_64_image = Base64.encode64(open(file) { |io| io.read })
+
+        post "#{host}/users", {
+          data: {
+            attributes: {
+              email: "josh@example.com",
+              username: "joshsmith",
+              password: "password",
+              base_64_photo_data: base_64_image
+            }
+          }
+        }
+
+        expect(last_response.status).to eq 200
+
+        user = User.last
+
+        expect(user.username).to eq "joshsmith"
+        expect(user.email).to eq "josh@example.com"
+
+        expect(UpdateProfilePictureWorker.jobs.size).to eq 1
+      end
+
+      it 'creates a user without a user uploaded image' do
+        post "#{host}/users", {
+          data: {
+            attributes: {
+              email: "josh@example.com",
+              username: "joshsmith",
+              password: "password"
+            }
+          }
+        }
+
+        expect(last_response.status).to eq 200
+
+        user = User.last
+      
+        expect(user.username).to eq "joshsmith"
+        expect(user.email).to eq "josh@example.com"
+        
+        expect(UpdateProfilePictureWorker.jobs.size).to eq 0
       end
     end
   end

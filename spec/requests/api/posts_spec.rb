@@ -94,7 +94,8 @@ describe "Posts API" do
     context "when successful" do
       before do
         @project = create(:project, owner: create(:organization))
-        @post = create(:post, project: @project)
+        create(:user, username: "joshsmith")
+        @post = create(:post, project: @project, markdown: "Mentioning @joshsmith")
         create_list(:comment, 5, post: @post)
         get "#{host}/projects/#{@project.id}/posts/#{@post.number}"
       end
@@ -103,8 +104,8 @@ describe "Posts API" do
         expect(last_response.status).to eq 200
       end
 
-      it "returns the post, serialized with PostSerializer, with comments included" do
-        expect(json).to serialize_object(Post.last).with(PostSerializer).with_includes("comments")
+      it "returns the post, serialized with PostSerializer, with comments and mentions included" do
+        expect(json).to serialize_object(Post.last).with(PostSerializer).with_includes(["comments","post_user_mentions"])
       end
     end
   end
@@ -125,7 +126,6 @@ describe "Posts API" do
         @project = create(:project, id: 2)
         @token = authenticate(email: "test_user@mail.com", password: "password")
       end
-
 
       it "requires a 'project' to be specified" do
         params = { data: { type: "posts", attributes: { title: "Post title", post_type: "issue" } } }
@@ -209,7 +209,7 @@ describe "Posts API" do
         it "creates a post" do
           post = Post.last
           expect(post.title).to eq "Post title"
-          expect(post.body).to eq "<p>Post body</p>\n"
+          expect(post.body).to eq "<p>Post body</p>"
           expect(post.issue?).to be true
 
           expect(post.user_id).to eq 1

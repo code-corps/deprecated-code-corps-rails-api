@@ -22,13 +22,13 @@ describe Comment, :type => :model do
     it { should validate_presence_of(:markdown) }
   end
 
-  describe "before_save" do
+  describe "before_validation" do
     it "converts markdown to html for the body" do
       comment = create(:comment, markdown: "# Hello World\n\nHello, world.")
       comment.save
 
       comment.reload
-      expect(comment.body).to eq "<h1>Hello World</h1>\n\n<p>Hello, world.</p>\n"
+      expect(comment.body).to eq "<h1>Hello World</h1>\n\n<p>Hello, world.</p>"
     end
   end
 end

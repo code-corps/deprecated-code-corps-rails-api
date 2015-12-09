@@ -9,10 +9,10 @@ class UsersController < ApplicationController
   def create
     user = User.new(create_params)
 
-    if user.save
-      render json: user
+    if creating_with_facebook?
+      create_user_from_facebook_and_render_json
     else
-      render_validation_errors user.errors
+      create_user_with_email_and_render_json
     end
   end
 
@@ -84,7 +84,7 @@ class UsersController < ApplicationController
     end
 
     def create_params
-      record_attributes.permit(:email, :username, :password, :facebook_id, :facebook_access_token)
+      record_attributes.permit(:email, :username, :password, :facebook_id, :facebook_access_token, :base_64_photo_data)
     end
 
     def update_params
@@ -107,5 +107,46 @@ class UsersController < ApplicationController
 
     def find_user_by_confirmation_token
       User.find_by(confirmation_token: reset_password_params[:confirmation_token])
+    end
+
+    def creating_with_facebook?
+      create_params[:facebook_id].present? && create_params[:facebook_access_token].present?
+    end
+
+    def create_user_from_facebook_and_render_json
+      user = User.where("facebook_id = ? OR email = ?", create_params[:facebook_id], create_params[:email]).first_or_create
+
+      user.update(create_params)
+
+      if user.save
+        InitializeNewFacebookUserWorker.perform_async(user.id)
+        if photo_param?
+          UpdateProfilePictureWorker.perform_async(user.id)
+        else
+          AddFacebookProfilePictureWorker.perform_async(user.id)
+        end
+
+        render json: user
+      else
+        render_validation_errors(user.errors)
+      end
+    end
+
+    def create_user_with_email_and_render_json
+      user = User.new(create_params)
+
+      if user.save
+        if photo_param?
+          UpdateProfilePictureWorker.perform_async(user.id)
+        end
+
+        render json: user
+      else
+        render_validation_errors user.errors
+      end
+    end
+
+    def photo_param?
+      create_params[:base_64_photo_data].present?
     end
 end

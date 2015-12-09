@@ -58,7 +58,7 @@ describe Post, :type => :model do
       post.save
 
       post.reload
-      expect(post.body).to eq "<h1>Hello World</h1>\n\n<p>Hello, world.</p>\n"
+      expect(post.body).to eq "<h1>Hello World</h1>\n\n<p>Hello, world.</p>"
     end
   end
 
@@ -76,6 +76,46 @@ describe Post, :type => :model do
       project = create(:project)
       first_post = create(:post, project: project)
       expect { create(:post, project: project, number: 1) }.to raise_error ActiveRecord::RecordNotUnique
+    end
+  end
+
+  describe "user mentions" do
+    context "when saving a post" do
+      it "creates mentions only for existing users" do
+        real_user = create(:user, username: "joshsmith")
+
+        post = Post.create(
+          project: create(:project),
+          user: create(:user),
+          markdown: "Hello @joshsmith and @someone_who_doesnt_exist",
+          title: "Test"
+        )
+
+        post.reload
+        mentions = post.post_user_mentions
+
+        expect(mentions.count).to eq 1
+        expect(mentions.first.user).to eq real_user
+      end
+
+      context "when usernames contain underscores" do
+        it "creates mentions and not <em> tags" do
+          underscored_user = create(:user, username: "a_real_username")
+
+          post = Post.create(
+            project: create(:project),
+            user: create(:user),
+            markdown: "Hello @a_real_username and @not_a_real_username",
+            title: "Test"
+          )
+
+          post.reload
+          mentions = post.post_user_mentions
+
+          expect(mentions.count).to eq 1
+          expect(mentions.first.user).to eq underscored_user
+        end
+      end
     end
   end
 end
