@@ -73,6 +73,7 @@ GEM
     connection_pool (2.2.0)
     crack (0.4.2)
       safe_yaml (~> 1.0.0)
+    database_cleaner (1.5.1)
     debug_inspector (0.0.2)
     diff-lcs (1.2.5)
     doorkeeper (3.0.1)
@@ -250,6 +251,7 @@ DEPENDENCIES
   aws-sdk
   bullet
   clearance
+  database_cleaner
   doorkeeper
   dotenv-rails
   factory_girl_rails (~> 4.0)

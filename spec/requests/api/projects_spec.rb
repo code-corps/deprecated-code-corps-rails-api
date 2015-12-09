@@ -190,7 +190,7 @@ describe "Projects API" do
 
     context 'when authenticated' do
       before do
-        @user = create(:user, email: "test_user@mail.com", password: "password")
+        create(:user, email: "test_user@mail.com", password: "password")
         @token = authenticate(email: "test_user@mail.com", password: "password")
       end
 
