@@ -12,7 +12,7 @@ class PostsController < ApplicationController
     post = find_post!
     authorize post
 
-    render json: post, include: [:comments, :post_user_mentions]
+    render json: post, include: [:comments, :post_user_mentions, :comment_user_mentions]
   end
 
   def create
@@ -76,11 +76,13 @@ class PostsController < ApplicationController
 
     def find_post!
       project = find_project!
-      Post.includes(comments: :user).includes(:post_user_mentions).find_by!(project: project, number: post_id)
+      Post.includes(comments: :user)
+          .includes(:post_user_mentions, :comment_user_mentions)
+          .find_by!(project: project, number: post_id)
     end
 
     def find_posts!
       project = find_project!
-      Post.where(project: project).page(page_number).per(page_size).includes [:comments, :user, :project, :post_user_mentions]
+      Post.where(project: project).page(page_number).per(page_size).includes [:comments, :user, :project, :post_user_mentions, :comment_user_mentions]
     end
 end
