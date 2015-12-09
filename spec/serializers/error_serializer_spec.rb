@@ -53,13 +53,11 @@ describe ErrorSerializer do
       expect(result[:errors].length).to eq 1
 
       error = result[:errors].first
-
       expect(error[:id]).to eq "PARAMETER_MISSING"
       expect(error[:title]).to eq "User is missing"
       expect(error[:detail]).to eq "You must specify a User."
       expect(error[:status]).to eq 400
     end
-
 
     it "can serialize ActionController::RoutingError" do
       error_instance = ActionController::RoutingError.new("No route matches test route")
@@ -69,7 +67,6 @@ describe ErrorSerializer do
       expect(result[:errors].length).to eq 1
 
       error = result[:errors].first
-
       expect(error[:id]).to eq "ROUTE_NOT_FOUND"
       expect(error[:title]).to eq "Route not found"
       expect(error[:detail]).to eq error_instance.message
