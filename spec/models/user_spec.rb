@@ -14,6 +14,10 @@ describe User, :type => :model do
     it { should have_db_column(:biography).of_type(:text) }
     it { should have_db_column(:facebook_id).of_type(:string) }
     it { should have_db_column(:facebook_access_token).of_type(:string) }
+    it { should have_db_column(:photo_file_name).of_type(:string) }
+    it { should have_db_column(:photo_content_type).of_type(:string) }
+    it { should have_db_column(:photo_file_size).of_type(:integer) }
+    it { should have_db_column(:photo_updated_at).of_type(:datetime) }
 
     it { should have_db_index(:email) }
     it { should have_db_index(:remember_token) }
@@ -130,6 +134,27 @@ describe User, :type => :model do
       user.save
 
       expect(user.username).to eq "new_name"
+    end
+  end
+
+  context 'paperclip' do
+    context 'without cloudfront' do
+      it { should have_attached_file(:photo) }
+      it { should validate_attachment_content_type(:photo)
+          .allowing('image/png', 'image/gif', 'image/jpeg')
+          .rejecting('text/plain', 'text/xml') }
+    end
+
+    context 'with cloudfront' do
+      let(:user) { create(:user, :with_s3_photo) }
+
+      it 'should have cloudfront in the URL' do
+        expect(user.photo.url(:thumb)).to include 'cloudfront'
+      end
+
+      it 'should have the right path' do
+        expect(user.photo.url(:thumb)).to include "users/#{user.id}/thumb"
+      end
     end
   end
 end

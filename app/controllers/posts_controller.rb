@@ -1,6 +1,6 @@
 class PostsController < ApplicationController
 
-  before_action :doorkeeper_authorize!, only: [:create]
+  before_action :doorkeeper_authorize!, only: [:create, :update]
 
   def index
     authorize Post
@@ -12,7 +12,7 @@ class PostsController < ApplicationController
     post = find_post!
     authorize post
 
-    render json: post, include: [:comments]
+    render json: post, include: [:comments, :post_user_mentions, :comment_user_mentions]
   end
 
   def create
@@ -27,10 +27,27 @@ class PostsController < ApplicationController
     end
   end
 
+  def update
+    post = Post.find(params[:id])
+    authorize post
+
+    post.assign_attributes(update_params)
+
+    if post.update!
+      render json: post
+    else
+      render_validation_errors post.errors
+    end
+  end
+
   private
 
+    def update_params
+      record_attributes.permit(:markdown, :title, :state)
+    end
+
     def create_params
-      record_attributes.permit(:markdown, :title, :post_type).merge(relationships)
+      record_attributes.permit(:markdown, :title, :state, :post_type).merge(relationships)
     end
 
     def project_relationship_id
@@ -59,11 +76,13 @@ class PostsController < ApplicationController
 
     def find_post!
       project = find_project!
-      Post.includes(comments: :user).find_by!(project: project, number: post_id)
+      Post.includes(comments: :user)
+          .includes(:post_user_mentions, :comment_user_mentions)
+          .find_by!(project: project, number: post_id)
     end
 
     def find_posts!
       project = find_project!
-      Post.where(project: project).page(page_number).per(page_size).includes [:comments, :user, :project]
+      Post.where(project: project).page(page_number).per(page_size).includes [:comments, :user, :project, :post_user_mentions, :comment_user_mentions]
     end
 end

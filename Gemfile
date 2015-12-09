@@ -27,11 +27,15 @@ gem 'kaminari'
 
 gem 'koala'
 
-gem 'redcarpet'
+gem 'github-markdown'
+
+gem 'html-pipeline'
 
 gem 'obscenity'
 
 gem 'sequenced'
+
+gem 'aasm'
 
 group :development, :test do
   gem 'dotenv-rails'
@@ -62,4 +66,6 @@ group :test do
   gem 'oauth2'
 
   gem 'hashie'
+
+  gem 'database_cleaner'
 end
