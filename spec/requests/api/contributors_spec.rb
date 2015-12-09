@@ -61,7 +61,7 @@ describe "Contributors API" do
           type: "contributors"
         } }, @token
 
-        # expect(last_response.status).to eq 422
+        expect(last_response.status).to eq 422
         expect(json).to be_a_valid_json_api_error
         expect(json).to contain_an_error_of_type("VALIDATION_ERROR").with_message("Project can't be blank")
       end
@@ -79,7 +79,7 @@ describe "Contributors API" do
             }
           } }, @token
 
-          # expect(last_response.status).to eq 422
+          expect(last_response.status).to eq 422
           expect(json).to be_a_valid_json_api_error
           expect(json).to contain_an_error_of_type("VALIDATION_ERROR").with_message("User has already been taken")
         end
@@ -97,38 +97,23 @@ describe "Contributors API" do
         end
 
         it "responds with a 200" do
-          # expect(last_response.status).to eq 200
+          expect(last_response.status).to eq 200
         end
 
         it "returns the created contributor" do
-          expect(json.data.attributes).not_to be_nil
-          expect(json.data.type).to eq "contributors"
+          expect(json).to serialize_object(Contributor.last).with(ContributorSerializer)
         end
 
         it "sets contributor user to current user" do
-          contributor_user = json.data.relationships.user
-          expect(contributor_user).not_to be_nil
-          expect(contributor_user.data.id).to eq @user.id.to_s
+          expect(Contributor.last.user).to eq @user
         end
 
         it "sets contributor project to specified project" do
-          contributor_project = json.data.relationships.project
-          expect(contributor_project).not_to be_nil
-          expect(contributor_project.data.id).to eq @project.id.to_s
+          expect(Contributor.last.project).to eq @project
         end
 
         it "sets contributor status to 'pending'" do
-          expect(json.data.attributes.status).to eq "pending"
-        end
-
-        it "includes the user" do
-          user_includes = json.included.select { |i| i.type == "users" }
-          expect(user_includes.count).to eq 1
-        end
-
-        it "includes the project" do
-          project_includes = json.included.select { |i| i.type == "projects" }
-          expect(project_includes.count).to eq 1
+          expect(Contributor.last.pending?).to be true
         end
       end
     end
