@@ -58,8 +58,20 @@ class Post < ActiveRecord::Base
     self.post_likes_count
   end
 
+  def update!
+    if aasm_state_was == "published" && self.changed?
+      self.edit!
+    else
+      self.save
+    end
+  end
+
   def state
     aasm_state
+  end
+
+  def state=(value)
+    self.publish if value == "published"
   end
 
   def edited_at

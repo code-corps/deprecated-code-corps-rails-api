@@ -31,9 +31,7 @@ class PostsController < ApplicationController
 
     post.assign_attributes(update_params)
 
-    if post.valid?
-      post.edit
-      post.save!
+    if post.update!
       render json: post
     else
       render_validation_errors post.errors

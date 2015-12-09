@@ -114,6 +114,56 @@ describe Post, :type => :model do
     end
   end
 
+  describe "#update!" do
+    context "when aasm_state_was 'published'" do
+      context "when the model has changed" do
+        it "should be edited" do
+          post = create(:post)
+          post.publish!
+
+          post.markdown = "New markdown"
+          post.update!
+
+          expect(post).to be_edited
+        end
+      end
+
+      context "when the model has not changed" do
+        it "should still be published" do
+          post = create(:post)
+          post.publish!
+
+          post.update!
+
+          expect(post).to be_published
+        end
+      end
+    end
+
+    context "when in draft state" do
+      it "should still be draft but saved" do
+        post = create(:post)
+        old_updated_at = post.updated_at
+        post.markdown = "New text"
+        post.update!
+
+        expect(post).to be_draft
+        expect(post.updated_at).not_to eq old_updated_at
+      end
+    end
+  end
+
+  describe "publishing" do
+    let(:post) { create(:post) }
+
+    it "publishes when state is set to 'published'" do
+      post.state = "published"
+      post.save
+
+      expect(post).to be_published
+    end
+  end
+
   describe "post user mentions" do
     context "when saving a post" do
       it "creates mentions only for existing users" do
