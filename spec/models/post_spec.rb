@@ -42,6 +42,32 @@ describe Post, :type => :model do
     it { should define_enum_for(:post_type).with({ idea: "idea", progress: "progress", task: "task", issue: "issue" }) }
   end
 
+  describe ".state" do
+    it "should return the aasm_state" do
+      post = create(:post)
+      expect(post.state).to eq post.aasm_state
+    end
+  end
+
+  describe ".edited_at" do
+    context "when the post hasn't been edited" do
+      it "returns nil" do
+        post = create(:post)
+        expect(post.edited_at).to eq nil
+      end
+    end
+
+    context "when the post has been edited" do
+      it "returns the updated_at timestamp" do
+        post = create(:post)
+        post.publish
+        post.edit
+
+        expect(post.edited_at).to eq post.updated_at
+      end
+    end
+  end
+
   describe ".post_like_counts" do
     let(:user) { create(:user) }
     let(:post) { create(:post) }
@@ -60,7 +86,7 @@ describe Post, :type => :model do
     end
   end
 
-  describe "before_save" do
+  describe "before_validation" do
     it "converts markdown to html for the body" do
       post = create(:post, markdown: "# Hello World\n\nHello, world.")
       post.save

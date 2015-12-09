@@ -9,6 +9,9 @@ describe PostSerializer, :type => :serializer do
       user: create(:user),
       project: create(:project))
 
+    @post.publish!
+    @post.edit!
+
     create_list(:comment, 10, post: @post)
     create_list(:post_user_mention, 10, post: @post)
     create_list(:comment_user_mention, 10, post: @post)
@@ -75,6 +78,10 @@ describe PostSerializer, :type => :serializer do
 
       it "has a 'state'" do
         expect(subject["state"]).to eql resource.state
+      end
+
+      it "has an 'edited_at'" do
+        expect(subject["edited_at"]).to be_the_same_time_as resource.edited_at
       end
     end
 
