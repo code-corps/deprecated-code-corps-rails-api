@@ -12,6 +12,7 @@ describe Post, :type => :model do
     it { should have_db_column(:updated_at) }
     it { should have_db_column(:created_at) }
     it { should have_db_column(:post_likes_count).of_type(:integer) }
+    it { should have_db_column(:aasm_state).of_type(:string) }
   end
 
   describe "relationships" do
@@ -27,6 +28,11 @@ describe Post, :type => :model do
     it { should validate_presence_of(:title) }
     it { should validate_presence_of(:body) }
     it { should validate_presence_of(:markdown) }
+
+    context "number" do
+      let(:subject) { create(:post) }
+      it { should validate_uniqueness_of(:number).scoped_to(:project_id).allow_nil }
+    end
   end
 
   describe "behavior" do
@@ -63,19 +69,46 @@ describe Post, :type => :model do
   end
 
   describe "sequencing" do
-    it "numbers posts for each project" do
-      project = create(:project)
-      first_post = create(:post, project: project)
-      second_post = create(:post, project: project)
+    context "when a draft" do
+      it "does not number the post" do
+        project = create(:project)
+        first_post = create(:post, project: project)
 
-      expect(first_post.number).to eq 1
-      expect(second_post.number).to eq 2
+        expect(first_post.number).to be_nil
+      end
     end
 
-    it "should not allow a duplicate number to be set for the same project" do
-      project = create(:project)
-      first_post = create(:post, project: project)
-      expect { create(:post, project: project, number: 1) }.to raise_error ActiveRecord::RecordNotUnique
+    context "when published with bang (auto-save) methods" do
+      it "numbers posts for each project" do
+        project = create(:project)
+        first_post = create(:post, project: project)
+        second_post = create(:post, project: project)
+        first_post.publish!
+        second_post.publish!
+
+        expect(first_post.number).to eq 1
+        expect(second_post.number).to eq 2
+      end
+
+      it "should not allow a duplicate number to be set for the same project" do
+        project = create(:project)
+        first_post = create(:post, project: project)
+        first_post.publish!
+
+        expect { create(:post, project: project, number: 1) }.to raise_error ActiveRecord::RecordInvalid
+      end
+    end
+  end
+
+  describe "state machine" do
+    let(:post) { Post.new }
+
+    it "sets the state to draft initially" do
+      expect(post).to have_state(:draft)
+    end
+
+    it "transitions correctly" do
+      expect(post).to transition_from(:draft).to(:published).on_event(:publish)
     end
   end
 
