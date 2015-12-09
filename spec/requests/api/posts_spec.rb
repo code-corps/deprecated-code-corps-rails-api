@@ -230,4 +230,91 @@ describe "Posts API" do
       end
     end
   end
+
+  context "PATCH /posts/:id" do
+    context "when unauthenticated" do
+      it "should return a 401 with a proper error" do
+        patch "#{host}/posts/1", { data: { type: "posts" } }
+        expect(last_response.status).to eq 401
+        expect(json).to be_a_valid_json_api_error.with_id "NOT_AUTHORIZED"
+      end
+    end
+
+    context "when authenticated" do
+      before do
+        @user = create(:user, id: 1, email: "test_user@mail.com", password: "password")
+        @project = create(:project, id: 2)
+        @token = authenticate(email: "test_user@mail.com", password: "password")
+      end
+
+      context "when the post doesn't exist" do
+        it "responds with a 404" do
+          authenticated_patch "/posts/1", { data: { type: "posts" } }, @token
+
+          expect(last_response.status).to eq 404
+          expect(json).to be_a_valid_json_api_error.with_id "RECORD_NOT_FOUND"
+        end
+      end
+
+      context "when the post does exist" do
+        before do
+          @post = create(:post, :published, project: @project, user: @user)
+        end
+
+        context "when the attributes are valid" do
+          before do
+            valid_attributes = {
+              data: {
+                attributes: {
+                  title: "Edited title", markdown: "Edited body"
+                },
+                relationships: {
+                  project: { data: { id: @project.id, type: "projects" } }
+                }
+              }
+            }
+            authenticated_patch "/posts/#{@post.id}", valid_attributes, @token
+          end
+
+          it "responds with a 200" do
+            expect(last_response.status).to eq 200
+          end
+
+          it "responds with the post, serialized with PostSerializer" do
+            expect(json).to serialize_object(@post.reload).with(PostSerializer)
+          end
+
+          it "updates the post" do
+            @post.reload
+
+            expect(@post.title).to eq "Edited title"
+            expect(@post.markdown).to eq "Edited body"
+            expect(@post.body).to eq "<p>Edited body</p>"
+          end
+
+        end
+
+        context "when the attributes are invalid" do
+          before do
+            invalid_attributes = {
+              data: {
+                attributes: {
+                  title: "", markdown: ""
+                },
+                relationships: {
+                  project: { data: { id: @project.id, type: "projects" } }
+                }
+              }
+            }
+            authenticated_patch "/posts/#{@post.id}", invalid_attributes, @token
+          end
+
+          it "responds with a 422 validation error" do
+            expect(last_response.status).to eq 422
+            expect(json).to be_a_valid_json_api_error.with_id "VALIDATION_ERROR"
+          end
+        end
+      end
+    end
+  end
 end

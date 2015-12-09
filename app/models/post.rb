@@ -40,14 +40,29 @@ class Post < ActiveRecord::Base
   aasm do
     state :draft, initial: true
     state :published
+    state :edited
 
     event :publish do
       transitions from: :draft, to: :published
     end
+
+    event :edit do
+      transitions from: :published, to: :edited
+    end
   end
+
+  scope :active, -> { published.merge edited }
 
   def likes_count
     self.post_likes_count
+  end
+
+  def state
+    aasm_state
+  end
+
+  def edited_at
+    updated_at if edited?
   end
 
   private

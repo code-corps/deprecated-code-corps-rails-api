@@ -17,4 +17,8 @@ class PostPolicy
   def create?
     user.present?
   end
+
+  def update?
+    true # will be overriden in other PR
+  end
 end
