@@ -2,18 +2,22 @@ require "rails_helper"
 
 describe PostSerializer, :type => :serializer do
 
-  context "individual resource representation" do
-    let(:resource) {
-      post = create(:post,
-        title: "Post title",
-        user: create(:user),
-        project: create(:project))
+  # We only use before all here because we know the context does not change
+  before :all do
+    @post = create(:post,
+      title: "Post title",
+      user: create(:user),
+      project: create(:project))
 
-      create_list(:comment, 10, post: post)
-      create_list(:post_user_mention, 10, post: post)
-      create_list(:comment_user_mention, 10, post: post)
-      post.reload
-    }
+    create_list(:comment, 10, post: @post)
+    create_list(:post_user_mention, 10, post: @post)
+    create_list(:comment_user_mention, 10, post: @post)
+    @post.reload
+  end
+
+  context "individual resource representation" do
+
+    let(:resource) { @post }
 
     let(:serializer) { PostSerializer.new(resource) }
     let(:serialization) { ActiveModel::Serializer::Adapter.create(serializer) }
@@ -37,7 +41,6 @@ describe PostSerializer, :type => :serializer do
     end
 
     context "attributes" do
-
       subject do
         JSON.parse(serialization.to_json)["data"]["attributes"]
       end

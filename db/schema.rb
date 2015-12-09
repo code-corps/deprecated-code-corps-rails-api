@@ -44,6 +44,14 @@ ActiveRecord::Schema.define(version: 20151209065652) do
     t.datetime "updated_at",                     null: false
   end
 
+  create_table "github_repositories", force: :cascade do |t|
+    t.string   "repository_name", null: false
+    t.string   "owner_name",      null: false
+    t.integer  "project_id",      null: false
+    t.datetime "created_at",      null: false
+    t.datetime "updated_at",      null: false
+  end
+
   create_table "members", force: :cascade do |t|
     t.string   "slug",       null: false
     t.integer  "model_id"

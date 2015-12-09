@@ -10,6 +10,7 @@ require 'clearance/rspec'
 require 'paperclip/matchers'
 require 'pundit/rspec'
 require 'aasm/rspec'
+require 'database_cleaner'
 
 # Requires supporting ruby files with custom matchers and macros, etc, in
 # spec/support/ and its subdirectories. Files matching `spec/**/*_spec.rb` are
@@ -64,6 +65,15 @@ RSpec.configure do |config|
 
   # Mix in Paperclip
   config.include Paperclip::Shoulda::Matchers
+
+  config.before(:suite) do
+    DatabaseCleaner.clean_with :truncation
+    DatabaseCleaner.strategy = :transaction
+  end
+
+  config.after(:each) do
+    DatabaseCleaner.clean
+  end
 
   config.before(:each) do
     allow_any_instance_of(Paperclip::Attachment).to receive(:save).and_return(true)
