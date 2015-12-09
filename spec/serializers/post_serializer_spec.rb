@@ -69,6 +69,10 @@ describe PostSerializer, :type => :serializer do
       it "has a 'number'" do
         expect(subject["number"]).to eql resource.number
       end
+
+      it "has a 'state'" do
+        expect(subject["state"]).to eql resource.state
+      end
     end
 
     context "relationships" do

@@ -194,38 +194,59 @@ describe "Posts API" do
       end
 
       context "when it succeeds" do
-        before do
-          create(:project, id: 1)
-          params = { data: {
-            type: "posts",
-            attributes: { title: "Post title", markdown: "Post body", post_type: "issue" },
-            relationships: {
-              project: { data: { id: 2, type: "projects" } }
-            }
-          }}
-          authenticated_post "/posts", params, @token
+        context "as a draft" do
+          before do
+            create(:project, id: 1)
+            params = { data: {
+              type: "posts",
+              attributes: { title: "Post title", markdown: "Post body", post_type: "issue" },
+              relationships: {
+                project: { data: { id: 2, type: "projects" } }
+              }
+            }}
+            authenticated_post "/posts", params, @token
+          end
+
+          it "creates a post" do
+            post = Post.last
+            expect(post.title).to eq "Post title"
+            expect(post.body).to eq "<p>Post body</p>"
+            expect(post.issue?).to be true
+
+            expect(post.user_id).to eq 1
+            expect(post.project_id).to eq 2
+          end
+
+          it "returns the created post, serialized with PostSerializer" do
+            expect(json).to serialize_object(Post.last).with(PostSerializer)
+          end
+
+          it "sets user to current user" do
+            expect(Post.last.user_id).to eq @user.id
+          end
+
+          it "sets status to 'open'" do
+            expect(Post.last.open?).to be true
+          end
         end
 
-        it "creates a post" do
-          post = Post.last
-          expect(post.title).to eq "Post title"
-          expect(post.body).to eq "<p>Post body</p>"
-          expect(post.issue?).to be true
+        context "when publishing" do
+          before do
+            create(:project, id: 1)
+            params = { data: {
+              type: "posts",
+              attributes: { title: "Post title", markdown: "Post body", post_type: "issue", state: "published" },
+              relationships: {
+                project: { data: { id: 2, type: "projects" } }
+              }
+            }}
+            authenticated_post "/posts", params, @token
+          end
 
-          expect(post.user_id).to eq 1
-          expect(post.project_id).to eq 2
-        end
-
-        it "returns the created post, serialized with PostSerializer" do
-          expect(json).to serialize_object(Post.last).with(PostSerializer)
-        end
-
-        it "sets user to current user" do
-          expect(Post.last.user_id).to eq @user.id
-        end
-
-        it "sets status to 'open'" do
-          expect(Post.last.open?).to be true
+          it "creates a post" do
+            post = Post.last
+            expect(post).to be_published
+          end
         end
       end
     end
@@ -258,40 +279,87 @@ describe "Posts API" do
 
       context "when the post does exist" do
         before do
-          @post = create(:post, :published, project: @project, user: @user)
+          @post = create(:post, project: @project, user: @user)
         end
 
         context "when the attributes are valid" do
-          before do
-            valid_attributes = {
-              data: {
-                attributes: {
-                  title: "Edited title", markdown: "Edited body"
-                },
-                relationships: {
-                  project: { data: { id: @project.id, type: "projects" } }
+          context "when updating a draft" do
+            before do
+              valid_attributes = {
+                data: {
+                  attributes: {
+                    title: "Edited title", markdown: "Edited body"
+                  },
+                  relationships: {
+                    project: { data: { id: @project.id, type: "projects" } }
+                  }
                 }
               }
-            }
-            authenticated_patch "/posts/#{@post.id}", valid_attributes, @token
+              authenticated_patch "/posts/#{@post.id}", valid_attributes, @token
+            end
+
+            it "responds with a 200" do
+              expect(last_response.status).to eq 200
+            end
+
+            it "responds with the post, serialized with PostSerializer" do
+              expect(json).to serialize_object(@post.reload).with(PostSerializer)
+            end
+
+            it "updates the post" do
+              @post.reload
+
+              expect(@post.title).to eq "Edited title"
+              expect(@post.markdown).to eq "Edited body"
+              expect(@post.body).to eq "<p>Edited body</p>"
+            end
           end
 
-          it "responds with a 200" do
-            expect(last_response.status).to eq 200
+          context "when publishing a post" do
+            before do
+              valid_attributes = {
+                data: {
+                  attributes: {
+                    title: "Edited title", markdown: "Edited body", state: "published"
+                  },
+                  relationships: {
+                    project: { data: { id: @project.id, type: "projects" } }
+                  }
+                }
+              }
+              authenticated_patch "/posts/#{@post.id}", valid_attributes, @token
+            end
+
+            it "updates the post" do
+              @post.reload
+
+              expect(@post).to be_published
+            end
           end
 
-          it "responds with the post, serialized with PostSerializer" do
-            expect(json).to serialize_object(@post.reload).with(PostSerializer)
+          context "when editing a published post" do
+            before do
+              @post.publish!
+
+              valid_attributes = {
+                data: {
+                  attributes: {
+                    title: "Edited title", markdown: "Edited body"
+                  },
+                  relationships: {
+                    project: { data: { id: @project.id, type: "projects" } }
+                  }
+                }
+              }
+              authenticated_patch "/posts/#{@post.id}", valid_attributes, @token
+            end
+
+            it "updates the post" do
+              @post.reload
+
+              expect(@post).to be_edited
+            end
           end
-
-          it "updates the post" do
-            @post.reload
-
-            expect(@post.title).to eq "Edited title"
-            expect(@post.markdown).to eq "Edited body"
-            expect(@post.body).to eq "<p>Edited body</p>"
-          end
-
         end
 
         context "when the attributes are invalid" do

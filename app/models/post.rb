@@ -71,7 +71,7 @@ class Post < ActiveRecord::Base
   end
 
   def state=(value)
-    self.publish if value == "published"
+    self.publish if value == "published" && self.draft?
   end
 
   def edited_at

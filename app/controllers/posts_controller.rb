@@ -41,11 +41,11 @@ class PostsController < ApplicationController
   private
 
     def update_params
-      record_attributes.permit(:markdown, :title)
+      record_attributes.permit(:markdown, :title, :state)
     end
 
     def create_params
-      record_attributes.permit(:markdown, :title, :post_type).merge(relationships)
+      record_attributes.permit(:markdown, :title, :state, :post_type).merge(relationships)
     end
 
     def project_relationship_id
