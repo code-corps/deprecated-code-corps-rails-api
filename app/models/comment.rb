@@ -1,8 +1,11 @@
 require 'html/pipeline'
+require 'code_corps/scenario/generate_user_mentions_for_comment'
 
 class Comment < ActiveRecord::Base
   belongs_to :user
   belongs_to :post
+
+  has_many :comment_user_mentions
 
   validates_presence_of :body
   validates_presence_of :markdown
@@ -11,7 +14,13 @@ class Comment < ActiveRecord::Base
 
   before_validation :render_markdown_to_body
 
+  after_save :generate_mentions # Still safe because it runs inside transaction
+
   private
+
+    def generate_mentions
+      CodeCorps::Scenario::GenerateUserMentionsForComment.new(self).call
+    end
 
     def render_markdown_to_body
       if markdown.present?
