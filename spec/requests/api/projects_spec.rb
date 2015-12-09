@@ -39,7 +39,6 @@ describe "Projects API" do
       end
 
       it "returns the specified project" do
-        expect(json).to serialize_object(@project).with(ProjectSerializer)
         expect(json).to serialize_object(@project).with(ProjectSerializer).with_includes(:github_repositories)
       end
     end
