@@ -6,6 +6,12 @@ FactoryGirl.define do
 
     association :user
     association :project
+
+    trait :published do
+      after :create do |post, evaluator|
+        post.publish!
+      end
+    end
   end
 
 end
