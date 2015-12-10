@@ -5,7 +5,11 @@ class GeneratePostUserNotificationsWorker
 
   def perform(post_id)
     post = Post.find(post_id)
-    CodeCorps::GenerateNotificationsForPostUserMentions.new.perform(post)
+    CodeCorps::Scenario::GenerateNotificationsForPostUserMentions.new(post).call
+
+    Notification.where(notifiable: post).each do |notification|
+      NotificationMailer.notify(notification).deliver_now
+    end
   end
 
 end
