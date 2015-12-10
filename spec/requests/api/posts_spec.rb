@@ -122,8 +122,8 @@ describe "Posts API" do
 
     context "when authenticated" do
       before do
-        @user = create(:user, id: 1, email: "test_user@mail.com", password: "password")
-        @project = create(:project, id: 2)
+        @user = create(:user, email: "test_user@mail.com", password: "password")
+        @project = create(:project)
         @contributor = create(:contributor, user: @user, status: "collaborator", project: @project)
         @token = authenticate(email: "test_user@mail.com", password: "password")
       end
@@ -140,7 +140,7 @@ describe "Posts API" do
       it "requires a 'title' to be specified" do
         params = { data: { type: "posts",
           attributes: { post_type: "issue" },
-          relationships: { project: { data: { id: 2 } } }
+          relationships: { project: { data: { id: @project.id } } }
         } }
         authenticated_post "/posts", params, @token
 
@@ -149,32 +149,10 @@ describe "Posts API" do
         expect(json).to contain_an_error_of_type("VALIDATION_ERROR").with_message("Title can't be blank")
       end
 
-      it "does not accept a 'number' to be set directly" do
-        params = { data: { type: "posts",
-          attributes: { title: "Post title", markdown: "Post body", number: 3 },
-          relationships: { project: { data: { id: 2 } } }
-        } }
-        authenticated_post "/posts", params, @token
-        
-        expect(last_response.status).to eq 200
-
-        expect(json.data.attributes.number).to eq nil
-      end
-
-      it "does not require a 'post_type' to be specified" do
-        params = { data: { type: "posts",
-          attributes: { title: "Post title", markdown: "Post body" },
-          relationships: { project: { data: { id: 2 } } }
-        } }
-        authenticated_post "/posts", params, @token
-
-        expect(last_response.status).to eq 200
-      end
-
       it "requires a 'body' to be specified" do
         params = { data: { type: "posts",
           attributes: { title: "Post title", post_type: "issue" },
-          relationships: { project: { data: { id: 2 } } }
+          relationships: { project: { data: { id: @project.id } } }
         } }
         authenticated_post "/posts", params, @token
 
@@ -183,10 +161,32 @@ describe "Posts API" do
         expect(json).to contain_an_error_of_type("VALIDATION_ERROR").with_message("Body can't be blank")
       end
 
+      it "does not accept a 'number' to be set directly" do
+        params = { data: { type: "posts",
+          attributes: { title: "Post title", markdown: "Post body", number: 3 },
+          relationships: { project: { data: { id: @project.id } } }
+        } }
+        authenticated_post "/posts", params, @token
+
+        expect(last_response.status).to eq 200
+
+        expect(json.data.attributes.number).to eq nil
+      end
+
+      it "does not require a 'post_type' to be specified" do
+        params = { data: { type: "posts",
+          attributes: { title: "Post title", markdown: "Post body" },
+          relationships: { project: { data: { id: @project.id } } }
+        } }
+        authenticated_post "/posts", params, @token
+
+        expect(last_response.status).to eq 200
+      end
+
       it "ignores the 'status' parameter" do
         params = { data: { type: "posts",
           attributes: { title: "Post title", post_type: "issue", status: "closed", markdown: "Post body" },
-          relationships: { project: { data: { id: 2 } } }
+          relationships: { project: { data: { id: @project.id } } }
         } }
         authenticated_post "/posts", params, @token
 
@@ -195,58 +195,92 @@ describe "Posts API" do
       end
 
       context "when it succeeds" do
-        context "as a draft" do
-          before do
-            create(:project, id: 1)
-            params = { data: {
-              type: "posts",
-              attributes: { title: "Post title", markdown: "Post body", post_type: "issue" },
-              relationships: {
-                project: { data: { id: 2, type: "projects" } }
-              }
-            }}
-            authenticated_post "/posts", params, @token
-          end
+        before do
+          create(:project, id: 1)
 
-          it "creates a post" do
-            post = Post.last
-            expect(post.title).to eq "Post title"
-            expect(post.body).to eq "<p>Post body</p>"
-            expect(post.issue?).to be true
+          @mentioned_1 = create(:user)
+          @mentioned_2 = create(:user)
 
-            expect(post.user_id).to eq 1
-            expect(post.project_id).to eq 2
-          end
-
-          it "returns the created post, serialized with PostSerializer" do
-            expect(json).to serialize_object(Post.last).with(PostSerializer)
-          end
-
-          it "sets user to current user" do
-            expect(Post.last.user_id).to eq @user.id
-          end
-
-          it "sets status to 'open'" do
-            expect(Post.last.open?).to be true
-          end
+          @params = { data: {
+            type: "posts",
+            attributes: {
+              title: "Post title",
+              markdown: "@#{@mentioned_1.username} @#{@mentioned_2.username}",
+              post_type: "issue"
+            },
+            relationships: {
+              project: { data: { id: @project.id, type: "projects" } }
+            }
+          } }
         end
 
-        context "when publishing" do
+        def make_request
+           authenticated_post "/posts", @params, @token
+        end
+
+        def make_request_with_sidekiq_inline
+          Sidekiq::Testing::inline! { make_request }
+        end
+
+        it "creates a draft post" do
+          expect{ make_request }.to change{ Post.draft.count }.by 1
+
+          post = Post.last
+          expect(post.title).to eq "Post title"
+          expect(post.body).to eq "<p>@#{@mentioned_1.username} @#{@mentioned_2.username}</p>"
+          expect(post.issue?).to be true
+        end
+
+        it "returns the created post, serialized with PostSerializer" do
+          make_request
+
+          expect(json).to serialize_object(Post.last).with(PostSerializer)
+        end
+
+        it "sets user to current user" do
+          make_request
+
+          expect(Post.last.user_id).to eq @user.id
+        end
+
+        it "sets status to 'open'" do
+          make_request
+
+          expect(Post.last.open?).to be true
+        end
+
+        it "creates mentions" do
+          expect{ make_request }.to change { PostUserMention.count }.by 2
+        end
+
+        it "doesn't create noficiations" do
+          expect{ make_request_with_sidekiq_inline }.not_to change{ Notification.pending.count }
+          expect{ make_request_with_sidekiq_inline }.not_to change{ Notification.sent.count }
+        end
+
+        it "doesn't send emails" do
+          expect{ make_request_with_sidekiq_inline }.not_to change{ ActionMailer::Base.deliveries.count }
+        end
+
+        context "when type is set to 'published'" do
           before do
-            create(:project, id: 1)
-            params = { data: {
-              type: "posts",
-              attributes: { title: "Post title", markdown: "Post body", post_type: "issue", state: "published" },
-              relationships: {
-                project: { data: { id: 2, type: "projects" } }
-              }
-            }}
-            authenticated_post "/posts", params, @token
+            @params[:data][:attributes][:state] = "published"
           end
 
-          it "creates a post" do
-            post = Post.last
-            expect(post).to be_published
+          it "creates a published post" do
+            expect{ make_request }.to change{ Post.published.count }.by 1
+          end
+
+          it "creates mentions" do
+            expect{ make_request_with_sidekiq_inline }.to change { PostUserMention.count }.by 2
+          end
+
+          it "creates notifications for each mentioned user" do
+            expect{ make_request_with_sidekiq_inline }.to change{ Notification.sent.count }.by 2
+          end
+
+          it "sends mails for each mentioned user" do
+            expect{ make_request_with_sidekiq_inline }.to change{ ActionMailer::Base.deliveries.count }.by 2
           end
         end
       end
@@ -264,8 +298,8 @@ describe "Posts API" do
 
     context "when authenticated" do
       before do
-        @user = create(:user, id: 1, email: "test_user@mail.com", password: "password")
-        @project = create(:project, id: 2)
+        @user = create(:user, email: "test_user@mail.com", password: "password")
+        @project = create(:project)
         @token = authenticate(email: "test_user@mail.com", password: "password")
       end
 
@@ -281,84 +315,80 @@ describe "Posts API" do
       context "when the post does exist" do
         before do
           @post = create(:post, project: @project, user: @user)
+          @mentioned_1 = create(:user)
+          @mentioned_2 = create(:user)
+          @params = { data: {
+            attributes: { title: "Edited title", markdown: "@#{@mentioned_1.username} @#{@mentioned_2.username}" },
+            relationships: { project: { data: { id: @project.id, type: "projects" } } }
+          } }
+        end
+
+        def make_request
+          authenticated_patch "/posts/#{@post.id}", @params, @token
+        end
+
+        def make_request_with_sidekiq_inline
+          Sidekiq::Testing::inline! { make_request }
         end
 
         context "when the attributes are valid" do
           context "when updating a draft" do
-            before do
-              valid_attributes = {
-                data: {
-                  attributes: {
-                    title: "Edited title", markdown: "Edited body"
-                  },
-                  relationships: {
-                    project: { data: { id: @project.id, type: "projects" } }
-                  }
-                }
-              }
-              authenticated_patch "/posts/#{@post.id}", valid_attributes, @token
-            end
-
             it "responds with a 200" do
+              make_request
               expect(last_response.status).to eq 200
             end
 
             it "responds with the post, serialized with PostSerializer" do
+              make_request
               expect(json).to serialize_object(@post.reload).with(PostSerializer)
             end
 
             it "updates the post" do
+              make_request
+
               @post.reload
 
               expect(@post.title).to eq "Edited title"
-              expect(@post.markdown).to eq "Edited body"
-              expect(@post.body).to eq "<p>Edited body</p>"
-            end
-          end
-
-          context "when publishing a post" do
-            before do
-              valid_attributes = {
-                data: {
-                  attributes: {
-                    title: "Edited title", markdown: "Edited body", state: "published"
-                  },
-                  relationships: {
-                    project: { data: { id: @project.id, type: "projects" } }
-                  }
-                }
-              }
-              authenticated_patch "/posts/#{@post.id}", valid_attributes, @token
+              expect(@post.markdown).to eq "@#{@mentioned_1.username} @#{@mentioned_2.username}"
+              expect(@post.body).to eq "<p>@#{@mentioned_1.username} @#{@mentioned_2.username}</p>"
             end
 
-            it "updates the post" do
-              @post.reload
+            it "creates mentions" do
+              expect{ make_request }.to change { PostUserMention.count }.by 2
+            end
 
-              expect(@post).to be_published
+            it "doesn't create noficiations" do
+              expect{ make_request_with_sidekiq_inline }.not_to change{ Notification.pending.count }
+              expect{ make_request_with_sidekiq_inline }.not_to change{ Notification.sent.count }
+            end
+
+            it "doesn't send emails" do
+              expect{ make_request_with_sidekiq_inline }.not_to change{ ActionMailer::Base.deliveries.count }
             end
           end
 
           context "when editing a published post" do
             before do
               @post.publish!
-
-              valid_attributes = {
-                data: {
-                  attributes: {
-                    title: "Edited title", markdown: "Edited body"
-                  },
-                  relationships: {
-                    project: { data: { id: @project.id, type: "projects" } }
-                  }
-                }
-              }
-              authenticated_patch "/posts/#{@post.id}", valid_attributes, @token
             end
 
             it "updates the post" do
-              @post.reload
+              make_request
 
+              @post.reload
               expect(@post).to be_edited
+            end
+
+            it "creates mentions" do
+              expect{ make_request_with_sidekiq_inline }.to change { PostUserMention.count }.by 2
+            end
+
+            it "creates notifications for each mentioned user" do
+              expect{ make_request_with_sidekiq_inline }.to change{ Notification.sent.count }.by 2
+            end
+
+            it "sends mails for each mentioned user" do
+              expect{ make_request_with_sidekiq_inline }.to change{ ActionMailer::Base.deliveries.count }.by 2
             end
           end
         end

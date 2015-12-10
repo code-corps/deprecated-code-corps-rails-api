@@ -21,7 +21,5 @@ describe NotificationMailer do
     it "renders author name in the body" do
       expect(mail.body.encoded).to match(author.username)
     end
-
-    it "renders a link to the notifiable in the body"
   end
 end

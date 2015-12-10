@@ -7,12 +7,12 @@ module CodeCorps
 
       def call
         ActiveRecord::Base.transaction do
-          mentions = PostUserMention.where(post: @post)
+          mentions = PostUserMention.includes(:user).where(post: @post)
           mentions.each do |mention|
             Notification.find_or_create_by!(notifiable: @post, user: mention.user)
           end
         end
       end
-    end 
+    end
   end
 end
