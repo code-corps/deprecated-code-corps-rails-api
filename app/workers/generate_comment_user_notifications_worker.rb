@@ -5,7 +5,12 @@ class GenerateCommentUserNotificationsWorker
 
   def perform(comment_id)
     comment = Comment.find(comment_id)
-    CodeCorps::GenerateNotificationsForCommentUserMentions.new.perform(comment)
+    CodeCorps::Scenario::GenerateNotificationsForCommentUserMentions.new(comment).call
+
+    Notification.pending.where(notifiable: comment).each do |notification|
+      NotificationMailer.notify(notification).deliver_now
+      notification.dispatch!
+    end
   end
 
 end

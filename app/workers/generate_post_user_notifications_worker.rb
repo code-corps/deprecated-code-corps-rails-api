@@ -7,7 +7,7 @@ class GeneratePostUserNotificationsWorker
     post = Post.find(post_id)
     CodeCorps::Scenario::GenerateNotificationsForPostUserMentions.new(post).call
 
-    Notification.where(notifiable: post).each do |notification|
+    Notification.pending.where(notifiable: post).each do |notification|
       NotificationMailer.notify(notification).deliver_now
       notification.dispatch!
     end
