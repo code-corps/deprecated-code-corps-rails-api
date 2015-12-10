@@ -20,7 +20,8 @@ class PostsController < ApplicationController
 
     authorize post
 
-    if post.save
+    if post.update!
+      GeneratePostUserNotificationsWorker.perform_async(post.id) if post.published?
       render json: post
     else
       render_validation_errors post.errors
@@ -34,6 +35,7 @@ class PostsController < ApplicationController
     post.assign_attributes(update_params)
 
     if post.update!
+      GeneratePostUserNotificationsWorker.perform_async(post.id) if post.edited?
       render json: post
     else
       render_validation_errors post.errors
