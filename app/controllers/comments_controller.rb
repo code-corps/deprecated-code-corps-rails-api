@@ -1,5 +1,5 @@
 class CommentsController < ApplicationController
-  before_action :doorkeeper_authorize!, only: [:create]
+  before_action :doorkeeper_authorize!, only: [:create, :update]
 
   def index
     comments = Comment.where(post: params[:post_id])
@@ -21,9 +21,25 @@ class CommentsController < ApplicationController
     end
   end
 
+  def update
+    comment = Comment.find(params[:id])
+
+    comment.assign_attributes(update_params)
+
+    if comment.update!
+      render json: comment
+    else
+      render_validation_errors comment.errors
+    end
+  end
+
   private
     def create_params
-      record_attributes.permit(:markdown).merge(relationships)
+      record_attributes.permit(:markdown, :state).merge(relationships)
+    end
+
+    def update_params
+      record_attributes.permit(:markdown, :state).merge(relationships)
     end
 
     def post_id
