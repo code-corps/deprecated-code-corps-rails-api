@@ -17,8 +17,8 @@ gem 'doorkeeper'
 
 gem 'pundit'
 
-gem 'paperclip'
-
+# paperclip master currently doesn't work with new version of AWS SDK
+gem 'paperclip', :git=> 'https://github.com/thoughtbot/paperclip', :ref => '523bd46c768226893f23889079a7aa9c73b57d68'
 gem 'aws-sdk'
 
 gem 'sidekiq'
