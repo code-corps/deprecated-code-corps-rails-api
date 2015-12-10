@@ -2,18 +2,25 @@ require "rails_helper"
 
 describe PostSerializer, :type => :serializer do
 
-  context "individual resource representation" do
-    let(:resource) {
-      post = create(:post,
-        title: "Post title",
-        user: create(:user),
-        project: create(:project))
+  # We only use before all here because we know the context does not change
+  before :all do
+    @post = create(:post,
+      title: "Post title",
+      user: create(:user),
+      project: create(:project))
 
-      create_list(:comment, 10, post: post)
-      create_list(:post_user_mention, 10, post: post)
-      create_list(:comment_user_mention, 10, post: post)
-      post.reload
-    }
+    @post.publish!
+    @post.edit!
+
+    create_list(:comment, 10, post: @post)
+    create_list(:post_user_mention, 10, post: @post)
+    create_list(:comment_user_mention, 10, post: @post)
+    @post.reload
+  end
+
+  context "individual resource representation" do
+
+    let(:resource) { @post }
 
     let(:serializer) { PostSerializer.new(resource) }
     let(:serialization) { ActiveModel::Serializer::Adapter.create(serializer) }
@@ -37,7 +44,6 @@ describe PostSerializer, :type => :serializer do
     end
 
     context "attributes" do
-
       subject do
         JSON.parse(serialization.to_json)["data"]["attributes"]
       end
@@ -68,6 +74,14 @@ describe PostSerializer, :type => :serializer do
 
       it "has a 'number'" do
         expect(subject["number"]).to eql resource.number
+      end
+
+      it "has a 'state'" do
+        expect(subject["state"]).to eql resource.state
+      end
+
+      it "has an 'edited_at'" do
+        expect(subject["edited_at"]).to be_the_same_time_as resource.edited_at
       end
     end
 

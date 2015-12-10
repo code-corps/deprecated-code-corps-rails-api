@@ -2,6 +2,8 @@ require 'html/pipeline'
 require 'code_corps/scenario/generate_user_mentions_for_comment'
 
 class Comment < ActiveRecord::Base
+  include AASM
+
   belongs_to :user
   belongs_to :post
 
@@ -15,6 +17,40 @@ class Comment < ActiveRecord::Base
   before_validation :render_markdown_to_body
 
   after_save :generate_mentions # Still safe because it runs inside transaction
+
+  aasm do
+    state :draft, initial: true
+    state :published
+    state :edited
+
+    event :publish do
+      transitions from: :draft, to: :published
+    end
+
+    event :edit do
+      transitions from: :published, to: :edited
+    end
+  end
+
+  def update!
+    if aasm_state_was == "published" && self.changed?
+      self.edit!
+    else
+      self.save
+    end
+  end
+
+  def state
+    aasm_state
+  end
+
+  def state=(value)
+    self.publish if value == "published" && self.draft?
+  end
+
+  def edited_at
+    updated_at if edited?
+  end
 
   private
 

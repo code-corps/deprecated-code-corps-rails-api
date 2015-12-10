@@ -2,6 +2,7 @@ class Project < ActiveRecord::Base
   belongs_to :owner, polymorphic: true
 
   has_many :posts
+  has_many :github_repositories
   has_many :contributors
 
   has_attached_file :icon,
@@ -14,9 +15,7 @@ class Project < ActiveRecord::Base
   before_validation :add_slug_if_blank
 
   validates :title, presence: true
-
   validates :slug, slug: true
-
   validate :slug_is_not_duplicate
 
   validates_presence_of :owner

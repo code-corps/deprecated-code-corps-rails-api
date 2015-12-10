@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151208225204) do
+ActiveRecord::Schema.define(version: 20151209222143) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -34,6 +34,7 @@ ActiveRecord::Schema.define(version: 20151208225204) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.text     "markdown",   null: false
+    t.string   "aasm_state"
   end
 
   create_table "contributors", force: :cascade do |t|
@@ -42,6 +43,14 @@ ActiveRecord::Schema.define(version: 20151208225204) do
     t.string   "status",     default: "pending", null: false
     t.datetime "created_at",                     null: false
     t.datetime "updated_at",                     null: false
+  end
+
+  create_table "github_repositories", force: :cascade do |t|
+    t.string   "repository_name", null: false
+    t.string   "owner_name",      null: false
+    t.integer  "project_id",      null: false
+    t.datetime "created_at",      null: false
+    t.datetime "updated_at",      null: false
   end
 
   create_table "members", force: :cascade do |t|
@@ -154,10 +163,9 @@ ActiveRecord::Schema.define(version: 20151208225204) do
     t.datetime "updated_at",                        null: false
     t.integer  "post_likes_count", default: 0
     t.text     "markdown",                          null: false
-    t.integer  "number",                            null: false
+    t.integer  "number"
+    t.string   "aasm_state"
   end
-
-  add_index "posts", ["number", "project_id"], name: "index_posts_on_number_and_project_id", unique: true, using: :btree
 
   create_table "projects", force: :cascade do |t|
     t.string   "title",              null: false

@@ -18,6 +18,7 @@ Rails.application.routes.draw do
     end
     resources :post_likes, only: [:create, :destroy]
     resources :user_skills, only: [:create, :destroy]
+    resources :github_repositories, only: [:create]
 
     resources :contributors, only: [:index, :create, :update]
 
@@ -31,7 +32,7 @@ Rails.application.routes.draw do
       resources :comments, only: [:index]
     end
 
-    resources :comments, only: [:show, :create]
+    resources :comments, only: [:show, :create, :update]
 
     resources :organizations, only: [:show, :create, :update]
 
