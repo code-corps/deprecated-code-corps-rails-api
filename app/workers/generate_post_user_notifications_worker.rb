@@ -9,6 +9,7 @@ class GeneratePostUserNotificationsWorker
 
     Notification.where(notifiable: post).each do |notification|
       NotificationMailer.notify(notification).deliver_now
+      notification.dispatch!
     end
   end
 

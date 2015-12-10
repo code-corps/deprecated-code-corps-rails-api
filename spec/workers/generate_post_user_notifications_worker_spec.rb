@@ -8,6 +8,6 @@ describe GeneratePostUserNotificationsWorker do
 
   it "creates notifications and sends emails" do
     expect { GeneratePostUserNotificationsWorker.new.perform(@post.id) }.to change { ActionMailer::Base.deliveries.count }.by(4)
-    expect(Notification.count).to eq 4
+    expect(Notification.sent.count).to eq 4
   end
 end
