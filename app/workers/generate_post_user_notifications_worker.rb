@@ -1,4 +1,5 @@
 require "code_corps/scenario/generate_notifications_for_post_user_mentions"
+require "code_corps/scenario/send_notification_emails"
 
 class GeneratePostUserNotificationsWorker
   include Sidekiq::Worker
@@ -6,11 +7,7 @@ class GeneratePostUserNotificationsWorker
   def perform(post_id)
     post = Post.find(post_id)
     CodeCorps::Scenario::GenerateNotificationsForPostUserMentions.new(post).call
-
-    Notification.pending.includes(:user, :notifiable).where(notifiable: post).each do |notification|
-      NotificationMailer.notify(notification).deliver_now
-      notification.dispatch!
-    end
+    CodeCorps::Scenario::SendNotificationEmails.new(post).call
   end
 
 end

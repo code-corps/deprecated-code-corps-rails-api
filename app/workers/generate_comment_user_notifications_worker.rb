@@ -1,4 +1,5 @@
 require "code_corps/scenario/generate_notifications_for_comment_user_mentions"
+require "code_corps/scenario/send_notification_emails"
 
 class GenerateCommentUserNotificationsWorker
   include Sidekiq::Worker
@@ -6,11 +7,7 @@ class GenerateCommentUserNotificationsWorker
   def perform(comment_id)
     comment = Comment.find(comment_id)
     CodeCorps::Scenario::GenerateNotificationsForCommentUserMentions.new(comment).call
-
-    Notification.pending.includes(:user, :notifiable).where(notifiable: comment).each do |notification|
-      NotificationMailer.notify(notification).deliver_now
-      notification.dispatch!
-    end
+    CodeCorps::Scenario::SendNotificationEmails.new(comment).call
   end
 
 end
