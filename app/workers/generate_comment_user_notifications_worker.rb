@@ -7,7 +7,7 @@ class GenerateCommentUserNotificationsWorker
     comment = Comment.find(comment_id)
     CodeCorps::Scenario::GenerateNotificationsForCommentUserMentions.new(comment).call
 
-    Notification.pending.where(notifiable: comment).each do |notification|
+    Notification.pending.includes(:user, :notifiable).where(notifiable: comment).each do |notification|
       NotificationMailer.notify(notification).deliver_now
       notification.dispatch!
     end

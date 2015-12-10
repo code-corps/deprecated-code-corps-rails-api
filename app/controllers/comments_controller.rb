@@ -15,6 +15,7 @@ class CommentsController < ApplicationController
     authorize Comment
     comment = Comment.new(create_params)
     if comment.save
+      GenerateCommentUserNotificationsWorker.perform_async(comment.id)
       render json: comment
     else
       render_validation_errors comment.errors
