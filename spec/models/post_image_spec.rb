@@ -36,15 +36,15 @@ RSpec.describe PostImage, type: :model do
         @base_64_image = open(file) { |io| io.read }
       end
 
-      let(:post) { create(:post) }
-      let(:post_image) { create(:post_image, :with_s3_image, post: post, filename: "default-avatar.png", base_64_photo_data: @base_64_image) }
+      let(:post) { create(:post, id: 1) }
+      let(:post_image) { create(:post_image, :with_s3_image, id: 1, post: post, filename: "default-avatar.png", base_64_photo_data: @base_64_image) }
 
       it 'should have cloudfront in the URL', vcr: { cassette_name: 'models/post_image/aws-upload' } do
         post_image.decode_image_data
         expect(post_image.image.url(:thumb)).to include 'cloudfront'
       end
 
-      it 'should have the right path', vcr: { cassette_name: 'models/post_image/aws-upload-2' } do
+      it 'should have the right path', vcr: { cassette_name: 'models/post_image/aws-upload' } do
         post_image.decode_image_data
         expect(post_image.image.url(:thumb)).to include "posts/#{post.id}/images/#{post_image.id}"
       end
