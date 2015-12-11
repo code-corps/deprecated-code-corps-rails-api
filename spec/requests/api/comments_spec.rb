@@ -106,7 +106,7 @@ describe "Comments API" do
 
             @params = { data: {
               type: "comments",
-              attributes: { markdown: "@#{@mention_1.username} @#{@mention_2.username}" },
+              attributes: { markdown: "@#{@mention_1.username} @#{@mention_2.username}", state: "published" },
               relationships: {
                 post: { data: { id: @post.id, type: "posts" } }
               }
