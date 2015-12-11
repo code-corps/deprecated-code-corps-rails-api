@@ -22,16 +22,9 @@ class PostImage < ActiveRecord::Base
     data = Paperclip.io_adapters.for(base64_photo_data)
     data.original_filename = self.filename
     self.image = data
-    notify_pusher
   end
 
   Paperclip.interpolates :post_id do |attachment, style|
     attachment.instance.post_id
   end
-
-  private
-
-    def notify_pusher
-      NotifyPusherOfPostImageWorker.perform_async(self.id)
-    end
 end

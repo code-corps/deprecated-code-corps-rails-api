@@ -14,14 +14,14 @@ http_interactions:
       User-Agent:
       - aws-sdk-ruby2/2.2.5 ruby/2.2.3 x86_64-darwin14 resources
       X-Amz-Date:
-      - 20151211T223301Z
+      - 20151211T230433Z
       Host:
       - code-corps-development.s3.amazonaws.com
       X-Amz-Content-Sha256:
       - e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
       Authorization:
       - AWS4-HMAC-SHA256 Credential=AKIAJA5VYNIZZFUPOAKA/20151211/us-east-1/s3/aws4_request,
-        SignedHeaders=host;user-agent;x-amz-content-sha256;x-amz-date, Signature=62d74dd7a25cd4e2a79c70994a75c8c077e60a2afd0a034e3a90001b37520d79
+        SignedHeaders=host;user-agent;x-amz-content-sha256;x-amz-date, Signature=4f5980736b2ead4aa9b0a2ba6549541f29664b11bb7651b8799b4ae341158f72
       Content-Length:
       - '0'
       Accept:
@@ -32,51 +32,116 @@ http_interactions:
       message: Not Found
     headers:
       X-Amz-Request-Id:
-      - 0D3F9A4B45412D2B
+      - 61E45C62E67B5230
       X-Amz-Id-2:
-      - d0e4sFrvBIoVNq1/WJk3UQLEj4OTe3c1SDXirPVWU8gRUADM1oj2QJ03+iJummWuP+QLUe8+c9Y=
+      - GzLnJ3QHxY91vk9nc7ckr3htCPEx8t1BRceZRNxZv/vUbKXFWIkcRgVEv4FX2bt+
       Content-Type:
       - application/xml
       Transfer-Encoding:
       - chunked
       Date:
-      - Fri, 11 Dec 2015 22:33:02 GMT
+      - Fri, 11 Dec 2015 23:04:32 GMT
       Server:
       - AmazonS3
     body:
       encoding: UTF-8
       string: ''
     http_version: 
-  recorded_at: Fri, 11 Dec 2015 22:33:02 GMT
+  recorded_at: Fri, 11 Dec 2015 23:04:33 GMT
 - request:
-    method: post
-    uri: http://127.0.0.1:55418/apps/160485/events?auth_key=7b0b034d6b2928e5c548&auth_signature=fa4d40df7d835e42f8e0b3c32c61a71b80e4a1a77d91f63dd720fb2f76db971a&auth_timestamp=1449873182&auth_version=1.0&body_md5=1b14b6c14fc0ab04b4be8eff04abdafe
+    method: head
+    uri: https://code-corps-development.s3.amazonaws.com/posts/1/images/1/original.jpg
     body:
-      encoding: UTF-8
-      string: '{"name":"post_image_uploaded","channels":["private-user-6"],"data":"{\"post_id\":1,\"user_id\":6,\"filename\":\"default-avatar.gif\",\"url\":\"https://dawxes9syhrgg.cloudfront.net/posts/1/images/1/original.gif?1449873182\"}"}'
+      encoding: ASCII-8BIT
+      string: ''
     headers:
+      Content-Type:
+      - ''
+      Accept-Encoding:
+      - ''
       User-Agent:
-      - HTTPClient/1.0 (2.7.0.1, ruby 2.2.3 (2015-08-18))
+      - aws-sdk-ruby2/2.2.5 ruby/2.2.3 x86_64-darwin14 resources
+      X-Amz-Date:
+      - 20151211T230433Z
+      Host:
+      - code-corps-development.s3.amazonaws.com
+      X-Amz-Content-Sha256:
+      - e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      Authorization:
+      - AWS4-HMAC-SHA256 Credential=AKIAJA5VYNIZZFUPOAKA/20151211/us-east-1/s3/aws4_request,
+        SignedHeaders=host;user-agent;x-amz-content-sha256;x-amz-date, Signature=4f5980736b2ead4aa9b0a2ba6549541f29664b11bb7651b8799b4ae341158f72
+      Content-Length:
+      - '0'
       Accept:
       - "*/*"
-      Date:
-      - Fri, 11 Dec 2015 22:33:02 GMT
-      Content-Type:
-      - application/json
   response:
     status:
-      code: 200
-      message: OK
+      code: 404
+      message: Not Found
     headers:
-      Content-Length:
-      - '2'
-      Connection:
-      - keep-alive
+      X-Amz-Request-Id:
+      - 8658441178E435C0
+      X-Amz-Id-2:
+      - ux+wo802hNl/UWWbwSNmlYxoT9E2XKdaPqTN9Xe1FEBZSMe/Ln2vyr+JiR7J14kH
+      Content-Type:
+      - application/xml
+      Transfer-Encoding:
+      - chunked
+      Date:
+      - Fri, 11 Dec 2015 23:04:32 GMT
       Server:
-      - thin
+      - AmazonS3
     body:
       encoding: UTF-8
-      string: "{}"
+      string: ''
     http_version: 
-  recorded_at: Fri, 11 Dec 2015 22:33:02 GMT
+  recorded_at: Fri, 11 Dec 2015 23:04:33 GMT
+- request:
+    method: head
+    uri: https://code-corps-development.s3.amazonaws.com/posts/1/images/1/original.gif
+    body:
+      encoding: ASCII-8BIT
+      string: ''
+    headers:
+      Content-Type:
+      - ''
+      Accept-Encoding:
+      - ''
+      User-Agent:
+      - aws-sdk-ruby2/2.2.5 ruby/2.2.3 x86_64-darwin14 resources
+      X-Amz-Date:
+      - 20151211T230433Z
+      Host:
+      - code-corps-development.s3.amazonaws.com
+      X-Amz-Content-Sha256:
+      - e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      Authorization:
+      - AWS4-HMAC-SHA256 Credential=AKIAJA5VYNIZZFUPOAKA/20151211/us-east-1/s3/aws4_request,
+        SignedHeaders=host;user-agent;x-amz-content-sha256;x-amz-date, Signature=189c9aa99b9413d61472e98e3155bad4cd4131199b4a18f2c4ce92ca1805c9e7
+      Content-Length:
+      - '0'
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 404
+      message: Not Found
+    headers:
+      X-Amz-Request-Id:
+      - 81F325C25C512EF3
+      X-Amz-Id-2:
+      - aHw3v3bSqqdpyiusOZa75BYQdoBaVdpCmXLg+6LDooY9jtu4ZJWrWeIapEy3qezI
+      Content-Type:
+      - application/xml
+      Transfer-Encoding:
+      - chunked
+      Date:
+      - Fri, 11 Dec 2015 23:04:33 GMT
+      Server:
+      - AmazonS3
+    body:
+      encoding: UTF-8
+      string: ''
+    http_version: 
+  recorded_at: Fri, 11 Dec 2015 23:04:34 GMT
 recorded_with: VCR 3.0.0

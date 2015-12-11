@@ -58,14 +58,4 @@ RSpec.describe PostImage, type: :model do
       end
     end
   end
-
-  describe ".decode_image_data" do
-    let(:post) { create(:post, id: 1) }
-    let(:post_image) { create(:post_image, :with_s3_image, id: 1, post: post, filename: "default-avatar.gif", base64_photo_data: gif_string) }
-
-    it 'should call the NotifyPusherOfPostImageWorker', vcr: { cassette_name: 'models/post_image/decode_image_data' } do
-      post_image.decode_image_data
-      expect(NotifyPusherOfPostImageWorker.jobs.size).to eq 1
-    end
-  end
 end
