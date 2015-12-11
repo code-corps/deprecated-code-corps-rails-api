@@ -49,6 +49,21 @@ class User < ActiveRecord::Base
     self.photo = data
   end
 
+  # Follows a user.
+  def follow(other_user)
+    active_relationships.create(following_id: other_user.id)
+  end
+
+  # Unfollows a user.
+  def unfollow(other_user)
+    active_relationships.find_by(following_id: other_user.id).destroy
+  end
+
+  # Returns true if the current user is following the other user.
+  def following?(other_user)
+    following.include?(other_user)
+  end
+
   private
 
     def slug_is_not_duplicate
