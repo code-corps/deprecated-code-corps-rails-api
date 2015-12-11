@@ -2,7 +2,7 @@
 http_interactions:
 - request:
     method: head
-    uri: https://codecorps.s3.amazonaws.com/posts/1/images/1/original.jpg
+    uri: https://code-corps-development.s3.amazonaws.com/posts/2/images/2/original.jpg
     body:
       encoding: ASCII-8BIT
       string: ''
@@ -12,42 +12,40 @@ http_interactions:
       Accept-Encoding:
       - ''
       User-Agent:
-      - aws-sdk-ruby2/2.2.5 ruby/2.2.3 x86_64-linux resources
+      - aws-sdk-ruby2/2.2.5 ruby/2.2.3 x86_64-darwin14 resources
       X-Amz-Date:
-      - 20151211T075115Z
+      - 20151211T190234Z
       Host:
-      - codecorps.s3.amazonaws.com
+      - code-corps-development.s3.amazonaws.com
       X-Amz-Content-Sha256:
       - e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
       Authorization:
       - AWS4-HMAC-SHA256 Credential=AKIAJA5VYNIZZFUPOAKA/20151211/us-east-1/s3/aws4_request,
-        SignedHeaders=host;user-agent;x-amz-content-sha256;x-amz-date, Signature=85b77a7855c7225708a4ac2c1283fb03611aa419d95d71c3caf834888f4a842e
+        SignedHeaders=host;user-agent;x-amz-content-sha256;x-amz-date, Signature=668776b71b55f56cd9db3a64182d31b97f82e2a8ab86f4f934b311ccf8403173
       Content-Length:
       - '0'
       Accept:
       - "*/*"
   response:
     status:
-      code: 400
-      message: Bad Request
+      code: 404
+      message: Not Found
     headers:
       X-Amz-Request-Id:
-      - 77679EFCC323B1D8
+      - B8F7D28E38692D01
       X-Amz-Id-2:
-      - OMMuTJVPI5u4suIjifIBZnmbj1a/bNNN38zTaYaxPmptzSIxfMpG5e0R1+VZBohTAgVJY8bN+KM=
+      - WevBhJLM7m+v14IFDvrNj0gWUWZ67L0tLaYJieIE3VpJyjURuhZnaFveDgp2nnsbUjFHvsaP3rM=
       Content-Type:
       - application/xml
       Transfer-Encoding:
       - chunked
       Date:
-      - Fri, 11 Dec 2015 07:51:15 GMT
-      Connection:
-      - close
+      - Fri, 11 Dec 2015 19:02:34 GMT
       Server:
       - AmazonS3
     body:
       encoding: UTF-8
       string: ''
     http_version: 
-  recorded_at: Fri, 11 Dec 2015 07:51:16 GMT
+  recorded_at: Fri, 11 Dec 2015 19:02:34 GMT
 recorded_with: VCR 3.0.0

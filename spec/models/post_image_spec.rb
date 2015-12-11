@@ -32,20 +32,19 @@ RSpec.describe PostImage, type: :model do
 
     context 'with cloudfront'  do
       before do
-        file = File.open("#{Rails.root}/spec/sample_data/default-avatar.png", 'r')
-        @base_64_image = Base64.encode64(open(file) { |io| io.read })
-        @data_uri_formatted_image = "data:image/png;base64,#{@base_64_image}"
+        file = File.open("#{Rails.root}/spec/sample_data/base_64_image.txt", 'r')
+        @base_64_image = open(file) { |io| io.read }
       end
 
       let(:post) { create(:post) }
-      let(:post_image) { create(:post_image, :with_s3_image, post: post, filename: "default-avatar.png", base_64_photo_data: @data_uri_formatted_image) }
+      let(:post_image) { create(:post_image, :with_s3_image, post: post, filename: "default-avatar.png", base_64_photo_data: @base_64_image) }
 
-      it 'should have cloudfront in the URL', vcr: { cassette_name: 'requests/models/post_image/aws-upload' } do
+      it 'should have cloudfront in the URL', vcr: { cassette_name: 'models/post_image/aws-upload' } do
         post_image.decode_image_data
         expect(post_image.image.url(:thumb)).to include 'cloudfront'
       end
 
-      it 'should have the right path', vcr: { cassette_name: 'requests/models/post_image/aws-upload-2' } do
+      it 'should have the right path', vcr: { cassette_name: 'models/post_image/aws-upload-2' } do
         post_image.decode_image_data
         expect(post_image.image.url(:thumb)).to include "posts/#{post.id}/images/#{post_image.id}"
       end
