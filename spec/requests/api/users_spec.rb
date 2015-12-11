@@ -233,7 +233,7 @@ describe "Users API" do
     context 'when registering with an email and password' do
       it 'creates a user with a user uploaded image' do
         file = File.open("#{Rails.root}/spec/sample_data/default-avatar.png", 'r')
-        base_64_image = Base64.encode64(open(file) { |io| io.read })
+        base64_image = Base64.encode64(open(file) { |io| io.read })
 
         post "#{host}/users", {
           data: {
@@ -241,7 +241,7 @@ describe "Users API" do
               email: "josh@example.com",
               username: "joshsmith",
               password: "password",
-              base_64_photo_data: base_64_image
+              base64_photo_data: base64_image
             }
           }
         }

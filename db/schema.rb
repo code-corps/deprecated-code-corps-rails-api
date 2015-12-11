@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151209235804) do
+ActiveRecord::Schema.define(version: 20151211200152) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -138,7 +138,7 @@ ActiveRecord::Schema.define(version: 20151209235804) do
     t.integer  "user_id",            null: false
     t.integer  "post_id",            null: false
     t.text     "filename",           null: false
-    t.text     "base_64_photo_data", null: false
+    t.text     "base64_photo_data",  null: false
     t.datetime "created_at",         null: false
     t.datetime "updated_at",         null: false
     t.string   "image_file_name"
@@ -190,7 +190,7 @@ ActiveRecord::Schema.define(version: 20151209235804) do
     t.string   "icon_content_type"
     t.integer  "icon_file_size"
     t.datetime "icon_updated_at"
-    t.text     "base_64_icon_data"
+    t.text     "base64_icon_data"
     t.integer  "contributors_count"
     t.string   "slug",               null: false
   end
@@ -259,7 +259,7 @@ ActiveRecord::Schema.define(version: 20151209235804) do
     t.text     "biography"
     t.string   "facebook_id"
     t.string   "facebook_access_token"
-    t.string   "base_64_photo_data"
+    t.string   "base64_photo_data"
     t.string   "photo_file_name"
     t.string   "photo_content_type"
     t.integer  "photo_file_size"

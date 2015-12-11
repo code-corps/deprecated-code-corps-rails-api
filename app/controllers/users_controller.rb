@@ -84,7 +84,7 @@ class UsersController < ApplicationController
     end
 
     def create_params
-      record_attributes.permit(:email, :username, :password, :facebook_id, :facebook_access_token, :base_64_photo_data)
+      record_attributes.permit(:email, :username, :password, :facebook_id, :facebook_access_token, :base64_photo_data)
     end
 
     def update_params
@@ -147,6 +147,6 @@ class UsersController < ApplicationController
     end
 
     def photo_param?
-      create_params[:base_64_photo_data].present?
+      create_params[:base64_photo_data].present?
     end
 end

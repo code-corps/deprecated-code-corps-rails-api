@@ -41,8 +41,8 @@ class User < ActiveRecord::Base
   after_save :create_or_update_member
 
   def decode_image_data
-    return unless base_64_photo_data.present?
-    data = StringIO.new(Base64.decode64(base_64_photo_data))
+    return unless base64_photo_data.present?
+    data = StringIO.new(Base64.decode64(base64_photo_data))
     data.class.class_eval { attr_accessor :original_filename, :content_type }
     data.original_filename = SecureRandom.hex + '.png'
     data.content_type = 'image/png'
