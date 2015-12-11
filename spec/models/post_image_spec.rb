@@ -45,19 +45,27 @@ RSpec.describe PostImage, type: :model do
 
     context 'with cloudfront'  do
       let(:post) { create(:post, id: 1) }
-      let(:post_image) { create(:post_image, :with_s3_image, id: 1, post: post, filename: "default-avatar.png", base64_photo_data: gif_string) }
+      let(:post_image) { create(:post_image, :with_s3_image, id: 1, post: post, filename: "default-avatar.gif", base64_photo_data: gif_string) }
 
-      it 'should have cloudfront in the URL', vcr: { cassette_name: 'models/post_image/aws-upload' } do
-        expect_any_instance_of(CodeCorps::Scenario::NotifyPusherOfPostImage).to receive(:call)
+      it 'should have our cloudfront domain in the URL', vcr: { cassette_name: 'models/post_image/aws-upload' } do
         post_image.decode_image_data
-        expect(post_image.image.url(:thumb)).to include 'cloudfront'
+        expect(post_image.image.url).to include ENV['CLOUDFRONT_DOMAIN']
       end
 
       it 'should have the right path', vcr: { cassette_name: 'models/post_image/aws-upload' } do
-        expect_any_instance_of(CodeCorps::Scenario::NotifyPusherOfPostImage).to receive(:call)
         post_image.decode_image_data
-        expect(post_image.image.url(:thumb)).to include "posts/#{post.id}/images/#{post_image.id}"
+        expect(post_image.image.url).to include "posts/#{post.id}/images/#{post_image.id}/original.gif"
       end
+    end
+  end
+
+  describe ".decode_image_data" do
+    let(:post) { create(:post, id: 1) }
+    let(:post_image) { create(:post_image, :with_s3_image, id: 1, post: post, filename: "default-avatar.gif", base64_photo_data: gif_string) }
+
+    it 'should call the NotifyPusherOfPostImageWorker', vcr: { cassette_name: 'models/post_image/decode_image_data' } do
+      post_image.decode_image_data
+      expect(NotifyPusherOfPostImageWorker.jobs.size).to eq 1
     end
   end
 end

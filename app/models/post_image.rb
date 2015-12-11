@@ -32,6 +32,6 @@ class PostImage < ActiveRecord::Base
   private
 
     def notify_pusher
-      CodeCorps::Scenario::NotifyPusherOfPostImage.new(self).call
+      NotifyPusherOfPostImageWorker.perform_async(self.id)
     end
 end

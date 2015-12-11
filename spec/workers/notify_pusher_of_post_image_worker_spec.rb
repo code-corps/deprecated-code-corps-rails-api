@@ -8,7 +8,7 @@ describe NotifyPusherOfPostImageWorker do
   }
   let(:post_image) { create(:post_image, :with_s3_image, filename: "jake.gif", base64_photo_data: gif_string) }
 
-  it 'adds a profile picture from facebook' do
+  it 'calls the NotifyPusherOfPostImage scenario' do
     expect_any_instance_of(CodeCorps::Scenario::NotifyPusherOfPostImage).to receive(:call).exactly(1).times
     NotifyPusherOfPostImageWorker.new.perform(post_image.id)
   end
