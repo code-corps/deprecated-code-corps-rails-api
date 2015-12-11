@@ -28,7 +28,6 @@ describe User, :type => :model do
     it { should have_many(:organizations).through(:organization_memberships) }
     it { should have_many(:team_memberships).with_foreign_key("member_id") }
     it { should have_many(:teams).through(:team_memberships) }
-    it { should have_many(:projects) }
     it { should have_many(:posts) }
     it { should have_many(:comments) }
     it { should have_many(:user_skills) }
@@ -38,6 +37,9 @@ describe User, :type => :model do
     it { should have_many(:following).through(:active_relationships).source(:following) }
     it { should have_many(:followers).through(:passive_relationships).source(:follower) }
     it { should have_one(:member) }
+
+    it { should have_many(:contributors) }
+    it { should have_many(:projects).through(:contributors) }
   end
 
   describe "validations" do
@@ -67,7 +69,7 @@ describe User, :type => :model do
         it { should validate_uniqueness_of(:username).case_insensitive }
         it { should validate_length_of(:username).is_at_most(39) }
       end
-      
+
       it { should allow_value("code_corps").for(:username) }
       it { should allow_value("codecorps").for(:username) }
       it { should allow_value("codecorps12345").for(:username) }
