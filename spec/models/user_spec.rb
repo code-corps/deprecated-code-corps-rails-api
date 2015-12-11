@@ -157,4 +157,37 @@ describe User, :type => :model do
       end
     end
   end
+
+  context 'following behavior' do
+    before(:each) do
+      @user = create(:user)
+      @other_user_1 = create(:user)
+      @other_user_2 = create(:user)
+    end
+
+    it "can have followers" do
+      create(:user_relationship, follower: @other_user_1, following: @user)
+      create(:user_relationship, follower: @other_user_2, following: @user)
+
+      expect(@user.followers.length).to eq 2
+    end
+
+    it "can have other users it follows" do
+      create(:user_relationship, follower: @user, following: @other_user_1)
+      create(:user_relationship, follower: @user, following: @other_user_2)
+
+      expect(@user.following.length).to eq 2
+    end
+
+    it "can follow another user" do
+      @user.follow(@other_user_1)
+      expect(@user.following? @other_user_1).to be true
+    end
+
+    it "can unfollow another user" do
+      create(:user_relationship, follower: @user, following: @other_user_1)
+      @user.unfollow(@other_user_1)
+      expect(@user.following? @other_user_1).to be false
+    end
+  end
 end

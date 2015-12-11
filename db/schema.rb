@@ -34,6 +34,7 @@ ActiveRecord::Schema.define(version: 20151211200152) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.text     "markdown",   null: false
+    t.string   "aasm_state"
   end
 
   create_table "contributors", force: :cascade do |t|

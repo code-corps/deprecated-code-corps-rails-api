@@ -119,7 +119,7 @@ class UsersController < ApplicationController
       user.update(create_params)
 
       if user.save
-        InitializeNewFacebookUserWorker.perform_async(user.id)
+        AddFacebookFriendsWorker.perform_async(user.id)
         if photo_param?
           UpdateProfilePictureWorker.perform_async(user.id)
         else
