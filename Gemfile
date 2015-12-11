@@ -37,6 +37,8 @@ gem 'sequenced'
 
 gem 'aasm'
 
+gem 'faraday'
+
 group :development, :test do
   gem 'dotenv-rails'
 
