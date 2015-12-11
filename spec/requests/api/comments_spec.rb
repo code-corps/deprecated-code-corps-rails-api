@@ -18,9 +18,17 @@ describe "Comments API" do
         @post = create(:post)
       end
 
+      def make_request
+        authenticated_post "/comments", @params, @token
+      end
+
+      def make_request_with_sidekiq_inline
+        Sidekiq::Testing::inline! { make_request }
+      end
+
       it "requires a 'post' to be specified" do
-        params = { data: { type: "comments", attributes: { markdown: "Comment body" } } }
-        authenticated_post "/comments", params, @token
+        @params = { data: { type: "comments", attributes: { markdown: "Comment body" } } }
+        make_request
 
         expect(last_response.status).to eq 422
         expect(json).to be_a_valid_json_api_error
@@ -28,11 +36,11 @@ describe "Comments API" do
       end
 
       it "requires a 'body' to be specified" do
-        params = { data: { type: "comments",
+        @params = { data: { type: "comments",
           attributes: {},
           relationships: { post: { data: { id: @post.id, type: "posts" } } }
         } }
-        authenticated_post "/comments", params, @token
+        make_request
 
         expect(last_response.status).to eq 422
         expect(json).to be_a_valid_json_api_error
@@ -42,60 +50,95 @@ describe "Comments API" do
       context "when it succeeds" do
         context "as a draft" do
           before do
-            params = { data: {
+            @mention_1 = create(:user)
+            @mention_2 = create(:user)
+
+            @params = { data: {
               type: "comments",
-              attributes: { markdown: "Comment body" },
+              attributes: { markdown: "@#{@mention_1.username} @#{@mention_2.username}" },
               relationships: {
                 post: { data: { id: @post.id, type: "posts" } }
               }
             }}
-            authenticated_post "/comments", params, @token
           end
 
           it "creates a comment" do
+            make_request
             comment = Comment.last
-            expect(comment.body).to eq "<p>Comment body</p>"
+
+            expect(comment.markdown).to eq "@#{@mention_1.username} @#{@mention_2.username}"
+            expect(comment.body).to eq "<p>@#{@mention_1.username} @#{@mention_2.username}</p>"
 
             expect(comment.user_id).to eq @user.id
             expect(comment.post_id).to eq @post.id
           end
 
-          it "returns the created comment" do
-            comment_attributes = json.data.attributes
-            expect(comment_attributes.body).to eq "<p>Comment body</p>"
+          it "returns the created comment, serialized with CommentSerializer" do
+            make_request
 
-            comment_relationships = json.data.relationships
-            expect(comment_relationships.post).not_to be_nil
-
-            comment_includes = json.included
-            expect(comment_includes).to be_nil
+            expect(json).to serialize_object(Comment.last).with(CommentSerializer)
           end
 
           it "sets user to current user" do
+            make_request
             comment_relationships = json.data.relationships
             expect(comment_relationships.user).not_to be_nil
             expect(comment_relationships.user.data.id).to eq @user.id.to_s
+          end
+
+          it "creates mentions" do
+            expect{ make_request_with_sidekiq_inline }.to change { CommentUserMention.count }.by 2
+          end
+
+          it "does not create notifications for each mentioned user" do
+            expect{ make_request_with_sidekiq_inline }.to_not change{ Notification.sent.count }
+          end
+
+          it "does not send mails for each mentioned user" do
+            expect{ make_request_with_sidekiq_inline }.to_not change{ ActionMailer::Base.deliveries.count }
           end
         end
 
         context "when publishing" do
           before do
-            params = { data: {
+            @mention_1 = create(:user)
+            @mention_2 = create(:user)
+
+            @params = { data: {
               type: "comments",
-              attributes: { markdown: "Comment body", state: "published" },
+              attributes: { markdown: "@#{@mention_1.username} @#{@mention_2.username}", state: "published" },
               relationships: {
                 post: { data: { id: @post.id, type: "posts" } }
               }
             }}
-            authenticated_post "/comments", params, @token
           end
 
           it "creates a comment" do
+            expect{ make_request }.to change{ Comment.count }.by 1
             comment = Comment.last
-            expect(comment.body).to eq "<p>Comment body</p>"
+            expect(comment.markdown).to eq "@#{@mention_1.username} @#{@mention_2.username}"
+            expect(comment.body).to eq "<p>@#{@mention_1.username} @#{@mention_2.username}</p>"
 
-            expect(comment.user_id).to eq @user.id
-            expect(comment.post_id).to eq @post.id
+            expect(comment.post).to eq @post
+            expect(comment.user).to eq @user
+          end
+
+          it "returns the created comment, serialized with CommentSerializer" do
+            make_request
+
+            expect(json).to serialize_object(Comment.last).with(CommentSerializer)
+          end
+
+          it "creates mentions" do
+            expect{ make_request_with_sidekiq_inline }.to change { CommentUserMention.count }.by 2
+          end
+
+          it "creates notifications for each mentioned user" do
+            expect{ make_request_with_sidekiq_inline }.to change{ Notification.sent.count }.by 2
+          end
+
+          it "sends mails for each mentioned user" do
+            expect{ make_request_with_sidekiq_inline }.to change{ ActionMailer::Base.deliveries.count }.by 2
           end
         end
       end
