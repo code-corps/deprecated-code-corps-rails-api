@@ -32,7 +32,7 @@ class UsersController < ApplicationController
   end
 
   def show_authenticated_user
-    render json: current_user, serializer: AuthenticatedUserSerializer, include: ["projects"]
+    render json: current_user, serializer: AuthenticatedUserSerializer
   end
 
   def update_authenticated_user
