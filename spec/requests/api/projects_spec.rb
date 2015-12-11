@@ -109,9 +109,9 @@ describe "Projects API" do
           }
         }, @token
 
-        expect(last_response.status).to eq 422
-        expect(json).to be_a_valid_json_api_error.with_id "VALIDATION_ERROR"
-        expect(json).to contain_an_error_of_type("VALIDATION_ERROR").with_message("Owner can't be blank")
+        expect(last_response.status).to eq 401
+        expect(json).to be_a_valid_json_api_error.with_id "ACCESS_DENIED"
+        expect(json).to contain_an_error_of_type("ACCESS_DENIED").with_message("You are not authorized to perform this action on projects.")
       end
 
       it "returns a 404 if the owner doesn't exist" do
@@ -186,7 +186,7 @@ describe "Projects API" do
 
   context 'PATCH /projects/:id' do
 
-    let(:project) { create(:project) }
+     let(:project) { create(:project) }
 
     context 'when unauthenticated' do
       it 'should return a 401 with a proper error' do
@@ -198,7 +198,7 @@ describe "Projects API" do
 
     context 'when authenticated' do
       before do
-        @user = create(:user, email: "test_user@mail.com", password: "password")
+        @project = create(:project, owner: create(:user, email: "test_user@mail.com", password: "password"))
         @token = authenticate(email: "test_user@mail.com", password: "password")
       end
 
@@ -215,7 +215,7 @@ describe "Projects API" do
 
       context 'when updating the title' do
         it 'updates a project title' do
-          authenticated_patch "/projects/#{project.id}", {
+          authenticated_patch "/projects/#{@project.id}", {
             data: {
               attributes: {
                 title: "New title"
@@ -223,13 +223,13 @@ describe "Projects API" do
             }
           }, @token
 
-          project.reload
+          @project.reload
 
-          expect(project.title).to eq "New title"
+          expect(@project.title).to eq "New title"
         end
 
         it 'returns an error when with a nil title' do
-          authenticated_patch "/projects/#{project.id}", {
+          authenticated_patch "/projects/#{@project.id}", {
               data: {
                 attributes: {
                   title: nil
@@ -243,7 +243,7 @@ describe "Projects API" do
       end
 
       it 'updates a project description' do
-        authenticated_patch "/projects/#{project.id}", {
+        authenticated_patch "/projects/#{@project.id}", {
           data: {
             attributes: {
               description: "New description"
@@ -251,9 +251,9 @@ describe "Projects API" do
           }
         }, @token
 
-        project.reload
+        @project.reload
 
-        expect(project.description).to eq "New description"
+        expect(@project.description).to eq "New description"
       end
 
       it 'updates a project icon for a project without an icon' do
@@ -261,7 +261,7 @@ describe "Projects API" do
           file = File.open("#{Rails.root}/spec/sample_data/default-avatar.png", 'r')
           base_64_image = Base64.encode64(open(file) { |io| io.read })
 
-          authenticated_patch "/projects/#{project.id}", {
+          authenticated_patch "/projects/#{@project.id}", {
             data: {
               attributes: {
                 base_64_icon_data: base_64_image
@@ -269,10 +269,10 @@ describe "Projects API" do
             }
           }, @token
 
-          project.reload
+          @project.reload
 
-          expect(project.base_64_icon_data).to be_nil
-          expect(project.icon.path).to_not be_nil
+          expect(@project.base_64_icon_data).to be_nil
+          expect(@project.icon.path).to_not be_nil
           project_icon_file = File.open("#{Rails.root}/spec/sample_data/default-avatar.png", 'r')
           base_64_saved_image = Base64.encode64(open(project_icon_file) { |io| io.read })
           expect(base_64_saved_image).to include base_64_image
