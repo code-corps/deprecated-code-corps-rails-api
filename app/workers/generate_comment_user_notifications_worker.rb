@@ -6,8 +6,8 @@ class GenerateCommentUserNotificationsWorker
 
   def perform(comment_id)
     comment = Comment.find(comment_id)
+    return if comment.draft?
     CodeCorps::Scenario::GenerateNotificationsForCommentUserMentions.new(comment).call
     CodeCorps::Scenario::SendNotificationEmails.new(comment).call
   end
-
 end

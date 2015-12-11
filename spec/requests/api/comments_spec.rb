@@ -50,9 +50,12 @@ describe "Comments API" do
       context "when it succeeds" do
         context "as a draft" do
           before do
+            @mention_1 = create(:user)
+            @mention_2 = create(:user)
+
             @params = { data: {
               type: "comments",
-              attributes: { markdown: "Comment body" },
+              attributes: { markdown: "@#{@mention_1.username} @#{@mention_2.username}" },
               relationships: {
                 post: { data: { id: @post.id, type: "posts" } }
               }
@@ -62,22 +65,18 @@ describe "Comments API" do
           it "creates a comment" do
             make_request
             comment = Comment.last
-            expect(comment.body).to eq "<p>Comment body</p>"
+
+            expect(comment.markdown).to eq "@#{@mention_1.username} @#{@mention_2.username}"
+            expect(comment.body).to eq "<p>@#{@mention_1.username} @#{@mention_2.username}</p>"
 
             expect(comment.user_id).to eq @user.id
             expect(comment.post_id).to eq @post.id
           end
 
-          it "returns the created comment" do
+          it "returns the created comment, serialized with CommentSerializer" do
             make_request
-            comment_attributes = json.data.attributes
-            expect(comment_attributes.body).to eq "<p>Comment body</p>"
 
-            comment_relationships = json.data.relationships
-            expect(comment_relationships.post).not_to be_nil
-
-            comment_includes = json.included
-            expect(comment_includes).to be_nil
+            expect(json).to serialize_object(Comment.last).with(CommentSerializer)
           end
 
           it "sets user to current user" do
@@ -85,6 +84,18 @@ describe "Comments API" do
             comment_relationships = json.data.relationships
             expect(comment_relationships.user).not_to be_nil
             expect(comment_relationships.user.data.id).to eq @user.id.to_s
+          end
+
+          it "creates mentions" do
+            expect{ make_request_with_sidekiq_inline }.to change { CommentUserMention.count }.by 2
+          end
+
+          it "does not create notifications for each mentioned user" do
+            expect{ make_request_with_sidekiq_inline }.to_not change{ Notification.sent.count }
+          end
+
+          it "does not send mails for each mentioned user" do
+            expect{ make_request_with_sidekiq_inline }.to_not change{ ActionMailer::Base.deliveries.count }
           end
         end
 
