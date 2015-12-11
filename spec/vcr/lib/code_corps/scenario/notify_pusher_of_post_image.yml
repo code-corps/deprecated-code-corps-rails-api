@@ -1,0 +1,34 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: http://127.0.0.1:54082/apps/160485/events?auth_key=7b0b034d6b2928e5c548&auth_signature=b979e39667c8991f1aef20a38fc1b8b1cee1f52f694c82e472a91dabd6f096c2&auth_timestamp=1449870749&auth_version=1.0&body_md5=8565fbd507a51483d08b65d755d199f7
+    body:
+      encoding: UTF-8
+      string: '{"name":"post_image_uploaded","channels":["private-user-1"],"data":"{\"post_id\":1,\"user_id\":1,\"filename\":\"default-avatar.png\",\"url\":\"https://dawxes9syhrgg.cloudfront.net/posts/1/images/1/original.jpg?1449870749\"}"}'
+    headers:
+      User-Agent:
+      - HTTPClient/1.0 (2.7.0.1, ruby 2.2.3 (2015-08-18))
+      Accept:
+      - "*/*"
+      Date:
+      - Fri, 11 Dec 2015 21:52:29 GMT
+      Content-Type:
+      - application/json
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Length:
+      - '2'
+      Connection:
+      - keep-alive
+      Server:
+      - thin
+    body:
+      encoding: UTF-8
+      string: "{}"
+    http_version: 
+  recorded_at: Fri, 11 Dec 2015 21:52:29 GMT
+recorded_with: VCR 3.0.0

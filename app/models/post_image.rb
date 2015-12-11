@@ -1,3 +1,5 @@
+require "code_corps/scenario/notify_pusher_of_post_image"
+
 class PostImage < ActiveRecord::Base
   belongs_to :user
   belongs_to :post
@@ -20,9 +22,16 @@ class PostImage < ActiveRecord::Base
     data = Paperclip.io_adapters.for(base64_photo_data)
     data.original_filename = self.filename
     self.image = data
+    notify_pusher
   end
 
   Paperclip.interpolates :post_id do |attachment, style|
     attachment.instance.post_id
   end
+
+  private
+
+    def notify_pusher
+      CodeCorps::Scenario::NotifyPusherOfPostImage.new(self).call
+    end
 end

@@ -48,11 +48,13 @@ RSpec.describe PostImage, type: :model do
       let(:post_image) { create(:post_image, :with_s3_image, id: 1, post: post, filename: "default-avatar.png", base64_photo_data: gif_string) }
 
       it 'should have cloudfront in the URL', vcr: { cassette_name: 'models/post_image/aws-upload' } do
+        expect_any_instance_of(CodeCorps::Scenario::NotifyPusherOfPostImage).to receive(:call)
         post_image.decode_image_data
         expect(post_image.image.url(:thumb)).to include 'cloudfront'
       end
 
       it 'should have the right path', vcr: { cassette_name: 'models/post_image/aws-upload' } do
+        expect_any_instance_of(CodeCorps::Scenario::NotifyPusherOfPostImage).to receive(:call)
         post_image.decode_image_data
         expect(post_image.image.url(:thumb)).to include "posts/#{post.id}/images/#{post_image.id}"
       end

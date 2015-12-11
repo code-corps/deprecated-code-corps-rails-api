@@ -37,6 +37,8 @@ gem 'sequenced'
 
 gem 'aasm'
 
+gem 'pusher'
+
 group :development, :test do
   gem 'dotenv-rails'
 
@@ -68,4 +70,6 @@ group :test do
   gem 'hashie'
 
   gem 'database_cleaner'
+
+  gem 'pusher-fake'
 end
