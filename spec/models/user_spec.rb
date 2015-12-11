@@ -148,8 +148,8 @@ describe User, :type => :model do
     context 'with cloudfront' do
       let(:user) { create(:user, :with_s3_photo) }
 
-      it 'should have cloudfront in the URL' do
-        expect(user.photo.url(:thumb)).to include 'cloudfront'
+      it 'should have our cloudfront domain in the URL' do
+        expect(user.photo.url(:thumb)).to include ENV['CLOUDFRONT_DOMAIN']
       end
 
       it 'should have the right path' do
