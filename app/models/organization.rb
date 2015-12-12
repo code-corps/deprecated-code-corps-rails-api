@@ -10,6 +10,7 @@ class Organization < ActiveRecord::Base
 
   validates_presence_of :name
 
+  validates :slug, presence: true
   validates :slug, obscenity: {message: "may not be obscene"}
   validates :slug, exclusion: { in: Rails.configuration.x.reserved_routes }
   validates :slug, slug: true
