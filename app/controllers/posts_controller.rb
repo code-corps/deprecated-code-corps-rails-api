@@ -85,6 +85,8 @@ class PostsController < ApplicationController
 
     def find_posts!
       project = find_project!
-      Post.where(project: project).page(page_number).per(page_size).includes [:comments, :user, :project, :post_user_mentions, :comment_user_mentions]
+      Post.where(project: project)
+        .page(page_number).per(page_size)
+        .includes [:users, :comments, :user, :project, :post_user_mentions, :comment_user_mentions]
     end
 end
