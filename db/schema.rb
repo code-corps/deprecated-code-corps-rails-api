@@ -11,10 +11,23 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151211200152) do
+ActiveRecord::Schema.define(version: 20151212172744) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "comment_images", force: :cascade do |t|
+    t.integer  "user_id",            null: false
+    t.integer  "comment_id",         null: false
+    t.text     "filename",           null: false
+    t.text     "base64_photo_data",  null: false
+    t.datetime "created_at",         null: false
+    t.datetime "updated_at",         null: false
+    t.string   "image_file_name"
+    t.string   "image_content_type"
+    t.integer  "image_file_size"
+    t.datetime "image_updated_at"
+  end
 
   create_table "comment_user_mentions", force: :cascade do |t|
     t.integer  "user_id",     null: false
