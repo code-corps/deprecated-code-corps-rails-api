@@ -11,6 +11,8 @@ gem 'pg'
 
 gem 'active_model_serializers', github: 'rails-api/active_model_serializers'
 
+gem 'rack-cors', require: 'rack/cors'
+
 gem 'clearance'
 
 gem 'doorkeeper'
@@ -38,14 +40,14 @@ gem 'sequenced'
 gem 'aasm'
 
 group :development, :test do
+  gem 'bullet'
+
   gem 'dotenv-rails'
 
   gem 'pry-rails'
   gem 'pry'
   gem 'pry-nav'
   gem 'pry-stack_explorer'
-
-  gem 'bullet'
 
   gem 'rspec-rails', '~> 3.0'
   gem 'rspec-sidekiq'
@@ -57,15 +59,12 @@ group :development do
 end
 
 group :test do
+  gem 'capybara'
+  gem 'database_cleaner'
   gem 'factory_girl_rails', '~> 4.0'
+  gem 'hashie'
+  gem 'oauth2'
   gem 'shoulda-matchers'
-
   gem 'vcr'
   gem 'webmock'
-
-  gem 'oauth2'
-
-  gem 'hashie'
-
-  gem 'database_cleaner'
 end
