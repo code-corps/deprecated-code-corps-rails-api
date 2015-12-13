@@ -71,10 +71,6 @@ class ApplicationController < ActionController::API
     end
 
     def set_default_response_format
-      if params[:controller] == "ember_index"
-        request.format = :html
-      else
-        request.format = :json unless params[:format]
-      end
+      request.format = :json unless params[:format]
     end
 end
