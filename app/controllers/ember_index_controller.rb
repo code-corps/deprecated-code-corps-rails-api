@@ -10,7 +10,7 @@ class EmberIndexController < ApplicationController
                   Sidekiq.redis { |r| "code-corps-ember:index:#{r.get('code-corps-ember:index:current')}" }
                 end
     index = Sidekiq.redis { |r| r.get(index_key) }
-    render html: process_index(index).html_safe, layout: false
+    render text: process_index(index).html_safe, layout: false
   end
 
   private
