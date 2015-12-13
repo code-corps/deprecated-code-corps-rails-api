@@ -2,7 +2,7 @@ class ApplicationController < ActionController::API
   include Clearance::Controller
   include Pundit
 
-  before_action :set_default_response_format
+  # before_action :set_default_response_format
 
   rescue_from Pundit::NotAuthorizedError, with: :render_error
   rescue_from ActionController::ParameterMissing, with: :render_error

@@ -41,4 +41,6 @@ Rails.application.routes.draw do
       resources :projects, :path => '', :only => [:show]
     end
   end
+
+  get '/(*path)' => "ember_index#index", as: :root, format: :html
 end
