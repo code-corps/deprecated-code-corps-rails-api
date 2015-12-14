@@ -114,8 +114,8 @@ describe Project, :type => :model do
 
       let(:project) { create(:project, :with_s3_icon) }
 
-      it 'should have cloudfront in the URL' do
-        expect(project.icon.url(:thumb)).to include 'cloudfront'
+      it 'should have our cloudfront domain in the URL' do
+        expect(project.icon.url(:thumb)).to include ENV['CLOUDFRONT_DOMAIN']
       end
 
       it 'should have the right path' do

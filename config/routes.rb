@@ -32,7 +32,11 @@ Rails.application.routes.draw do
       resources :comments, only: [:index]
     end
 
+    resources :post_images, only: [:create]
+
     resources :comments, only: [:show, :create, :update]
+
+    resources :comment_images, only: [:create]
 
     resources :organizations, only: [:show, :create, :update]
 
