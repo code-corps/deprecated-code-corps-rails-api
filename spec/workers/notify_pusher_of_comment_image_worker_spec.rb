@@ -6,10 +6,13 @@ describe NotifyPusherOfCommentImageWorker do
     file = File.open(filename, "r")
     open(file, &:read)
   end
-  
+
   let(:comment_image) do
-    create(:comment_image, :with_s3_image,
-      filename: "jake.gif", base64_photo_data: gif_string
+    create(
+      :comment_image,
+      :with_s3_image,
+      filename: "jake.gif",
+      base64_photo_data: gif_string
     )
   end
 
