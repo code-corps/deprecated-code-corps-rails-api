@@ -7,9 +7,11 @@ describe NotifyPusherOfPostImageWorker do
     open(file, &:read)
   end
 
-  let(:post_image) { create(:post_image, :with_s3_image,
-    filename: "jake.gif", base64_photo_data: gif_string)
-  }
+  let(:post_image) do
+    create(:post_image, :with_s3_image,
+      filename: "jake.gif", base64_photo_data: gif_string
+    )
+  end
 
   it "calls the NotifyPusherOfPostImage scenario" do
     expect_any_instance_of(
