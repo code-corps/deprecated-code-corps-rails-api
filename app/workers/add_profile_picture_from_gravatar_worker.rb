@@ -15,7 +15,8 @@ class AddProfilePictureFromGravatarWorker
 
   def gravatar_photo_url(user)
     hash = gravatar_hash_for(user)
-    return "https://secure.gravatar.com/avatar/#{hash}?s=500&r=pg&d=404" unless gravatar_returns_error?(hash)
+    gravatar_url = "https://secure.gravatar.com/avatar/#{hash}?s=500&r=pg&d=404"
+    gravatar_returns_error?(hash) ? nil : gravatar_url
   end
 
   def gravatar_hash_for(user)
@@ -25,6 +26,6 @@ class AddProfilePictureFromGravatarWorker
   def gravatar_returns_error?(hash)
     response = Faraday.get "https://secure.gravatar.com/avatar/#{hash}?d=404"
 
-    return false unless response.body == "404 Not Found"
+    response.body == "404 Not Found" ? true : false
   end
 end

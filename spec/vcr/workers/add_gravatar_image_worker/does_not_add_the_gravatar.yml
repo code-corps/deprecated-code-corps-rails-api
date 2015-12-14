@@ -21,7 +21,7 @@ http_interactions:
       Server:
       - nginx
       Date:
-      - Mon, 14 Dec 2015 18:17:05 GMT
+      - Mon, 14 Dec 2015 18:39:45 GMT
       Content-Type:
       - text/html; charset=utf-8
       Content-Length:
@@ -38,12 +38,56 @@ http_interactions:
       Accept-Ranges:
       - bytes
       X-Varnish:
-      - '3740146836'
+      - 3745628782 3740146836
       Via:
       - 1.1 varnish
     body:
       encoding: UTF-8
       string: 404 Not Found
     http_version: 
-  recorded_at: Mon, 14 Dec 2015 18:17:05 GMT
+  recorded_at: Mon, 14 Dec 2015 18:39:45 GMT
+- request:
+    method: get
+    uri: https://secure.gravatar.com/avatar/175ffcd4a85aa394bcb09f2cafc3e616?d=404&r=pg&s=500
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - Ruby
+  response:
+    status:
+      code: 404
+      message: Not Found
+    headers:
+      Server:
+      - nginx
+      Date:
+      - Mon, 14 Dec 2015 18:39:45 GMT
+      Content-Type:
+      - text/html; charset=utf-8
+      Content-Length:
+      - '13'
+      Connection:
+      - keep-alive
+      Last-Modified:
+      - Wed, 11 Jan 1984 08:00:00 GMT
+      Link:
+      - <https://www.gravatar.com/avatar/175ffcd4a85aa394bcb09f2cafc3e616?s=500&r=pg&d=404>;
+        rel="canonical"
+      Access-Control-Allow-Origin:
+      - "*"
+      X-Varnish:
+      - '356519158'
+      Via:
+      - 1.1 varnish-v4
+    body:
+      encoding: UTF-8
+      string: 404 Not Found
+    http_version: 
+  recorded_at: Mon, 14 Dec 2015 18:39:45 GMT
 recorded_with: VCR 3.0.0
