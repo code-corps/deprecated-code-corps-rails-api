@@ -14,6 +14,7 @@ describe "EmberIndex API" do
         get "#{host}"
         expect(last_response.status).to eq 200
         expect(last_response.body).to eq "INDEX NOT FOUND"
+        expect(last_response.header["Content-Type"]).to match "text/html"
       end
     end
 
@@ -32,6 +33,7 @@ describe "EmberIndex API" do
         get "#{host}"
         expect(last_response.status).to eq 200
         expect(last_response.body).to eq "HELLO DEV"
+        expect(last_response.header["Content-Type"]).to match "text/html"
       end
     end
 
@@ -51,8 +53,8 @@ describe "EmberIndex API" do
 
         expect(last_response.status).to eq 200
         expect(last_response.body).to eq "HELLO REVISION"
+        expect(last_response.header["Content-Type"]).to match "text/html"
       end
-
     end
 
     context "when fetching latest" do
@@ -72,6 +74,7 @@ describe "EmberIndex API" do
 
         expect(last_response.status).to eq 200
         expect(last_response.body).to eq "HELLO CURRENT"
+        expect(last_response.header["Content-Type"]).to match "text/html"
       end
     end
   end
