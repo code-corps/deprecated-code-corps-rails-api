@@ -42,14 +42,6 @@ class ErrorSerializer
       }
     end
 
-    def self.serialize_validation_errors(errors)
-      errors.to_hash(true).map do |k, v|
-        v.map do |msg|
-          { id: "VALIDATION_ERROR", title: "#{k.capitalize} error", detail: msg, status: 422 }
-        end
-      end.flatten
-    end
-
     def self.serialize_parameter_missing(error)
       subject_name = error.param.to_s.humanize.capitalize
       return {
@@ -85,5 +77,14 @@ class ErrorSerializer
         detail: error.message,
         status: 404
       }
+    end
+
+    def self.serialize_validation_errors(errors)
+      errors.to_hash.map do |k, v|
+        v.map do |msg|
+          source = { pointer: "data/attributes/#{k}" }
+          { id: "VALIDATION_ERROR", source: source, detail: msg, status: 422 }
+        end
+      end.flatten
     end
 end

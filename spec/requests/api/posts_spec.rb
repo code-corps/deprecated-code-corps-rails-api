@@ -135,8 +135,7 @@ describe "Posts API" do
         authenticated_post "/posts", params, @token
 
         expect(last_response.status).to eq 422
-        expect(json).to be_a_valid_json_api_error
-        expect(json).to contain_an_error_of_type("VALIDATION_ERROR").with_message("Project can't be blank")
+        expect(json).to be_a_valid_json_api_validation_error
       end
 
       it "requires a 'title' to be specified" do
@@ -147,8 +146,7 @@ describe "Posts API" do
         authenticated_post "/posts", params, @token
 
         expect(last_response.status).to eq 422
-        expect(json).to be_a_valid_json_api_error
-        expect(json).to contain_an_error_of_type("VALIDATION_ERROR").with_message("Title can't be blank")
+        expect(json).to be_a_valid_json_api_validation_error
       end
 
       it "requires a 'body' to be specified" do
@@ -159,8 +157,7 @@ describe "Posts API" do
         authenticated_post "/posts", params, @token
 
         expect(last_response.status).to eq 422
-        expect(json).to be_a_valid_json_api_error
-        expect(json).to contain_an_error_of_type("VALIDATION_ERROR").with_message("Body can't be blank")
+        expect(json).to be_a_valid_json_api_validation_error
       end
 
       it "does not accept a 'number' to be set directly" do
@@ -412,7 +409,7 @@ describe "Posts API" do
 
           it "responds with a 422 validation error" do
             expect(last_response.status).to eq 422
-            expect(json).to be_a_valid_json_api_error.with_id "VALIDATION_ERROR"
+            expect(json).to be_a_valid_json_api_validation_error
           end
         end
       end

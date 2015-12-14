@@ -120,8 +120,7 @@ describe "Projects API" do
         }, @token
 
         expect(last_response.status).to eq 422
-        expect(json).to be_a_valid_json_api_error.with_id "VALIDATION_ERROR"
-        expect(json).to contain_an_error_of_type("VALIDATION_ERROR").with_message("Title can't be blank")
+        expect(json).to be_a_valid_json_api_validation_error.with_message "can't be blank"
       end
 
       it "returns an error if owner is left blank" do
@@ -260,7 +259,7 @@ describe "Projects API" do
             }, @token
 
           expect(last_response.status).to eq 422
-          expect(json.errors[0].detail).to eq "Title can't be blank"
+          expect(json).to be_a_valid_json_api_validation_error.with_message "can't be blank"
         end
       end
 
