@@ -5,7 +5,7 @@ class PostImagesController < ApplicationController
   def create
     post_image = PostImage.new(create_params)
 
-    # authorize post_image
+    authorize post_image
 
     if post_image.save
       NotifyPusherOfPostImageWorker.perform_async(post_image.id)

@@ -5,7 +5,7 @@ class CommentImagesController < ApplicationController
   def create
     comment_image = CommentImage.new(create_params)
 
-    # authorize comment_image
+    authorize comment_image
 
     if comment_image.save
       NotifyPusherOfCommentImageWorker.perform_async(comment_image.id)
