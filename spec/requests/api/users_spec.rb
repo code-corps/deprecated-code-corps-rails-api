@@ -132,7 +132,7 @@ describe "Users API" do
 
         expect(last_response.status).to eq 422
 
-        expect(json.errors[0].detail).to eq "Username has already been taken by an organization"
+        expect(json).to be_a_valid_json_api_validation_error.with_message "has already been taken by an organization"
       end
 
       it 'fails on a blank password and username' do
@@ -143,8 +143,8 @@ describe "Users API" do
 
         expect(last_response.status).to eq 422
 
-        expect(json.errors[0].detail).to eq "Password can't be blank"
-        expect(json.errors[1].detail).to eq "Username can't be blank"
+        expect(json).to be_a_valid_json_api_validation_error
+          .with_messages ["can't be blank", "can't be blank"]
       end
 
       it 'fails on a too long username' do
@@ -155,7 +155,7 @@ describe "Users API" do
 
         expect(last_response.status).to eq 422
 
-        expect(json.errors[0].detail).to eq "Username is too long (maximum is 39 characters)"
+        expect(json).to be_a_valid_json_api_validation_error.with_message "is too long (maximum is 39 characters)"
       end
 
       it 'fails on a username with invalid characters' do
@@ -166,7 +166,7 @@ describe "Users API" do
 
         expect(last_response.status).to eq 422
 
-        expect(json.errors[0].detail).to eq "Username may only contain alphanumeric characters, underscores, or single hyphens, and cannot begin or end with a hyphen or underscore"
+        expect(json).to be_a_valid_json_api_validation_error.with_message "may only contain alphanumeric characters, underscores, or single hyphens, and cannot begin or end with a hyphen or underscore"
       end
 
       it 'fails on a username with profane content' do
@@ -177,7 +177,7 @@ describe "Users API" do
 
         expect(last_response.status).to eq 422
 
-        expect(json.errors[0].detail).to eq "Username may not be obscene"
+        expect(json).to be_a_valid_json_api_validation_error.with_message "may not be obscene"
       end
     end
 
@@ -194,7 +194,7 @@ describe "Users API" do
 
         expect(last_response.status).to eq 422
 
-        expect(json.errors[0].detail).to eq "Email has already been taken"
+        expect(json).to be_a_valid_json_api_validation_error.with_message "has already been taken"
       end
 
       it 'fails when the username is taken' do
@@ -204,7 +204,7 @@ describe "Users API" do
         post "#{host}/users", json_api_params
 
         expect(last_response.status).to eq 422
-        expect(json.errors[0].detail).to eq "Username has already been taken"
+        expect(json).to be_a_valid_json_api_validation_error.with_message "has already been taken"
       end
     end
 
@@ -278,8 +278,7 @@ describe "Users API" do
       post "#{host}/users/forgot_password", json_api_params
 
       expect(last_response.status).to eq 422
-      expect(json).to be_a_valid_json_api_error.with_id "VALIDATION_ERROR"
-      expect(json).to contain_an_error_of_type("VALIDATION_ERROR").with_message "Email doesn't exist in the database"
+      expect(json).to be_a_valid_json_api_validation_error
     end
   end
 
@@ -319,8 +318,7 @@ describe "Users API" do
       post "#{host}/users/reset_password", json_api_params
 
       expect(last_response.status).to eq 422
-      expect(json).to be_a_valid_json_api_error.with_id "VALIDATION_ERROR"
-      expect(json).to contain_an_error_of_type("VALIDATION_ERROR").with_message "Password couldn't be reset"
+      expect(json).to be_a_valid_json_api_validation_error
     end
   end
 
@@ -383,7 +381,7 @@ describe "Users API" do
           invalid_params = json_api_params_for("users", {website: "multi word"})
           authenticated_patch "/users/1", invalid_params, @token
           expect(last_response.status).to eq 422
-          expect(json).to be_a_valid_json_api_error.with_id "VALIDATION_ERROR"
+          expect(json).to be_a_valid_json_api_validation_error
         end
       end
 
@@ -454,7 +452,7 @@ describe "Users API" do
         invalid_params = json_api_params_for("users", {website: "multi word"})
         authenticated_patch "/users/me", invalid_params, @token
         expect(last_response.status).to eq 422
-        expect(json).to be_a_valid_json_api_error.with_id "VALIDATION_ERROR"
+        expect(json).to be_a_valid_json_api_validation_error
       end
     end
   end

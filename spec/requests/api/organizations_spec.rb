@@ -51,8 +51,7 @@ describe "Organizations API" do
         it "responds with a 422 VALIDATION_ERROR if name is not provided" do
           authenticated_post "/organizations", { data: { attributes: { } } }, @token
           expect(last_response.status).to eq 422
-          expect(json).to be_a_valid_json_api_error.with_id "VALIDATION_ERROR"
-          expect(json).to contain_an_error_of_type("VALIDATION_ERROR").with_message "Name can't be blank"
+          expect(json).to be_a_valid_json_api_validation_error
         end
 
         it 'allows a slug to be set' do
@@ -67,8 +66,7 @@ describe "Organizations API" do
           authenticated_post "/organizations", { data: { attributes: { name: "Test", slug: "shit" } } }, @token
 
           expect(last_response.status).to eq 422
-
-          expect(json.errors[0].detail).to eq "Slug may not be obscene"
+          expect(json).to be_a_valid_json_api_validation_error.with_message "may not be obscene"
         end
 
         context "when succesful" do

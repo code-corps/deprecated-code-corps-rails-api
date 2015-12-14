@@ -31,8 +31,7 @@ describe "Comments API" do
         make_request
 
         expect(last_response.status).to eq 422
-        expect(json).to be_a_valid_json_api_error
-        expect(json).to contain_an_error_of_type("VALIDATION_ERROR").with_message("Post can't be blank")
+        expect(json).to be_a_valid_json_api_validation_error
       end
 
       it "requires a 'body' to be specified" do
@@ -43,8 +42,7 @@ describe "Comments API" do
         make_request
 
         expect(last_response.status).to eq 422
-        expect(json).to be_a_valid_json_api_error
-        expect(json).to contain_an_error_of_type("VALIDATION_ERROR").with_message("Body can't be blank")
+        expect(json).to be_a_valid_json_api_validation_error
       end
 
       context "when it succeeds" do
@@ -271,7 +269,7 @@ describe "Comments API" do
 
           it "responds with a 422 validation error" do
             expect(last_response.status).to eq 422
-            expect(json).to be_a_valid_json_api_error.with_id "VALIDATION_ERROR"
+            expect(json).to be_a_valid_json_api_validation_error
           end
         end
       end
