@@ -7,7 +7,7 @@ describe CommentImageSerializer, :type => :serializer do
       file = File.open("#{Rails.root}/spec/sample_data/base64_images/gif.txt", 'r')
       open(file) { |io| io.read }
     }
-    let(:resource) { create(:comment_image, :comment_with_s3_image, filename: "default-avatar.gif", base64_photo_data: gif_string) }
+    let(:resource) { create(:comment_image, :with_s3_image, filename: "default-avatar.gif", base64_photo_data: gif_string) }
 
     let(:serializer) { CommentImageSerializer.new(resource) }
     let(:serialization) { ActiveModel::Serializer::Adapter.create(serializer) }
