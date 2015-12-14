@@ -36,16 +36,16 @@ class TokensController < Doorkeeper::TokensController
       end
     end
 
-      def handle_authentication_successful(response)
-        self.headers.merge! response.headers
-        self.status = response.status
+    def handle_authentication_successful(response)
+      self.headers.merge! response.headers
+      self.status = response.status
 
-        user_id = response.try(:token).try(:resource_owner_id)
-        body = response.body.merge('user_id' => user_id)
-        self.response_body = body.to_json
+      user_id = response.try(:token).try(:resource_owner_id)
+      body = response.body.merge('user_id' => user_id)
+      self.response_body = body.to_json
 
-        return user_id
-      end
+      return user_id
+    end
 
     def authenticate_with_facebook
       user_id = get_user_id_from_facebook_information
@@ -55,25 +55,25 @@ class TokensController < Doorkeeper::TokensController
       return user_id
     end
 
-      def get_user_id_from_facebook_information
-        facebook_access_token = params[:password]
-        graph = Koala::Facebook::API.new(facebook_access_token, ENV["FACEBOOK_APP_SECRET"])
-        facebook_user = graph.get_object("me", { fields: ['email', 'first_name', 'last_name']})
+    def get_user_id_from_facebook_information
+      facebook_access_token = params[:password]
+      graph = Koala::Facebook::API.new(facebook_access_token, ENV["FACEBOOK_APP_SECRET"])
+      facebook_user = graph.get_object("me", { fields: ['email', 'first_name', 'last_name']})
 
-        User.find_by!(facebook_id: facebook_user["id"]).id
-      end
+      User.find_by!(facebook_id: facebook_user["id"]).id
+    end
 
-      def generate_token_data(user_id)
-        doorkeeper_access_token = Doorkeeper::AccessToken.create!({
-          application_id: nil,
-          resource_owner_id: user_id,
-          expires_in: 7200})
+    def generate_token_data(user_id)
+      doorkeeper_access_token = Doorkeeper::AccessToken.create!({
+        application_id: nil,
+        resource_owner_id: user_id,
+        expires_in: 7200})
 
-        return {
-          access_token: doorkeeper_access_token.token,
-          token_type: 'bearer',
-          expires_in: doorkeeper_access_token.expires_in,
-          user_id: user_id.to_s
-        }
-      end
+      return {
+        access_token: doorkeeper_access_token.token,
+        token_type: 'bearer',
+        expires_in: doorkeeper_access_token.expires_in,
+        user_id: user_id.to_s
+      }
+    end
 end

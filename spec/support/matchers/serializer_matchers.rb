@@ -30,7 +30,8 @@ RSpec::Matchers.define :serialize_collection do |collection|
 
     expected_json = cleanup JSON.parse(serialization.to_json options)
 
-    expected_json == actual_json
+    content_is_ok = arrays_have_same_elements(expected_json["data"], actual_json["data"])
+    content_is_ok and remainder_is_ok(expected_json, actual_json)
   end
 
   chain :with do |serializer_klass|
@@ -89,4 +90,15 @@ RSpec::Matchers.define :serialize_collection do |collection|
 
     { serialization_context: serialization_context }
   end
+
+  def arrays_have_same_elements a, b
+    a.to_set == b.to_set
+  end
+
+  def remainder_is_ok expected_json, actual_json
+    expected_json.delete(:data)
+    actual_json.delete(:data)
+    expected_json == actual_json
+  end
+
 end

@@ -2,10 +2,15 @@ require "rails_helper"
 
 describe CommentSerializer, :type => :serializer do
 
+  # We only use before all here because we know the context does not change
+  before :all do
+    @comment = create(:comment, body: "Comment body", post: create(:post))
+    @comment.publish
+    @comment.edit
+  end
+
   context "individual resource representation" do
-    let(:resource) {
-      create(:comment, body: "Comment body", post: create(:post))
-    }
+    let(:resource) { @comment }
 
     let(:serializer) { CommentSerializer.new(resource) }
     let(:serialization) { ActiveModel::Serializer::Adapter.create(serializer) }
@@ -40,6 +45,14 @@ describe CommentSerializer, :type => :serializer do
 
       it "has 'markdown'" do
         expect(subject["markdown"]).to eql resource.markdown
+      end
+
+      it "has a 'state'" do
+        expect(subject["state"]).to eql resource.state
+      end
+
+      it "has an 'edited_at'" do
+        expect(subject["edited_at"]).to be_the_same_time_as resource.edited_at
       end
     end
 

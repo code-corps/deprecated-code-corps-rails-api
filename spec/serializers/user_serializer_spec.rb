@@ -12,7 +12,10 @@ describe UserSerializer, :type => :serializer do
         biography: "Lorem ipsum",
         facebook_id: "some_id",
         facebook_access_token: "some_token")
-      create_list(:user_skill, 10, user: user)
+
+      create_list(:user_skill, 2, user: user)
+      create_list(:contributor, 3, user: user)
+
       user
     }
 
@@ -82,7 +85,12 @@ describe UserSerializer, :type => :serializer do
 
       it "has a 'skills' relationship" do
         expect(subject["skills"]).not_to be_nil
-        expect(subject["skills"]["data"].count).to eq 10
+        expect(subject["skills"]["data"].count).to eq 2
+      end
+
+      it "has a 'projects' relationship" do
+        expect(subject["projects"]).not_to be_nil
+        expect(subject["projects"]["data"].count).to eq 3
       end
     end
 
@@ -106,7 +114,20 @@ describe UserSerializer, :type => :serializer do
 
         it "should contain the user's skills" do
           expect(subject).not_to be_nil
-          expect(subject.select{ |i| i["type"] == "skills"}.length).to eq 10
+          expect(subject.select{ |i| i["type"] == "skills"}.length).to eq 2
+        end
+      end
+
+      context "when including projects" do
+        let(:serialization) { ActiveModel::Serializer::Adapter.create(serializer, include: ["projects"]) }
+
+        subject do
+          JSON.parse(serialization.to_json)["included"]
+        end
+
+        it "should contain the user's projects" do
+          expect(subject).not_to be_nil
+          expect(subject.select{ |i| i["type"] == "projects"}.length).to eq 3
         end
       end
     end

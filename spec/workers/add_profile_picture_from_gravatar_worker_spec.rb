@@ -6,8 +6,8 @@ describe AddProfilePictureFromGravatarWorker do
     @user_gravatar = create(:user, email: "bradyrudesill@gmail.com")
   end
 
-  context "when the user's photo doesn't exist", vcr: { cassette_name: 'workers/add gravatar image worker/adds gravatar' } do
-    it "has not been added" do
+  context "when the user does not have a gravatar image", vcr: { cassette_name: 'workers/add gravatar image worker/does not add the gravatar' } do
+    it "does not add the gravatar" do
       AddProfilePictureFromGravatarWorker.new.perform(@user.id)
 
       @user.reload
@@ -16,8 +16,8 @@ describe AddProfilePictureFromGravatarWorker do
     end
   end
 
-  context "when the user's photo exists", vcr: { cassette_name: 'workers/add gravatar image worker/does not add gravatar' } do
-    it "adds the photo" do
+  context "when the user has a gravatar image", vcr: { cassette_name: 'workers/add gravatar image worker/adds the gravatar' } do
+    it "adds the gravatar" do
       AddProfilePictureFromGravatarWorker.new.perform(@user_gravatar.id)
 
       @user_gravatar.reload

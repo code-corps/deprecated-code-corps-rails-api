@@ -7,33 +7,29 @@ describe "Users API" do
   end
 
   context 'GET /user' do
-    let(:token) { authenticate(email: "josh@example.com", password: "password") }
-
-    before do
-      create(:user, email: "josh@example.com", username: "joshsmith", password: "password")
-    end
-
-    context 'when authenticated' do
-      it 'returns the authenticated user object' do
-        authenticated_get "user", {}, token
-
-        expect(last_response.status).to eq 200
-
-        user_attributes = json.data.attributes
-
-        expect(user_attributes.email).to eq "josh@example.com"
-        expect(user_attributes.username).to eq "joshsmith"
-        expect(user_attributes.password).to be_nil
-      end
-    end
-
     context 'when unauthenticated' do
-      it 'returns a 401 unauthorized' do
+      it 'returns a 401 NOT_AUTHORIZED' do
         get "#{host}/user"
 
         expect(last_response.status).to eq 401
-
         expect(json).to be_a_valid_json_api_error.with_id "NOT_AUTHORIZED"
+      end
+    end
+
+    context 'when authenticated' do
+      let(:token) { authenticate(email: "josh@example.com", password: "password") }
+
+      before do
+        @user = create(:user, email: "josh@example.com", username: "joshsmith", password: "password")
+        authenticated_get "user", {}, token
+      end
+
+      it "responds with a 200" do
+        expect(last_response.status).to eq 200
+      end
+
+      it 'returns the authenticated user object, serialized with AuthenticatedUserSerializer' do
+        expect(json).to serialize_object(@user).with(AuthenticatedUserSerializer)
       end
     end
   end
@@ -41,7 +37,8 @@ describe "Users API" do
   context 'GET /users/:id' do
     before do
       @user = create(:user, username: "joshsmith")
-      create_list(:user_skill, 10, user: @user)
+      create_list(:user_skill, 2, user: @user)
+      create_list(:contributor, 3, user: @user)
       get "#{host}/users/#{@user.id}"
     end
 
@@ -49,27 +46,8 @@ describe "Users API" do
       expect(last_response.status).to eq 200
     end
 
-    it "retrieves the specified user by id using UserSerializer, including skills" do
-      expect(json).to serialize_object(User.find(@user.id)).with(UserSerializer).with_includes("skills")
-      expect(json.data.id).to eq @user.id.to_s
-    end
-  end
-
-  context 'GET /users' do
-    before do
-      @user = create(:user, email: "josh@example.com", username: "joshsmith", password: "password")
-    end
-
-    it 'returns a user object if the user exists' do
-      get "#{host}/users/#{@user.id}",{}
-
-      expect(last_response.status).to eq 200
-
-      user_attributes = json.data.attributes
-
-      expect(user_attributes.email).to eq "josh@example.com"
-      expect(user_attributes.username).to eq "joshsmith"
-      expect(user_attributes.password).to be_nil
+    it "retrieves the specified user by id using UserSerializer, including skills and projects" do
+      expect(json).to serialize_object(User.find(@user.id)).with(UserSerializer).with_includes([:skills, :projects])
     end
   end
 
@@ -154,7 +132,7 @@ describe "Users API" do
 
         expect(last_response.status).to eq 422
 
-        expect(json.errors[0].detail).to eq "Username has already been taken by an organization"
+        expect(json).to be_a_valid_json_api_validation_error.with_message "has already been taken by an organization"
       end
 
       it 'fails on a blank password and username' do
@@ -165,8 +143,8 @@ describe "Users API" do
 
         expect(last_response.status).to eq 422
 
-        expect(json.errors[0].detail).to eq "Password can't be blank"
-        expect(json.errors[1].detail).to eq "Username can't be blank"
+        expect(json).to be_a_valid_json_api_validation_error
+          .with_messages ["can't be blank", "can't be blank"]
       end
 
       it 'fails on a too long username' do
@@ -177,7 +155,7 @@ describe "Users API" do
 
         expect(last_response.status).to eq 422
 
-        expect(json.errors[0].detail).to eq "Username is too long (maximum is 39 characters)"
+        expect(json).to be_a_valid_json_api_validation_error.with_message "is too long (maximum is 39 characters)"
       end
 
       it 'fails on a username with invalid characters' do
@@ -188,9 +166,9 @@ describe "Users API" do
 
         expect(last_response.status).to eq 422
 
-        expect(json.errors[0].detail).to eq "Username may only contain alphanumeric characters, underscores, or single hyphens, and cannot begin or end with a hyphen or underscore"
+        expect(json).to be_a_valid_json_api_validation_error.with_message "may only contain alphanumeric characters, underscores, or single hyphens, and cannot begin or end with a hyphen or underscore"
       end
-      
+
       it 'fails on a username with profane content' do
         params = { email: "josh@example.com", username: "shit", password: "password" }
         json_api_params = json_api_params_for("users", params)
@@ -199,7 +177,7 @@ describe "Users API" do
 
         expect(last_response.status).to eq 422
 
-        expect(json.errors[0].detail).to eq "Username may not be obscene"
+        expect(json).to be_a_valid_json_api_validation_error.with_message "may not be obscene"
       end
     end
 
@@ -216,7 +194,7 @@ describe "Users API" do
 
         expect(last_response.status).to eq 422
 
-        expect(json.errors[0].detail).to eq "Email has already been taken"
+        expect(json).to be_a_valid_json_api_validation_error.with_message "has already been taken"
       end
 
       it 'fails when the username is taken' do
@@ -226,14 +204,14 @@ describe "Users API" do
         post "#{host}/users", json_api_params
 
         expect(last_response.status).to eq 422
-        expect(json.errors[0].detail).to eq "Username has already been taken"
+        expect(json).to be_a_valid_json_api_validation_error.with_message "has already been taken"
       end
     end
 
     context 'when registering with an email and password' do
       it 'creates a user with a user uploaded image' do
         file = File.open("#{Rails.root}/spec/sample_data/default-avatar.png", 'r')
-        base_64_image = Base64.encode64(open(file) { |io| io.read })
+        base64_image = Base64.encode64(open(file) { |io| io.read })
 
         post "#{host}/users", {
           data: {
@@ -241,7 +219,7 @@ describe "Users API" do
               email: "josh@example.com",
               username: "joshsmith",
               password: "password",
-              base_64_photo_data: base_64_image
+              base64_photo_data: base64_image
             }
           }
         }
@@ -271,10 +249,10 @@ describe "Users API" do
         expect(last_response.status).to eq 200
 
         user = User.last
-      
+
         expect(user.username).to eq "joshsmith"
         expect(user.email).to eq "josh@example.com"
-        
+
         expect(UpdateProfilePictureWorker.jobs.size).to eq 0
         expect(AddProfilePictureFromGravatarWorker.jobs.size).to eq 1
       end
@@ -302,8 +280,7 @@ describe "Users API" do
       post "#{host}/users/forgot_password", json_api_params
 
       expect(last_response.status).to eq 422
-      expect(json).to be_a_valid_json_api_error.with_id "VALIDATION_ERROR"
-      expect(json).to contain_an_error_of_type("VALIDATION_ERROR").with_message "Email doesn't exist in the database"
+      expect(json).to be_a_valid_json_api_validation_error
     end
   end
 
@@ -343,8 +320,7 @@ describe "Users API" do
       post "#{host}/users/reset_password", json_api_params
 
       expect(last_response.status).to eq 422
-      expect(json).to be_a_valid_json_api_error.with_id "VALIDATION_ERROR"
-      expect(json).to contain_an_error_of_type("VALIDATION_ERROR").with_message "Password couldn't be reset"
+      expect(json).to be_a_valid_json_api_validation_error
     end
   end
 
@@ -407,7 +383,7 @@ describe "Users API" do
           invalid_params = json_api_params_for("users", {website: "multi word"})
           authenticated_patch "/users/1", invalid_params, @token
           expect(last_response.status).to eq 422
-          expect(json).to be_a_valid_json_api_error.with_id "VALIDATION_ERROR"
+          expect(json).to be_a_valid_json_api_validation_error
         end
       end
 
@@ -478,7 +454,7 @@ describe "Users API" do
         invalid_params = json_api_params_for("users", {website: "multi word"})
         authenticated_patch "/users/me", invalid_params, @token
         expect(last_response.status).to eq 422
-        expect(json).to be_a_valid_json_api_error.with_id "VALIDATION_ERROR"
+        expect(json).to be_a_valid_json_api_validation_error
       end
     end
   end

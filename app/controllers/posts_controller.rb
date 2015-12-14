@@ -20,7 +20,8 @@ class PostsController < ApplicationController
 
     authorize post
 
-    if post.save
+    if post.update!
+      GeneratePostUserNotificationsWorker.perform_async(post.id) if post.published?
       render json: post
     else
       render_validation_errors post.errors
@@ -34,6 +35,7 @@ class PostsController < ApplicationController
     post.assign_attributes(update_params)
 
     if post.update!
+      GeneratePostUserNotificationsWorker.perform_async(post.id) if post.edited?
       render json: post
     else
       render_validation_errors post.errors
@@ -83,6 +85,8 @@ class PostsController < ApplicationController
 
     def find_posts!
       project = find_project!
-      Post.where(project: project).page(page_number).per(page_size).includes [:comments, :user, :project, :post_user_mentions, :comment_user_mentions]
+      Post.where(project: project)
+        .page(page_number).per(page_size)
+        .includes [:users, :comments, :user, :project, :post_user_mentions, :comment_user_mentions]
     end
 end
