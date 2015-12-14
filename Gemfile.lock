@@ -305,6 +305,7 @@ DEPENDENCIES
   dotenv-rails
   factory_girl_rails (~> 4.0)
   fakeredis
+  faraday
   github-markdown
   hashie
   html-pipeline

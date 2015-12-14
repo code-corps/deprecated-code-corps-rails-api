@@ -232,6 +232,7 @@ describe "Users API" do
         expect(user.email).to eq "josh@example.com"
 
         expect(UpdateProfilePictureWorker.jobs.size).to eq 1
+        expect(AddProfilePictureFromGravatarWorker.jobs.size).to eq 0
       end
 
       it 'creates a user without a user uploaded image' do
@@ -253,6 +254,7 @@ describe "Users API" do
         expect(user.email).to eq "josh@example.com"
 
         expect(UpdateProfilePictureWorker.jobs.size).to eq 0
+        expect(AddProfilePictureFromGravatarWorker.jobs.size).to eq 1
       end
     end
   end

@@ -138,6 +138,8 @@ class UsersController < ApplicationController
       if user.save
         if photo_param?
           UpdateProfilePictureWorker.perform_async(user.id)
+        else
+          AddProfilePictureFromGravatarWorker.perform_async(user.id)
         end
 
         render json: user

@@ -39,6 +39,8 @@ gem 'sequenced'
 
 gem 'aasm'
 
+gem 'faraday'
+
 gem 'pusher'
 
 group :development, :test do
