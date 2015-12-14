@@ -79,7 +79,7 @@ describe "Comment Images API" do
 
             expect(last_response.status).to eq 422
 
-            expect(json).to be_a_valid_json_api_error.with_message "can't be blank"
+            expect(json).to be_a_valid_json_api_validation_error.with_message "can't be blank"
           end
         end
       end
