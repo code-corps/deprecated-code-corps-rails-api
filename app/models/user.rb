@@ -5,7 +5,6 @@ class User < ActiveRecord::Base
   has_many :organizations, through: :organization_memberships
   has_many :team_memberships, foreign_key: "member_id"
   has_many :teams, through: :team_memberships
-  has_many :projects, as: :owner
   has_many :posts
   has_many :comments
   has_many :user_skills
@@ -16,11 +15,14 @@ class User < ActiveRecord::Base
   has_many :following, through: :active_relationships, source: :following
   has_many :followers, through: :passive_relationships, source: :follower
 
+  has_many :contributors
+  has_many :projects, through: :contributors
+
   has_one :member, as: :model
 
   has_attached_file :photo,
                     styles: {
-                      large: "500x500#", 
+                      large: "500x500#",
                       thumb: "100x100#"
                     },
                     path: "users/:id/:style.:extension"
@@ -41,12 +43,27 @@ class User < ActiveRecord::Base
   after_save :create_or_update_member
 
   def decode_image_data
-    return unless base_64_photo_data.present?
-    data = StringIO.new(Base64.decode64(base_64_photo_data))
+    return unless base64_photo_data.present?
+    data = StringIO.new(Base64.decode64(base64_photo_data))
     data.class.class_eval { attr_accessor :original_filename, :content_type }
     data.original_filename = SecureRandom.hex + '.png'
     data.content_type = 'image/png'
     self.photo = data
+  end
+
+  # Follows a user.
+  def follow(other_user)
+    active_relationships.create(following_id: other_user.id)
+  end
+
+  # Unfollows a user.
+  def unfollow(other_user)
+    active_relationships.find_by(following_id: other_user.id).destroy
+  end
+
+  # Returns true if the current user is following the other user.
+  def following?(other_user)
+    following.include?(other_user)
   end
 
   private

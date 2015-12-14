@@ -28,7 +28,6 @@ describe User, :type => :model do
     it { should have_many(:organizations).through(:organization_memberships) }
     it { should have_many(:team_memberships).with_foreign_key("member_id") }
     it { should have_many(:teams).through(:team_memberships) }
-    it { should have_many(:projects) }
     it { should have_many(:posts) }
     it { should have_many(:comments) }
     it { should have_many(:user_skills) }
@@ -38,6 +37,9 @@ describe User, :type => :model do
     it { should have_many(:following).through(:active_relationships).source(:following) }
     it { should have_many(:followers).through(:passive_relationships).source(:follower) }
     it { should have_one(:member) }
+
+    it { should have_many(:contributors) }
+    it { should have_many(:projects).through(:contributors) }
   end
 
   describe "validations" do
@@ -67,7 +69,7 @@ describe User, :type => :model do
         it { should validate_uniqueness_of(:username).case_insensitive }
         it { should validate_length_of(:username).is_at_most(39) }
       end
-      
+
       it { should allow_value("code_corps").for(:username) }
       it { should allow_value("codecorps").for(:username) }
       it { should allow_value("codecorps12345").for(:username) }
@@ -148,13 +150,46 @@ describe User, :type => :model do
     context 'with cloudfront' do
       let(:user) { create(:user, :with_s3_photo) }
 
-      it 'should have cloudfront in the URL' do
-        expect(user.photo.url(:thumb)).to include 'cloudfront'
+      it 'should have our cloudfront domain in the URL' do
+        expect(user.photo.url(:thumb)).to include ENV['CLOUDFRONT_DOMAIN']
       end
 
       it 'should have the right path' do
         expect(user.photo.url(:thumb)).to include "users/#{user.id}/thumb"
       end
+    end
+  end
+
+  context 'following behavior' do
+    before(:each) do
+      @user = create(:user)
+      @other_user_1 = create(:user)
+      @other_user_2 = create(:user)
+    end
+
+    it "can have followers" do
+      create(:user_relationship, follower: @other_user_1, following: @user)
+      create(:user_relationship, follower: @other_user_2, following: @user)
+
+      expect(@user.followers.length).to eq 2
+    end
+
+    it "can have other users it follows" do
+      create(:user_relationship, follower: @user, following: @other_user_1)
+      create(:user_relationship, follower: @user, following: @other_user_2)
+
+      expect(@user.following.length).to eq 2
+    end
+
+    it "can follow another user" do
+      @user.follow(@other_user_1)
+      expect(@user.following? @other_user_1).to be true
+    end
+
+    it "can unfollow another user" do
+      create(:user_relationship, follower: @user, following: @other_user_1)
+      @user.unfollow(@other_user_1)
+      expect(@user.following? @other_user_1).to be false
     end
   end
 end

@@ -62,8 +62,7 @@ describe "Contributors API" do
         } }, @token
 
         expect(last_response.status).to eq 422
-        expect(json).to be_a_valid_json_api_error
-        expect(json).to contain_an_error_of_type("VALIDATION_ERROR").with_message("Project can't be blank")
+        expect(json).to be_a_valid_json_api_validation_error
       end
 
       context "when contributor record for project and user already exists" do
@@ -80,8 +79,7 @@ describe "Contributors API" do
           } }, @token
 
           expect(last_response.status).to eq 422
-          expect(json).to be_a_valid_json_api_error
-          expect(json).to contain_an_error_of_type("VALIDATION_ERROR").with_message("User has already been taken")
+          expect(json).to be_a_valid_json_api_validation_error
         end
 
       end

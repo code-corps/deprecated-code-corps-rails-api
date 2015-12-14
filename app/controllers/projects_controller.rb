@@ -3,7 +3,13 @@ class ProjectsController < ApplicationController
 
   def index
     authorize Project
-    projects = Project.all.includes(:contributors, :github_repositories)
+
+    if for_member?
+      projects = find_projects_with_member!
+    else
+      projects = Project.all.includes(:contributors, :github_repositories)
+    end
+
     render json: projects
   end
 
@@ -71,7 +77,7 @@ class ProjectsController < ApplicationController
     end
 
     def permitted_params
-      record_attributes.permit(:base_64_icon_data, :title, :description, :slug)
+      record_attributes.permit(:base64_icon_data, :title, :description, :slug)
     end
 
     def member_slug
@@ -82,9 +88,18 @@ class ProjectsController < ApplicationController
       params[:id]
     end
 
+    def for_member?
+      member_slug.present?
+    end
+
     def find_project_with_member!
       member = find_member!
       Project.includes(:contributors, :github_repositories).find_by!(slug: project_slug, owner: member.model)
+    end
+
+    def find_projects_with_member!
+      member = find_member!
+      Project.includes(:contributors, :github_repositories).where(owner: member.model)
     end
 
     def find_member!

@@ -16,6 +16,7 @@ describe Project, :type => :model do
     it { should have_many(:posts) }
     it { should have_many(:github_repositories) }
     it { should have_many(:contributors) }
+    it { should have_many(:users).through(:contributors) }
   end
 
   describe "validations" do
@@ -113,8 +114,8 @@ describe Project, :type => :model do
 
       let(:project) { create(:project, :with_s3_icon) }
 
-      it 'should have cloudfront in the URL' do
-        expect(project.icon.url(:thumb)).to include 'cloudfront'
+      it 'should have our cloudfront domain in the URL' do
+        expect(project.icon.url(:thumb)).to include ENV['CLOUDFRONT_DOMAIN']
       end
 
       it 'should have the right path' do

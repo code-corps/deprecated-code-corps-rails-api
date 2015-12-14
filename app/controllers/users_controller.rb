@@ -17,10 +17,10 @@ class UsersController < ApplicationController
   end
 
   def show
-    user = User.includes(skills: [:skill_category]).find(params[:id])
+    user = User.includes(:projects, skills: :skill_category).find(params[:id])
 
     authorize user
-    render json: user, include: ["skills"]
+    render json: user, include: ["skills", "projects"]
   end
 
   def update
@@ -84,7 +84,7 @@ class UsersController < ApplicationController
     end
 
     def create_params
-      record_attributes.permit(:email, :username, :password, :facebook_id, :facebook_access_token, :base_64_photo_data)
+      record_attributes.permit(:email, :username, :password, :facebook_id, :facebook_access_token, :base64_photo_data)
     end
 
     def update_params
@@ -119,7 +119,7 @@ class UsersController < ApplicationController
       user.update(create_params)
 
       if user.save
-        InitializeNewFacebookUserWorker.perform_async(user.id)
+        AddFacebookFriendsWorker.perform_async(user.id)
         if photo_param?
           UpdateProfilePictureWorker.perform_async(user.id)
         else
@@ -149,6 +149,6 @@ class UsersController < ApplicationController
     end
 
     def photo_param?
-      create_params[:base_64_photo_data].present?
+      create_params[:base64_photo_data].present?
     end
 end

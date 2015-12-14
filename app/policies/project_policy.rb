@@ -15,10 +15,13 @@ class ProjectPolicy
   end
 
   def create?
-    true
+    return unless @user.present?
+    return true if @user.admin?
+    return true if @user == @project.owner
   end
 
   def update?
-    true
+    return unless @user.present?
+    return true if @user == @project.owner
   end
 end

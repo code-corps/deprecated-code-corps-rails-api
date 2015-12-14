@@ -32,12 +32,19 @@ Rails.application.routes.draw do
       resources :comments, only: [:index]
     end
 
-    resources :comments, only: [:show, :create]
+    resources :post_images, only: [:create]
+
+    resources :comments, only: [:show, :create, :update]
+
+    resources :comment_images, only: [:create]
 
     resources :organizations, only: [:show, :create, :update]
 
     resources :members, :path => '', :only => [:show] do
+      get "projects", to: "projects#index"
       resources :projects, :path => '', :only => [:show]
     end
   end
+
+  get '/(*path)' => "ember_index#index", as: :root, format: :html
 end
