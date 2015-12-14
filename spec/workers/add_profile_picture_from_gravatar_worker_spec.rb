@@ -1,4 +1,4 @@
-require 'rails_helper'
+require "rails_helper"
 
 describe AddProfilePictureFromGravatarWorker do
   before do
@@ -6,7 +6,7 @@ describe AddProfilePictureFromGravatarWorker do
     @user_gravatar = create(:user, email: "bradyrudesill@gmail.com")
   end
 
-  context "when the user does not have a gravatar image", vcr: { cassette_name: 'workers/add gravatar image worker/does not add the gravatar' } do
+  context "when the user does not have a gravatar image", vcr: { cassette_name: "workers/add gravatar image worker/does not add the gravatar" } do
     it "does not add the gravatar" do
       AddProfilePictureFromGravatarWorker.new.perform(@user.id)
 
@@ -16,7 +16,7 @@ describe AddProfilePictureFromGravatarWorker do
     end
   end
 
-  context "when the user has a gravatar image", vcr: { cassette_name: 'workers/add gravatar image worker/adds the gravatar' } do
+  context "when the user has a gravatar image", vcr: { cassette_name: "workers/add gravatar image worker/adds the gravatar" } do
     it "adds the gravatar" do
       AddProfilePictureFromGravatarWorker.new.perform(@user_gravatar.id)
 
