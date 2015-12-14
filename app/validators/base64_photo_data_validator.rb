@@ -1,4 +1,4 @@
-require 'code_corps/base64_image_matcher'
+require "code_corps/base64_image_matcher"
 
 class Base64PhotoDataValidator < ActiveModel::EachValidator
 
