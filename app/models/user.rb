@@ -5,7 +5,6 @@ class User < ActiveRecord::Base
   has_many :organizations, through: :organization_memberships
   has_many :team_memberships, foreign_key: "member_id"
   has_many :teams, through: :team_memberships
-  has_many :projects, as: :owner
   has_many :posts
   has_many :comments
   has_many :user_skills
@@ -16,11 +15,14 @@ class User < ActiveRecord::Base
   has_many :following, through: :active_relationships, source: :following
   has_many :followers, through: :passive_relationships, source: :follower
 
+  has_many :contributors
+  has_many :projects, through: :contributors
+
   has_one :member, as: :model
 
   has_attached_file :photo,
                     styles: {
-                      large: "500x500#", 
+                      large: "500x500#",
                       thumb: "100x100#"
                     },
                     path: "users/:id/:style.:extension"

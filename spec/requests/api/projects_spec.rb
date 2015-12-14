@@ -23,6 +23,28 @@ describe "Projects API" do
 
   end
 
+  context "GET /:slug/projects" do
+    before do
+      @member = create(:organization).member
+      @projects = create_list(:project, 3, owner: @member.model)
+      create_list(:project, 2, owner: create(:organization))
+    end
+
+    context "when successful" do
+      before do
+        get "#{host}/#{@member.slug}/projects"
+      end
+
+      it "responds with a 200" do
+        expect(last_response.status).to eq 200
+      end
+
+      it "returns a list of projects for the specified member, serialized with ProjectSerializer" do
+        expect(json).to serialize_collection(@projects).with(ProjectSerializer)
+      end
+    end
+  end
+
   context "GET /:slug/:project_slug" do
     before do
       @project = create(:project, owner: create(:organization))
