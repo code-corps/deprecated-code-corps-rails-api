@@ -275,6 +275,19 @@ describe "Comments API" do
           end
         end
       end
+
+      context "when updating another user's comment" do
+        before do
+          @comment = create(:comment, post: @post)
+        end
+
+        it "responds with a 401 ACCESS_DENIED" do
+          authenticated_patch "/comments/#{@comment.id}", { data: { type: "comments" } }, @token
+
+          expect(last_response.status).to eq 401
+          expect(json).to be_a_valid_json_api_error.with_id "ACCESS_DENIED"
+        end
+      end
     end
   end
 end

@@ -27,7 +27,8 @@ describe Organization, :type => :model do
         it { should validate_uniqueness_of(:slug).case_insensitive }
         it { should validate_length_of(:slug).is_at_most(39) }
       end
-
+      
+      let(:organization) { Organization.create(name: "Test") }
       it { should allow_value("code_corps").for(:slug) }
       it { should allow_value("codecorps").for(:slug) }
       it { should allow_value("codecorps12345").for(:slug) }
@@ -46,6 +47,7 @@ describe Organization, :type => :model do
       it { should_not allow_value("code///corps").for(:slug) }
       it { should_not allow_value("@code/corps/code").for(:slug) }
       it { should_not allow_value("@code/corps/code/corps").for(:slug) }
+      it { expect(organization.slug).to_not be_profane }
 
       # Checks reserved routes
       it { should_not allow_value("help").for(:slug) }

@@ -55,6 +55,22 @@ describe "Organizations API" do
           expect(json).to contain_an_error_of_type("VALIDATION_ERROR").with_message "Name can't be blank"
         end
 
+        it 'allows a slug to be set' do
+          authenticated_post "/organizations", { data: { attributes: { name: "Test", slug: "Test_slug" } } }, @token
+
+          expect(last_response.status).to eq 200
+
+          expect(Organization.last.slug).to eq "Test_slug"
+        end
+
+        it 'fails on a slug with profane content' do
+          authenticated_post "/organizations", { data: { attributes: { name: "Test", slug: "shit" } } }, @token
+
+          expect(last_response.status).to eq 422
+
+          expect(json.errors[0].detail).to eq "Slug may not be obscene"
+        end
+
         context "when succesful" do
           def make_request
             authenticated_post "/organizations", { data: { attributes: { name: "Test" } } }, @token

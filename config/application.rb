@@ -29,5 +29,13 @@ module CodeCorpsApi
 
     # Turn off CSRF since we're using an API only
     config.action_controller.allow_forgery_protection = false
+
+    cors_origins = ENV.fetch('CORS_ORIGINS', '*')
+    config.middleware.insert_before 0, "Rack::Cors" do
+      allow do
+        origins cors_origins
+        resource '*', :headers => :any, :methods => [:get, :post, :options]
+      end
+    end
   end
 end

@@ -4,6 +4,7 @@ class Project < ActiveRecord::Base
   has_many :posts
   has_many :github_repositories
   has_many :contributors
+  has_many :users, through: :contributors
 
   has_attached_file :icon,
                     styles: {

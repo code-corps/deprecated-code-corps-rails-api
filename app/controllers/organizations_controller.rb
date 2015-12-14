@@ -24,6 +24,6 @@ class OrganizationsController < ApplicationController
 
   private
     def create_params
-      record_attributes.permit(:name)
+      record_attributes.permit(:name, :slug)
     end
 end
