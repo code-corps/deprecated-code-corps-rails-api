@@ -25,7 +25,7 @@ RSpec::Matchers.define :serialize_collection do |collection|
 
     actual_json = cleanup actual_json
 
-    serializer =  ActiveModel::Serializer::CollectionSerializer.new collection, each_serializer: @serializer_klass
+    serializer =  ActiveModel::Serializer::CollectionSerializer.new collection, serializer: @serializer_klass
     serialization = ActiveModel::Serializer::Adapter.create(serializer, include: includes, meta: meta)
 
     expected_json = cleanup JSON.parse(serialization.to_json options)
