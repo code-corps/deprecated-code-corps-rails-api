@@ -1,0 +1,51 @@
+---
+http_interactions:
+- request:
+    method: head
+    uri: https://code-corps-development.s3.amazonaws.com/posts//images//original.
+    body:
+      encoding: ASCII-8BIT
+      string: ''
+    headers:
+      Content-Type:
+      - ''
+      Accept-Encoding:
+      - ''
+      User-Agent:
+      - aws-sdk-ruby2/2.2.5 ruby/2.2.3 x86_64-linux resources
+      X-Amz-Date:
+      - 20151215T150259Z
+      Host:
+      - code-corps-development.s3.amazonaws.com
+      X-Amz-Content-Sha256:
+      - e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      Authorization:
+      - AWS4-HMAC-SHA256 Credential=AKIAJA5VYNIZZFUPOAKA/20151215/us-east-1/s3/aws4_request,
+        SignedHeaders=host;user-agent;x-amz-content-sha256;x-amz-date, Signature=509326738279533fc62ac61c6019979c12b711b8e2c71b88eb75525597533cd4
+      Content-Length:
+      - '0'
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 404
+      message: Not Found
+    headers:
+      X-Amz-Request-Id:
+      - 63B1DDA5407B74BC
+      X-Amz-Id-2:
+      - xn08IsFMN36tsDJKrcsXu44YS/pvuPWVQ90rIpOZeFoknQep1lRbkOKy/wT+qKx7
+      Content-Type:
+      - application/xml
+      Transfer-Encoding:
+      - chunked
+      Date:
+      - Tue, 15 Dec 2015 15:02:56 GMT
+      Server:
+      - AmazonS3
+    body:
+      encoding: UTF-8
+      string: ''
+    http_version: 
+  recorded_at: Tue, 15 Dec 2015 15:03:00 GMT
+recorded_with: VCR 3.0.0

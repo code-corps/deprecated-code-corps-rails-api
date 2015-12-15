@@ -30,6 +30,8 @@ class User < ActiveRecord::Base
   validates_attachment_content_type :photo,
                                     content_type: %r{^image\/(png|gif|jpeg)}
 
+  validates_attachment_size :photo, less_than: 10.megabytes
+
   validates :username, presence: { message: "can't be blank" }, obscenity: {message: "may not be obscene"}
   validates :username, exclusion: { in: Rails.configuration.x.reserved_routes }
   validates :username, slug: true

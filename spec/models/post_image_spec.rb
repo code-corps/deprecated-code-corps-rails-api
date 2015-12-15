@@ -33,6 +33,10 @@ RSpec.describe PostImage, type: :model do
 
     it { should allow_value(gif_string).for(:base64_photo_data) }
     it { should_not allow_value(jpeg_without_data_string).for(:base64_photo_data) }
+
+    context "paperclip", vcr: { cassette_name: 'models/post_image/validation' } do
+      it { should validate_attachment_size(:image).less_than(10.megabytes) }
+    end
   end
 
   context 'paperclip' do

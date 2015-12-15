@@ -21,6 +21,11 @@ describe Project, :type => :model do
 
   describe "validations" do
 
+    context "paperclip", vcr: { cassette_name: 'models/project/validation' } do
+      it { should validate_attachment_size(:icon).less_than(10.megabytes) }
+    end
+
+
     describe "title" do
       describe "base validations" do
         # visit the following to understand why this is tested in a separate context

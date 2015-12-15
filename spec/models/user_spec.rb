@@ -43,6 +43,10 @@ describe User, :type => :model do
   end
 
   describe "validations" do
+    context "paperclip", vcr: { cassette_name: 'models/user/validation' } do
+      it { should validate_attachment_size(:photo).less_than(10.megabytes) }
+    end
+
 
     describe "website" do
       it { should allow_value("www.example.com").for(:website) }
