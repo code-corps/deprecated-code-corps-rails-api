@@ -6,8 +6,17 @@ describe "Comment Images API" do
     ActionMailer::Base.deliveries = []
   end
 
-  context 'POST /comment_images' do
+  feature "cors" do
+    it "should be supported for POST" do
+      post "#{host}/comment_images", nil, "HTTP_ORIGIN" => "*"
+      expect(last_response).to have_proper_cors_headers
 
+      options "#{host}/comment_images", nil, "HTTP_ORIGIN" => "*", "HTTP_ACCESS_CONTROL_REQUEST_METHOD" => "POST", "HTTP_ACCESS_CONTROL_REQUEST_HEADERS" => "test"
+      expect(last_response).to have_proper_preflight_options_response_headers
+    end
+  end
+
+  context 'POST /comment_images' do
     context "when unauthenticated" do
       it "should return a 401 with a proper error" do
         post "#{host}/comment_images", { data: { type: "comment_images" } }

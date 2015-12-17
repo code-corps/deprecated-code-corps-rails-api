@@ -1,6 +1,25 @@
 require "rails_helper"
 
 describe "Comments API" do
+
+  feature "cors" do
+    it "should be supported for POST" do
+      post "#{host}/comments", nil, "HTTP_ORIGIN" => "*"
+      expect(last_response).to have_proper_cors_headers
+
+      options "#{host}/comments", nil, "HTTP_ORIGIN" => "*", "HTTP_ACCESS_CONTROL_REQUEST_METHOD" => "POST", "HTTP_ACCESS_CONTROL_REQUEST_HEADERS" => "test"
+      expect(last_response).to have_proper_preflight_options_response_headers
+    end
+
+    it "should be supported for PATCH" do
+      post "#{host}/comments", nil, "HTTP_ORIGIN" => "*"
+      expect(last_response).to have_proper_cors_headers
+
+      options "#{host}/comments", nil, "HTTP_ORIGIN" => "*", "HTTP_ACCESS_CONTROL_REQUEST_METHOD" => "PATCH", "HTTP_ACCESS_CONTROL_REQUEST_HEADERS" => "test"
+      expect(last_response).to have_proper_preflight_options_response_headers
+    end
+  end
+
   context "POST /comments" do
 
     context "when unauthenticated" do
