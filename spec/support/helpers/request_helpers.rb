@@ -1,5 +1,5 @@
-require 'json'
-require 'hashie/mash'
+require "json"
+require "hashie/mash"
 
 module RequestHelpers
   def json
@@ -8,7 +8,7 @@ module RequestHelpers
 
   # Host redirects locally to allow testing API subdomain
   def host
-    'http://api.lvh.me:3000'
+    "http://api.lvh.me:3000"
   end
 
   def authenticated_get(path, args, token)
@@ -41,20 +41,24 @@ module RequestHelpers
   end
 
   def cors_options(path, method)
-    options full_path(path),
-            nil,
-            'HTTP_ORIGIN' => '*',
-            'HTTP_ACCESS_CONTROL_REQUEST_METHOD' => method.to_s.upcase,
-            'HTTP_ACCESS_CONTROL_REQUEST_HEADERS' => 'test'
+    options(full_path(path), nil, options_header(method))
   end
 
   private
 
   def authorization_header(token)
-    { 'HTTP_AUTHORIZATION' => "Bearer #{token}" }
+    { "HTTP_AUTHORIZATION" => "Bearer #{token}" }
   end
 
   def full_path(path)
     "#{host}/#{path}"
+  end
+
+  def options_header(method)
+    {
+      "HTTP_ORIGIN" => "*",
+      "HTTP_ACCESS_CONTROL_REQUEST_METHOD" => method.to_s.upcase,
+      "HTTP_ACCESS_CONTROL_REQUEST_HEADERS" => "test"
+    }
   end
 end
