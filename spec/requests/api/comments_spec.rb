@@ -192,7 +192,7 @@ describe "Comments API" do
     context "when authenticated" do
       before do
         @user = create(:user,
-                       id: 1, email: "test_user@mail.com", password: "password")
+          id: 1, email: "test_user@mail.com", password: "password")
         @post = create(:post, id: 2)
         @token = authenticate(email: "test_user@mail.com", password: "password")
       end
@@ -200,7 +200,7 @@ describe "Comments API" do
       context "when the comment doesn't exist" do
         it "responds with a 404" do
           authenticated_patch "/comments/1",
-                              { data: { type: "comments" } }, @token
+            { data: { type: "comments" } }, @token
 
           expect(last_response.status).to eq 404
           expect(json).to be_a_valid_json_api_error.with_id "RECORD_NOT_FOUND"
@@ -226,7 +226,7 @@ describe "Comments API" do
                 }
               }
               authenticated_patch "/comments/#{@comment.id}",
-                                  valid_attributes, @token
+                valid_attributes, @token
             end
 
             it "responds with a 200" do
@@ -259,7 +259,7 @@ describe "Comments API" do
                 }
               }
               authenticated_patch "/comments/#{@comment.id}",
-                                  valid_attributes, @token
+                valid_attributes, @token
             end
 
             it "updates the comment" do
@@ -284,8 +284,7 @@ describe "Comments API" do
                 }
               }
               authenticated_patch "/comments/#{@comment.id}",
-                                  valid_attributes,
-                                  @token
+                valid_attributes, @token
             end
 
             it "updates the comment" do
@@ -309,7 +308,7 @@ describe "Comments API" do
               }
             }
             authenticated_patch "/comments/#{@comment.id}",
-                                invalid_attributes, @token
+              invalid_attributes, @token
           end
 
           it "responds with a 422 validation error" do
@@ -326,8 +325,7 @@ describe "Comments API" do
 
         it "responds with a 401 ACCESS_DENIED" do
           authenticated_patch "/comments/#{@comment.id}",
-                              { data: { type: "comments" } },
-                              @token
+            { data: { type: "comments" } }, @token
 
           expect(last_response.status).to eq 401
           expect(json).to be_a_valid_json_api_error.with_id "ACCESS_DENIED"
