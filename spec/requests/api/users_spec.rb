@@ -43,8 +43,10 @@ describe "Users API" do
       expect(last_response.status).to eq 200
     end
 
-    it "retrieves the specified user by id using UserSerializer, including skills and projects" do
-      expect(json).to serialize_object(@user).with(UserSerializer).with_includes([:skills, :projects])
+    it "responds with a properly serialized user" do
+      expect(json).to serialize_object(@user)
+        .with(UserSerializer)
+        .with_includes([:skills, :projects])
     end
   end
 
