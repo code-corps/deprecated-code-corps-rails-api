@@ -46,8 +46,8 @@ Style/BlockDelimiters:
     # are enforced).
     - braces_for_chaining
 
-# Multi-line method chaining should be done with leading dots.
 Style/DotPosition:
+  # Multi-line method chaining should be done with leading dots.
   EnforcedStyle: leading
   SupportedStyles:
     - leading
