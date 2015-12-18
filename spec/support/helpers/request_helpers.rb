@@ -8,27 +8,27 @@ module RequestHelpers
 
   # Host redirects locally to allow testing API subdomain
   def host
-    "http://api.lvh.me:3000"
+    'http://api.lvh.me:3000'
   end
 
   def authenticated_get(path, args, token)
-    get "#{host}/#{path}", args, {"HTTP_AUTHORIZATION" => "Bearer #{token}"}
+    get full_path(path), args, authorization_header(token)
   end
 
   def authenticated_post(path, args, token)
-    post "#{host}/#{path}", args, {"HTTP_AUTHORIZATION" => "Bearer #{token}"}
+    post full_path(path), args, authorization_header(token)
   end
 
   def authenticated_put(path, args, token)
-    put "#{host}/#{path}", args, {"HTTP_AUTHORIZATION" => "Bearer #{token}"}
+    put full_path(path), args, authorization_header(token)
   end
 
   def authenticated_patch(path, args, token)
-    patch "#{host}/#{path}", args, {"HTTP_AUTHORIZATION" => "Bearer #{token}"}
+    patch full_path(path), args, authorization_header(token)
   end
 
   def authenticated_delete(path, args, token)
-    delete "#{host}/#{path}", args, {"HTTP_AUTHORIZATION" => "Bearer #{token}"}
+    delete full_path(path), args, authorization_header(token)
   end
 
   def json_api_params_for(type, hash)
@@ -38,5 +38,23 @@ module RequestHelpers
     data[:attributes] = hash.except(:id)
 
     { data: data }
+  end
+
+  def cors_options(path, method)
+    options full_path(path),
+            nil,
+            'HTTP_ORIGIN' => '*',
+            'HTTP_ACCESS_CONTROL_REQUEST_METHOD' => method.to_s.upcase,
+            'HTTP_ACCESS_CONTROL_REQUEST_HEADERS' => 'test'
+  end
+
+  private
+
+  def authorization_header(token)
+    { 'HTTP_AUTHORIZATION' => "Bearer #{token}" }
+  end
+
+  def full_path(path)
+    "#{host}/#{path}"
   end
 end
