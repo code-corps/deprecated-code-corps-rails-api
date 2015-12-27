@@ -15,6 +15,8 @@ class CommentImage < ActiveRecord::Base
 
   validates :base64_photo_data, base64_photo_data: true
 
+  validates_attachment_size :image, less_than: 10.megabytes
+
   def decode_image_data
     return unless base64_photo_data.present?
     data = Paperclip.io_adapters.for(base64_photo_data)

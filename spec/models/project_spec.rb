@@ -1,4 +1,4 @@
-require 'rails_helper'
+require "rails_helper"
 
 describe Project, :type => :model do
   describe "schema" do
@@ -20,6 +20,10 @@ describe Project, :type => :model do
   end
 
   describe "validations" do
+
+    context "paperclip", vcr: { cassette_name: "models/project/validation" } do
+      it { should validate_attachment_size(:icon).less_than(10.megabytes) }
+    end
 
     describe "title" do
       describe "base validations" do
@@ -102,23 +106,24 @@ describe Project, :type => :model do
     end
   end
 
-  context 'paperclip' do
-    context 'without cloudfront' do
+  context "paperclip" do
+    context "without cloudfront" do
       it { should have_attached_file(:icon) }
-      it { should validate_attachment_content_type(:icon)
-          .allowing('image/png', 'image/gif', 'image/jpeg')
-          .rejecting('text/plain', 'text/xml') }
+      it { should validate_attachment_content_type(:icon).
+        allowing("image/png", "image/gif", "image/jpeg").
+        rejecting("text/plain", "text/xml")
+      }
     end
 
-    context 'with cloudfront' do
+    context "with cloudfront" do
 
       let(:project) { create(:project, :with_s3_icon) }
 
-      it 'should have our cloudfront domain in the URL' do
-        expect(project.icon.url(:thumb)).to include ENV['CLOUDFRONT_DOMAIN']
+      it "should have our cloudfront domain in the URL" do
+        expect(project.icon.url(:thumb)).to include ENV["CLOUDFRONT_DOMAIN"]
       end
 
-      it 'should have the right path' do
+      it "should have the right path" do
         expect(project.icon.url(:thumb)).to include "projects/#{project.id}/thumb"
       end
     end

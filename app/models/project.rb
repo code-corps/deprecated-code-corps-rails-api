@@ -24,6 +24,8 @@ class Project < ActiveRecord::Base
   validates_attachment_content_type :icon,
                                     content_type: %r{^image\/(png|gif|jpeg)}
 
+  validates_attachment_size :icon, less_than: 10.megabytes
+
 
   def decode_image_data
     return unless base64_icon_data.present?
