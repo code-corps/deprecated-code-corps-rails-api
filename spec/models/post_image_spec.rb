@@ -1,13 +1,13 @@
-require 'rails_helper'
+require "rails_helper"
 
 RSpec.describe PostImage, type: :model do
   let(:gif_string) {
-    file = File.open("#{Rails.root}/spec/sample_data/base64_images/gif.txt", 'r')
+    file = File.open("#{Rails.root}/spec/sample_data/base64_images/gif.txt", "r")
     open(file) { |io| io.read }
   }
 
   let(:jpeg_without_data_string) {
-    file = File.open("#{Rails.root}/spec/sample_data/base64_images/jpeg_without_data_string.txt", 'r')
+    file = File.open("#{Rails.root}/spec/sample_data/base64_images/jpeg_without_data_string.txt", "r")
     open(file) { |io| io.read }
   }
 
@@ -34,29 +34,29 @@ RSpec.describe PostImage, type: :model do
     it { should allow_value(gif_string).for(:base64_photo_data) }
     it { should_not allow_value(jpeg_without_data_string).for(:base64_photo_data) }
 
-    context "paperclip", vcr: { cassette_name: 'models/post_image/validation' } do
+    context "paperclip", vcr: { cassette_name: "models/post_image/validation" } do
       it { should validate_attachment_size(:image).less_than(10.megabytes) }
     end
   end
 
-  context 'paperclip' do
-    context 'without cloudfront' do
+  context "paperclip" do
+    context "without cloudfront" do
       it { should have_attached_file(:image) }
       it { should validate_attachment_content_type(:image)
-          .allowing('image/png', 'image/gif', 'image/jpeg')
-          .rejecting('text/plain', 'text/xml') }
+          .allowing("image/png", "image/gif", "image/jpeg")
+          .rejecting("text/plain", "text/xml") }
     end
 
-    context 'with cloudfront'  do
+    context "with cloudfront"  do
       let(:post) { create(:post, id: 1) }
       let(:post_image) { create(:post_image, :with_s3_image, id: 1, post: post, filename: "default-avatar.gif", base64_photo_data: gif_string) }
 
-      it 'should have our cloudfront domain in the URL', vcr: { cassette_name: 'models/post_image/aws-upload' } do
+      it "should have our cloudfront domain in the URL", vcr: { cassette_name: "models/post_image/aws-upload" } do
         post_image.decode_image_data
-        expect(post_image.image.url).to include ENV['CLOUDFRONT_DOMAIN']
+        expect(post_image.image.url).to include ENV["CLOUDFRONT_DOMAIN"]
       end
 
-      it 'should have the right path', vcr: { cassette_name: 'models/post_image/aws-upload' } do
+      it "should have the right path", vcr: { cassette_name: "models/post_image/aws-upload" } do
         post_image.decode_image_data
         expect(post_image.image.url).to include "posts/#{post.id}/images/#{post_image.id}/original.gif"
       end
