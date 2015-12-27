@@ -146,7 +146,7 @@ describe User, :type => :model do
   context "paperclip" do
     context "without cloudfront" do
       it { should have_attached_file(:photo) }
-      it { should validate_attachment_content_type(:image).
+      it { should validate_attachment_content_type(:photo).
         allowing("image/png", "image/gif", "image/jpeg").
         rejecting("text/plain", "text/xml")
       }
