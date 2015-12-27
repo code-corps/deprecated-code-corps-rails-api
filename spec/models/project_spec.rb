@@ -25,7 +25,6 @@ describe Project, :type => :model do
       it { should validate_attachment_size(:icon).less_than(10.megabytes) }
     end
 
-
     describe "title" do
       describe "base validations" do
         # visit the following to understand why this is tested in a separate context
@@ -110,9 +109,10 @@ describe Project, :type => :model do
   context "paperclip" do
     context "without cloudfront" do
       it { should have_attached_file(:icon) }
-      it { should validate_attachment_content_type(:icon)
-          .allowing("image/png", "image/gif", "image/jpeg")
-          .rejecting("text/plain", "text/xml") }
+      it { should validate_attachment_content_type(:image).
+        allowing("image/png", "image/gif", "image/jpeg").
+        rejecting("text/plain", "text/xml")
+      }
     end
 
     context "with cloudfront" do

@@ -42,12 +42,13 @@ RSpec.describe CommentImage, type: :model do
   context "paperclip" do
     context "without cloudfront" do
       it { should have_attached_file(:image) }
-      it { should validate_attachment_content_type(:image)
-          .allowing("image/png", "image/gif", "image/jpeg")
-          .rejecting("text/plain", "text/xml") }
+      it { should validate_attachment_content_type(:image).
+        allowing("image/png", "image/gif", "image/jpeg").
+        rejecting("text/plain", "text/xml")
+      }
     end
 
-    context "with cloudfront"  do
+    context "with cloudfront" do
       let(:comment) { create(:comment, id: 1) }
       let(:comment_image) { create(:comment_image, :with_s3_image, id: 1, comment: comment, filename: "default-avatar.gif", base64_photo_data: gif_string) }
 
