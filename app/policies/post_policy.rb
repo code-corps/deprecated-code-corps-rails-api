@@ -15,15 +15,27 @@ class PostPolicy
   end
 
   def create?
+    # Cannot create there's no user
     return unless @user.present?
+
+    # Can create issue posts for any user
     return true if post.issue?
+
+    # Cannot create if not a contributor
     return false unless contributor_for_user
+
+    # Can create if a contributor with permissions
     return true if current_user_is_at_least_collaborator_on_project?
   end
 
   def update?
+    # Can update if the user who posted
     return true if @user == post.user
+
+    # Cannot update if not a contributor
     return false unless contributor_for_user
+
+    # Can update if the user is a project admin
     return true if current_user_is_at_least_admin_on_project?
   end
 

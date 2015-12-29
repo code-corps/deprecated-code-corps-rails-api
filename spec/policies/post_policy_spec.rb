@@ -14,7 +14,7 @@ describe PostPolicy do
 
     @collaborator_user = create(:user)
     create(:contributor, user: @collaborator_user, project: @project, status: "collaborator")
-    
+
     @owner_user = create(:user)
     create(:contributor, user: @owner_user, project: @project, status: "admin")
 
@@ -197,7 +197,7 @@ describe PostPolicy do
     end
 
     context "as a regular user" do
-      it "is not permitted to update other's posts" do
+      it "is not permitted to update others' posts" do
         expect(subject).to_not permit(@regular_user, @idea_post)
         expect(subject).to_not permit(@regular_user, @progress_post)
         expect(subject).to_not permit(@regular_user, @task_post)
@@ -210,7 +210,7 @@ describe PostPolicy do
     end
 
     context "as a pending user" do
-      it "is not permitted to update a post" do
+      it "is not permitted to update others' post" do
         expect(subject).to_not permit(@pending_user, @idea_post)
         expect(subject).to_not permit(@pending_user, @progress_post)
         expect(subject).to_not permit(@pending_user, @task_post)
@@ -223,7 +223,7 @@ describe PostPolicy do
     end
 
     context "as a collaborator" do
-      it "is not permitted to update a post" do
+      it "is not permitted to update others' posts" do
         expect(subject).to_not permit(@collaborator_user, @idea_post)
         expect(subject).to_not permit(@collaborator_user, @progress_post)
         expect(subject).to_not permit(@collaborator_user, @task_post)
@@ -239,7 +239,7 @@ describe PostPolicy do
     end
 
     context "as an admin" do
-      it "is permitted to update a post" do
+      it "is permitted to update anyone's post" do
         expect(subject).to permit(@admin_user, @idea_post)
         expect(subject).to permit(@admin_user, @progress_post)
         expect(subject).to permit(@admin_user, @task_post)
@@ -248,7 +248,7 @@ describe PostPolicy do
     end
 
     context "as an owner" do
-      it "is permitted to update a post" do
+      it "is permitted to update anyone's post" do
         expect(subject).to permit(@owner_user, @idea_post)
         expect(subject).to permit(@owner_user, @progress_post)
         expect(subject).to permit(@owner_user, @task_post)
