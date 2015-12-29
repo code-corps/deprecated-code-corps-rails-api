@@ -7,8 +7,13 @@ class CommentImagePolicy
   end
 
   def create?
+    # Cannot create if there's no user
     return false unless user.present?
+
+    # Cannot create if they're not the same user
     return false unless comment.user_id == user.id
+
+    # Can create comments for any user
     return true
   end
 

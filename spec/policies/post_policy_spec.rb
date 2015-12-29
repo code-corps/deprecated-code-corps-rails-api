@@ -95,92 +95,147 @@ describe PostPolicy do
     end
 
     context "as a regular user" do
+      it "is not permitted to create others' posts" do
+        expect(subject).to_not permit(@regular_user, @issue_post)
+        expect(subject).to_not permit(@regular_user, @idea_post)
+        expect(subject).to_not permit(@regular_user, @progress_post)
+        expect(subject).to_not permit(@regular_user, @task_post)
+      end
+
       it "is permitted to add an issue" do
-        expect(subject).to permit(@regular_user, @issue_post)
+        post = create(:post, user: @regular_user, post_type: "issue", project: @project)
+        expect(subject).to permit(@regular_user, post)
       end
 
       it "is not permitted to add an idea" do
-        expect(subject).to_not permit(@regular_user, @idea_post)
+        post = create(:post, user: @regular_user, post_type: "idea", project: @project)
+        expect(subject).to_not permit(@regular_user, post)
       end
 
       it "is not permitted to add progress" do
-        expect(subject).to_not permit(@regular_user, @progress_post)
+        post = create(:post, user: @regular_user, post_type: "progress", project: @project)
+        expect(subject).to_not permit(@regular_user, post)
       end
 
       it "is not permitted to add a task" do
-        expect(subject).to_not permit(@regular_user, @task_post)
+        post = create(:post, user: @regular_user, post_type: "task", project: @project)
+        expect(subject).to_not permit(@regular_user, post)
       end
     end
 
     context "as a pending user" do
+      it "is not permitted to create others' posts" do
+        expect(subject).to_not permit(@pending_user, @issue_post)
+        expect(subject).to_not permit(@pending_user, @idea_post)
+        expect(subject).to_not permit(@pending_user, @progress_post)
+        expect(subject).to_not permit(@pending_user, @task_post)
+      end
+
       it "is permitted to add an issue" do
-        expect(subject).to permit(@pending_user, @issue_post)
+        post = create(:post, user: @pending_user, post_type: "issue", project: @project)
+        expect(subject).to permit(@pending_user, post)
       end
 
       it "is not permitted to add an idea" do
-        expect(subject).to_not permit(@pending_user, @idea_post)
+        post = create(:post, user: @pending_user, post_type: "idea", project: @project)
+        expect(subject).not_to permit(@pending_user, post)
       end
 
       it "is not permitted to add progress" do
-        expect(subject).to_not permit(@pending_user, @progress_post)
+        post = create(:post, user: @pending_user, post_type: "progress", project: @project)
+        expect(subject).not_to permit(@pending_user, post)
       end
 
       it "is not permitted to add a task" do
-        expect(subject).to_not permit(@pending_user, @task_post)
+        post = create(:post, user: @pending_user, post_type: "task", project: @project)
+        expect(subject).not_to permit(@pending_user, post)
       end
     end
 
     context "as a collaborator" do
+      it "is not permitted to create others' posts" do
+        expect(subject).to_not permit(@collaborator_user, @issue_post)
+        expect(subject).to_not permit(@collaborator_user, @idea_post)
+        expect(subject).to_not permit(@collaborator_user, @progress_post)
+        expect(subject).to_not permit(@collaborator_user, @task_post)
+      end
+
       it "is permitted to add an issue" do
-        expect(subject).to permit(@collaborator_user, @issue_post)
+        post = create(:post, user: @collaborator_user, post_type: "issue", project: @project)
+        expect(subject).to permit(@collaborator_user, post)
       end
 
       it "is permitted to add an idea" do
-        expect(subject).to permit(@collaborator_user, @idea_post)
+        post = create(:post, user: @collaborator_user, post_type: "idea", project: @project)
+        expect(subject).to permit(@collaborator_user, post)
       end
 
       it "is permitted to add progress" do
-        expect(subject).to permit(@collaborator_user, @progress_post)
+        post = create(:post, user: @collaborator_user, post_type: "progress", project: @project)
+        expect(subject).to permit(@collaborator_user, post)
       end
 
       it "is permitted to add a task" do
-        expect(subject).to permit(@collaborator_user, @task_post)
+        post = create(:post, user: @collaborator_user, post_type: "task", project: @project)
+        expect(subject).to permit(@collaborator_user, post)
       end
     end
 
     context "as an admin" do
+      it "is not permitted to create others' posts" do
+        expect(subject).to_not permit(@admin_user, @issue_post)
+        expect(subject).to_not permit(@admin_user, @idea_post)
+        expect(subject).to_not permit(@admin_user, @progress_post)
+        expect(subject).to_not permit(@admin_user, @task_post)
+      end
+
       it "is permitted to add an issue" do
-        expect(subject).to permit(@admin_user, @issue_post)
+        post = create(:post, user: @admin_user, post_type: "issue", project: @project)
+        expect(subject).to permit(@admin_user, post)
       end
 
       it "is permitted to add an idea" do
-        expect(subject).to permit(@admin_user, @idea_post)
+        post = create(:post, user: @admin_user, post_type: "idea", project: @project)
+        expect(subject).to permit(@admin_user, post)
       end
 
       it "is permitted to add progress" do
-        expect(subject).to permit(@admin_user, @progress_post)
+        post = create(:post, user: @admin_user, post_type: "progress", project: @project)
+        expect(subject).to permit(@admin_user, post)
       end
 
       it "is permitted to add a task" do
-        expect(subject).to permit(@admin_user, @task_post)
+        post = create(:post, user: @admin_user, post_type: "task", project: @project)
+        expect(subject).to permit(@admin_user, post)
       end
     end
 
     context "as an owner" do
+      it "is not permitted to create others' posts" do
+        expect(subject).to_not permit(@owner_user, @issue_post)
+        expect(subject).to_not permit(@owner_user, @idea_post)
+        expect(subject).to_not permit(@owner_user, @progress_post)
+        expect(subject).to_not permit(@owner_user, @task_post)
+      end
+
       it "is permitted to add an issue" do
-        expect(subject).to permit(@owner_user, @issue_post)
+        post = create(:post, user: @owner_user, post_type: "issue", project: @project)
+        expect(subject).to permit(@owner_user, post)
       end
 
       it "is permitted to add an idea" do
-        expect(subject).to permit(@owner_user, @idea_post)
+        post = create(:post, user: @owner_user, post_type: "idea", project: @project)
+        expect(subject).to permit(@owner_user, post)
       end
 
       it "is permitted to add progress" do
-        expect(subject).to permit(@owner_user, @progress_post)
+        post = create(:post, user: @owner_user, post_type: "progress", project: @project)
+        expect(subject).to permit(@owner_user, post)
       end
 
       it "is permitted to add a task" do
-        expect(subject).to permit(@owner_user, @task_post)
+        post = create(:post, user: @owner_user, post_type: "task", project: @project)
+        expect(subject).to permit(@owner_user, post)
       end
     end
   end
