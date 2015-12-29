@@ -313,6 +313,7 @@ describe "Posts API" do
 
       context "when the post does exist" do
         before do
+          create(:contributor, project: @project, user: @user, status: "collaborator")
           @post = create(:post, project: @project, user: @user)
           @mentioned_1 = create(:user)
           @mentioned_2 = create(:user)
