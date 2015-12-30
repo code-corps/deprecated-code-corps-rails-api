@@ -12,30 +12,30 @@ describe PostPolicy do
     # Pending contributor
     @pending_user = create(:user)
     create(:contributor,
-          user: @pending_user,
-          project: @project,
-          status: "pending")
+           user: @pending_user,
+           project: @project,
+           status: "pending")
 
     # Collaborator
     @collaborator_user = create(:user)
     create(:contributor,
-          user: @collaborator_user,
-          project: @project,
-          status: "collaborator")
+           user: @collaborator_user,
+           project: @project,
+           status: "collaborator")
 
     # Owner
     @owner_user = create(:user)
     create(:contributor,
-          user: @owner_user,
-          project: @project,
-          status: "admin")
+           user: @owner_user,
+           project: @project,
+           status: "admin")
 
     # Admin
     @admin_user = create(:user)
     create(:contributor,
-          user: @admin_user,
-          project: @project,
-          status: "owner")
+           user: @admin_user,
+           project: @project,
+           status: "owner")
 
     @idea_post = create(:post,
                         post_type: "idea",
