@@ -50,8 +50,8 @@ describe PostPolicy do
                         project: @project)
 
     @issue_post = create(:post,
-                        post_type: "issue",
-                        project: @project)
+                         post_type: "issue",
+                         project: @project)
   end
 
   permissions :index?, :show? do
