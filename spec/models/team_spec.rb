@@ -7,6 +7,7 @@ describe Team, :type => :model do
 
   describe "relationships" do
     it { should have_many(:members).through(:team_memberships) }
+    it { should have_many(:projects).through(:team_projects) }
     it { should belong_to(:organization) }
   end
 end
