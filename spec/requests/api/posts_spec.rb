@@ -27,9 +27,12 @@ describe "Posts API" do
         end
 
         it "returns the first page of 10 Post records, serialized with PostSerializer" do
-          expect(json).to serialize_collection(Post.page(1).per(10)).with(PostSerializer)
-                            .with_links_to("#{host}/projects/#{@project.id}/posts")
-                            .with_meta(total_records: 13, total_pages: 2, page_size: 10, current_page: 1)
+          collection = Post.page(1).per(10)
+          expect(json).to
+            serialize_collection(collection).
+              with(PostSerializer).
+              with_links_to("#{host}/projects/#{@project.id}/posts").
+              with_meta(total_records: 13, total_pages: 2, page_size: 10, current_page: 1)
         end
       end
 
@@ -313,7 +316,10 @@ describe "Posts API" do
 
       context "when the post does exist" do
         before do
-          create(:contributor, project: @project, user: @user, status: "collaborator")
+          create(:contributor,
+                 project: @project,
+                 user: @user,
+                 status: "collaborator")
           @post = create(:post, project: @project, user: @user)
           @mentioned_1 = create(:user)
           @mentioned_2 = create(:user)
