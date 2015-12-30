@@ -5,7 +5,7 @@ class TeamProject < ActiveRecord::Base
   validates :team, presence: true
   validates :project, presence: true
 
-  validates_uniqueness_of :project_id, scope: :team_id
+  validates :project_id, uniqueness: { scope: :team_id }
 
   enum role: {
     regular: "regular",
