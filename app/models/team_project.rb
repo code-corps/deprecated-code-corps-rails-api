@@ -19,6 +19,6 @@ class TeamProject < ActiveRecord::Base
   }
 
   def role_value
-    ROLES_MAP[self.role]
+    ROLES_MAP[role]
   end
 end

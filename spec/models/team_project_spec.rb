@@ -56,7 +56,7 @@ describe TeamProject, type: :model do
       regular_team_project.regular!
 
       array = [admin_team_project, regular_team_project]
-      max = array.max_by { |item| item.role_value }
+      max = array.max_by(&:role_value)
       expect(max).to be admin_team_project
     end
   end
