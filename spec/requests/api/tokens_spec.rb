@@ -1,5 +1,5 @@
 require 'rails_helper'
-require_relative '../../utils'
+require_relative "../../utils"
 
 describe "Tokens API" do
 
