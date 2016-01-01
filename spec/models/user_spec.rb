@@ -44,7 +44,9 @@ describe User, :type => :model do
   end
 
   describe "validations" do
-    context "paperclip", vcr: { cassette_name: "models/user/validation" }, skip: S3_ENABLED do
+    context "paperclip",
+            vcr: { cassette_name: "models/user/validation" },
+            skip: S3_ENABLED do
       it { should validate_attachment_size(:photo).less_than(10.megabytes) }
     end
 
