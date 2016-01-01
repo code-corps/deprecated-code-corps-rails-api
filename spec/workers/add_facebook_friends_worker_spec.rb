@@ -1,7 +1,6 @@
 require 'rails_helper'
 require_relative "../utils"
 
-
 describe AddFacebookFriendsWorker, skip: FB_ENABLED do
 
   before do
