@@ -1,4 +1,5 @@
 require "rails_helper"
+require_relative "../utils"
 
 describe Project, :type => :model do
   describe "schema" do
@@ -21,7 +22,7 @@ describe Project, :type => :model do
 
   describe "validations" do
 
-    context "paperclip", vcr: { cassette_name: "models/project/validation" } do
+    context "paperclip", vcr: { cassette_name: "models/project/validation" }, :skip => S3_ENABLED do
       it { should validate_attachment_size(:icon).less_than(10.megabytes) }
     end
 
@@ -115,7 +116,7 @@ describe Project, :type => :model do
       }
     end
 
-    context "with cloudfront" do
+    context "with cloudfront", :skip => CLOUDFRONT_ENABLED do
 
       let(:project) { create(:project, :with_s3_icon) }
 

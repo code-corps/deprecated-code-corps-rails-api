@@ -1,4 +1,5 @@
 require "rails_helper"
+require_relative "../utils"
 
 describe User, :type => :model do
 
@@ -43,7 +44,7 @@ describe User, :type => :model do
   end
 
   describe "validations" do
-    context "paperclip", vcr: { cassette_name: "models/user/validation" } do
+    context "paperclip", vcr: { cassette_name: "models/user/validation" }, :skip => S3_ENABLED do
       it { should validate_attachment_size(:photo).less_than(10.megabytes) }
     end
 
@@ -152,7 +153,7 @@ describe User, :type => :model do
       }
     end
 
-    context "with cloudfront" do
+    context "with cloudfront", :skip => CLOUDFRONT_ENABLED do
       let(:user) { create(:user, :with_s3_photo) }
 
       it "should have our cloudfront domain in the URL" do
