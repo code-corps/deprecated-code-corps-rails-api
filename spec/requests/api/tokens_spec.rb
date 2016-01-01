@@ -43,7 +43,7 @@ describe "Tokens API" do
       end
     end
 
-    context "with a facebook_auth_code", :skip => FB_ENABLED do
+    context "with a facebook_auth_code", skip: FB_ENABLED do
 
       context "when facebook user doesn't exist", vcr: { cassette_name: 'requests/api/tokens/facebook_user_not_found' } do
         it "fails with 400" do
@@ -58,7 +58,7 @@ describe "Tokens API" do
         end
       end
 
-      context "when facebook user does exist", vcr: { cassette_name: 'requests/api/tokens/facebook_user_found' }, :skip => FB_ENABLED do
+      context "when facebook user does exist", vcr: { cassette_name: 'requests/api/tokens/facebook_user_found' }, skip: FB_ENABLED do
         before do
           oauth = Koala::Facebook::OAuth.new(ENV["FACEBOOK_APP_ID"], ENV["FACEBOOK_APP_SECRET"], ENV["FACEBOOK_REDIRECT_URL"])
           test_users = Koala::Facebook::TestUsers.new(app_id: ENV["FACEBOOK_APP_ID"], secret: ENV["FACEBOOK_APP_SECRET"])

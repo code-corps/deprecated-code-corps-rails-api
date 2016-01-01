@@ -1,7 +1,7 @@
 require "rails_helper"
 require_relative '../utils'
 
-describe AddFacebookProfilePictureWorker, :skip => FB_ENABLED do
+describe AddFacebookProfilePictureWorker, skip: FB_ENABLED do
 
   before do
     oauth = Koala::Facebook::OAuth.new(ENV["FACEBOOK_APP_ID"], ENV["FACEBOOK_APP_SECRET"], ENV["FACEBOOK_REDIRECT_URL"])

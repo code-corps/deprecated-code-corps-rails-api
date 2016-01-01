@@ -35,7 +35,7 @@ RSpec.describe PostImage, type: :model do
     it { should allow_value(gif_string).for(:base64_photo_data) }
     it { should_not allow_value(jpeg_without_data_string).for(:base64_photo_data) }
 
-    context "paperclip", vcr: { cassette_name: "models/post_image/validation" }, :skip => S3_ENABLED do
+    context "paperclip", vcr: { cassette_name: "models/post_image/validation" }, skip: S3_ENABLED do
       it { should validate_attachment_size(:image).less_than(10.megabytes) }
     end
   end
@@ -49,7 +49,7 @@ RSpec.describe PostImage, type: :model do
       }
     end
 
-    context "with cloudfront", :skip => CLOUDFRONT_ENABLED do
+    context "with cloudfront", skip: CLOUDFRONT_ENABLED do
       let(:post) { create(:post, id: 1) }
       let(:post_image) { create(:post_image, :with_s3_image, id: 1, post: post, filename: "default-avatar.gif", base64_photo_data: gif_string) }
 

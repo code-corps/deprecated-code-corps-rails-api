@@ -54,7 +54,7 @@ describe "Users API" do
 
   context 'POST /users' do
 
-    context "when registering through Facebook", :skip => FB_ENABLED do
+    context "when registering through Facebook", skip: FB_ENABLED do
       before do
         oauth = Koala::Facebook::OAuth.new(ENV["FACEBOOK_APP_ID"], ENV["FACEBOOK_APP_SECRET"], ENV["FACEBOOK_REDIRECT_URL"])
         test_users = Koala::Facebook::TestUsers.new(app_id: ENV["FACEBOOK_APP_ID"], secret: ENV["FACEBOOK_APP_SECRET"])
