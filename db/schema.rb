@@ -11,18 +11,83 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151124130007) do
+ActiveRecord::Schema.define(version: 20151227182138) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
+  create_table "comment_images", force: :cascade do |t|
+    t.integer  "user_id",            null: false
+    t.integer  "comment_id",         null: false
+    t.text     "filename",           null: false
+    t.text     "base64_photo_data",  null: false
+    t.datetime "created_at",         null: false
+    t.datetime "updated_at",         null: false
+    t.string   "image_file_name"
+    t.string   "image_content_type"
+    t.integer  "image_file_size"
+    t.datetime "image_updated_at"
+  end
+
+  create_table "comment_user_mentions", force: :cascade do |t|
+    t.integer  "user_id",     null: false
+    t.integer  "comment_id",  null: false
+    t.integer  "post_id",     null: false
+    t.string   "username",    null: false
+    t.integer  "start_index", null: false
+    t.integer  "end_index",   null: false
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
+  end
+
   create_table "comments", force: :cascade do |t|
-    t.text     "body"
+    t.text     "body",       null: false
+    t.integer  "user_id",    null: false
+    t.integer  "post_id",    null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.text     "markdown",   null: false
+    t.string   "aasm_state"
+  end
+
+  create_table "contributors", force: :cascade do |t|
     t.integer  "user_id"
-    t.integer  "post_id"
+    t.integer  "project_id"
+    t.string   "status",     default: "pending", null: false
+    t.datetime "created_at",                     null: false
+    t.datetime "updated_at",                     null: false
+  end
+
+  create_table "github_repositories", force: :cascade do |t|
+    t.string   "repository_name", null: false
+    t.string   "owner_name",      null: false
+    t.integer  "project_id",      null: false
+    t.datetime "created_at",      null: false
+    t.datetime "updated_at",      null: false
+  end
+
+  create_table "members", force: :cascade do |t|
+    t.string   "slug",       null: false
+    t.integer  "model_id"
+    t.string   "model_type"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
+
+  add_index "members", ["model_id", "model_type"], name: "index_members_on_model_id_and_model_type", unique: true, using: :btree
+  add_index "members", ["slug"], name: "index_members_on_slug", unique: true, using: :btree
+
+  create_table "notifications", force: :cascade do |t|
+    t.integer  "notifiable_id",   null: false
+    t.string   "notifiable_type", null: false
+    t.integer  "user_id",         null: false
+    t.string   "aasm_state"
+    t.datetime "created_at",      null: false
+    t.datetime "updated_at",      null: false
+  end
+
+  add_index "notifications", ["user_id", "notifiable_id", "notifiable_type"], name: "index_notifications_on_user_id_and_notifiable", unique: true, using: :btree
+  add_index "notifications", ["user_id"], name: "index_notifications_on_user_id", using: :btree
 
   create_table "oauth_access_grants", force: :cascade do |t|
     t.integer  "resource_owner_id", null: false
@@ -78,29 +143,88 @@ ActiveRecord::Schema.define(version: 20151124130007) do
     t.string   "name",       null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string   "slug",       null: false
   end
 
-  create_table "posts", force: :cascade do |t|
-    t.string   "status",     default: "open"
-    t.string   "type",       default: "task"
-    t.string   "title",                       null: false
-    t.text     "body"
+  add_index "organizations", ["slug"], name: "index_organizations_on_slug", unique: true, using: :btree
+
+  create_table "post_images", force: :cascade do |t|
+    t.integer  "user_id",            null: false
+    t.integer  "post_id",            null: false
+    t.text     "filename",           null: false
+    t.text     "base64_photo_data",  null: false
+    t.datetime "created_at",         null: false
+    t.datetime "updated_at",         null: false
+    t.string   "image_file_name"
+    t.string   "image_content_type"
+    t.integer  "image_file_size"
+    t.datetime "image_updated_at"
+  end
+
+  create_table "post_likes", force: :cascade do |t|
+    t.integer  "post_id"
     t.integer  "user_id"
-    t.integer  "project_id"
-    t.datetime "created_at",                  null: false
-    t.datetime "updated_at",                  null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
-  create_table "projects", force: :cascade do |t|
-    t.string   "title",       null: false
-    t.string   "description"
-    t.integer  "owner_id"
-    t.string   "owner_type"
+  create_table "post_user_mentions", force: :cascade do |t|
+    t.integer  "user_id",     null: false
+    t.integer  "post_id",     null: false
+    t.string   "username",    null: false
+    t.integer  "start_index", null: false
+    t.integer  "end_index",   null: false
     t.datetime "created_at",  null: false
     t.datetime "updated_at",  null: false
   end
 
+  create_table "posts", force: :cascade do |t|
+    t.string   "status",           default: "open"
+    t.string   "post_type",        default: "task"
+    t.string   "title",                             null: false
+    t.text     "body",                              null: false
+    t.integer  "user_id",                           null: false
+    t.integer  "project_id",                        null: false
+    t.datetime "created_at",                        null: false
+    t.datetime "updated_at",                        null: false
+    t.integer  "post_likes_count", default: 0
+    t.text     "markdown",                          null: false
+    t.integer  "number"
+    t.string   "aasm_state"
+  end
+
+  create_table "projects", force: :cascade do |t|
+    t.string   "title",              null: false
+    t.string   "description"
+    t.integer  "owner_id"
+    t.string   "owner_type"
+    t.datetime "created_at",         null: false
+    t.datetime "updated_at",         null: false
+    t.string   "icon_file_name"
+    t.string   "icon_content_type"
+    t.integer  "icon_file_size"
+    t.datetime "icon_updated_at"
+    t.text     "base64_icon_data"
+    t.integer  "contributors_count"
+    t.string   "slug",               null: false
+  end
+
   add_index "projects", ["owner_type", "owner_id"], name: "index_projects_on_owner_type_and_owner_id", using: :btree
+  add_index "projects", ["slug", "owner_id"], name: "index_projects_on_slug_and_owner_id", unique: true, using: :btree
+
+  create_table "skill_categories", force: :cascade do |t|
+    t.string   "title",      null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "skills", force: :cascade do |t|
+    t.string   "title",             null: false
+    t.string   "description"
+    t.integer  "skill_category_id"
+    t.datetime "created_at",        null: false
+    t.datetime "updated_at",        null: false
+  end
 
   create_table "team_memberships", force: :cascade do |t|
     t.datetime "created_at", null: false
@@ -111,6 +235,16 @@ ActiveRecord::Schema.define(version: 20151124130007) do
 
   add_index "team_memberships", ["member_id", "team_id"], name: "index_team_memberships_on_member_id_and_team_id", unique: true, using: :btree
 
+  create_table "team_projects", force: :cascade do |t|
+    t.integer  "team_id",                        null: false
+    t.integer  "project_id",                     null: false
+    t.string   "role",       default: "regular", null: false
+    t.datetime "created_at",                     null: false
+    t.datetime "updated_at",                     null: false
+  end
+
+  add_index "team_projects", ["team_id", "project_id"], name: "index_team_projects_on_team_id_and_project_id", unique: true, using: :btree
+
   create_table "teams", force: :cascade do |t|
     t.string   "name",            null: false
     t.datetime "created_at",      null: false
@@ -118,21 +252,49 @@ ActiveRecord::Schema.define(version: 20151124130007) do
     t.integer  "organization_id"
   end
 
+  create_table "user_relationships", force: :cascade do |t|
+    t.integer  "follower_id"
+    t.integer  "following_id"
+    t.datetime "created_at",   null: false
+    t.datetime "updated_at",   null: false
+  end
+
+  add_index "user_relationships", ["follower_id"], name: "index_user_relationships_on_follower_id", using: :btree
+  add_index "user_relationships", ["following_id"], name: "index_user_relationships_on_following_id", using: :btree
+
+  create_table "user_skills", force: :cascade do |t|
+    t.integer  "user_id"
+    t.integer  "skill_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "users", force: :cascade do |t|
-    t.datetime "created_at",                                     null: false
-    t.datetime "updated_at",                                     null: false
-    t.string   "email",                                          null: false
-    t.string   "encrypted_password", limit: 128,                 null: false
-    t.string   "confirmation_token", limit: 128
-    t.string   "remember_token",     limit: 128,                 null: false
+    t.datetime "created_at",                                        null: false
+    t.datetime "updated_at",                                        null: false
+    t.string   "email",                                             null: false
+    t.string   "encrypted_password",    limit: 128,                 null: false
+    t.string   "confirmation_token",    limit: 128
+    t.string   "remember_token",        limit: 128,                 null: false
     t.string   "username"
-    t.boolean  "admin",                          default: false, null: false
+    t.boolean  "admin",                             default: false, null: false
     t.text     "website"
     t.string   "twitter"
     t.text     "biography"
+    t.string   "facebook_id"
+    t.string   "facebook_access_token"
+    t.string   "base64_photo_data"
+    t.string   "photo_file_name"
+    t.string   "photo_content_type"
+    t.integer  "photo_file_size"
+    t.datetime "photo_updated_at"
   end
 
   add_index "users", ["email"], name: "index_users_on_email", using: :btree
   add_index "users", ["remember_token"], name: "index_users_on_remember_token", using: :btree
 
+  add_foreign_key "comments", "posts"
+  add_foreign_key "comments", "users"
+  add_foreign_key "posts", "projects"
+  add_foreign_key "posts", "users"
 end

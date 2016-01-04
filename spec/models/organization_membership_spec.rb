@@ -1,4 +1,4 @@
-require 'rails_helper'
+require "rails_helper"
 
 describe OrganizationMembership, :type => :model do
   describe "schema" do
