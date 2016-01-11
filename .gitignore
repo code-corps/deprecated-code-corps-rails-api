@@ -29,3 +29,5 @@ bundler_stubs/*
 vendor/bundle/*
 
 .DS_Store
+
+dump.rdb
