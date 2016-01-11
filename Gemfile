@@ -72,4 +72,5 @@ group :test do
   gem 'vcr'
   gem 'webmock'
   gem 'pusher-fake'
+  gem 'codeclimate-test-reporter', require: nil
 end

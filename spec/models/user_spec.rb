@@ -1,4 +1,4 @@
-require 'rails_helper'
+require "rails_helper"
 
 describe User, :type => :model do
 
@@ -43,6 +43,10 @@ describe User, :type => :model do
   end
 
   describe "validations" do
+    context "paperclip", vcr: { cassette_name: "models/user/validation" } do
+      it { should validate_attachment_size(:photo).less_than(10.megabytes) }
+    end
+
 
     describe "website" do
       it { should allow_value("www.example.com").for(:website) }
@@ -139,28 +143,29 @@ describe User, :type => :model do
     end
   end
 
-  context 'paperclip' do
-    context 'without cloudfront' do
+  context "paperclip" do
+    context "without cloudfront" do
       it { should have_attached_file(:photo) }
-      it { should validate_attachment_content_type(:photo)
-          .allowing('image/png', 'image/gif', 'image/jpeg')
-          .rejecting('text/plain', 'text/xml') }
+      it { should validate_attachment_content_type(:photo).
+        allowing("image/png", "image/gif", "image/jpeg").
+        rejecting("text/plain", "text/xml")
+      }
     end
 
-    context 'with cloudfront' do
+    context "with cloudfront" do
       let(:user) { create(:user, :with_s3_photo) }
 
-      it 'should have our cloudfront domain in the URL' do
-        expect(user.photo.url(:thumb)).to include ENV['CLOUDFRONT_DOMAIN']
+      it "should have our cloudfront domain in the URL" do
+        expect(user.photo.url(:thumb)).to include ENV["CLOUDFRONT_DOMAIN"]
       end
 
-      it 'should have the right path' do
+      it "should have the right path" do
         expect(user.photo.url(:thumb)).to include "users/#{user.id}/thumb"
       end
     end
   end
 
-  context 'following behavior' do
+  context "following behavior" do
     before(:each) do
       @user = create(:user)
       @other_user_1 = create(:user)
