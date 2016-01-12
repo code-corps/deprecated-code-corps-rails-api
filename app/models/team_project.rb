@@ -11,4 +11,14 @@ class TeamProject < ActiveRecord::Base
     regular: "regular",
     admin: "admin"
   }
+
+  # Least permissive is 0
+  ROLES_MAP = {
+    "regular" => 0,
+    "admin" => 1
+  }
+
+  def role_value
+    ROLES_MAP[role]
+  end
 end

@@ -32,4 +32,32 @@ describe TeamProject, type: :model do
     expect(team_project.admin?).to be false
     expect(team_project.regular?).to be true
   end
+
+  describe "#role_value" do
+    it "should return 0 for regular" do
+      team_project = create(:team_project)
+      team_project.regular!
+
+      expect(team_project.role_value).to eq 0
+    end
+
+    it "should return 1 for admin" do
+      team_project = create(:team_project)
+      team_project.admin!
+
+      expect(team_project.role_value).to eq 1
+    end
+
+    it "should rank admin higher than regular" do
+      admin_team_project = create(:team_project)
+      admin_team_project.admin!
+
+      regular_team_project = create(:team_project)
+      regular_team_project.regular!
+
+      array = [admin_team_project, regular_team_project]
+      max = array.max_by(&:role_value)
+      expect(max).to be admin_team_project
+    end
+  end
 end
