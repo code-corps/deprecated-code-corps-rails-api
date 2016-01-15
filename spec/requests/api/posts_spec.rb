@@ -14,7 +14,8 @@ describe "Posts API" do
     context "when successful" do
       before do
         @project = create(:project, owner: create(:organization))
-        create_list(:post, 13, project: @project)
+        create_list(:post, 3, project: @project, post_type: "issue")
+        create_list(:post, 10, project: @project, post_type: "task")
       end
 
       context "when no page is specified" do
@@ -69,6 +70,14 @@ describe "Posts API" do
           expect(json.meta.total_pages).to eq 3
           expect(json.meta.page_size).to eq 5
           expect(json.meta.current_page).to eq 2
+        end
+      end
+
+      context "when 'post_type' parameter is specified" do
+        it "only returns posts of that type" do
+          get "#{host}/projects/#{@project.id}/posts", { post_type: "issue" }
+          collection = Post.where(project: @project, post_type: "issue")
+          expect(json).to serialize_collection(collection).with(PostSerializer)
         end
       end
     end

@@ -52,6 +52,12 @@ class PostsController < ApplicationController
       record_attributes.permit(:markdown, :title, :state, :post_type).merge(relationships)
     end
 
+    def filter_params
+      filter_params = {}
+      filter_params[:post_type] = params[:post_type] if params[:post_type]
+      filter_params
+    end
+
     def project_relationship_id
       record_relationships.fetch(:project, {}).fetch(:data, {})[:id]
     end
@@ -85,7 +91,7 @@ class PostsController < ApplicationController
 
     def find_posts!
       project = find_project!
-      Post.where(project: project)
+      Post.where(filter_params.merge(project: project))
         .page(page_number).per(page_size)
         .includes [:users, :comments, :user, :project, :post_user_mentions, :comment_user_mentions]
     end
