@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160116201731) do
+ActiveRecord::Schema.define(version: 20160116232718) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -177,8 +177,6 @@ ActiveRecord::Schema.define(version: 20160116201731) do
   create_table "projects", force: :cascade do |t|
     t.string   "title",             null: false
     t.string   "description"
-    t.integer  "owner_id"
-    t.string   "owner_type"
     t.datetime "created_at",        null: false
     t.datetime "updated_at",        null: false
     t.string   "icon_file_name"
@@ -187,10 +185,10 @@ ActiveRecord::Schema.define(version: 20160116201731) do
     t.datetime "icon_updated_at"
     t.text     "base64_icon_data"
     t.string   "slug",              null: false
+    t.integer  "organization_id",   null: false
   end
 
-  add_index "projects", ["owner_type", "owner_id"], name: "index_projects_on_owner_type_and_owner_id", using: :btree
-  add_index "projects", ["slug", "owner_id"], name: "index_projects_on_slug_and_owner_id", unique: true, using: :btree
+  add_index "projects", ["organization_id"], name: "index_projects_on_organization_id", using: :btree
 
   create_table "skill_categories", force: :cascade do |t|
     t.string   "title",      null: false
@@ -262,4 +260,5 @@ ActiveRecord::Schema.define(version: 20160116201731) do
   add_foreign_key "comments", "users"
   add_foreign_key "posts", "projects"
   add_foreign_key "posts", "users"
+  add_foreign_key "projects", "organizations"
 end

@@ -2,7 +2,7 @@ FactoryGirl.define do
   factory :project do
     sequence(:title) { |n| "Project#{n}" }
 
-    association :owner, factory: :organization
+    association :organization
 
     trait :with_s3_icon do
       after(:build) do |project, evaluator|

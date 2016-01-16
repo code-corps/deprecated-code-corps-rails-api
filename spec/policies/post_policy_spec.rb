@@ -9,8 +9,6 @@ describe PostPolicy do
 
     @project = create(:project, owner: @organization)
 
-    @regular_user = create(:user)
-
     # Pending organization member
     @pending_user = create(:user)
     create(:organization_membership,
