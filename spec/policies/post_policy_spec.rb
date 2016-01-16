@@ -5,37 +5,39 @@ describe PostPolicy do
   subject { described_class }
 
   before do
-    @project = create(:project)
+    @organization = create(:organization)
+
+    @project = create(:project, owner: @organization)
 
     @regular_user = create(:user)
 
-    # Pending contributor
+    # Pending organization member
     @pending_user = create(:user)
-    create(:contributor,
-           user: @pending_user,
-           project: @project,
-           status: "pending")
+    create(:organization_membership,
+           organization: @organization,
+           member: @pending_user,
+           role: "pending")
 
-    # Collaborator
-    @collaborator_user = create(:user)
-    create(:contributor,
-           user: @collaborator_user,
-           project: @project,
-           status: "collaborator")
+    # Contributor organization member
+    @contributor_user = create(:user)
+    create(:organization_membership,
+           organization: @organization,
+           member: @contributor_user,
+           role: "contributor")
 
-    # Owner
-    @owner_user = create(:user)
-    create(:contributor,
-           user: @owner_user,
-           project: @project,
-           status: "admin")
-
-    # Admin
+    # Admin organization member
     @admin_user = create(:user)
-    create(:contributor,
-           user: @admin_user,
-           project: @project,
-           status: "owner")
+    create(:organization_membership,
+           organization: @organization,
+           member: @admin_user,
+           role: "admin")
+
+    # Owner organization member
+    @owner_user = create(:user)
+    create(:organization_membership,
+           organization: @organization,
+           member: @owner_user,
+           role: "owner")
 
     @idea_post = create(:post,
                         post_type: "idea",
@@ -73,21 +75,12 @@ describe PostPolicy do
       end
     end
 
-    context "as a regular user" do
+    context "as a contributor user" do
       it "is permitted to view any post" do
-        expect(subject).to permit(@regular_user, @issue_post)
-        expect(subject).to permit(@regular_user, @idea_post)
-        expect(subject).to permit(@regular_user, @progress_post)
-        expect(subject).to permit(@regular_user, @task_post)
-      end
-    end
-
-    context "as a collaborator user" do
-      it "is permitted to view any post" do
-        expect(subject).to permit(@collaborator_user, @issue_post)
-        expect(subject).to permit(@collaborator_user, @idea_post)
-        expect(subject).to permit(@collaborator_user, @progress_post)
-        expect(subject).to permit(@collaborator_user, @task_post)
+        expect(subject).to permit(@contributor_user, @issue_post)
+        expect(subject).to permit(@contributor_user, @idea_post)
+        expect(subject).to permit(@contributor_user, @progress_post)
+        expect(subject).to permit(@contributor_user, @task_post)
       end
     end
 
@@ -118,47 +111,6 @@ describe PostPolicy do
         expect(subject).to_not permit(nil, @idea_post)
         expect(subject).to_not permit(nil, @progress_post)
         expect(subject).to_not permit(nil, @task_post)
-      end
-    end
-
-    context "as a regular user" do
-      it "is not permitted to create others' posts" do
-        expect(subject).to_not permit(@regular_user, @issue_post)
-        expect(subject).to_not permit(@regular_user, @idea_post)
-        expect(subject).to_not permit(@regular_user, @progress_post)
-        expect(subject).to_not permit(@regular_user, @task_post)
-      end
-
-      it "is permitted to add an issue" do
-        post = create(:post,
-                      user: @regular_user,
-                      post_type: "issue",
-                      project: @project)
-        expect(subject).to permit(@regular_user, post)
-      end
-
-      it "is not permitted to add an idea" do
-        post = create(:post,
-                      user: @regular_user,
-                      post_type: "idea",
-                      project: @project)
-        expect(subject).to_not permit(@regular_user, post)
-      end
-
-      it "is not permitted to add progress" do
-        post = create(:post,
-                      user: @regular_user,
-                      post_type: "progress",
-                      project: @project)
-        expect(subject).to_not permit(@regular_user, post)
-      end
-
-      it "is not permitted to add a task" do
-        post = create(:post,
-                      user: @regular_user,
-                      post_type: "task",
-                      project: @project)
-        expect(subject).to_not permit(@regular_user, post)
       end
     end
 
@@ -203,44 +155,44 @@ describe PostPolicy do
       end
     end
 
-    context "as a collaborator" do
+    context "as a contributor" do
       it "is not permitted to create others' posts" do
-        expect(subject).to_not permit(@collaborator_user, @issue_post)
-        expect(subject).to_not permit(@collaborator_user, @idea_post)
-        expect(subject).to_not permit(@collaborator_user, @progress_post)
-        expect(subject).to_not permit(@collaborator_user, @task_post)
+        expect(subject).to_not permit(@contributor_user, @issue_post)
+        expect(subject).to_not permit(@contributor_user, @idea_post)
+        expect(subject).to_not permit(@contributor_user, @progress_post)
+        expect(subject).to_not permit(@contributor_user, @task_post)
       end
 
       it "is permitted to add an issue" do
         post = create(:post,
-                      user: @collaborator_user,
+                      user: @contributor_user,
                       post_type: "issue",
                       project: @project)
-        expect(subject).to permit(@collaborator_user, post)
+        expect(subject).to permit(@contributor_user, post)
       end
 
       it "is permitted to add an idea" do
         post = create(:post,
-                      user: @collaborator_user,
+                      user: @contributor_user,
                       post_type: "idea",
                       project: @project)
-        expect(subject).to permit(@collaborator_user, post)
+        expect(subject).to permit(@contributor_user, post)
       end
 
       it "is permitted to add progress" do
         post = create(:post,
-                      user: @collaborator_user,
+                      user: @contributor_user,
                       post_type: "progress",
                       project: @project)
-        expect(subject).to permit(@collaborator_user, post)
+        expect(subject).to permit(@contributor_user, post)
       end
 
       it "is permitted to add a task" do
         post = create(:post,
-                      user: @collaborator_user,
+                      user: @contributor_user,
                       post_type: "task",
                       project: @project)
-        expect(subject).to permit(@collaborator_user, post)
+        expect(subject).to permit(@contributor_user, post)
       end
     end
 
@@ -338,23 +290,6 @@ describe PostPolicy do
       end
     end
 
-    context "as a regular user" do
-      it "is not permitted to update others' posts" do
-        expect(subject).to_not permit(@regular_user, @idea_post)
-        expect(subject).to_not permit(@regular_user, @progress_post)
-        expect(subject).to_not permit(@regular_user, @task_post)
-        expect(subject).to_not permit(@regular_user, @issue_post)
-      end
-
-      it "is permitted to update their own posts" do
-        post = create(:post,
-                      user: @regular_user,
-                      post_type: "issue",
-                      project: @project)
-        expect(subject).to permit(@regular_user, post)
-      end
-    end
-
     context "as a pending user" do
       it "is not permitted to update others' post" do
         expect(subject).to_not permit(@pending_user, @idea_post)
@@ -372,44 +307,44 @@ describe PostPolicy do
       end
     end
 
-    context "as a collaborator" do
+    context "as a contributor" do
       it "is not permitted to update others' posts" do
-        expect(subject).to_not permit(@collaborator_user, @idea_post)
-        expect(subject).to_not permit(@collaborator_user, @progress_post)
-        expect(subject).to_not permit(@collaborator_user, @task_post)
-        expect(subject).to_not permit(@collaborator_user, @issue_post)
+        expect(subject).to_not permit(@contributor_user, @idea_post)
+        expect(subject).to_not permit(@contributor_user, @progress_post)
+        expect(subject).to_not permit(@contributor_user, @task_post)
+        expect(subject).to_not permit(@contributor_user, @issue_post)
       end
 
       it "is permitted to update their own issue" do
         post = create(:post,
-                      user: @collaborator_user,
+                      user: @contributor_user,
                       post_type: "issue",
                       project: @project)
-        expect(subject).to permit(@collaborator_user, post)
+        expect(subject).to permit(@contributor_user, post)
       end
 
       it "is permitted to update their own idea" do
         post = create(:post,
-                      user: @collaborator_user,
+                      user: @contributor_user,
                       post_type: "idea",
                       project: @project)
-        expect(subject).to permit(@collaborator_user, post)
+        expect(subject).to permit(@contributor_user, post)
       end
 
       it "is permitted to update their own progress" do
         post = create(:post,
-                      user: @collaborator_user,
+                      user: @contributor_user,
                       post_type: "progress",
                       project: @project)
-        expect(subject).to permit(@collaborator_user, post)
+        expect(subject).to permit(@contributor_user, post)
       end
 
       it "is permitted to update their own task" do
         post = create(:post,
-                      user: @collaborator_user,
+                      user: @contributor_user,
                       post_type: "task",
                       project: @project)
-        expect(subject).to permit(@collaborator_user, post)
+        expect(subject).to permit(@contributor_user, post)
       end
     end
 

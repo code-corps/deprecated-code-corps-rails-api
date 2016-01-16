@@ -18,15 +18,23 @@ describe OrganizationMembership, :type => :model do
     membership = create(:organization_membership)
 
     expect(membership.pending?).to be true
+    expect(membership.owner?).to be false
     expect(membership.admin?).to be false
     expect(membership.contributor?).to be false
 
     membership.contributor!
+    expect(membership.owner?).to be false
     expect(membership.admin?).to be false
     expect(membership.contributor?).to be true
 
     membership.admin!
+    expect(membership.owner?).to be false
     expect(membership.admin?).to be true
+    expect(membership.contributor?).to be false
+
+    membership.owner!
+    expect(membership.owner?).to be true
+    expect(membership.admin?).to be false
     expect(membership.contributor?).to be false
   end
 end

@@ -8,5 +8,6 @@ class OrganizationMembership < ActiveRecord::Base
     pending: "pending",
     contributor: "contributor",
     admin: "admin",
+    owner: "owner"
   }
 end
