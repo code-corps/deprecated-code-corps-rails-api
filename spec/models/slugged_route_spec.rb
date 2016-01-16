@@ -1,14 +1,14 @@
 require 'rails_helper'
 
-describe Member, type: :model do
+describe SluggedRoute, type: :model do
   describe "schema" do
     it { should have_db_column(:slug).of_type(:string) }
-    it { should have_db_column(:model_id).of_type(:integer) }
-    it { should have_db_column(:model_type).of_type(:string) }
+    it { should have_db_column(:owner_id).of_type(:integer) }
+    it { should have_db_column(:owner_type).of_type(:string) }
   end
 
   describe "relationships" do
-    it { should belong_to(:model) }
+    it { should belong_to(:owner) }
   end
 
   describe "validations" do
