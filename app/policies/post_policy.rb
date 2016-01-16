@@ -51,7 +51,7 @@ class PostPolicy
   private
 
     def organization_member_for_user
-      @organization_member_for_user ||= OrganizationMembership.find_by(member: user, organization: post.project.owner)
+      @organization_member_for_user ||= OrganizationMembership.find_by(member: user, organization: post.project.organization)
     end
 
     def current_user_is_at_least_contributor_to_organization?
