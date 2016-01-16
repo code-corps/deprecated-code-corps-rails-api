@@ -40,6 +40,8 @@ Rails.application.routes.draw do
 
     resources :organizations, only: [:show, :create, :update]
 
+    resources :team_projects, only: [:show, :create, :update]
+
     resources :members, :path => '', :only => [:show] do
       get "projects", to: "projects#index"
       resources :projects, :path => '', :only => [:show]
