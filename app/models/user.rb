@@ -48,8 +48,8 @@ class User < ActiveRecord::Base
     return unless base64_photo_data.present?
     data = StringIO.new(Base64.decode64(base64_photo_data))
     data.class.class_eval { attr_accessor :original_filename, :content_type }
-    data.original_filename = SecureRandom.hex + '.png'
-    data.content_type = 'image/png'
+    data.original_filename = SecureRandom.hex + ".png"
+    data.content_type = "image/png"
     self.photo = data
   end
 
@@ -71,7 +71,7 @@ class User < ActiveRecord::Base
   private
 
     def slug_is_not_duplicate
-      if SluggedRoute.where.not(owner: self).where('lower(slug) = ?', username.try(:downcase)).present?
+      if SluggedRoute.where.not(owner: self).where("lower(slug) = ?", username.try(:downcase)).present?
         errors.add(:username, "has already been taken by an organization")
       end
     end
