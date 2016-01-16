@@ -1,4 +1,4 @@
-class MemberPolicy
+class SluggedRoutePolicy
   def initialize (user, member)
     @user = user
     @member = member

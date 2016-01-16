@@ -40,7 +40,7 @@ Rails.application.routes.draw do
 
     resources :organizations, only: [:show, :create, :update]
 
-    resources :members, :path => '', :only => [:show] do
+    resources :slugged_routes, :path => '', :only => [:show] do
       get "projects", to: "projects#index"
       resources :projects, :path => '', :only => [:show]
     end

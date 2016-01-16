@@ -36,7 +36,7 @@ describe User, :type => :model do
     it { should have_many(:passive_relationships).class_name("UserRelationship").dependent(:destroy) }
     it { should have_many(:following).through(:active_relationships).source(:following) }
     it { should have_many(:followers).through(:passive_relationships).source(:follower) }
-    it { should have_one(:member) }
+    it { should have_one(:slugged_route) }
 
     it { should have_many(:contributors) }
     it { should have_many(:projects).through(:contributors) }

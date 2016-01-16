@@ -1,17 +1,17 @@
 require "rails_helper"
 
-describe MemberSerializer, :type => :serializer do
+describe SluggedRouteSerializer, :type => :serializer do
 
   context "individual resource representation" do
-    # Due to the fact member records are automatically created upon saving
+    # Due to the fact slugged_route records are automatically created upon saving
     # a user or an organization, this is the "correct" way to get a working
-    # member instance.
+    # slugged_route instance.
     # If we try to define a factory which has an association, then we will be gettin unique
-    # constraint violations, due to a member record with the same model_type and model_id being
+    # constraint violations, due to a slugged_route record with the same owner_type and owner_id being
     # created automatically.
-    let(:resource) { create(:organization).member }
+    let(:resource) { create(:organization).slugged_route }
 
-    let(:serializer) { MemberSerializer.new(resource) }
+    let(:serializer) { SluggedRouteSerializer.new(resource) }
     let(:serialization) { ActiveModel::Serializer::Adapter.create(serializer) }
 
     context "root" do
@@ -27,8 +27,8 @@ describe MemberSerializer, :type => :serializer do
         expect(subject["id"]).not_to be nil
       end
 
-      it "has a type set to 'members'" do
-        expect(subject["type"]).to eq "members"
+      it "has a type set to 'slugged_routes'" do
+        expect(subject["type"]).to eq "slugged_routes"
       end
     end
 
@@ -48,8 +48,8 @@ describe MemberSerializer, :type => :serializer do
         JSON.parse(serialization.to_json)["data"]["relationships"]
       end
 
-      it "should include 'model'" do
-        expect(subject["model"]).not_to be_nil
+      it "should include 'owner'" do
+        expect(subject["owner"]).not_to be_nil
       end
     end
 
@@ -64,14 +64,14 @@ describe MemberSerializer, :type => :serializer do
         end
       end
 
-      context "when including model" do
-        let(:serialization) { ActiveModel::Serializer::Adapter.create(serializer, include: ["model"]) }
+      context "when including owner" do
+        let(:serialization) { ActiveModel::Serializer::Adapter.create(serializer, include: ["owner"]) }
 
         subject do
           JSON.parse(serialization.to_json)["included"]
         end
 
-        it "should contain the members's model" do
+        it "should contain the slugged_routes's owner" do
           expect(subject).not_to be_nil
           expect(subject.select{ |i| i["type"] == "organizations"}.length).to eq 1
         end
