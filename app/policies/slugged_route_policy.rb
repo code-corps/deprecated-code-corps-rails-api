@@ -1,7 +1,7 @@
 class SluggedRoutePolicy
-  def initialize (user, member)
+  def initialize (user, slugged_route)
     @user = user
-    @member = member
+    @slugged_route = slugged_route
   end
 
   def show?
