@@ -81,7 +81,7 @@ describe Organization, :type => :model do
       it "should return users with membership role 'admin'" do
         organization = create(:organization)
         create_list(:organization_membership, 10, role: "admin", organization: organization)
-        create_list(:organization_membership, 10, role: "regular", organization: organization)
+        create_list(:organization_membership, 10, role: "contributor", organization: organization)
 
         organization.reload
 
