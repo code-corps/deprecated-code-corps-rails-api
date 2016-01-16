@@ -1,6 +1,6 @@
 require "rails_helper"
 
-describe SluggedRouteSerializer, :type => :serializer do
+describe SluggedRouteSerializer, type: :serializer do
 
   context "individual resource representation" do
     # Due to the fact slugged_route records are automatically created upon saving

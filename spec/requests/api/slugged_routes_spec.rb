@@ -15,9 +15,9 @@ describe "Slugged Routes API" do
       end
 
       it "returns a SluggedRoute, serialized with SluggedRouteSerializer, with owner included" do
-        expect(json).to serialize_object(@slugged_route)
-                          .with(SluggedRouteSerializer)
-                          .with_includes("owner")
+        expect(json).to serialize_object(@slugged_route).
+          with(SluggedRouteSerializer).
+          with_includes("owner")
       end
     end
 
