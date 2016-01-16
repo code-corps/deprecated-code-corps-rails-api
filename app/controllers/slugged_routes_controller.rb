@@ -5,11 +5,10 @@ class SluggedRoutesController < ApplicationController
 
     authorize slugged_route
 
-    render json: slugged_route, include: ['owner']
+    render json: slugged_route, include: ["owner"]
   end
 
   def slug
     params[:id]
   end
-
 end
