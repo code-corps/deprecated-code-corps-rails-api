@@ -12,8 +12,6 @@ class Post < ActiveRecord::Base
   has_many :post_user_mentions
   has_many :comment_user_mentions
 
-  has_many :users, through: :project
-
   acts_as_sequenced scope: :project_id, column: :number, skip: lambda { |r| r.draft? }
 
   validates_presence_of :project

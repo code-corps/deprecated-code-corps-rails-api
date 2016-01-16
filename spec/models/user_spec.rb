@@ -26,8 +26,6 @@ describe User, :type => :model do
   describe "relationships" do
     it { should have_many(:organization_memberships).with_foreign_key("member_id") }
     it { should have_many(:organizations).through(:organization_memberships) }
-    it { should have_many(:team_memberships).with_foreign_key("member_id") }
-    it { should have_many(:teams).through(:team_memberships) }
     it { should have_many(:posts) }
     it { should have_many(:comments) }
     it { should have_many(:user_skills) }
@@ -37,9 +35,6 @@ describe User, :type => :model do
     it { should have_many(:following).through(:active_relationships).source(:following) }
     it { should have_many(:followers).through(:passive_relationships).source(:follower) }
     it { should have_one(:slugged_route) }
-
-    it { should have_many(:contributors) }
-    it { should have_many(:projects).through(:contributors) }
   end
 
   describe "validations" do

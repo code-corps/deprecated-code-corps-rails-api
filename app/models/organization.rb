@@ -1,7 +1,6 @@
 class Organization < ActiveRecord::Base
   has_many :organization_memberships
   has_many :members, through: :organization_memberships
-  has_many :teams
   has_many :projects, as: :owner
 
   has_one :slugged_route, as: :owner

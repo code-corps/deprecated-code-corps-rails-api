@@ -9,7 +9,6 @@ describe Organization, :type => :model do
   describe "relationships" do
     it { should have_many(:members).through(:organization_memberships) }
     it { should have_many(:projects) }
-    it { should have_many(:teams) }
     it { should have_one(:slugged_route) }
   end
 

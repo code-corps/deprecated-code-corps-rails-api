@@ -22,7 +22,6 @@ describe Post, :type => :model do
     it { should have_many(:post_likes) }
     it { should have_many(:post_user_mentions) }
     it { should have_many(:comment_user_mentions) }
-    it { should have_many(:users).through(:project) }
   end
 
   describe "validations" do

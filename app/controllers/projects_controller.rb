@@ -7,7 +7,7 @@ class ProjectsController < ApplicationController
     if for_slugged_route?
       projects = find_projects_with_slugged_route!
     else
-      projects = Project.all.includes(:contributors, :github_repositories)
+      projects = Project.all.includes(:github_repositories)
     end
 
     render json: projects
@@ -94,12 +94,12 @@ class ProjectsController < ApplicationController
 
     def find_project_with_slugged_route!
       slugged_route = find_slugged_route!
-      Project.includes(:contributors, :github_repositories).find_by!(slug: project_slug, owner: slugged_route.owner)
+      Project.includes(:github_repositories).find_by!(slug: project_slug, owner: slugged_route.owner)
     end
 
     def find_projects_with_slugged_route!
       slugged_route = find_slugged_route!
-      Project.includes(:contributors, :github_repositories).where(owner: slugged_route.owner)
+      Project.includes(:github_repositories).where(owner: slugged_route.owner)
     end
 
     def find_slugged_route!

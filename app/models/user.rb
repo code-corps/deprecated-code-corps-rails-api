@@ -3,8 +3,6 @@ class User < ActiveRecord::Base
 
   has_many :organization_memberships, foreign_key: "member_id"
   has_many :organizations, through: :organization_memberships
-  has_many :team_memberships, foreign_key: "member_id"
-  has_many :teams, through: :team_memberships
   has_many :posts
   has_many :comments
   has_many :user_skills
@@ -14,9 +12,6 @@ class User < ActiveRecord::Base
   has_many :passive_relationships, class_name: "UserRelationship", foreign_key: "following_id", dependent: :destroy
   has_many :following, through: :active_relationships, source: :following
   has_many :followers, through: :passive_relationships, source: :follower
-
-  has_many :contributors
-  has_many :projects, through: :contributors
 
   has_one :slugged_route, as: :owner
 

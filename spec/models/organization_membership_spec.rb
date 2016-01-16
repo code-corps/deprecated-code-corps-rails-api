@@ -17,15 +17,16 @@ describe OrganizationMembership, :type => :model do
   it "should have a working 'role' enum" do
     membership = create(:organization_membership)
 
+    expect(membership.pending?).to be true
     expect(membership.admin?).to be false
-    expect(membership.regular?).to be true
+    expect(membership.contributor?).to be false
+
+    membership.contributor!
+    expect(membership.admin?).to be false
+    expect(membership.contributor?).to be true
 
     membership.admin!
     expect(membership.admin?).to be true
-    expect(membership.regular?).to be false
-
-    membership.regular!
-    expect(membership.admin?).to be false
-    expect(membership.regular?).to be true
+    expect(membership.contributor?).to be false
   end
 end
