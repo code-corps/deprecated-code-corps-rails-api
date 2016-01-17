@@ -137,18 +137,6 @@ describe "Projects API" do
         expect(json).to contain_an_error_of_type("VALIDATION_ERROR").with_message("can't be blank")
       end
 
-      it "returns a 404 if the organization doesn't exist" do
-        authenticated_post "/projects", {
-          data: {
-            attributes: { title: "Project", description: "Test project description" },
-            relationships: { organization: { data: { id: 222 } } }
-          }
-        }, @token
-
-        expect(last_response.status).to eq 404
-        expect(json).to be_a_valid_json_api_error.with_id "RECORD_NOT_FOUND"
-      end
-
       context 'with a user uploaded image' do
         it 'creates a project' do
           Sidekiq::Testing.inline! do
