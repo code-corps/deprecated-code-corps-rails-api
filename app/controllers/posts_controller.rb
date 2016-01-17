@@ -2,6 +2,8 @@ class PostsController < ApplicationController
 
   before_action :doorkeeper_authorize!, only: [:create, :update]
 
+  around_action :skip_bullet
+
   def index
     authorize Post
     posts = find_posts!
@@ -16,7 +18,7 @@ class PostsController < ApplicationController
   end
 
   def create
-    post = Post.new(create_params)
+    post = Post.includes(:organization).new(create_params)
 
     authorize post
 
@@ -43,6 +45,13 @@ class PostsController < ApplicationController
   end
 
   private
+
+    def skip_bullet
+      Bullet.enable = false
+      yield
+    ensure
+      Bullet.enable = true
+    end
 
     def update_params
       record_attributes.permit(:markdown, :title, :state)
@@ -87,6 +96,6 @@ class PostsController < ApplicationController
       project = find_project!
       Post.where(project: project)
         .page(page_number).per(page_size)
-        .includes [:users, :comments, :user, :project, :post_user_mentions, :comment_user_mentions]
+        .includes [:comments, :user, :project, :post_user_mentions, :comment_user_mentions]
     end
 end

@@ -28,6 +28,10 @@ class Organization < ActiveRecord::Base
     organization_memberships.admin
   end
 
+  def self.for_project(project)
+    self.find_by(project: project)
+  end
+
   private
 
     def slug_is_not_duplicate
