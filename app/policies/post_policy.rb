@@ -36,7 +36,7 @@ class PostPolicy
     return unless user.present?
 
     # Can update if the user is a project admin
-    return true if current_user_is_at_least_admin_on_project?
+    return true if current_user_is_at_least_admin_in_organization?
 
     # Cannot update if not the user who posted
     return false unless post.user == user
@@ -59,7 +59,7 @@ class PostPolicy
       return true if organization_member_for_user.contributor? or organization_member_for_user.admin? or organization_member_for_user.owner?
     end
 
-    def current_user_is_at_least_admin_on_project?
+    def current_user_is_at_least_admin_in_organization?
       return false unless organization_member_for_user
       return true if organization_member_for_user.admin? or organization_member_for_user.owner?
     end
