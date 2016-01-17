@@ -18,7 +18,7 @@ class PostsController < ApplicationController
   end
 
   def create
-    post = Post.includes(:organization).new(create_params)
+    post = Post.new(create_params)
 
     authorize post
 
