@@ -64,7 +64,7 @@ class ProjectsController < ApplicationController
     end
 
     def organization_id
-      record_relationships.fetch(:organization_id, {}).fetch(:data, {})[:id]
+      record_relationships.fetch(:organization, {}).fetch(:data, {})[:id]
     end
 
     def permitted_params
