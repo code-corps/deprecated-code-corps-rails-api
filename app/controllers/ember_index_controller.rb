@@ -17,22 +17,22 @@ class EmberIndexController < ApplicationController
 
   private
 
-  def fetch_revision
-    rev = params[:revision]
-    if rev =~ SHORT_UUID_V4_REGEXP
-      rev
+    def fetch_revision
+      rev = params[:revision]
+      if rev =~ SHORT_UUID_V4_REGEXP
+        rev
+      end
     end
-  end
 
-  def process_index(index)
-    return "INDEX NOT FOUND" unless index
+    def process_index(index)
+      return "INDEX NOT FOUND" unless index
 
-    index.sub!('/ember-cli-live-reload', 'http://localhost:4200/ember-cli-live-reload') if Rails.env.development?
+      index.sub!('/ember-cli-live-reload', 'http://localhost:4200/ember-cli-live-reload') if Rails.env.development?
 
-    index
-  end
+      index
+    end
 
-  def set_response_format
-    request.format = :html
-  end
+    def set_response_format
+      request.format = :html
+    end
 end
