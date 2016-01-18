@@ -2,6 +2,14 @@ require "rails_helper"
 
 describe "Posts API" do
 
+  before do
+    Bullet.enable = false
+  end
+
+  after do
+    Bullet.enable = true
+  end
+
   context "GET /projects/:id/posts" do
     context "when the project doesn't exist" do
       it "responds with a 404" do

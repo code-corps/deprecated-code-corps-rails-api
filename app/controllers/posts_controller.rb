@@ -1,8 +1,5 @@
 class PostsController < ApplicationController
-
   before_action :doorkeeper_authorize!, only: [:create, :update]
-
-  around_action :skip_bullet
 
   def index
     authorize Post
@@ -45,13 +42,6 @@ class PostsController < ApplicationController
   end
 
   private
-
-    def skip_bullet
-      Bullet.enable = false
-      yield
-    ensure
-      Bullet.enable = true
-    end
 
     def update_params
       record_attributes.permit(:markdown, :title, :state)
