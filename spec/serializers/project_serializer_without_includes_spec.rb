@@ -4,7 +4,7 @@ describe ProjectSerializerWithoutIncludes, :type => :serializer do
 
   context "individual resource representation" do
     let(:resource) {
-      project = create(:project, :with_contributors, contributors_count: 5)
+      project = create(:project)
       create_list(:github_repository, 10, project: project)
       project
     }
@@ -46,10 +46,6 @@ describe ProjectSerializerWithoutIncludes, :type => :serializer do
 
       it "has a 'description'" do
         expect(subject["description"]).to eql resource.description
-      end
-
-      it "has a 'contributors_count'" do
-        expect(subject["contributors_count"]).to eql resource.contributors_count
       end
     end
   end

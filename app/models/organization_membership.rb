@@ -17,7 +17,9 @@ class OrganizationMembership < ActiveRecord::Base
   validates_uniqueness_of :member_id, scope: :organization_id
 
   enum role: {
-    regular: "regular",
-    admin: "admin"
+    pending: "pending",
+    contributor: "contributor",
+    admin: "admin",
+    owner: "owner"
   }
 end

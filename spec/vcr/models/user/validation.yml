@@ -2,7 +2,7 @@
 http_interactions:
 - request:
     method: head
-    uri: https://code-corps-development.s3.amazonaws.com/users//original.
+    uri: https://s3.amazonaws.com/test_bucket/users//original.
     body:
       encoding: ASCII-8BIT
       string: ''
@@ -12,45 +12,45 @@ http_interactions:
       Accept-Encoding:
       - ''
       User-Agent:
-      - aws-sdk-ruby2/2.2.5 ruby/2.2.3 x86_64-linux resources
+      - aws-sdk-ruby2/2.2.5 ruby/2.2.3 x86_64-darwin14 resources
       X-Amz-Date:
-      - 20151215T150408Z
+      - 20160118T165743Z
       Host:
-      - code-corps-development.s3.amazonaws.com
+      - s3.amazonaws.com
       X-Amz-Content-Sha256:
       - e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
       Authorization:
-      - AWS4-HMAC-SHA256 Credential=AKIAJA5VYNIZZFUPOAKA/20151215/us-east-1/s3/aws4_request,
-        SignedHeaders=host;user-agent;x-amz-content-sha256;x-amz-date, Signature=d6c1dceba53461dfe55436e8050bbda44e175150645c8207f58f45082078a7de
+      - AWS4-HMAC-SHA256 Credential=AKIAJA5VYNIZZFUPOAKA/20160118/us-east-1/s3/aws4_request,
+        SignedHeaders=host;user-agent;x-amz-content-sha256;x-amz-date, Signature=05945f24ababe36ba1843859a25e08d96507305caf98800e25d0ea64e7256293
       Content-Length:
       - '0'
       Accept:
       - "*/*"
   response:
     status:
-      code: 404
-      message: Not Found
+      code: 403
+      message: Forbidden
     headers:
       X-Amz-Request-Id:
-      - 2A57E47D4E45A3D1
+      - EC0E6012E311CB02
       X-Amz-Id-2:
-      - wO5jAYQYqVqGuy4cRooRMYv5nRxq6Oewf8FJghidj6LAAQfIOPA3QXwF6g0Ywi/0
+      - 3P6F2kLeWf/cQ9/hgz/LyizI+kVcJ0gOMhCQJdgbI/epwb82kgUkT5JJkuxlSx26LoqGgfDv+LA=
       Content-Type:
       - application/xml
       Transfer-Encoding:
       - chunked
       Date:
-      - Tue, 15 Dec 2015 15:04:05 GMT
+      - Mon, 18 Jan 2016 16:57:43 GMT
       Server:
       - AmazonS3
     body:
       encoding: UTF-8
       string: ''
     http_version: 
-  recorded_at: Tue, 15 Dec 2015 15:04:09 GMT
+  recorded_at: Mon, 18 Jan 2016 16:57:43 GMT
 - request:
     method: head
-    uri: https://code-corps-development.s3.amazonaws.com/users//large.
+    uri: https://s3.amazonaws.com/test_bucket/users//large.
     body:
       encoding: ASCII-8BIT
       string: ''
@@ -60,45 +60,45 @@ http_interactions:
       Accept-Encoding:
       - ''
       User-Agent:
-      - aws-sdk-ruby2/2.2.5 ruby/2.2.3 x86_64-linux resources
+      - aws-sdk-ruby2/2.2.5 ruby/2.2.3 x86_64-darwin14 resources
       X-Amz-Date:
-      - 20151215T150409Z
+      - 20160118T165743Z
       Host:
-      - code-corps-development.s3.amazonaws.com
+      - s3.amazonaws.com
       X-Amz-Content-Sha256:
       - e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
       Authorization:
-      - AWS4-HMAC-SHA256 Credential=AKIAJA5VYNIZZFUPOAKA/20151215/us-east-1/s3/aws4_request,
-        SignedHeaders=host;user-agent;x-amz-content-sha256;x-amz-date, Signature=c974011db621baffd703c5f442a4c30ca56c4a6c661847e79156992535e34360
+      - AWS4-HMAC-SHA256 Credential=AKIAJA5VYNIZZFUPOAKA/20160118/us-east-1/s3/aws4_request,
+        SignedHeaders=host;user-agent;x-amz-content-sha256;x-amz-date, Signature=7b984186d6fd6912f9b22d28eec5c3d0ac6f3b3ab58d6cfcb227d43c1eef414b
       Content-Length:
       - '0'
       Accept:
       - "*/*"
   response:
     status:
-      code: 404
-      message: Not Found
+      code: 403
+      message: Forbidden
     headers:
       X-Amz-Request-Id:
-      - 4EA731A3AD22E15B
+      - 5AD549C065EBB468
       X-Amz-Id-2:
-      - 54u3HoWlgvPJDlGECCbBd5/0UVHYyhciwhDT9IV6hQ9p7yadZ/1QBclvY5aXG1bf
+      - rHT+NVESMFyMJ/GHqrkfsqCTDssSJ8jN/RQ7vJwDO6gds2I9ZpLUwZmt/2umhk2FUUJYnqmEOBc=
       Content-Type:
       - application/xml
       Transfer-Encoding:
       - chunked
       Date:
-      - Tue, 15 Dec 2015 15:04:07 GMT
+      - Mon, 18 Jan 2016 16:57:43 GMT
       Server:
       - AmazonS3
     body:
       encoding: UTF-8
       string: ''
     http_version: 
-  recorded_at: Tue, 15 Dec 2015 15:04:10 GMT
+  recorded_at: Mon, 18 Jan 2016 16:57:44 GMT
 - request:
     method: head
-    uri: https://code-corps-development.s3.amazonaws.com/users//thumb.
+    uri: https://s3.amazonaws.com/test_bucket/users//thumb.
     body:
       encoding: ASCII-8BIT
       string: ''
@@ -108,40 +108,40 @@ http_interactions:
       Accept-Encoding:
       - ''
       User-Agent:
-      - aws-sdk-ruby2/2.2.5 ruby/2.2.3 x86_64-linux resources
+      - aws-sdk-ruby2/2.2.5 ruby/2.2.3 x86_64-darwin14 resources
       X-Amz-Date:
-      - 20151215T150410Z
+      - 20160118T165744Z
       Host:
-      - code-corps-development.s3.amazonaws.com
+      - s3.amazonaws.com
       X-Amz-Content-Sha256:
       - e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
       Authorization:
-      - AWS4-HMAC-SHA256 Credential=AKIAJA5VYNIZZFUPOAKA/20151215/us-east-1/s3/aws4_request,
-        SignedHeaders=host;user-agent;x-amz-content-sha256;x-amz-date, Signature=cc82b754af45b9488b54199611a5857170850960e243afc69ca91d9389a96779
+      - AWS4-HMAC-SHA256 Credential=AKIAJA5VYNIZZFUPOAKA/20160118/us-east-1/s3/aws4_request,
+        SignedHeaders=host;user-agent;x-amz-content-sha256;x-amz-date, Signature=47f810e6b8a5f2259f61af60047a23acad8e5756490f2fc80d1c652e4a71c9fd
       Content-Length:
       - '0'
       Accept:
       - "*/*"
   response:
     status:
-      code: 404
-      message: Not Found
+      code: 403
+      message: Forbidden
     headers:
       X-Amz-Request-Id:
-      - 57BFF264AAE7219D
+      - 71EDB5DDC0DE2DD0
       X-Amz-Id-2:
-      - 34JBnUcWRcz3ww1wdeuFMypmKGVq9OjGGzcUZA7qSAx2cioxz9nvALVR695gDV2z
+      - HcocIj7LtdveyuNUsDqQgi3VwOCBXdea21W92G3ZY4Ig8sOGVzZQbRzIZbBG6BQ/siBOzOIg0vA=
       Content-Type:
       - application/xml
       Transfer-Encoding:
       - chunked
       Date:
-      - Tue, 15 Dec 2015 15:04:08 GMT
+      - Mon, 18 Jan 2016 16:57:43 GMT
       Server:
       - AmazonS3
     body:
       encoding: UTF-8
       string: ''
     http_version: 
-  recorded_at: Tue, 15 Dec 2015 15:04:12 GMT
+  recorded_at: Mon, 18 Jan 2016 16:57:44 GMT
 recorded_with: VCR 3.0.0

@@ -27,7 +27,7 @@ class ProjectsController < ApplicationController
     if for_slugged_route?
       projects = find_projects_with_slugged_route!
     else
-      projects = Project.all.includes(:contributors, :github_repositories)
+      projects = Project.all.includes(:github_repositories, :organization)
     end
 
     render json: projects
@@ -80,20 +80,11 @@ class ProjectsController < ApplicationController
     end
 
     def relationships
-      #{ owner_id: owner_id, owner_type: owner_type }
-      { owner: owner }
+      { organization_id: organization_id }
     end
 
-    def owner
-      owner_type.constantize.find(owner_id) if owner_type.present?
-    end
-
-    def owner_id
-      record_relationships.fetch(:owner, {}).fetch(:data, {})[:id]
-    end
-
-    def owner_type
-      record_relationships.fetch(:owner, {}).fetch(:data, {})[:type]
+    def organization_id
+      record_relationships.fetch(:organization, {}).fetch(:data, {})[:id]
     end
 
     def permitted_params
@@ -114,12 +105,12 @@ class ProjectsController < ApplicationController
 
     def find_project_with_slugged_route!
       slugged_route = find_slugged_route!
-      Project.includes(:contributors, :github_repositories).find_by!(slug: project_slug, owner: slugged_route.owner)
+      Project.includes(:github_repositories, :organization).find_by!(slug: project_slug, organization: slugged_route.owner)
     end
 
     def find_projects_with_slugged_route!
       slugged_route = find_slugged_route!
-      Project.includes(:contributors, :github_repositories).where(owner: slugged_route.owner)
+      Project.includes(:github_repositories, :organization).where(organization: slugged_route.owner)
     end
 
     def find_slugged_route!

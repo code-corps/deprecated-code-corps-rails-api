@@ -26,8 +26,8 @@ describe "Projects API" do
   context "GET /:slug/projects" do
     before do
       @slugged_route = create(:organization).slugged_route
-      @projects = create_list(:project, 3, owner: @slugged_route.owner)
-      create_list(:project, 2, owner: create(:organization))
+      @projects = create_list(:project, 3, organization: @slugged_route.owner)
+      create_list(:project, 2, organization: create(:organization))
     end
 
     context "when successful" do
@@ -47,13 +47,13 @@ describe "Projects API" do
 
   context "GET /:slug/:project_slug" do
     before do
-      @project = create(:project, owner: create(:organization))
+      @project = create(:project, organization: create(:organization))
       github_repositories = create_list(:github_repository, 10, project: @project)
     end
 
     context "when successful" do
       before do
-        get "#{host}/#{@project.owner.slugged_route.slug}/#{@project.slug}"
+        get "#{host}/#{@project.organization.slugged_route.slug}/#{@project.slug}"
       end
 
       it "responds with a 200" do
@@ -65,7 +65,7 @@ describe "Projects API" do
       end
     end
 
-    context "when there's no owner" do
+    context "when there's no organization" do
       before do
         get "#{host}/slug_1/slug_2"
       end
@@ -107,7 +107,9 @@ describe "Projects API" do
 
     context 'when authenticated' do
       before do
-        @user = create(:user, email: "test_user@mail.com", password: "password")
+        @user = create(:user, email: "test_user@mail.com", password: "password", admin: true)
+        @organization = create(:organization)
+        create(:organization_membership, member: @user, organization: @organization, role: "admin")
         @token = authenticate(email: "test_user@mail.com", password: "password")
       end
 
@@ -115,7 +117,7 @@ describe "Projects API" do
         authenticated_post "/projects", {
           data: {
             attributes: { description: "Test project description" },
-            relationships: { owner: { data: { id: @user.id, type: "User" } } }
+            relationships: { organization: { data: { id: @organization.id } } }
           }
         }, @token
 
@@ -123,28 +125,16 @@ describe "Projects API" do
         expect(json).to be_a_valid_json_api_validation_error.with_message "can't be blank"
       end
 
-      it "returns an error if owner is left blank" do
+      it "returns an error if organization is left blank" do
         authenticated_post "/projects", {
           data: {
             attributes: { title: "Test title", description: "Test project description" }
           }
         }, @token
 
-        expect(last_response.status).to eq 401
-        expect(json).to be_a_valid_json_api_error.with_id "ACCESS_DENIED"
-        expect(json).to contain_an_error_of_type("ACCESS_DENIED").with_message("You are not authorized to perform this action on projects.")
-      end
-
-      it "returns a 404 if the owner doesn't exist" do
-        authenticated_post "/projects", {
-          data: {
-            attributes: { title: "Project", description: "Test project description" },
-            relationships: { owner: { data: { id: 222, type: "Organization" } } }
-          }
-        }, @token
-
-        expect(last_response.status).to eq 404
-        expect(json).to be_a_valid_json_api_error.with_id "RECORD_NOT_FOUND"
+        expect(last_response.status).to eq 422
+        expect(json).to be_a_valid_json_api_error.with_id "VALIDATION_ERROR"
+        expect(json).to contain_an_error_of_type("VALIDATION_ERROR").with_message("can't be blank")
       end
 
       context 'with a user uploaded image' do
@@ -161,7 +151,7 @@ describe "Projects API" do
                   description: "Test project description",
                   base64_icon_data: base64_image
                 },
-                relationships: { owner: { data: { id: @user.id, type: "User" } } }
+                relationships: { organization: { data: { id: @organization.id } } }
               }
             }, @token
 
@@ -189,7 +179,7 @@ describe "Projects API" do
                   title: "Test Project Title",
                   description: "Test project description",
                 },
-                relationships: { owner: { data: { id: @user.id, type: "User" } } }
+                relationships: { organization: { data: { id: @organization.id } } }
               }
             }, @token
 
@@ -219,7 +209,10 @@ describe "Projects API" do
 
     context 'when authenticated' do
       before do
-        @project = create(:project, owner: create(:user, email: "test_user@mail.com", password: "password"))
+        @user = create(:user, email: "test_user@mail.com", password: "password")
+        @organization = create(:organization)
+        create(:organization_membership, member: @user, organization: @organization, role: "admin")
+        @project = create(:project, organization: @organization)
         @token = authenticate(email: "test_user@mail.com", password: "password")
       end
 

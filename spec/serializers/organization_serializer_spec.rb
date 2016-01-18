@@ -57,10 +57,6 @@ describe OrganizationSerializer, :type => :serializer do
         expect(subject["members"]).not_to be_nil
       end
 
-      it "should include 'teams'" do
-        expect(subject["teams"]).not_to be_nil
-      end
-
       it "should include 'projects'" do
         expect(subject["projects"]).not_to be_nil
       end

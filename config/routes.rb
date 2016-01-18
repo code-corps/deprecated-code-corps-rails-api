@@ -20,8 +20,6 @@ Rails.application.routes.draw do
     resources :user_skills, only: [:create, :destroy]
     resources :github_repositories, only: [:create]
 
-    resources :contributors, only: [:index, :create, :update]
-
     resources :skill_categories, only: [:index]
 
     resources :projects, only: [:index, :create, :update] do

@@ -18,7 +18,6 @@
 #
 
 class PostsController < ApplicationController
-
   before_action :doorkeeper_authorize!, only: [:create, :update]
 
   def index
@@ -106,6 +105,6 @@ class PostsController < ApplicationController
       project = find_project!
       Post.where(project: project)
         .page(page_number).per(page_size)
-        .includes [:users, :comments, :user, :project, :post_user_mentions, :comment_user_mentions]
+        .includes [:comments, :user, :project, :post_user_mentions, :comment_user_mentions]
     end
 end

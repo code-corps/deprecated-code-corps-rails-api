@@ -12,8 +12,7 @@
 class Organization < ActiveRecord::Base
   has_many :organization_memberships
   has_many :members, through: :organization_memberships
-  has_many :teams
-  has_many :projects, as: :owner
+  has_many :projects
 
   has_one :slugged_route, as: :owner
 
@@ -38,6 +37,10 @@ class Organization < ActiveRecord::Base
 
   def admin_memberships
     organization_memberships.admin
+  end
+
+  def self.for_project(project)
+    self.find_by(project: project)
   end
 
   private

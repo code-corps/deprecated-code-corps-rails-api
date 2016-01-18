@@ -4,8 +4,8 @@ CodeClimate::TestReporter.start
 # This file is copied to spec/ when you run 'rails generate rspec:install'
 ENV["RAILS_ENV"] ||= 'test'
 
-ENV["S3_BUCKET_NAME"] ||= "test_bucket"
-ENV["CLOUDFRONT_DOMAIN"] ||= "test.cloudfront.com"
+ENV["S3_BUCKET_NAME"] = "test_bucket"
+ENV["CLOUDFRONT_DOMAIN"] = "test.cloudfront.com"
 
 require 'spec_helper'
 require File.expand_path("../../config/environment", __FILE__)
