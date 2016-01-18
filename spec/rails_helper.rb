@@ -5,7 +5,7 @@ CodeClimate::TestReporter.start
 ENV["RAILS_ENV"] ||= 'test'
 
 ENV["S3_BUCKET_NAME"] ||= "test_bucket"
-ENV["CLOUDFRONT_DOMAIN"] ||= "test.cloufront.com"
+ENV["CLOUDFRONT_DOMAIN"] ||= "test.cloudfront.com"
 
 require 'spec_helper'
 require File.expand_path("../../config/environment", __FILE__)
