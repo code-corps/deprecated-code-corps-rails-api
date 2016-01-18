@@ -71,7 +71,7 @@ group :test do
   gem 'factory_girl_rails', '~> 4.0'
   gem 'hashie'
   gem 'oauth2'
-  gem 'shoulda-matchers'
+  gem 'shoulda-matchers', '3.0.1' # locked due to https://github.com/thoughtbot/shoulda-matchers/issues/880
   gem 'vcr'
   gem 'webmock'
   gem 'pusher-fake'
