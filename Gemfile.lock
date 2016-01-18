@@ -59,6 +59,9 @@ GEM
       thread_safe (~> 0.3, >= 0.3.4)
       tzinfo (~> 1.1)
     addressable (2.4.0)
+    annotate (2.7.0)
+      activerecord (>= 3.2, < 6.0)
+      rake (~> 10.4)
     arel (6.0.3)
     aws-sdk (2.2.5)
       aws-sdk-resources (= 2.2.5)
@@ -304,6 +307,7 @@ PLATFORMS
 DEPENDENCIES
   aasm
   active_model_serializers!
+  annotate
   aws-sdk
   bullet
   capybara
