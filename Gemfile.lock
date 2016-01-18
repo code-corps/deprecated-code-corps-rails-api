@@ -264,7 +264,7 @@ GEM
     sequenced (3.0.0)
       activerecord (>= 3.0)
       activesupport (>= 3.0)
-    shoulda-matchers (3.1.0)
+    shoulda-matchers (3.0.1)
       activesupport (>= 4.0.0)
     sidekiq (4.0.2)
       concurrent-ruby (~> 1.0)
@@ -342,7 +342,7 @@ DEPENDENCIES
   rspec-sidekiq
   seed-fu
   sequenced
-  shoulda-matchers
+  shoulda-matchers (= 3.0.1)
   sidekiq
   spring
   vcr
