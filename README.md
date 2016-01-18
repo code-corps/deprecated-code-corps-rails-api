@@ -49,6 +49,20 @@ We've written some convenience helpers to help with API testing. The helpers are
 
 These helpers are included in specs by default via the `rails_helper`. You can just call these methods directly.
 
+
+### Working with Ember
+
+The CodeCorps API is intended to work alongside a client written in Ember. For that purpose, the rails application exposes all of it's API endpoints behind an `api.` subdomain.
+
+On the Ember client side of things, we use [`ember-cli-deploy`](https://github.com/ember-cli/ember-cli-deploy) with a `redis` plugin to deploy the client application to redis. Multiple revisions are maintained this way.
+
+Any server request pointing to the main domain and not the `api.` subdomain is redirected to `ember_index_controller#index`. There, depending on the remainder of the request path and the current environment, a specific revision of the ember app is retrieved from redis and rendered. This can be
+* the development revision, if the current environment is development
+* a specific deployed revision in production if the request contains a revision parameter in SHORT_UUID format
+* the latest deployed revision in production if the request does not contain a revision parameter
+* A plain text string containing "INDEX NOT FOUND" if a revision was specified, but the key for the specified revision was not found by redis
+
+
 ## Built with
 
 - [Rails::API](https://github.com/rails-api/rails-api) — Our backend API is a Rails::API app which uses JSON API to respond RESTfully to requests.
