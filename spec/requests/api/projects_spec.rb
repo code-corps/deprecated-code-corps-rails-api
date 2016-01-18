@@ -25,21 +25,21 @@ describe "Projects API" do
 
   context "GET /:slug/projects" do
     before do
-      @member = create(:organization).member
-      @projects = create_list(:project, 3, owner: @member.model)
+      @slugged_route = create(:organization).slugged_route
+      @projects = create_list(:project, 3, owner: @slugged_route.owner)
       create_list(:project, 2, owner: create(:organization))
     end
 
     context "when successful" do
       before do
-        get "#{host}/#{@member.slug}/projects"
+        get "#{host}/#{@slugged_route.slug}/projects"
       end
 
       it "responds with a 200" do
         expect(last_response.status).to eq 200
       end
 
-      it "returns a list of projects for the specified member, serialized with ProjectSerializer" do
+      it "returns a list of projects for the specified slugged_route, serialized with ProjectSerializer" do
         expect(json).to serialize_collection(@projects).with(ProjectSerializer)
       end
     end
@@ -53,7 +53,7 @@ describe "Projects API" do
 
     context "when successful" do
       before do
-        get "#{host}/#{@project.owner.member.slug}/#{@project.slug}"
+        get "#{host}/#{@project.owner.slugged_route.slug}/#{@project.slug}"
       end
 
       it "responds with a 200" do
@@ -81,8 +81,8 @@ describe "Projects API" do
 
     context "when there's no project" do
       before do
-        member = create(:organization).member
-        get "#{host}/#{member.slug}/slug_2"
+        slugged_route = create(:organization).slugged_route
+        get "#{host}/#{slugged_route.slug}/slug_2"
       end
 
       it "responds with a 404" do
