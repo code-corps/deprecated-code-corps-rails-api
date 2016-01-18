@@ -1,6 +1,7 @@
 # Code Corps Rails API
 
 [![Code Climate](https://codeclimate.com/github/code-corps/code-corps-api/badges/gpa.svg)](https://codeclimate.com/github/code-corps/code-corps-api) [![Test Coverage](https://codeclimate.com/github/code-corps/code-corps-api/badges/coverage.svg)](https://codeclimate.com/github/code-corps/code-corps-api/coverage) [ ![Codeship Status for code-corps/code-corps-api](https://codeship.com/projects/f79468b0-fd8d-0132-18d2-123cfeffb5ea/status)](https://codeship.com/projects/87849)
+[![Slack Status](http://slack.codecorps.org/badge.svg)](http://slack.codecorps.org)
 
 The Code Corps API is an open source Rails::API backend that powers the Code Corps platform. It includes:
 

@@ -10,18 +10,11 @@
 #  updated_at :datetime         not null
 #
 
-class MembersController < ApplicationController
+class SluggedRoute < ActiveRecord::Base
+  belongs_to :owner, polymorphic: true
 
-  def show
-    member = Member.includes(model: :members).find_by_slug!(member_slug)
-
-    authorize member
-
-    render json: member, include: ['model']
-  end
-
-  def member_slug
-    params[:id]
-  end
-
+  validates_presence_of :slug
+  validates_exclusion_of :slug, in: Rails.configuration.x.reserved_routes
+  validates :slug, slug: true
+  validates :slug, uniqueness: { case_sensitive: false }
 end
