@@ -1,4 +1,6 @@
 Documentation:
   Enabled: false
+Style/StringLiterals:
+  EnforcedStyle: double_quotes
 Style/IndentationConsistency:
   EnforcedStyle: rails

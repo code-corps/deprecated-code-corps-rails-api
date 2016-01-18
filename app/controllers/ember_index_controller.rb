@@ -12,7 +12,7 @@ class EmberIndexController < ApplicationController
 
     def fetch_index_key
       if Rails.env.development?
-        'code-corps-ember:index:__development__'
+        "code-corps-ember:index:__development__"
       elsif fetch_revision
         "code-corps-ember:index:#{fetch_revision}"
       else
@@ -26,14 +26,14 @@ class EmberIndexController < ApplicationController
     end
 
     def fetch_current_revision
-      Sidekiq.redis { |r| r.get('code-corps-ember:index:current') }
+      Sidekiq.redis { |r| r.get("code-corps-ember:index:current") }
     end
 
     def process_index(index)
-      return 'INDEX NOT FOUND' unless index
+      return "INDEX NOT FOUND" unless index
 
-      relative_url = '/ember-cli-live-reload'
-      absolute_url = 'http://localhost:4200/ember-cli-live-reload'
+      relative_url = "/ember-cli-live-reload"
+      absolute_url = "http://localhost:4200/ember-cli-live-reload"
       index.sub!(relative_url, absolute_url) if Rails.env.development?
 
       index
