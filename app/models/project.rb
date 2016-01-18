@@ -19,12 +19,10 @@
 #
 
 class Project < ActiveRecord::Base
-  belongs_to :owner, polymorphic: true
+  belongs_to :organization
 
   has_many :posts
   has_many :github_repositories
-  has_many :contributors
-  has_many :users, through: :contributors
 
   has_attached_file :icon,
                     styles: {
@@ -39,7 +37,7 @@ class Project < ActiveRecord::Base
   validates :slug, slug: true
   validate :slug_is_not_duplicate
 
-  validates_presence_of :owner
+  validates_presence_of :organization
 
   validates_attachment_content_type :icon,
                                     content_type: %r{^image\/(png|gif|jpeg)}
@@ -59,7 +57,7 @@ class Project < ActiveRecord::Base
   private
 
     def slug_is_not_duplicate
-      if Project.where.not(id: self.id).where(owner: self.owner).where('lower(slug) = ?', slug.try(:downcase)).present?
+      if Project.where.not(id: self.id).where(organization: self.organization).where('lower(slug) = ?', slug.try(:downcase)).present?
         errors.add(:slug, "has already been taken")
       end
     end

@@ -38,7 +38,6 @@ describe "Users API" do
     before do
       @user = create(:user, username: "joshsmith")
       create_list(:user_skill, 2, user: @user)
-      create_list(:contributor, 3, user: @user)
       get "#{host}/users/#{@user.id}"
     end
 
@@ -46,8 +45,8 @@ describe "Users API" do
       expect(last_response.status).to eq 200
     end
 
-    it "retrieves the specified user by id using UserSerializer, including skills and projects" do
-      expect(json).to serialize_object(User.find(@user.id)).with(UserSerializer).with_includes([:skills, :projects])
+    it "retrieves the specified user by id using UserSerializer, including skills" do
+      expect(json).to serialize_object(User.find(@user.id)).with(UserSerializer).with_includes([:skills])
     end
   end
 

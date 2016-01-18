@@ -42,10 +42,10 @@ class UsersController < ApplicationController
   end
 
   def show
-    user = User.includes(:projects, skills: :skill_category).find(params[:id])
+    user = User.includes(skills: :skill_category).find(params[:id])
 
     authorize user
-    render json: user, include: ["skills", "projects"]
+    render json: user, include: ["skills"]
   end
 
   def update
