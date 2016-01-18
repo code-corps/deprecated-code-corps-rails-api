@@ -21,6 +21,7 @@ class Post < ActiveRecord::Base
   validates_presence_of :title
   validates_presence_of :body
   validates_presence_of :markdown
+  validates_presence_of :post_type
 
   validates_uniqueness_of :number, scope: :project_id, allow_nil: true
 

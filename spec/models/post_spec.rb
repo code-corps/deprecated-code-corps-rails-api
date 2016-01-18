@@ -31,6 +31,7 @@ describe Post, :type => :model do
     it { should validate_presence_of(:title) }
     it { should validate_presence_of(:body) }
     it { should validate_presence_of(:markdown) }
+    it { should validate_presence_of(:post_type) }
 
     context "number" do
       let(:subject) { create(:post) }
