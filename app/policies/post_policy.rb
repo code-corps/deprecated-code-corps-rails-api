@@ -21,8 +21,8 @@ class PostPolicy
     # Cannot create if not the user who's posting
     return false unless post.user == user
 
-    # Can create issue posts for any user
-    return true if post.issue?
+    # Can create issue and idea posts for any user
+    return true if post.issue? or post.idea?
 
     # Cannot create if not a contributor
     return false unless organization_member_for_user

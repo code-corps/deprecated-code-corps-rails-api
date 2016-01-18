@@ -104,11 +104,11 @@ describe PostPolicy do
   permissions :create? do
 
     context "as an anonymous user" do
-      it "is not permitted" do
+      it "is not permitted to create any type of post" do
         expect(subject).to_not permit(nil, @issue_post)
-        expect(subject).to_not permit(nil, @idea_post)
         expect(subject).to_not permit(nil, @progress_post)
-        expect(subject).to_not permit(nil, @task_post)
+        expect(subject).to_not permit(nil, @task)
+        expect(subject).to_not permit(nil, @idea_post)
       end
     end
 
@@ -128,12 +128,12 @@ describe PostPolicy do
         expect(subject).to permit(@pending_user, post)
       end
 
-      it "is not permitted to add an idea" do
+      it "is permitted to add an idea" do
         post = create(:post,
                       user: @pending_user,
                       post_type: "idea",
                       project: @project)
-        expect(subject).not_to permit(@pending_user, post)
+        expect(subject).to permit(@pending_user, post)
       end
 
       it "is not permitted to add progress" do
