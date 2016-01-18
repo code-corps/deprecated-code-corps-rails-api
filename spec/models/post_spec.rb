@@ -1,3 +1,22 @@
+# == Schema Information
+#
+# Table name: posts
+#
+#  id               :integer          not null, primary key
+#  status           :string           default("open")
+#  post_type        :string           default("task")
+#  title            :string           not null
+#  body             :text             not null
+#  user_id          :integer          not null
+#  project_id       :integer          not null
+#  created_at       :datetime         not null
+#  updated_at       :datetime         not null
+#  post_likes_count :integer          default(0)
+#  markdown         :text             not null
+#  number           :integer
+#  aasm_state       :string
+#
+
 require 'rails_helper'
 
 describe Post, :type => :model do
@@ -30,6 +49,7 @@ describe Post, :type => :model do
     it { should validate_presence_of(:title) }
     it { should validate_presence_of(:body) }
     it { should validate_presence_of(:markdown) }
+    it { should validate_presence_of(:post_type) }
 
     context "number" do
       let(:subject) { create(:post) }
