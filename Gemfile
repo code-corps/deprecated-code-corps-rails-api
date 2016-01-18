@@ -43,7 +43,10 @@ gem 'faraday'
 
 gem 'pusher'
 
+
 group :development, :test do
+  gem 'annotate'
+
   gem 'bullet'
 
   gem 'dotenv-rails'

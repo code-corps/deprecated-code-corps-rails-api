@@ -1,3 +1,14 @@
+# == Schema Information
+#
+# Table name: organizations
+#
+#  id         :integer          not null, primary key
+#  name       :string           not null
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#  slug       :string           not null
+#
+
 class Organization < ActiveRecord::Base
   has_many :organization_memberships
   has_many :members, through: :organization_memberships
