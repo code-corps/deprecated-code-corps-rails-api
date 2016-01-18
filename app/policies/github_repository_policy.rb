@@ -17,12 +17,9 @@ class GithubRepositoryPolicy
       @project ||= github_repository.project
     end
 
-    def organization
-      @organization ||= project.organization
-    end
-
     def organization_member_for_user
-      @organization_member_for_user ||= OrganizationMembership.find_by(member: user, organization: organization)
+      @organization_member_for_user ||= OrganizationMembership.find_by(
+        member_id: user.id, organization_id: project.organization_id)
     end
 
     def current_user_is_at_least_admin_in_organization?

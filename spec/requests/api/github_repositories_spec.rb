@@ -2,14 +2,6 @@ require 'rails_helper'
 
 describe "GithubRepositories API" do
 
-  before do
-    Bullet.enable = false
-  end
-
-  after do
-    Bullet.enable = true
-  end
-
   describe "POST /github_repositories" do
 
     context "when unauthenticated" do
