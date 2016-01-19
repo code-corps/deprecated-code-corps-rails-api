@@ -1,10 +1,20 @@
+# == Schema Information
+#
+# Table name: organizations
+#
+#  id         :integer          not null, primary key
+#  name       :string           not null
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#  slug       :string           not null
+#
+
 class Organization < ActiveRecord::Base
   has_many :organization_memberships
   has_many :members, through: :organization_memberships
-  has_many :teams
-  has_many :projects, as: :owner
+  has_many :projects
 
-  has_one :member, as: :model
+  has_one :slugged_route, as: :owner
 
   before_validation :add_slug_if_blank
 
@@ -19,7 +29,7 @@ class Organization < ActiveRecord::Base
 
   validate :slug_is_not_duplicate
 
-  after_save :create_or_update_member
+  after_save :create_or_update_slugged_route
 
   def admins
     admin_memberships.map(&:member)
@@ -29,22 +39,26 @@ class Organization < ActiveRecord::Base
     organization_memberships.admin
   end
 
+  def self.for_project(project)
+    self.find_by(project: project)
+  end
+
   private
 
     def slug_is_not_duplicate
-      if Member.where.not(model: self).where('lower(slug) = ?', slug.try(:downcase)).present?
+      if SluggedRoute.where.not(owner: self).where('lower(slug) = ?', slug.try(:downcase)).present?
         errors.add(:slug, "has already been taken by a user")
       end
     end
 
-    def create_or_update_member
+    def create_or_update_slugged_route
       if slug_was
         route_slug = slug_was
       else
         route_slug = slug
       end
 
-      Member.lock.find_or_create_by!(model: self, slug: route_slug).tap do |r|
+      SluggedRoute.lock.find_or_create_by!(owner: self, slug: route_slug).tap do |r|
         r.slug = slug
         r.save!
       end

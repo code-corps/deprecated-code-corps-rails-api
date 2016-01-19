@@ -1,3 +1,14 @@
+# == Schema Information
+#
+# Table name: organizations
+#
+#  id         :integer          not null, primary key
+#  name       :string           not null
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#  slug       :string           not null
+#
+
 require "rails_helper"
 
 describe Organization, :type => :model do
@@ -9,8 +20,7 @@ describe Organization, :type => :model do
   describe "relationships" do
     it { should have_many(:members).through(:organization_memberships) }
     it { should have_many(:projects) }
-    it { should have_many(:teams) }
-    it { should have_one(:member) }
+    it { should have_one(:slugged_route) }
   end
 
   describe "validations" do
@@ -27,8 +37,9 @@ describe Organization, :type => :model do
         it { should validate_uniqueness_of(:slug).case_insensitive }
         it { should validate_length_of(:slug).is_at_most(39) }
       end
-      
+
       let(:organization) { Organization.create(name: "Test") }
+
       it { should allow_value("code_corps").for(:slug) }
       it { should allow_value("codecorps").for(:slug) }
       it { should allow_value("codecorps12345").for(:slug) }
@@ -81,7 +92,7 @@ describe Organization, :type => :model do
       it "should return users with membership role 'admin'" do
         organization = create(:organization)
         create_list(:organization_membership, 10, role: "admin", organization: organization)
-        create_list(:organization_membership, 10, role: "regular", organization: organization)
+        create_list(:organization_membership, 10, role: "contributor", organization: organization)
 
         organization.reload
 

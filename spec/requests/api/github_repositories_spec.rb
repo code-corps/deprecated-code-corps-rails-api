@@ -17,7 +17,8 @@ describe "GithubRepositories API" do
 
       before do
         @user = create(:user, email: "josh@coderly.com", password: "password")
-        @project = create(:project, owner: @user)
+        @organization = create(:organization)
+        @project = create(:project, organization: @organization)
       end
 
       context "when user has insufficient access rights" do
@@ -34,7 +35,7 @@ describe "GithubRepositories API" do
 
       context "when user has sufficient access rights" do
         before do
-          create(:contributor, user: @user, project: @project, status: "admin")
+          create(:organization_membership, member: @user, organization: @organization, role: "admin")
         end
 
         context "when creation is succesful" do
@@ -80,7 +81,6 @@ describe "GithubRepositories API" do
           end
         end
       end
-
     end
   end
 end

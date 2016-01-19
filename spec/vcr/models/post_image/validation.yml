@@ -2,7 +2,7 @@
 http_interactions:
 - request:
     method: head
-    uri: https://code-corps-development.s3.amazonaws.com/posts//images//original.
+    uri: https://s3.amazonaws.com/test_bucket/posts//images//original.
     body:
       encoding: ASCII-8BIT
       string: ''
@@ -12,40 +12,40 @@ http_interactions:
       Accept-Encoding:
       - ''
       User-Agent:
-      - aws-sdk-ruby2/2.2.5 ruby/2.2.3 x86_64-linux resources
+      - aws-sdk-ruby2/2.2.5 ruby/2.2.3 x86_64-darwin14 resources
       X-Amz-Date:
-      - 20151215T150259Z
+      - 20160118T165738Z
       Host:
-      - code-corps-development.s3.amazonaws.com
+      - s3.amazonaws.com
       X-Amz-Content-Sha256:
       - e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
       Authorization:
-      - AWS4-HMAC-SHA256 Credential=AKIAJA5VYNIZZFUPOAKA/20151215/us-east-1/s3/aws4_request,
-        SignedHeaders=host;user-agent;x-amz-content-sha256;x-amz-date, Signature=509326738279533fc62ac61c6019979c12b711b8e2c71b88eb75525597533cd4
+      - AWS4-HMAC-SHA256 Credential=AKIAJA5VYNIZZFUPOAKA/20160118/us-east-1/s3/aws4_request,
+        SignedHeaders=host;user-agent;x-amz-content-sha256;x-amz-date, Signature=4f4bf5f1bfe367a11402b330a5685cf0dc349176ae1cfe27fd1beb08312da441
       Content-Length:
       - '0'
       Accept:
       - "*/*"
   response:
     status:
-      code: 404
-      message: Not Found
+      code: 403
+      message: Forbidden
     headers:
       X-Amz-Request-Id:
-      - 63B1DDA5407B74BC
+      - D83A8E8720D7A378
       X-Amz-Id-2:
-      - xn08IsFMN36tsDJKrcsXu44YS/pvuPWVQ90rIpOZeFoknQep1lRbkOKy/wT+qKx7
+      - 5Vv1QYa738Ev1h8+sUoF4jL+MXf162bFcnAv0lw3TdSNzO1YfWdgsh7uLEjTCDZ4jdu3iywoi+4=
       Content-Type:
       - application/xml
       Transfer-Encoding:
       - chunked
       Date:
-      - Tue, 15 Dec 2015 15:02:56 GMT
+      - Mon, 18 Jan 2016 16:57:38 GMT
       Server:
       - AmazonS3
     body:
       encoding: UTF-8
       string: ''
     http_version: 
-  recorded_at: Tue, 15 Dec 2015 15:03:00 GMT
+  recorded_at: Mon, 18 Jan 2016 16:57:39 GMT
 recorded_with: VCR 3.0.0

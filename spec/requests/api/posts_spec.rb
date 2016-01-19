@@ -13,7 +13,7 @@ describe "Posts API" do
 
     context "when successful" do
       before do
-        @project = create(:project, owner: create(:organization))
+        @project = create(:project, organization: create(:organization))
         create_list(:post, 13, project: @project)
       end
 
@@ -85,7 +85,7 @@ describe "Posts API" do
 
     context "when the post doesn't exist" do
       before do
-        @project = create(:project, owner: create(:organization))
+        @project = create(:project, organization: create(:organization))
       end
 
       it "responds with a 404" do
@@ -97,7 +97,7 @@ describe "Posts API" do
 
     context "when successful" do
       before do
-        @project = create(:project, owner: create(:organization))
+        @project = create(:project, organization: create(:organization))
         create(:user, username: "joshsmith")
         @post = create(:post, :published, project: @project, markdown: "Mentioning @joshsmith")
         create_list(:comment, 5, post: @post)
@@ -129,8 +129,9 @@ describe "Posts API" do
     context "when authenticated" do
       before do
         @user = create(:user, email: "test_user@mail.com", password: "password")
-        @project = create(:project)
-        @contributor = create(:contributor, user: @user, status: "collaborator", project: @project)
+        @organization = create(:organization)
+        @project = create(:project, organization: @organization)
+        create(:organization_membership, member: @user, organization: @organization, role: "contributor")
         @token = authenticate(email: "test_user@mail.com", password: "password")
       end
 
@@ -302,7 +303,9 @@ describe "Posts API" do
     context "when authenticated" do
       before do
         @user = create(:user, email: "test_user@mail.com", password: "password")
-        @project = create(:project)
+        @organization = create(:organization)
+        @project = create(:project, organization: @organization)
+        create(:organization_membership, member: @user, organization: @organization, role: "contributor")
         @token = authenticate(email: "test_user@mail.com", password: "password")
       end
 
@@ -317,10 +320,6 @@ describe "Posts API" do
 
       context "when the post does exist" do
         before do
-          create(:contributor,
-                 project: @project,
-                 user: @user,
-                 status: "collaborator")
           @post = create(:post, project: @project, user: @user)
           @mentioned_1 = create(:user)
           @mentioned_2 = create(:user)
