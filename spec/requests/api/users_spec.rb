@@ -406,9 +406,10 @@ describe "Users API" do
     before do
       @current_user = create(:user, email: "current@mail.com", password: "password", website: "initial.com", biography: "Initial", twitter: "@user")
       params = {
-        website: "edit.com", biography: "Edited", twitter: "@edit",
-        email: "new@mail.com", encrypted_password: "bla", confirmation_token: "bla",
-        remember_token: "bla", username: "bla", admin: true
+        name: "Josh Smith", website: "edit.com", biography: "Edited",
+        twitter: "@edit", email: "new@mail.com", encrypted_password: "bla",
+        confirmation_token: "bla", remember_token: "bla", username: "bla",
+        admin: true
       }
       @edit_params = json_api_params_for("users", params)
     end
@@ -433,6 +434,7 @@ describe "Users API" do
         expect(last_response.status).to eq 200
 
         user_json = json.data.attributes
+        expect(user_json.name).to eq "Josh Smith"
         expect(user_json.website).to eq "edit.com"
         expect(user_json.biography).to eq "Edited"
         expect(user_json.twitter).to eq "@edit"
@@ -444,7 +446,13 @@ describe "Users API" do
       end
 
       it "allows updating of only specific parameters" do
-        expect_any_instance_of(User).to receive(:assign_attributes).with({ website: "edit.com", biography: "Edited", twitter: "@edit"}.with_indifferent_access)
+        expect_any_instance_of(User).to receive(:assign_attributes).
+          with({
+            name: "Josh Smith",
+            website: "edit.com",
+            biography: "Edited",
+            twitter: "@edit"
+          }.with_indifferent_access)
         authenticated_patch "/users/me", @edit_params, @token
       end
 

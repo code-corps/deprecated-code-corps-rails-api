@@ -48,6 +48,10 @@ describe UserSerializerWithoutIncludes, :type => :serializer do
         expect(subject["email"]).to eq resource.email
       end
 
+      it "has a 'name'" do
+        expect(subject["name"]).to eq resource.name
+      end
+
       it "has a 'username'" do
         expect(subject["username"]).to eq resource.username
       end

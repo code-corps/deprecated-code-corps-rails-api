@@ -32,6 +32,7 @@ describe UserSerializer, :type => :serializer do
     let(:resource) {
       user = create(:user,
         email: "user@mail.com",
+        name: "Josh Smith",
         username: "joshsmith",
         website: "example.com",
         twitter: "@user",
@@ -80,6 +81,10 @@ describe UserSerializer, :type => :serializer do
 
       it "has a 'username'" do
         expect(subject["username"]).to eq resource.username
+      end
+
+      it "has a 'name'" do
+        expect(subject["name"]).to eq resource.name
       end
 
       it "has a 'twitter'" do

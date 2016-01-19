@@ -114,7 +114,7 @@ class UsersController < ApplicationController
     end
 
     def update_params
-      record_attributes.permit(:website, :biography, :twitter)
+      record_attributes.permit(:name, :website, :biography, :twitter)
     end
 
     def render_no_such_email_error
