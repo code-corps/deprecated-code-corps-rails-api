@@ -6,3 +6,6 @@ Style/IndentationConsistency:
   EnforcedStyle: rails
 Style/DotPosition:
   EnforcedStyle: leading
+# Alignment of parameters in multi-line method calls.
+Style/AlignParameters:
+  EnforcedStyle: with_fixed_indentation
