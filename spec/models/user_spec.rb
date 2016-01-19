@@ -1,3 +1,28 @@
+# == Schema Information
+#
+# Table name: users
+#
+#  id                    :integer          not null, primary key
+#  created_at            :datetime         not null
+#  updated_at            :datetime         not null
+#  email                 :string           not null
+#  encrypted_password    :string(128)      not null
+#  confirmation_token    :string(128)
+#  remember_token        :string(128)      not null
+#  username              :string
+#  admin                 :boolean          default(FALSE), not null
+#  website               :text
+#  twitter               :string
+#  biography             :text
+#  facebook_id           :string
+#  facebook_access_token :string
+#  base64_photo_data     :string
+#  photo_file_name       :string
+#  photo_content_type    :string
+#  photo_file_size       :integer
+#  photo_updated_at      :datetime
+#
+
 require "rails_helper"
 
 describe User, :type => :model do
@@ -26,8 +51,6 @@ describe User, :type => :model do
   describe "relationships" do
     it { should have_many(:organization_memberships).with_foreign_key("member_id") }
     it { should have_many(:organizations).through(:organization_memberships) }
-    it { should have_many(:team_memberships).with_foreign_key("member_id") }
-    it { should have_many(:teams).through(:team_memberships) }
     it { should have_many(:posts) }
     it { should have_many(:comments) }
     it { should have_many(:user_skills) }
@@ -36,10 +59,7 @@ describe User, :type => :model do
     it { should have_many(:passive_relationships).class_name("UserRelationship").dependent(:destroy) }
     it { should have_many(:following).through(:active_relationships).source(:following) }
     it { should have_many(:followers).through(:passive_relationships).source(:follower) }
-    it { should have_one(:member) }
-
-    it { should have_many(:contributors) }
-    it { should have_many(:projects).through(:contributors) }
+    it { should have_one(:slugged_route) }
   end
 
   describe "validations" do

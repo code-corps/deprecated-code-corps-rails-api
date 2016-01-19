@@ -1,3 +1,22 @@
+# == Schema Information
+#
+# Table name: posts
+#
+#  id               :integer          not null, primary key
+#  status           :string           default("open")
+#  post_type        :string           default("task")
+#  title            :string           not null
+#  body             :text             not null
+#  user_id          :integer          not null
+#  project_id       :integer          not null
+#  created_at       :datetime         not null
+#  updated_at       :datetime         not null
+#  post_likes_count :integer          default(0)
+#  markdown         :text             not null
+#  number           :integer
+#  aasm_state       :string
+#
+
 require 'html/pipeline'
 require 'code_corps/scenario/generate_user_mentions_for_post'
 
@@ -12,8 +31,6 @@ class Post < ActiveRecord::Base
   has_many :post_user_mentions
   has_many :comment_user_mentions
 
-  has_many :users, through: :project
-
   acts_as_sequenced scope: :project_id, column: :number, skip: lambda { |r| r.draft? }
 
   validates_presence_of :project
@@ -21,6 +38,7 @@ class Post < ActiveRecord::Base
   validates_presence_of :title
   validates_presence_of :body
   validates_presence_of :markdown
+  validates_presence_of :post_type
 
   validates_uniqueness_of :number, scope: :project_id, allow_nil: true
 

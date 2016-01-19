@@ -1,3 +1,22 @@
+# == Schema Information
+#
+# Table name: posts
+#
+#  id               :integer          not null, primary key
+#  status           :string           default("open")
+#  post_type        :string           default("task")
+#  title            :string           not null
+#  body             :text             not null
+#  user_id          :integer          not null
+#  project_id       :integer          not null
+#  created_at       :datetime         not null
+#  updated_at       :datetime         not null
+#  post_likes_count :integer          default(0)
+#  markdown         :text             not null
+#  number           :integer
+#  aasm_state       :string
+#
+
 require "rails_helper"
 
 describe PostSerializer, :type => :serializer do
@@ -15,8 +34,6 @@ describe PostSerializer, :type => :serializer do
     create_list(:comment, 2, post: @post)
     create_list(:post_user_mention, 2, post: @post)
     create_list(:comment_user_mention, 2, post: @post)
-
-    create_list(:contributor, 2, project: @post.project)
 
     @post.reload
   end
@@ -105,10 +122,6 @@ describe PostSerializer, :type => :serializer do
       it "should include 'project'" do
         expect(subject["project"]).not_to be_nil
       end
-
-      it "should include 'users'" do
-        expect(subject["users"]).not_to be_nil
-      end
     end
 
     context "included" do
@@ -158,19 +171,6 @@ describe PostSerializer, :type => :serializer do
         it "should not be empty" do
           expect(subject).not_to be_nil
           expect(subject.select{ |i| i["type"] == "comment_user_mentions"}.length).to eq 2
-        end
-      end
-
-      context "when including 'users'" do
-        let(:serialization) { ActiveModel::Serializer::Adapter.create(serializer, include: ["users"]) }
-
-        subject do
-          JSON.parse(serialization.to_json)["included"]
-        end
-
-        it "should not be empty" do
-          expect(subject).not_to be_nil
-          expect(subject.select{ |i| i["type"] == "users"}.length).to eq 2
         end
       end
     end
