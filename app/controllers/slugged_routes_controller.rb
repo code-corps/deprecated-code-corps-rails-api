@@ -1,6 +1,6 @@
 class SluggedRoutesController < ApplicationController
   def show
-    slugged_route = SluggedRoute.includes(owner: :members).find_by_slug!(slug)
+    slugged_route = SluggedRoute.find_by_slug!(slug)
 
     authorize slugged_route
 
