@@ -25,7 +25,8 @@
 #
 
 class UserSerializer < ActiveModel::Serializer
-  attributes :id, :email, :username, :twitter, :biography, :website, :facebook_id, :facebook_access_token, :photo_thumb_url, :photo_large_url
+  attributes :id, :email, :name, :username, :twitter, :biography, :website,
+    :facebook_id, :facebook_access_token, :photo_thumb_url, :photo_large_url
 
   has_many :skills
 
