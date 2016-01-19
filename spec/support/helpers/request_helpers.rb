@@ -46,19 +46,19 @@ module RequestHelpers
 
   private
 
-  def authorization_header(token)
-    { "HTTP_AUTHORIZATION" => "Bearer #{token}" }
-  end
+    def authorization_header(token)
+      { "HTTP_AUTHORIZATION" => "Bearer #{token}" }
+    end
 
-  def full_path(path)
-    "#{host}/#{path}"
-  end
+    def full_path(path)
+      "#{host}/#{path}"
+    end
 
-  def options_header(method)
-    {
-      "HTTP_ORIGIN" => "*",
-      "HTTP_ACCESS_CONTROL_REQUEST_METHOD" => method.to_s.upcase,
-      "HTTP_ACCESS_CONTROL_REQUEST_HEADERS" => "test"
-    }
-  end
+    def options_header(method)
+      {
+        "HTTP_ORIGIN" => "*",
+        "HTTP_ACCESS_CONTROL_REQUEST_METHOD" => method.to_s.upcase,
+        "HTTP_ACCESS_CONTROL_REQUEST_HEADERS" => "test"
+      }
+    end
 end
