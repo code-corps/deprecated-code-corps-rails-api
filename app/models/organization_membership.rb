@@ -3,7 +3,7 @@
 # Table name: organization_memberships
 #
 #  id              :integer          not null, primary key
-#  role            :string           default("regular"), not null
+#  role            :string           default("pending"), not null
 #  created_at      :datetime         not null
 #  updated_at      :datetime         not null
 #  member_id       :integer

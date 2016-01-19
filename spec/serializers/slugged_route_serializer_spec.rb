@@ -1,11 +1,11 @@
 # == Schema Information
 #
-# Table name: members
+# Table name: slugged_routes
 #
 #  id         :integer          not null, primary key
 #  slug       :string           not null
-#  model_id   :integer
-#  model_type :string
+#  owner_id   :integer
+#  owner_type :string
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #
