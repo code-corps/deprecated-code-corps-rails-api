@@ -405,10 +405,12 @@ describe "Users API" do
 
     before do
       @current_user = create(:user, email: "current@mail.com", password: "password", website: "initial.com", biography: "Initial", twitter: "@user")
+      file = File.open("#{Rails.root}/spec/sample_data/default-avatar.png", 'r')
+      @base64_image = Base64.encode64(open(file) { |io| io.read })
       params = {
         name: "Josh Smith", website: "edit.com", biography: "Edited",
         twitter: "@edit", email: "new@mail.com", encrypted_password: "bla",
-        confirmation_token: "bla", remember_token: "bla", username: "bla",
+        confirmation_token: "bla", remember_token: "bla", username: "bla", base64_photo_data: @base64_image,
         admin: true
       }
       @edit_params = json_api_params_for("users", params)
@@ -443,6 +445,7 @@ describe "Users API" do
         expect(current_user.website).to eq "edit.com"
         expect(current_user.biography).to eq "Edited"
         expect(current_user.twitter).to eq "@edit"
+        expect(UpdateProfilePictureWorker.jobs.size).to eq 1
       end
 
       it "allows updating of only specific parameters" do
@@ -451,7 +454,8 @@ describe "Users API" do
             name: "Josh Smith",
             website: "edit.com",
             biography: "Edited",
-            twitter: "@edit"
+            twitter: "@edit",
+            base64_photo_data: @base64_image 
           }.with_indifferent_access)
         authenticated_patch "/users/me", @edit_params, @token
       end
