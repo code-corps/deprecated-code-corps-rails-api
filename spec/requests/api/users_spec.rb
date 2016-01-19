@@ -405,12 +405,13 @@ describe "Users API" do
 
     before do
       @current_user = create(:user, email: "current@mail.com", password: "password", website: "initial.com", biography: "Initial", twitter: "@user")
-      file = File.open("#{Rails.root}/spec/sample_data/default-avatar.png", 'r')
-      @base64_image = Base64.encode64(open(file) { |io| io.read })
+      file = File.open("#{Rails.root}/spec/sample_data/default-avatar.png", "r")
+      @base64_image = Base64.encode64(open(file, &:read))
       params = {
         name: "Josh Smith", website: "edit.com", biography: "Edited",
         twitter: "@edit", email: "new@mail.com", encrypted_password: "bla",
-        confirmation_token: "bla", remember_token: "bla", username: "bla", base64_photo_data: @base64_image,
+        confirmation_token: "bla", remember_token: "bla", username: "bla", 
+        base64_photo_data: @base64_image,
         admin: true
       }
       @edit_params = json_api_params_for("users", params)
@@ -455,7 +456,7 @@ describe "Users API" do
             website: "edit.com",
             biography: "Edited",
             twitter: "@edit",
-            base64_photo_data: @base64_image 
+            base64_photo_data: @base64_image
           }.with_indifferent_access)
         authenticated_patch "/users/me", @edit_params, @token
       end

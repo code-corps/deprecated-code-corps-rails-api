@@ -96,7 +96,7 @@ class UsersController < ApplicationController
 
       if record.save
         UpdateProfilePictureWorker.perform_async(record.id) if photo_param?
- 
+
         render json: record
       else
         render_validation_errors(record.errors)
@@ -112,7 +112,8 @@ class UsersController < ApplicationController
     end
 
     def create_params
-      record_attributes.permit(:email, :username, :password, :facebook_id, :facebook_access_token, :base64_photo_data)
+      record_attributes.permit(:email, :username, :password, :facebook_id,
+                               :facebook_access_token, :base64_photo_data)
     end
 
     def update_params
@@ -177,6 +178,7 @@ class UsersController < ApplicationController
     end
 
     def photo_param?
-      update_params[:base64_photo_data].present? || create_params[:base64_photo_data].present?
+      update_params[:base64_photo_data].present? ||
+      create_params[:base64_photo_data].present?
     end
 end
