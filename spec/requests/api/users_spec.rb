@@ -406,9 +406,10 @@ describe "Users API" do
     before do
       @current_user = create(:user, email: "current@mail.com", password: "password", website: "initial.com", biography: "Initial", twitter: "@user")
       params = {
-        name: "Josh Smith", website: "edit.com", biography: "Edited", twitter: "@edit",
-        email: "new@mail.com", encrypted_password: "bla", confirmation_token: "bla",
-        remember_token: "bla", username: "bla", admin: true
+        name: "Josh Smith", website: "edit.com", biography: "Edited",
+        twitter: "@edit", email: "new@mail.com", encrypted_password: "bla",
+        confirmation_token: "bla", remember_token: "bla", username: "bla",
+        admin: true
       }
       @edit_params = json_api_params_for("users", params)
     end
