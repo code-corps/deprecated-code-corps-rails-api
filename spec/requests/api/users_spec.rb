@@ -410,7 +410,7 @@ describe "Users API" do
       params = {
         name: "Josh Smith", website: "edit.com", biography: "Edited",
         twitter: "@edit", email: "new@mail.com", encrypted_password: "bla",
-        confirmation_token: "bla", remember_token: "bla", username: "bla", 
+        confirmation_token: "bla", remember_token: "bla", username: "bla",
         base64_photo_data: @base64_image,
         admin: true
       }
