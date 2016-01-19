@@ -24,11 +24,8 @@ describe "Users API" do
         authenticated_get "user", {}, token
       end
 
-      it "responds with a 200" do
+      it "returns a proper response", aggregate_failures: true do
         expect(last_response.status).to eq 200
-      end
-
-      it 'returns the authenticated user object, serialized with AuthenticatedUserSerializer' do
         expect(json).to serialize_object(@user).with(AuthenticatedUserSerializer)
       end
     end
@@ -45,8 +42,10 @@ describe "Users API" do
       expect(last_response.status).to eq 200
     end
 
-    it "retrieves the specified user by id using UserSerializer, including skills" do
-      expect(json).to serialize_object(User.find(@user.id)).with(UserSerializer).with_includes([:skills])
+    it "responds with a properly serialized user" do
+      expect(json).to serialize_object(@user)
+        .with(UserSerializer)
+        .with_includes([:skills, :projects])
     end
   end
 
