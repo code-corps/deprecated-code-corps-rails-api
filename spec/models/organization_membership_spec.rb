@@ -1,3 +1,15 @@
+# == Schema Information
+#
+# Table name: organization_memberships
+#
+#  id              :integer          not null, primary key
+#  role            :string           default("regular"), not null
+#  created_at      :datetime         not null
+#  updated_at      :datetime         not null
+#  member_id       :integer
+#  organization_id :integer
+#
+
 require "rails_helper"
 
 describe OrganizationMembership, :type => :model do
@@ -17,15 +29,24 @@ describe OrganizationMembership, :type => :model do
   it "should have a working 'role' enum" do
     membership = create(:organization_membership)
 
+    expect(membership.pending?).to be true
+    expect(membership.owner?).to be false
     expect(membership.admin?).to be false
-    expect(membership.regular?).to be true
+    expect(membership.contributor?).to be false
+
+    membership.contributor!
+    expect(membership.owner?).to be false
+    expect(membership.admin?).to be false
+    expect(membership.contributor?).to be true
 
     membership.admin!
+    expect(membership.owner?).to be false
     expect(membership.admin?).to be true
-    expect(membership.regular?).to be false
+    expect(membership.contributor?).to be false
 
-    membership.regular!
+    membership.owner!
+    expect(membership.owner?).to be true
     expect(membership.admin?).to be false
-    expect(membership.regular?).to be true
+    expect(membership.contributor?).to be false
   end
 end

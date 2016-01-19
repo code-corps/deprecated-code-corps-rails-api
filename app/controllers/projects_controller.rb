@@ -1,20 +1,40 @@
+# == Schema Information
+#
+# Table name: projects
+#
+#  id                 :integer          not null, primary key
+#  title              :string           not null
+#  description        :string
+#  owner_id           :integer
+#  owner_type         :string
+#  created_at         :datetime         not null
+#  updated_at         :datetime         not null
+#  icon_file_name     :string
+#  icon_content_type  :string
+#  icon_file_size     :integer
+#  icon_updated_at    :datetime
+#  base64_icon_data   :text
+#  contributors_count :integer
+#  slug               :string           not null
+#
+
 class ProjectsController < ApplicationController
   before_action :doorkeeper_authorize!, only: [:create, :update]
 
   def index
     authorize Project
 
-    if for_member?
-      projects = find_projects_with_member!
+    if for_slugged_route?
+      projects = find_projects_with_slugged_route!
     else
-      projects = Project.all.includes(:contributors, :github_repositories)
+      projects = Project.all.includes(:github_repositories, :organization)
     end
 
     render json: projects
   end
 
   def show
-    project = find_project_with_member!
+    project = find_project_with_slugged_route!
 
     authorize project
 
@@ -60,49 +80,40 @@ class ProjectsController < ApplicationController
     end
 
     def relationships
-      #{ owner_id: owner_id, owner_type: owner_type }
-      { owner: owner }
+      { organization_id: organization_id }
     end
 
-    def owner
-      owner_type.constantize.find(owner_id) if owner_type.present?
-    end
-
-    def owner_id
-      record_relationships.fetch(:owner, {}).fetch(:data, {})[:id]
-    end
-
-    def owner_type
-      record_relationships.fetch(:owner, {}).fetch(:data, {})[:type]
+    def organization_id
+      record_relationships.fetch(:organization, {}).fetch(:data, {})[:id]
     end
 
     def permitted_params
       record_attributes.permit(:base64_icon_data, :title, :description, :slug)
     end
 
-    def member_slug
-      params[:member_id]
+    def slugged_route_slug
+      params[:slugged_route_id]
     end
 
     def project_slug
       params[:id]
     end
 
-    def for_member?
-      member_slug.present?
+    def for_slugged_route?
+      slugged_route_slug.present?
     end
 
-    def find_project_with_member!
-      member = find_member!
-      Project.includes(:contributors, :github_repositories).find_by!(slug: project_slug, owner: member.model)
+    def find_project_with_slugged_route!
+      slugged_route = find_slugged_route!
+      Project.includes(:github_repositories, :organization).find_by!(slug: project_slug, organization: slugged_route.owner)
     end
 
-    def find_projects_with_member!
-      member = find_member!
-      Project.includes(:contributors, :github_repositories).where(owner: member.model)
+    def find_projects_with_slugged_route!
+      slugged_route = find_slugged_route!
+      Project.includes(:github_repositories, :organization).where(organization: slugged_route.owner)
     end
 
-    def find_member!
-      Member.find_by_slug!(member_slug)
+    def find_slugged_route!
+      SluggedRoute.find_by_slug!(slugged_route_slug)
     end
 end

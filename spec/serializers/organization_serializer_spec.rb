@@ -1,3 +1,14 @@
+# == Schema Information
+#
+# Table name: organizations
+#
+#  id         :integer          not null, primary key
+#  name       :string           not null
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#  slug       :string           not null
+#
+
 require "rails_helper"
 
 describe OrganizationSerializer, :type => :serializer do
@@ -44,10 +55,6 @@ describe OrganizationSerializer, :type => :serializer do
 
       it "should include 'members'" do
         expect(subject["members"]).not_to be_nil
-      end
-
-      it "should include 'teams'" do
-        expect(subject["teams"]).not_to be_nil
       end
 
       it "should include 'projects'" do

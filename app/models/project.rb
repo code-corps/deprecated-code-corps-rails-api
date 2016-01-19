@@ -1,10 +1,28 @@
+# == Schema Information
+#
+# Table name: projects
+#
+#  id                 :integer          not null, primary key
+#  title              :string           not null
+#  description        :string
+#  owner_id           :integer
+#  owner_type         :string
+#  created_at         :datetime         not null
+#  updated_at         :datetime         not null
+#  icon_file_name     :string
+#  icon_content_type  :string
+#  icon_file_size     :integer
+#  icon_updated_at    :datetime
+#  base64_icon_data   :text
+#  contributors_count :integer
+#  slug               :string           not null
+#
+
 class Project < ActiveRecord::Base
-  belongs_to :owner, polymorphic: true
+  belongs_to :organization
 
   has_many :posts
   has_many :github_repositories
-  has_many :contributors
-  has_many :users, through: :contributors
 
   has_attached_file :icon,
                     styles: {
@@ -19,7 +37,7 @@ class Project < ActiveRecord::Base
   validates :slug, slug: true
   validate :slug_is_not_duplicate
 
-  validates_presence_of :owner
+  validates_presence_of :organization
 
   validates_attachment_content_type :icon,
                                     content_type: %r{^image\/(png|gif|jpeg)}
@@ -39,7 +57,7 @@ class Project < ActiveRecord::Base
   private
 
     def slug_is_not_duplicate
-      if Project.where.not(id: self.id).where(owner: self.owner).where('lower(slug) = ?', slug.try(:downcase)).present?
+      if Project.where.not(id: self.id).where(organization: self.organization).where('lower(slug) = ?', slug.try(:downcase)).present?
         errors.add(:slug, "has already been taken")
       end
     end

@@ -1,5 +1,23 @@
-class PostsController < ApplicationController
+# == Schema Information
+#
+# Table name: posts
+#
+#  id               :integer          not null, primary key
+#  status           :string           default("open")
+#  post_type        :string           default("task")
+#  title            :string           not null
+#  body             :text             not null
+#  user_id          :integer          not null
+#  project_id       :integer          not null
+#  created_at       :datetime         not null
+#  updated_at       :datetime         not null
+#  post_likes_count :integer          default(0)
+#  markdown         :text             not null
+#  number           :integer
+#  aasm_state       :string
+#
 
+class PostsController < ApplicationController
   before_action :doorkeeper_authorize!, only: [:create, :update]
 
   def index
@@ -87,6 +105,6 @@ class PostsController < ApplicationController
       project = find_project!
       Post.where(project: project)
         .page(page_number).per(page_size)
-        .includes [:users, :comments, :user, :project, :post_user_mentions, :comment_user_mentions]
+        .includes [:comments, :user, :project, :post_user_mentions, :comment_user_mentions]
     end
 end

@@ -1,10 +1,30 @@
+# == Schema Information
+#
+# Table name: projects
+#
+#  id                 :integer          not null, primary key
+#  title              :string           not null
+#  description        :string
+#  owner_id           :integer
+#  owner_type         :string
+#  created_at         :datetime         not null
+#  updated_at         :datetime         not null
+#  icon_file_name     :string
+#  icon_content_type  :string
+#  icon_file_size     :integer
+#  icon_updated_at    :datetime
+#  base64_icon_data   :text
+#  contributors_count :integer
+#  slug               :string           not null
+#
+
 require "rails_helper"
 
 describe ProjectSerializer, :type => :serializer do
 
   context "individual resource representation" do
     let(:resource) {
-      project = create(:project, :with_contributors, contributors_count: 5)
+      project = create(:project)
       create_list(:github_repository, 10, project: project)
       project
     }
@@ -47,20 +67,11 @@ describe ProjectSerializer, :type => :serializer do
       it "has a 'description'" do
         expect(subject["description"]).to eql resource.description
       end
-
-      it "has a 'contributors_count'" do
-        expect(subject["contributors_count"]).to eql resource.contributors_count
-      end
     end
 
     context "relationships" do
       subject do
         JSON.parse(serialization.to_json)["data"]["relationships"]
-      end
-
-      it "should contain a 'contributors' relationship" do
-        expect(subject["contributors"]).not_to be_nil
-        expect(subject["contributors"]["data"].count).to eq 5
       end
 
       it "should have a 'github_repositories' relationship" do

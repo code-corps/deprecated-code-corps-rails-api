@@ -1,5 +1,5 @@
 class ProjectSerializerWithoutIncludes < ActiveModel::Serializer
-  attributes :id, :title, :description, :icon_thumb_url, :icon_large_url, :contributors_count
+  attributes :id, :title, :description, :icon_thumb_url, :icon_large_url
 
   def icon_thumb_url
     object.icon.url(:thumb)

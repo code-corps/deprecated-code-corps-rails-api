@@ -6,140 +6,162 @@ describe ProjectPolicy do
 
 
   before do
-    @project = create(:project)
+    @organization = create(:organization)
+    @another_organization = create(:organization)
 
-    @regular_user = create(:user)
+    @project = create(:project, organization: @organization)
+    @another_project = create(:project, organization: @another_organization)
+
+    @unaffiliated_user = create(:user)
+
+    # Pending organization member
     @pending_user = create(:user)
-    @collaborator_user = create(:user)
+    create(:organization_membership,
+           organization: @organization,
+           member: @pending_user,
+           role: "pending")
+
+    # Contributor organization member
+    @contributor_user = create(:user)
+    create(:organization_membership,
+           organization: @organization,
+           member: @contributor_user,
+           role: "contributor")
+
+    # Admin organization member
     @admin_user = create(:user)
+    create(:organization_membership,
+           organization: @organization,
+           member: @admin_user,
+           role: "admin")
+
+    # Owner organization member
     @owner_user = create(:user)
+    create(:organization_membership,
+           organization: @organization,
+           member: @owner_user,
+           role: "owner")
 
-    @admin = create(:user, admin: true)
-
-    @pending_contributor = create(:contributor, user: @pending_user, project: @project)
-    @collaborator_contributor = create(:contributor, user: @collaborator_user, project: @project)
-    @admin_contributor = create(:contributor, user: @admin_user, project: @project)
-    @owner_contributor = create(:contributor, user: @owner_user, project: @project)
+    @site_admin = create(:user, admin: true)
   end
 
   permissions :index?, :show? do
 
-    context "as an unaffiliated user" do
+    context "as a logged out user" do
       it "can view all projects" do
         expect(subject).to permit(nil, @project)
+        expect(subject).to permit(nil, @another_project)
       end
     end
 
-    context "as a regular user" do
+    context "as an unaffiliated user" do
       it "can view all projects" do
-        expect(subject).to permit(@regular_user, @project)
+        expect(subject).to permit(@unaffiliated_user, @project)
+        expect(subject).to permit(@unaffiliated_user, @another_project)
       end
     end
 
     context "as a pending user" do
       it "can view all projects" do
         expect(subject).to permit(@pending_user, @project)
+        expect(subject).to permit(@pending_user, @another_project)
       end
     end
 
-    context "as a collaborator user" do
+    context "as a contributor user" do
       it "can view all projects" do
-        expect(subject).to permit(@collaborator_user, @project)
+        expect(subject).to permit(@contributor_user, @project)
+        expect(subject).to permit(@contributor_user, @another_project)
       end
     end
 
     context "as an admin user" do
       it "can view all projects" do
         expect(subject).to permit(@admin_user, @project)
+        expect(subject).to permit(@admin_user, @another_project)
       end
     end
 
     context "as an owner user" do
       it "can view all projects" do
         expect(subject).to permit(@owner_user, @project)
+        expect(subject).to permit(@owner_user, @another_project)
+      end
+    end
+
+    context "as a site admin" do
+      it "can view all projects" do
+        expect(subject).to permit(@site_admin, @project)
+        expect(subject).to permit(@site_admin, @another_project)
       end
     end
   end
 
   permissions :create?, :update? do
 
-    context "as an unaffiliated user" do
-      it "is not permitted to create/update projects for others" do
-        expect(subject).to_not permit(nil, create(:project, owner: @regular_user))
+    context "as a logged out user" do
+      it "is not permitted to create/update projects" do
+        expect(subject).to_not permit(nil, create(:project))
       end
     end
 
-    context "as a regular user" do
-      it "is not permitted to create/update projects for others" do
-        expect(subject).to_not permit(@regular_user, create(:project, owner: create(:user)))
+    context "as an unaffiliated user" do
+      it "is not permitted to create/update projects in other organizations" do
+        expect(subject).to_not permit(@unaffiliated_user, @another_project)
       end
 
-      it "is permitted to create/update projects for themselves" do
-        expect(subject).to permit(@regular_user, create(:project, owner: @regular_user))
+      it "is not permitted to create/update projects in their organization" do
+        expect(subject).to_not permit(@unaffiliated_user, @project)
       end
     end
 
     context "as a pending user" do
-      it "is not permitted to create/update projects for others" do
-        expect(subject).to_not permit(@pending_user, create(:project, owner: @regular_user))
+      it "is not permitted to create/update projects in other organizations" do
+        expect(subject).to_not permit(@pending_user, @project)
       end
 
-      it "is permitted to create/update projects for themselves" do
-        expect(subject).to permit(@pending_user, create(:project, owner: @pending_user))
+      it "is not permitted to create/update projects in their organization" do
+        expect(subject).to_not permit(@pending_user, @project)
       end
     end
 
-    context "as a collaborator user" do
-      it "is not permitted to create/update projects for others" do
-        expect(subject).to_not permit(@collaborator_user, create(:project, owner: @regular_user))
+    context "as a contributor user" do
+      it "is not permitted to create/update projects in other organizations" do
+        expect(subject).to_not permit(@contributor_user, @project)
       end
 
-      it "is permitted to create/update projects for themselves" do
-        expect(subject).to permit(@collaborator_user, create(:project, owner: @collaborator_user))
+      it "is not permitted to create/update projects in their organization" do
+        expect(subject).to_not permit(@contributor_user, @project)
       end
     end
 
     context "as an admin user" do
-      it "is not permitted to create/update projects for others" do
-        expect(subject).to_not permit(@admin_user, create(:project, owner: @regular_user))
+      it "is not permitted to create/update projects in other organizations" do
+        expect(subject).to_not permit(@admin_user, @another_project)
       end
 
-      it "is permitted to create/update projects for themselves" do
-        expect(subject).to permit(@admin_user, create(:project, owner: @admin_user))
+      it "is permitted to create/update projects in their organization" do
+        expect(subject).to permit(@admin_user, @project)
       end
     end
 
     context "as an owner user" do
-      it "is not permitted to create/update projects for others" do
-        expect(subject).to_not permit(@owner_user, create(:project, owner: @regular_user))
+      it "is not permitted to create/update projects in other organizations" do
+        expect(subject).to_not permit(@owner_user, @another_project)
       end
 
-      it "is permitted to create/update projects for themselves" do
-        expect(subject).to permit(@owner_user, create(:project, owner: @owner_user))
-      end
-    end
-  end
-
-  permissions :create? do #for differing admin rights to cut down on # of tests
-    context "as an site admin" do
-      it "is permitted to create projects for others" do
-        expect(subject).to permit(@admin, create(:project, owner: @regular_user))
-      end
-
-      it "is permitted to create projects for themselves" do
-        expect(subject).to permit(@admin, create(:project, owner: @admin))
+      it "is permitted to create/update projects in their organization" do
+        expect(subject).to permit(@owner_user, @project)
       end
     end
-  end
 
-  permissions :update? do #for differing admin rights to cut down on # of tests
-    context "as an site admin" do
-      it "is not permitted to update projects for others" do
-        expect(subject).to_not permit(@admin, create(:project, owner: @regular_user))
+    context "as a site admin" do
+      it "is permitted to create projects in other organizations" do
+        expect(subject).to permit(@site_admin, @another_project)
       end
 
-      it "is permitted to update projects for themselves" do
-        expect(subject).to permit(@admin, create(:project, owner: @admin))
+      it "is permitted to create projects in their organization" do
+        expect(subject).to permit(@site_admin, @project)
       end
     end
   end

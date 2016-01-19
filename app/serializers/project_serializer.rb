@@ -1,9 +1,29 @@
-class ProjectSerializer < ActiveModel::Serializer
-  attributes :id, :title, :description, :icon_thumb_url, :icon_large_url, :contributors_count
+# == Schema Information
+#
+# Table name: projects
+#
+#  id                 :integer          not null, primary key
+#  title              :string           not null
+#  description        :string
+#  owner_id           :integer
+#  owner_type         :string
+#  created_at         :datetime         not null
+#  updated_at         :datetime         not null
+#  icon_file_name     :string
+#  icon_content_type  :string
+#  icon_file_size     :integer
+#  icon_updated_at    :datetime
+#  base64_icon_data   :text
+#  contributors_count :integer
+#  slug               :string           not null
+#
 
-  has_many :contributors
+class ProjectSerializer < ActiveModel::Serializer
+  attributes :id, :title, :description, :icon_thumb_url, :icon_large_url
 
   has_many :github_repositories
+
+  belongs_to :organization
 
   def icon_thumb_url
     object.icon.url(:thumb)

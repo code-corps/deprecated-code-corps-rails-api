@@ -35,7 +35,6 @@ describe "Users API" do
     before do
       @user = create(:user, username: "joshsmith")
       create_list(:user_skill, 2, user: @user)
-      create_list(:contributor, 3, user: @user)
       get "#{host}/users/#{@user.id}"
     end
 

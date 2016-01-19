@@ -1,3 +1,28 @@
+# == Schema Information
+#
+# Table name: users
+#
+#  id                    :integer          not null, primary key
+#  created_at            :datetime         not null
+#  updated_at            :datetime         not null
+#  email                 :string           not null
+#  encrypted_password    :string(128)      not null
+#  confirmation_token    :string(128)
+#  remember_token        :string(128)      not null
+#  username              :string
+#  admin                 :boolean          default(FALSE), not null
+#  website               :text
+#  twitter               :string
+#  biography             :text
+#  facebook_id           :string
+#  facebook_access_token :string
+#  base64_photo_data     :string
+#  photo_file_name       :string
+#  photo_content_type    :string
+#  photo_file_size       :integer
+#  photo_updated_at      :datetime
+#
+
 require "rails_helper"
 
 describe UserSerializer, :type => :serializer do
@@ -14,7 +39,6 @@ describe UserSerializer, :type => :serializer do
         facebook_access_token: "some_token")
 
       create_list(:user_skill, 2, user: user)
-      create_list(:contributor, 3, user: user)
 
       user
     }
@@ -87,11 +111,6 @@ describe UserSerializer, :type => :serializer do
         expect(subject["skills"]).not_to be_nil
         expect(subject["skills"]["data"].count).to eq 2
       end
-
-      it "has a 'projects' relationship" do
-        expect(subject["projects"]).not_to be_nil
-        expect(subject["projects"]["data"].count).to eq 3
-      end
     end
 
     context "included" do
@@ -115,19 +134,6 @@ describe UserSerializer, :type => :serializer do
         it "should contain the user's skills" do
           expect(subject).not_to be_nil
           expect(subject.select{ |i| i["type"] == "skills"}.length).to eq 2
-        end
-      end
-
-      context "when including projects" do
-        let(:serialization) { ActiveModel::Serializer::Adapter.create(serializer, include: ["projects"]) }
-
-        subject do
-          JSON.parse(serialization.to_json)["included"]
-        end
-
-        it "should contain the user's projects" do
-          expect(subject).not_to be_nil
-          expect(subject.select{ |i| i["type"] == "projects"}.length).to eq 3
         end
       end
     end
