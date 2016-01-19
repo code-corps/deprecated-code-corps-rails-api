@@ -103,6 +103,9 @@ describe PostSerializer, :type => :serializer do
       it "has an 'edited_at'" do
         expect(subject["edited_at"]).to be_the_same_time_as resource.edited_at
       end
+      it "has a 'comments_count'" do
+        expect(subject["comments_count"]).to eql resource.comments_count
+      end
     end
 
     context "relationships" do

@@ -26,7 +26,7 @@ describe Comment, :type => :model do
   end
 
   describe "relationships" do
-    it { should belong_to(:post) }
+    it { should belong_to(:post).counter_cache true }
     it { should belong_to(:user) }
   end
 
