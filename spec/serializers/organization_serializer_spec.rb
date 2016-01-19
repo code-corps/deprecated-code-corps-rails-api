@@ -53,10 +53,6 @@ describe OrganizationSerializer, :type => :serializer do
         JSON.parse(serialization.to_json)["data"]["relationships"]
       end
 
-      it "should include 'members'" do
-        expect(subject["members"]).not_to be_nil
-      end
-
       it "should include 'projects'" do
         expect(subject["projects"]).not_to be_nil
       end
