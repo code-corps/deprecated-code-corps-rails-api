@@ -19,7 +19,7 @@
 
 class PostSerializer < ActiveModel::Serializer
   attributes :id, :title, :body, :status, :post_type, :likes_count, :markdown,
-    :number, :state, :edited_at, :comments_count
+             :number, :state, :edited_at, :comments_count
 
   has_many :comments
   has_many :post_user_mentions
