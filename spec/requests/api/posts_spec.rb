@@ -77,7 +77,7 @@ describe "Posts API" do
         it "only returns posts of that type" do
           get "#{host}/projects/#{@project.id}/posts", { post_type: "issue" }
           collection = Post.where(project: @project, post_type: "issue")
-          expect(json).to serialize_collection(collection).with(PostSerializer)
+          expect(json).to serialize_collection(collection).with(PostSerializerWithoutIncludes)
         end
       end
     end
