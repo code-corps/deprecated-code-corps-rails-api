@@ -23,7 +23,7 @@ class PostsController < ApplicationController
   def index
     authorize Post
     posts = find_posts!
-    render json: posts, meta: meta_for(Post), each_serializer: PostSerializerWithoutIncludes
+    render json: posts, meta: meta_for(posts, post_count), each_serializer: PostSerializerWithoutIncludes
   end
 
   def show
@@ -111,5 +111,9 @@ class PostsController < ApplicationController
       project = find_project!
       Post.where(filter_params.merge(project: project))
         .page(page_number).per(page_size)
+    end
+
+    def post_count
+      Post.where(filter_params.merge(project_id: project_id)).count
     end
 end
