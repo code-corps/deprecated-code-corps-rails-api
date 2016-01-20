@@ -32,7 +32,7 @@ describe OrganizationSerializer, :type => :serializer do
         expect(subject["id"]).not_to be nil
       end
 
-      it "has a type set to 'projects'" do
+      it "has a type set to 'organizations'" do
         expect(subject["type"]).to eq "organizations"
       end
     end
@@ -51,14 +51,6 @@ describe OrganizationSerializer, :type => :serializer do
     context "relationships" do
       subject do
         JSON.parse(serialization.to_json)["data"]["relationships"]
-      end
-
-      it "should include 'members'" do
-        expect(subject["members"]).not_to be_nil
-      end
-
-      it "should include 'projects'" do
-        expect(subject["projects"]).not_to be_nil
       end
     end
 

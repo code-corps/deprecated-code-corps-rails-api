@@ -1,11 +1,28 @@
 require "rails_helper"
 
 describe "Comments API" do
-  context "POST /comments" do
+  feature "cors" do
+    it "should be supported for POST" do
+      post "#{host}/comments", nil, "HTTP_ORIGIN" => "*"
+      expect(last_response).to have_proper_cors_headers
 
+      cors_options("comments", :post)
+      expect(last_response).to have_proper_preflight_options_response_headers
+    end
+
+    it "should be supported for PATCH" do
+      post "#{host}/comments", nil, "HTTP_ORIGIN" => "*"
+      expect(last_response).to have_proper_cors_headers
+
+      cors_options("comments", :patch)
+      expect(last_response).to have_proper_preflight_options_response_headers
+    end
+  end
+
+  context "POST /comments" do
     context "when unauthenticated" do
       it "should return a 401 with a proper error" do
-        post "#{host}/comments", { data: { type: "comments" } }
+        post "#{host}/comments", data: { type: "comments" }
         expect(last_response.status).to eq 401
         expect(json).to be_a_valid_json_api_error.with_id "NOT_AUTHORIZED"
       end
@@ -23,19 +40,22 @@ describe "Comments API" do
       end
 
       def make_request_with_sidekiq_inline
-        Sidekiq::Testing::inline! { make_request }
+        Sidekiq::Testing.inline! { make_request }
       end
 
-      it "requires a 'post' to be specified" do
-        @params = { data: { type: "comments", attributes: { markdown: "Comment body" } } }
+      it "requires a post to be specified" do
+        @params = { data: {
+          type: "comments", attributes: { markdown: "Comment body" }
+        } }
         make_request
 
         expect(last_response.status).to eq 422
         expect(json).to be_a_valid_json_api_validation_error
       end
 
-      it "requires a 'body' to be specified" do
-        @params = { data: { type: "comments",
+      it "requires a body to be specified" do
+        @params = { data: {
+          type: "comments",
           attributes: {},
           relationships: { post: { data: { id: @post.id, type: "posts" } } }
         } }
@@ -53,19 +73,23 @@ describe "Comments API" do
 
             @params = { data: {
               type: "comments",
-              attributes: { markdown: "@#{@mention_1.username} @#{@mention_2.username}" },
+              attributes: {
+                markdown: "@#{@mention_1.username} @#{@mention_2.username}"
+              },
               relationships: {
                 post: { data: { id: @post.id, type: "posts" } }
               }
-            }}
+            } }
           end
 
           it "creates a comment" do
             make_request
             comment = Comment.last
 
-            expect(comment.markdown).to eq "@#{@mention_1.username} @#{@mention_2.username}"
-            expect(comment.body).to eq "<p>@#{@mention_1.username} @#{@mention_2.username}</p>"
+            expect(comment.markdown)
+              .to eq "@#{@mention_1.username} @#{@mention_2.username}"
+            expect(comment.body)
+              .to eq "<p>@#{@mention_1.username} @#{@mention_2.username}</p>"
 
             expect(comment.user_id).to eq @user.id
             expect(comment.post_id).to eq @post.id
@@ -74,7 +98,8 @@ describe "Comments API" do
           it "returns the created comment, serialized with CommentSerializer" do
             make_request
 
-            expect(json).to serialize_object(Comment.last).with(CommentSerializer)
+            expect(json).to serialize_object(Comment.last)
+              .with(CommentSerializer)
           end
 
           it "sets user to current user" do
@@ -85,15 +110,18 @@ describe "Comments API" do
           end
 
           it "creates mentions" do
-            expect{ make_request_with_sidekiq_inline }.to change { CommentUserMention.count }.by 2
+            expect { make_request_with_sidekiq_inline }
+              .to change { CommentUserMention.count }.by 2
           end
 
           it "does not create notifications for each mentioned user" do
-            expect{ make_request_with_sidekiq_inline }.to_not change{ Notification.sent.count }
+            expect { make_request_with_sidekiq_inline }
+              .to_not change { Notification.sent.count }
           end
 
           it "does not send mails for each mentioned user" do
-            expect{ make_request_with_sidekiq_inline }.to_not change{ ActionMailer::Base.deliveries.count }
+            expect { make_request_with_sidekiq_inline }
+              .to_not change { ActionMailer::Base.deliveries.count }
           end
         end
 
@@ -104,18 +132,23 @@ describe "Comments API" do
 
             @params = { data: {
               type: "comments",
-              attributes: { markdown: "@#{@mention_1.username} @#{@mention_2.username}", state: "published" },
+              attributes: {
+                markdown: "@#{@mention_1.username} @#{@mention_2.username}",
+                state: "published"
+              },
               relationships: {
                 post: { data: { id: @post.id, type: "posts" } }
               }
-            }}
+            } }
           end
 
           it "creates a comment" do
-            expect{ make_request }.to change{ Comment.count }.by 1
+            expect { make_request }.to change { Comment.count }.by 1
             comment = Comment.last
-            expect(comment.markdown).to eq "@#{@mention_1.username} @#{@mention_2.username}"
-            expect(comment.body).to eq "<p>@#{@mention_1.username} @#{@mention_2.username}</p>"
+            expect(comment.markdown)
+              .to eq "@#{@mention_1.username} @#{@mention_2.username}"
+            expect(comment.body)
+              .to eq "<p>@#{@mention_1.username} @#{@mention_2.username}</p>"
 
             expect(comment.post).to eq @post
             expect(comment.user).to eq @user
@@ -124,19 +157,23 @@ describe "Comments API" do
           it "returns the created comment, serialized with CommentSerializer" do
             make_request
 
-            expect(json).to serialize_object(Comment.last).with(CommentSerializer)
+            expect(json).to serialize_object(Comment.last)
+              .with(CommentSerializer)
           end
 
           it "creates mentions" do
-            expect{ make_request_with_sidekiq_inline }.to change { CommentUserMention.count }.by 2
+            expect { make_request_with_sidekiq_inline }
+              .to change { CommentUserMention.count }.by 2
           end
 
           it "creates notifications for each mentioned user" do
-            expect{ make_request_with_sidekiq_inline }.to change{ Notification.sent.count }.by 2
+            expect { make_request_with_sidekiq_inline }
+              .to change { Notification.sent.count }.by 2
           end
 
           it "sends mails for each mentioned user" do
-            expect{ make_request_with_sidekiq_inline }.to change{ ActionMailer::Base.deliveries.count }.by 2
+            expect { make_request_with_sidekiq_inline }
+              .to change { ActionMailer::Base.deliveries.count }.by 2
           end
         end
       end
@@ -146,7 +183,7 @@ describe "Comments API" do
   context "PATCH /comments/:id" do
     context "when unauthenticated" do
       it "should return a 401 with a proper error" do
-        patch "#{host}/comments/1", { data: { type: "comments" } }
+        patch "#{host}/comments/1", data: { type: "comments" }
         expect(last_response.status).to eq 401
         expect(json).to be_a_valid_json_api_error.with_id "NOT_AUTHORIZED"
       end
@@ -154,14 +191,16 @@ describe "Comments API" do
 
     context "when authenticated" do
       before do
-        @user = create(:user, id: 1, email: "test_user@mail.com", password: "password")
+        @user = create(:user,
+          id: 1, email: "test_user@mail.com", password: "password")
         @post = create(:post, id: 2)
         @token = authenticate(email: "test_user@mail.com", password: "password")
       end
 
       context "when the comment doesn't exist" do
         it "responds with a 404" do
-          authenticated_patch "/comments/1", { data: { type: "comments" } }, @token
+          authenticated_patch "/comments/1",
+            { data: { type: "comments" } }, @token
 
           expect(last_response.status).to eq 404
           expect(json).to be_a_valid_json_api_error.with_id "RECORD_NOT_FOUND"
@@ -186,7 +225,8 @@ describe "Comments API" do
                   }
                 }
               }
-              authenticated_patch "/comments/#{@comment.id}", valid_attributes, @token
+              authenticated_patch "/comments/#{@comment.id}",
+                valid_attributes, @token
             end
 
             it "responds with a 200" do
@@ -194,7 +234,8 @@ describe "Comments API" do
             end
 
             it "responds with the comment, serialized with CommentSerializer" do
-              expect(json).to serialize_object(@comment.reload).with(CommentSerializer)
+              expect(json).to serialize_object(@comment.reload)
+                .with(CommentSerializer)
             end
 
             it "updates the comment" do
@@ -217,7 +258,8 @@ describe "Comments API" do
                   }
                 }
               }
-              authenticated_patch "/comments/#{@comment.id}", valid_attributes, @token
+              authenticated_patch "/comments/#{@comment.id}",
+                valid_attributes, @token
             end
 
             it "updates the comment" do
@@ -241,7 +283,8 @@ describe "Comments API" do
                   }
                 }
               }
-              authenticated_patch "/comments/#{@comment.id}", valid_attributes, @token
+              authenticated_patch "/comments/#{@comment.id}",
+                valid_attributes, @token
             end
 
             it "updates the comment" do
@@ -264,7 +307,8 @@ describe "Comments API" do
                 }
               }
             }
-            authenticated_patch "/comments/#{@comment.id}", invalid_attributes, @token
+            authenticated_patch "/comments/#{@comment.id}",
+              invalid_attributes, @token
           end
 
           it "responds with a 422 validation error" do
@@ -280,7 +324,8 @@ describe "Comments API" do
         end
 
         it "responds with a 401 ACCESS_DENIED" do
-          authenticated_patch "/comments/#{@comment.id}", { data: { type: "comments" } }, @token
+          authenticated_patch "/comments/#{@comment.id}",
+            { data: { type: "comments" } }, @token
 
           expect(last_response.status).to eq 401
           expect(json).to be_a_valid_json_api_error.with_id "ACCESS_DENIED"

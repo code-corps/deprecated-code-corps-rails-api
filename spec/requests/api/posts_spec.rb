@@ -27,11 +27,11 @@ describe "Posts API" do
           expect(last_response.status).to eq 200
         end
 
-        it "returns the first page of 10 Post records, serialized with PostSerializer" do
+        it "returns the first page of 10 Post records, serialized with PostSerializerWithoutIncludes" do
           collection = Post.page(1).per(10)
           expect(json).to(
             serialize_collection(collection).
-              with(PostSerializer).
+              with(PostSerializerWithoutIncludes).
               with_links_to("#{host}/projects/#{@project.id}/posts").
               with_meta(total_records: 13, total_pages: 2, page_size: 10, current_page: 1)
           )
@@ -120,7 +120,8 @@ describe "Posts API" do
       it "returns the post, serialized with PostSerializer, with users, comments and mentions included" do
         expect(json).to serialize_object(Post.last)
           .with(PostSerializer)
-          .with_includes(["users", "comments","post_user_mentions","comment_user_mentions"])
+          .with_includes(["users", "comments", "post_user_mentions", "comment_user_mentions",
+                          "comments_count"])
       end
     end
   end

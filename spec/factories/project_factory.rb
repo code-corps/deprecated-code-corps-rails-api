@@ -2,20 +2,18 @@
 #
 # Table name: projects
 #
-#  id                 :integer          not null, primary key
-#  title              :string           not null
-#  description        :string
-#  owner_id           :integer
-#  owner_type         :string
-#  created_at         :datetime         not null
-#  updated_at         :datetime         not null
-#  icon_file_name     :string
-#  icon_content_type  :string
-#  icon_file_size     :integer
-#  icon_updated_at    :datetime
-#  base64_icon_data   :text
-#  contributors_count :integer
-#  slug               :string           not null
+#  id                :integer          not null, primary key
+#  title             :string           not null
+#  description       :string
+#  created_at        :datetime         not null
+#  updated_at        :datetime         not null
+#  icon_file_name    :string
+#  icon_content_type :string
+#  icon_file_size    :integer
+#  icon_updated_at   :datetime
+#  base64_icon_data  :text
+#  slug              :string           not null
+#  organization_id   :integer          not null
 #
 
 FactoryGirl.define do

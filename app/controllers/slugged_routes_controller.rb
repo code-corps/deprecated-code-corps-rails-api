@@ -1,6 +1,18 @@
+# == Schema Information
+#
+# Table name: slugged_routes
+#
+#  id         :integer          not null, primary key
+#  slug       :string           not null
+#  owner_id   :integer
+#  owner_type :string
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#
+
 class SluggedRoutesController < ApplicationController
   def show
-    slugged_route = SluggedRoute.includes(owner: :members).find_by_slug!(slug)
+    slugged_route = SluggedRoute.find_by_slug!(slug)
 
     authorize slugged_route
 

@@ -32,6 +32,7 @@ describe Post, :type => :model do
     it { should have_db_column(:created_at) }
     it { should have_db_column(:post_likes_count).of_type(:integer) }
     it { should have_db_column(:aasm_state).of_type(:string) }
+    it { should have_db_column(:comments_count).of_type(:integer) }
   end
 
   describe "relationships" do
