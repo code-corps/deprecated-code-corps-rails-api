@@ -38,7 +38,7 @@ class ApplicationController < ActionController::API
     params.fetch(:page, {}).fetch(:number, 1).to_i
   end
 
-  def meta_for object, object_count
+  def meta_for object_count
     return {
       total_records: object_count,
       total_pages: (object_count.to_f / page_size).ceil,
