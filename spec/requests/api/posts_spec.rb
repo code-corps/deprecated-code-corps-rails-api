@@ -14,7 +14,19 @@ describe "Posts API" do
     context "when successful" do
       before do
         @project = create(:project, organization: create(:organization))
-        create_list(:post, 13, project: @project)
+        create_list(:post, 3, :published, project: @project, post_type: "issue")
+        create_list(:post, 10, :published, project: @project, post_type: "task")
+      end
+
+      it "returns only published posts" do
+        create_list(:post, 5, project: @project)
+        get "#{host}/projects/#{@project.id}/posts"
+        collection = Post.published.page(1).per(10)
+        expect(json).to(
+          serialize_collection(collection).
+            with(PostSerializerWithoutIncludes).
+            with_meta(total_records: 13, total_pages: 2, page_size: 10, current_page: 1)
+        )
       end
 
       context "when no page is specified" do
@@ -69,6 +81,16 @@ describe "Posts API" do
           expect(json.meta.total_pages).to eq 3
           expect(json.meta.page_size).to eq 5
           expect(json.meta.current_page).to eq 2
+        end
+      end
+
+      context "when 'post_type' parameter is specified" do
+        it "only returns posts of that type, with proper meta" do
+          get "#{host}/projects/#{@project.id}/posts", post_type: "issue"
+          collection = Post.where(project: @project, post_type: "issue")
+          expect(json).to serialize_collection(collection).
+            with(PostSerializerWithoutIncludes).
+            with_meta(total_records: 3, total_pages: 1, page_size: 10, current_page: 1)
         end
       end
     end

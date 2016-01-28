@@ -23,7 +23,7 @@ class PostsController < ApplicationController
   def index
     authorize Post
     posts = find_posts!
-    render json: posts, meta: meta_for(Post), each_serializer: PostSerializerWithoutIncludes
+    render json: posts, meta: meta_for(post_count), each_serializer: PostSerializerWithoutIncludes
   end
 
   def show
@@ -70,6 +70,12 @@ class PostsController < ApplicationController
       record_attributes.permit(:markdown, :title, :state, :post_type).merge(relationships)
     end
 
+    def filter_params
+      filter_params = {}
+      filter_params[:post_type] = params[:post_type] if params[:post_type]
+      filter_params
+    end
+
     def project_relationship_id
       record_relationships.fetch(:project, {}).fetch(:data, {})[:id]
     end
@@ -103,7 +109,11 @@ class PostsController < ApplicationController
 
     def find_posts!
       project = find_project!
-      Post.where(project: project)
+      Post.published.where(filter_params.merge(project: project))
         .page(page_number).per(page_size)
+    end
+
+    def post_count
+      Post.published.where(filter_params.merge(project_id: project_id)).count
     end
 end
