@@ -62,6 +62,7 @@ group :development, :test do
 end
 
 group :development do
+  gem 'foreman'
   gem 'seed-fu'
 end
 
