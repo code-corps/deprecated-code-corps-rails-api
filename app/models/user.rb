@@ -67,6 +67,7 @@ class User < ActiveRecord::Base
 
   def decode_image_data
     return unless base64_photo_data.present?
+    string = self.base64_photo_data.gsub(/^data:image\/[^;]+;base64,/, "")
     data = StringIO.new(Base64.decode64(base64_photo_data))
     data.class.class_eval { attr_accessor :original_filename, :content_type }
     data.original_filename = SecureRandom.hex + ".png"
