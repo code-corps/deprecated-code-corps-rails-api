@@ -88,7 +88,11 @@ class PostsController < ApplicationController
       { project_id: project_relationship_id, user_id: user_id }
     end
 
-    def project_id
+    def slugged_route_slug
+      params[:slugged_route_id]
+    end
+
+    def project_slug
       params[:project_id]
     end
 
@@ -97,7 +101,9 @@ class PostsController < ApplicationController
     end
 
     def find_project!
-      Project.find(project_id)
+      Organization.find_by_slug(slugged_route_slug)
+        .projects
+        .find_by_slug(project_slug)
     end
 
     def find_post!

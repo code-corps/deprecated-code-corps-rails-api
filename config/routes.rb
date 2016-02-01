@@ -22,17 +22,7 @@ Rails.application.routes.draw do
 
     resources :skill_categories, only: [:index]
 
-    resources :projects, only: [:index, :create, :update] do
-        resources :posts, only: [:index, :show]
-    end
-
-    resources :posts, only: [:create, :update] do
-      resources :comments, only: [:index]
-    end
-
     resources :post_images, only: [:create]
-
-    resources :comments, only: [:show, :create, :update]
 
     resources :comment_images, only: [:create]
 
@@ -40,7 +30,11 @@ Rails.application.routes.draw do
 
     resources :slugged_routes, path: '', only: [:show] do
       get "projects", to: "projects#index"
-      resources :projects, path: '', only: [:show]
+      resources :projects, path: '', only: [:show, :create, :update] do
+        resources :posts, only: [:index, :show, :create, :update] do
+          resources :comments, only: [:index, :create, :update]
+        end
+      end
     end
   end
 
