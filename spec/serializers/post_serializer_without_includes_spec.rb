@@ -40,18 +40,27 @@ describe PostSerializerWithoutIncludes, :type => :serializer do
       end
 
       it "has a 'title'" do
+        expect(subject["title"]).to_not be_nil
         expect(subject["title"]).to eql resource.title
       end
 
       it "has a 'status'" do
+        expect(subject["status"]).to_not be_nil
         expect(subject["status"]).to eql resource.status
       end
 
+      it "has a 'number'" do
+        expect(subject["number"]).to_not be_nil
+        expect(subject["number"]).to eql resource.number
+      end
+
       it "has a 'post_type'" do
+        expect(subject["post_type"]).to_not be_nil
         expect(subject["post_type"]).to eql resource.post_type
       end
 
       it "has a 'likes_count'" do
+        expect(subject["likes_count"]).to_not be_nil
         expect(subject["likes_count"]).to eql resource.likes_count
       end
     end

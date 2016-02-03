@@ -16,9 +16,9 @@ class CommentsController < ApplicationController
   before_action :doorkeeper_authorize!, only: [:create, :update]
 
   def index
-    authorize Comments
-
     comments = Comment.where(post: params[:post_id])
+    authorize comments
+
     render json: comments
   end
 

@@ -1,3 +1,3 @@
 class PostSerializerWithoutIncludes < ActiveModel::Serializer
-  attributes :id, :title, :body, :status, :post_type, :likes_count
+  attributes :id, :title, :body, :status, :post_type, :likes_count, :number
 end
