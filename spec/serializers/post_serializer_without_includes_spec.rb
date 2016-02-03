@@ -7,7 +7,9 @@ describe PostSerializerWithoutIncludes, :type => :serializer do
       post = create(:post,
         title: "Post title",
         user: create(:user),
-        project: create(:project))
+        project: create(:project),
+        number: 1
+      )
 
       create_list(:comment, 10, post: post)
       post.reload
