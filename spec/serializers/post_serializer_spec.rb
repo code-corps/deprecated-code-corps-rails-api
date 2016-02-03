@@ -26,7 +26,9 @@ describe PostSerializer, :type => :serializer do
     @post = create(:post,
       title: "Post title",
       user: create(:user),
-      project: create(:project))
+      project: create(:project),
+      number: 1
+    )
 
     @post.publish!
     @post.edit!
