@@ -70,20 +70,6 @@ describe CommentSerializer, :type => :serializer do
       end
     end
 
-    context "relationships" do
-      subject do
-        JSON.parse(serialization.to_json)["data"]["relationships"]
-      end
-
-      it "should include 'post'" do
-        expect(subject["post"]).not_to be_nil
-      end
-
-      it "should include 'user'" do
-        expect(subject["user"]).not_to be_nil
-      end
-    end
-
     context "included" do
       context "when not including anything" do
         subject do
