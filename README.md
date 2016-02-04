@@ -31,7 +31,7 @@ The Code Corps API is an open source Rails::API backend that powers the Code Cor
    * It's best to install it as a service instead of running it manually
    * To make sure everything works and the service is running, execute `redis-cli ping` in the console. It should respond with `PONG`
 
-From you can either:
+From here you can either:
 
 #### Use foreman to run processes
 6. Stop your existing `redis-server` process
