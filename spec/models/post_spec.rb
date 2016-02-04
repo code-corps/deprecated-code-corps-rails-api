@@ -211,6 +211,14 @@ describe Post, :type => :model do
     end
   end
 
+  describe "default_scope" do
+    it "orders by number by default" do
+      create_list(:post, 3, :published, :with_number)
+      posts = Post.all
+      expect(posts.map(&:number)).to eq [3, 2, 1]
+    end
+  end
+
   describe "post user mentions" do
     context "when saving a post" do
       it "creates mentions only for existing users" do

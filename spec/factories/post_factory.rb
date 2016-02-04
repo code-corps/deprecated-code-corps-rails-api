@@ -41,6 +41,10 @@ FactoryGirl.define do
         create_list(:post_user_mention, evaluator.mention_count, post: post)
       end
     end
+
+    trait :with_number do
+      sequence(:number) { |n| n }
+    end
   end
 
 end
