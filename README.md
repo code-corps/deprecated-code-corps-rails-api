@@ -26,11 +26,21 @@ The Code Corps API is an open source Rails::API backend that powers the Code Cor
 2. `bundle exec rake db:create db:migrate db:test:prepare db:seed`
 3. `bundle exec rake db:seed_fu`
 4. Try running the specs: `bundle exec rake spec`
-5. Install and make sure redis is running
+5. Install and make sure you can run redis:
    * Follow the [official quickstart guide](http://redis.io/topics/quickstart)
    * It's best to install it as a service instead of running it manually
    * To make sure everything works and the service is running, execute `redis-cli ping` in the console. It should respond with `PONG`
-6. Run the api with `bundle exec rails server`
+
+From here you can either:
+
+#### Use foreman to run processes
+6. Stop your existing `redis-server` process
+7. Run the api with `foreman start -f Procfile.dev`. This will start any service listed in that Procfile.
+
+#### Alternatively, run processes individually
+6. You already have `redis-server` running. In the future, you'll need to run it, as well.
+7. Start Sidekiq with `bundle exec sidekiq`
+8. Start the Rails server with `rails s`
 
 
 ### To make sure the API is running properly
