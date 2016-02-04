@@ -26,7 +26,8 @@ describe PostSerializer, :type => :serializer do
     @post = create(:post,
       title: "Post title",
       user: create(:user),
-      project: create(:project))
+      project: create(:project),
+      number: 1)
 
     @post.publish!
     @post.edit!
@@ -93,6 +94,7 @@ describe PostSerializer, :type => :serializer do
       end
 
       it "has a 'number'" do
+        expect(subject["number"]).to_not be_nil
         expect(subject["number"]).to eql resource.number
       end
 

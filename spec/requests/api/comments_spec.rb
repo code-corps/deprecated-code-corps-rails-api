@@ -19,6 +19,29 @@ describe "Comments API" do
     end
   end
 
+  context "GET /posts/:id/comments" do
+    context "when unauthenticated" do
+      before do
+        @post = create(:post, id: 2)
+        create_list(:comment, 3, post: @post)
+
+        get "#{host}/posts/#{@post.id}/comments"
+      end
+
+      it "responds with a 200" do
+        expect(last_response.status).to eq 200
+      end
+
+      it "responds with the comments, serialized with CommentSerializer" do
+        collection = @post.comments
+        expect(json).to(
+          serialize_collection(collection).
+          with(CommentSerializer)
+        )
+      end
+    end
+  end
+
   context "POST /comments" do
     context "when unauthenticated" do
       it "should return a 401 with a proper error" do
