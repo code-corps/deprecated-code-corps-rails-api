@@ -93,6 +93,14 @@ describe "Posts API" do
             with_meta(total_records: 3, total_pages: 1, page_size: 10, current_page: 1)
         end
       end
+
+      it "returns posts in order by number" do
+        get "#{host}/projects/#{@project.id}/posts"
+
+        numbers_array = json.data.map(&:attributes).map(&:number)
+
+        expect(numbers_array).to eq [13, 12, 11, 10, 9, 8, 7, 6, 5, 4]
+      end
     end
   end
 

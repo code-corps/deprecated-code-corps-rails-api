@@ -72,6 +72,8 @@ class Post < ActiveRecord::Base
     end
   end
 
+  default_scope  { order(:number => :desc) }
+
   scope :active, -> { published.merge edited }
 
   def likes_count
