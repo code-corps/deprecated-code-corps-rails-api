@@ -48,8 +48,8 @@ describe "Organizations API" do
           @token = authenticate(email: @admin.email, password: "password")
         end
 
-        context 'with a user uploaded image' do
-          it 'creates an organization' do
+        context "with a user uploaded image" do
+          it "creates an organization" do
             Sidekiq::Testing.inline! do
               file = File.open("#{Rails.root}/spec/sample_data/default-avatar.png", 'r')
               base64_image = Base64.encode64(open(file) { |io| io.read })
