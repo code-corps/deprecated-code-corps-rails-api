@@ -48,6 +48,36 @@ describe "Organizations API" do
           @token = authenticate(email: @admin.email, password: "password")
         end
 
+        context 'with a user uploaded image' do
+          it 'creates an organization' do
+            Sidekiq::Testing.inline! do
+              file = File.open("#{Rails.root}/spec/sample_data/default-avatar.png", 'r')
+              base64_image = Base64.encode64(open(file) { |io| io.read })
+
+              authenticated_post "/organizations", {
+                data: {
+                  attributes: {
+                    base64_icon_data: base64_image,
+                    name: "Test",
+                  }
+                }
+              }, @token
+
+              expect(last_response.status).to eq 200
+
+              organization = Organization.last
+
+              expect(organization.base64_icon_data).to be_nil
+              expect(organization.icon.path).to_not be_nil
+              expect(organization.name).to eq "Test"
+              # expect icon saved from create action to be identical to our test photor
+              organization_icon_file = File.open("#{Rails.root}/spec/sample_data/default-avatar.png", 'r')
+              base64_saved_image = Base64.encode64(open(organization_icon_file) { |io| io.read })
+              expect(base64_saved_image).to include base64_image
+            end
+          end
+        end
+
         it "responds with a 422 VALIDATION_ERROR if name is not provided" do
           authenticated_post "/organizations", { data: { attributes: { } } }, @token
           expect(last_response.status).to eq 422

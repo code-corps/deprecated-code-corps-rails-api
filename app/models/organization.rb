@@ -16,6 +16,13 @@ class Organization < ActiveRecord::Base
 
   has_one :slugged_route, as: :owner
 
+  has_attached_file :icon,
+                    styles: {
+                      large: "500x500#",
+                      thumb: "100x100#"
+                    },
+                    path: "orgnizations/:id/:style.:extension"
+
   before_validation :add_slug_if_blank
 
   validates_presence_of :name
@@ -29,6 +36,11 @@ class Organization < ActiveRecord::Base
 
   validate :slug_is_not_duplicate
 
+  validates_attachment_content_type :icon,
+                                    content_type: %r{^image\/(png|gif|jpeg)}
+
+  validates_attachment_size :icon, less_than: 10.megabytes
+
   after_save :create_or_update_slugged_route
 
   def admins
@@ -41,6 +53,15 @@ class Organization < ActiveRecord::Base
 
   def self.for_project(project)
     self.find_by(project: project)
+  end
+
+  def decode_image_data
+    return unless base64_icon_data.present?
+    data = StringIO.new(Base64.decode64(base64_icon_data))
+    data.class.class_eval { attr_accessor :original_filename, :content_type }
+    data.original_filename = SecureRandom.hex + '.png'
+    data.content_type = 'image/png'
+    self.icon = data
   end
 
   private
