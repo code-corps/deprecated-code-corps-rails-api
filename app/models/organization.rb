@@ -59,8 +59,8 @@ class Organization < ActiveRecord::Base
     return unless base64_icon_data.present?
     data = StringIO.new(Base64.decode64(base64_icon_data))
     data.class.class_eval { attr_accessor :original_filename, :content_type }
-    data.original_filename = SecureRandom.hex + '.png'
-    data.content_type = 'image/png'
+    data.original_filename = SecureRandom.hex + ".png"
+    data.content_type = "image/png"
     self.icon = data
   end
 
