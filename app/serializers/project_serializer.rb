@@ -17,7 +17,8 @@
 #
 
 class ProjectSerializer < ActiveModel::Serializer
-  attributes :id, :title, :description, :icon_thumb_url, :icon_large_url
+  attributes :id, :title, :description, :icon_thumb_url, :icon_large_url,
+             :slug
 
   has_many :github_repositories
 
