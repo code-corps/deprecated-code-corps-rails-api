@@ -1,5 +1,5 @@
 class Base64ImageDecoder
-  DATA_URI_REGEX = /^data:image\/[^;]+;base64,/
+  DATA_URI_REGEX = %r{^data:image\/[^;]+;base64,}
 
   attr_accessor :base64_string
 

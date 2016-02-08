@@ -141,7 +141,7 @@ describe "Projects API" do
         it 'creates a project' do
           Sidekiq::Testing.inline! do
             file = File.open("#{Rails.root}/spec/sample_data/default-avatar.png", 'r')
-            base64_image = Base64.encode64(open(file) { |io| io.read })
+            base64_image = Base64.encode64(open(file, &:read))
 
             authenticated_post "/projects", {
               data: {
