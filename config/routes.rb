@@ -43,9 +43,9 @@ Rails.application.routes.draw do
 
     resources :organizations, only: [:show, :create, :update]
 
-    resources :slugged_routes, path: ", only: [:show] do
+    resources :slugged_routes, path: "", only: [:show] do
       get "projects", to: "projects#index"
-      resources :projects, path: ", only: [:show]
+      resources :projects, path: "", only: [:show]
     end
   end
 
