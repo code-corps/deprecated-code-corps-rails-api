@@ -3,6 +3,11 @@ Rails.application.routes.draw do
     controllers tokens: 'tokens'
   end
 
+  if Rails.env.development?
+    require "sidekiq/web"
+    mount Sidekiq::Web => '/sidekiq'
+  end
+
   constraints subdomain: 'api' do
 
     get 'ping', to: 'ping#index'

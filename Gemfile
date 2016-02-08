@@ -57,13 +57,13 @@ group :development, :test do
   gem 'pry-stack_explorer'
 
   gem 'rspec-rails', '~> 3.0'
-  gem 'rspec-sidekiq'
   gem 'fakeredis', :require => "fakeredis/rspec"
 end
 
 group :development do
   gem 'foreman'
   gem 'seed-fu'
+  gem 'sinatra', :require => nil # for Sidekiq UI to work in development
 end
 
 group :test do
@@ -72,6 +72,7 @@ group :test do
   gem 'factory_girl_rails', '~> 4.0'
   gem 'hashie'
   gem 'oauth2'
+  gem 'rspec-sidekiq'
   gem 'shoulda-matchers', '3.0.1' # locked due to https://github.com/thoughtbot/shoulda-matchers/issues/880
   gem 'vcr'
   gem 'webmock'
