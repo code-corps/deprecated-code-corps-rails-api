@@ -43,7 +43,6 @@ gem 'faraday'
 
 gem 'pusher'
 
-
 group :development, :test do
   gem 'annotate'
 
@@ -51,30 +50,32 @@ group :development, :test do
 
   gem 'dotenv-rails'
 
+  gem 'fakeredis', :require => "fakeredis/rspec"
+
   gem 'pry-rails'
   gem 'pry'
   gem 'pry-nav'
   gem 'pry-stack_explorer'
 
   gem 'rspec-rails', '~> 3.0'
-  gem 'rspec-sidekiq'
-  gem 'fakeredis', :require => "fakeredis/rspec"
 end
 
 group :development do
   gem 'foreman'
   gem 'seed-fu'
+  gem 'sinatra', :require => nil # for Sidekiq UI to work in development
 end
 
 group :test do
   gem 'capybara'
+  gem 'codeclimate-test-reporter', require: nil
   gem 'database_cleaner'
   gem 'factory_girl_rails', '~> 4.0'
   gem 'hashie'
   gem 'oauth2'
+  gem 'pusher-fake'
+  gem 'rspec-sidekiq'
   gem 'shoulda-matchers', '3.0.1' # locked due to https://github.com/thoughtbot/shoulda-matchers/issues/880
   gem 'vcr'
   gem 'webmock'
-  gem 'pusher-fake'
-  gem 'codeclimate-test-reporter', require: nil
 end

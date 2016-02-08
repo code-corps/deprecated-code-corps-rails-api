@@ -1,0 +1,6 @@
+---
+:verbose: true
+:concurrency: 10
+:queues:
+  - default
+  - paperclip
