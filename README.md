@@ -22,14 +22,12 @@ The Code Corps API is an open source Rails::API backend that powers the Code Cor
 
 ### Before you start Rails
 
-1. `bundle install`
-2. `bundle exec rake db:create db:migrate db:test:prepare db:seed`
-3. `bundle exec rake db:seed_fu`
-4. Try running the specs: `bundle exec rake spec`
-5. Install and make sure you can run redis:
+1. Install and make sure you can run redis:
    * Follow the [official quickstart guide](http://redis.io/topics/quickstart)
    * It's best to install it as a service instead of running it manually
    * To make sure everything works and the service is running, execute `redis-cli ping` in the console. It should respond with `PONG`
+2. Run `bin/setup` to set up and seed the database.
+3. Try running the specs: `bundle exec rake spec`
 
 From here you can either:
 
