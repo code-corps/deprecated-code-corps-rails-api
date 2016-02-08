@@ -6,7 +6,7 @@ class UpdateProfilePictureWorker
   def perform(user_id)
     user = User.find(user_id)
     return unless user.base64_photo_data
-    user.photo = Base64ImageDecoder.new(user.base64_photo_data).decode
+    user.photo = Base64ImageDecoder.decode(user.base64_photo_data)
     user.base64_photo_data = nil
     user.save
   end

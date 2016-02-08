@@ -18,7 +18,7 @@ describe AddProjectIconWorker do
     end
 
     it "decodes the image using the Base64ImageDecoder" do
-      expect_any_instance_of(Base64ImageDecoder).to receive(:decode)
+      expect(Base64ImageDecoder).to receive(:decode)
 
       AddProjectIconWorker.new.perform(@project.id)
     end

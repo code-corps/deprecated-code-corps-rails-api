@@ -6,7 +6,7 @@ class AddProjectIconWorker
   def perform(project_id)
     project = Project.find(project_id)
     return unless project.base64_icon_data
-    project.icon = Base64ImageDecoder.new(project.base64_icon_data).decode
+    project.icon = Base64ImageDecoder.decode(project.base64_icon_data)
     project.base64_icon_data = nil
     project.save
   end

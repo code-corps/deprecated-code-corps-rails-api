@@ -3,14 +3,15 @@ require "code_corps/base64_image_decoder"
 
 module CodeCorps
   describe Base64ImageDecoder do
-    describe ".decode" do
+    describe "#decode" do
+      let(:decoder) { Base64ImageDecoder }
       let(:project) { create(:project) }
 
       context "when base64 string has data string" do
         before do
           filename = "#{Rails.root}/spec/sample_data/base64_images/jpeg.txt"
           base64_string = File.open(filename, &:read)
-          @result = Base64ImageDecoder.new(base64_string).decode
+          @result = decoder.decode(base64_string)
         end
 
         it "sets the right content type and filename" do
@@ -28,7 +29,7 @@ module CodeCorps
         before do
           filename = "#{Rails.root}/spec/sample_data/base64_images/jpeg_without_data_string.txt"
           base64_string = File.open(filename, &:read)
-          @result = Base64ImageDecoder.new(base64_string).decode
+          @result = decoder.decode(base64_string)
         end
 
         it "sets the right content type and filename" do

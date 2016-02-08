@@ -19,7 +19,7 @@ describe UpdateProfilePictureWorker do
     end
 
     it "decodes the image using the Base64ImageDecoder" do
-      expect_any_instance_of(Base64ImageDecoder).to receive(:decode)
+      expect(Base64ImageDecoder).to receive(:decode)
 
       UpdateProfilePictureWorker.new.perform(@user.id)
     end
