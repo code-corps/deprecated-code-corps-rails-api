@@ -95,7 +95,7 @@ class UsersController < ApplicationController
       record.assign_attributes update_params
 
       if record.save
-        result = UpdateProfilePictureWorker.perform_async(record.id) if photo_param?
+        UpdateProfilePictureWorker.perform_async(record.id) if photo_param?
         render json: record
       else
         render_validation_errors(record.errors)
