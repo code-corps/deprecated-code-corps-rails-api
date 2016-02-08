@@ -1,19 +1,19 @@
 Rails.application.routes.draw do
   use_doorkeeper do
-    controllers tokens: 'tokens'
+    controllers tokens: "tokens"
   end
 
   if Rails.env.development?
     require "sidekiq/web"
-    mount Sidekiq::Web => '/sidekiq'
+    mount Sidekiq::Web => "/sidekiq"
   end
 
-  constraints subdomain: 'api' do
+  constraints subdomain: "api" do
 
-    get 'ping', to: 'ping#index'
+    get "ping", to: "ping#index"
 
-    get 'user', to: 'users#show_authenticated_user'
-    patch 'users/me', to: 'users#update_authenticated_user'
+    get "user", to: "users#show_authenticated_user"
+    patch "users/me", to: "users#update_authenticated_user"
     resources :users, only: [:show, :create, :update]
     resource :users, only: [:reset_password] do
       post :reset_password
@@ -43,11 +43,11 @@ Rails.application.routes.draw do
 
     resources :organizations, only: [:show, :create, :update]
 
-    resources :slugged_routes, path: '', only: [:show] do
+    resources :slugged_routes, path: ", only: [:show] do
       get "projects", to: "projects#index"
-      resources :projects, path: '', only: [:show]
+      resources :projects, path: ", only: [:show]
     end
   end
 
-  get '/(*path)' => "ember_index#index", as: :root, format: :html
+  get "/(*path)" => "ember_index#index", as: :root, format: :html
 end
