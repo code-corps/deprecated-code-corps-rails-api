@@ -17,6 +17,12 @@ describe UpdateProfilePictureWorker do
       expect(@user.photo.to_s).not_to be_nil
       expect(@user.base64_photo_data).to be_nil
     end
+
+    it "decodes the image using the Base64ImageDecoder" do
+      expect_any_instance_of(Base64ImageDecoder).to receive(:decode)
+
+      UpdateProfilePictureWorker.new.perform(@user.id)
+    end
   end
 
   context "when the user does not have 'base64_photo_data'" do

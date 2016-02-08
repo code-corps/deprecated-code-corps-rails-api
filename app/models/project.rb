@@ -42,16 +42,6 @@ class Project < ActiveRecord::Base
 
   validates_attachment_size :icon, less_than: 10.megabytes
 
-
-  def decode_image_data
-    return unless base64_icon_data.present?
-    data = StringIO.new(Base64.decode64(base64_icon_data))
-    data.class.class_eval { attr_accessor :original_filename, :content_type }
-    data.original_filename = SecureRandom.hex + '.png'
-    data.content_type = 'image/png'
-    self.icon = data
-  end
-
   private
 
     def slug_is_not_duplicate
