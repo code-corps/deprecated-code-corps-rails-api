@@ -13,7 +13,8 @@ module CodeCorps
         end
 
         it "creates user mentions" do
-          comment = create(:comment, markdown: "Mentioning @joshsmith")
+          comment = build(:comment, markdown_preview: "Mentioning @joshsmith")
+          comment.update
 
           GenerateUserMentionsForComment.new(comment).call
 
@@ -26,6 +27,6 @@ module CodeCorps
           expect(post.comment_user_mentions).to include mention
         end
       end
-    end 
+    end
   end
 end

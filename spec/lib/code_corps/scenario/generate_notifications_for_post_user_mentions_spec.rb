@@ -53,6 +53,6 @@ module CodeCorps
           end
         end
       end
-    end 
+    end
   end
 end

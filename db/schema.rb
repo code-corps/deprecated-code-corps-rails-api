@@ -41,13 +41,15 @@ ActiveRecord::Schema.define(version: 20160215223422) do
   end
 
   create_table "comments", force: :cascade do |t|
-    t.text     "body",       null: false
-    t.integer  "user_id",    null: false
-    t.integer  "post_id",    null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.text     "markdown",   null: false
+    t.text     "body"
+    t.integer  "user_id",          null: false
+    t.integer  "post_id",          null: false
+    t.datetime "created_at",       null: false
+    t.datetime "updated_at",       null: false
+    t.text     "markdown"
     t.string   "aasm_state"
+    t.text     "body_preview"
+    t.text     "markdown_preview"
   end
 
   create_table "github_repositories", force: :cascade do |t|
@@ -168,17 +170,19 @@ ActiveRecord::Schema.define(version: 20160215223422) do
   create_table "posts", force: :cascade do |t|
     t.string   "status",           default: "open"
     t.string   "post_type",        default: "task"
-    t.string   "title",                             null: false
-    t.text     "body",                              null: false
+    t.string   "title"
+    t.text     "body"
     t.integer  "user_id",                           null: false
     t.integer  "project_id",                        null: false
     t.datetime "created_at",                        null: false
     t.datetime "updated_at",                        null: false
     t.integer  "post_likes_count", default: 0
-    t.text     "markdown",                          null: false
+    t.text     "markdown"
     t.integer  "number"
     t.string   "aasm_state"
     t.integer  "comments_count",   default: 0
+    t.text     "body_preview"
+    t.text     "markdown_preview"
   end
 
   create_table "projects", force: :cascade do |t|

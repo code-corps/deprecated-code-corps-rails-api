@@ -25,12 +25,11 @@ class Comment < ActiveRecord::Base
 
   has_many :comment_user_mentions
 
-  validates_presence_of :body
-  validates_presence_of :markdown
+  validates :body, presence: true, unless: :draft?
+  validates :markdown, presence: true, unless: :draft?
+
   validates_presence_of :user
   validates_presence_of :post
-
-  before_validation :render_markdown_to_body
 
   after_save :generate_mentions # Still safe because it runs inside transaction
 
@@ -48,12 +47,12 @@ class Comment < ActiveRecord::Base
     end
   end
 
-  def update!
-    if aasm_state_was == "published" && self.changed?
-      self.edit!
-    else
-      self.save
-    end
+  scope :active, -> { where("aasm_state=? OR aasm_state=?", "published", "edited") }
+
+  def update(publish = false)
+    render_markdown_to_body
+    publish_changes if publish
+    save
   end
 
   def state
@@ -75,10 +74,17 @@ class Comment < ActiveRecord::Base
     end
 
     def render_markdown_to_body
-      if markdown.present?
-        html = pipeline.call(markdown)
-        self.body = html[:output].to_s
+      if markdown_preview_changed?
+        html = pipeline.call(markdown_preview)
+        self.body_preview = html[:output].to_s
       end
+    end
+
+    def publish_changes
+      assign_attributes markdown: markdown_preview, body: body_preview
+
+      edit if published?
+      publish if draft?
     end
 
     def pipeline

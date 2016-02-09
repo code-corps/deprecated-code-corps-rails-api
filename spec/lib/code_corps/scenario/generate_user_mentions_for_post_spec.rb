@@ -13,7 +13,8 @@ module CodeCorps
         end
 
         it "creates user mentions" do
-          post = create(:post, markdown: "Mentioning @joshsmith")
+          post = build(:post, markdown_preview: "Mentioning @joshsmith")
+          post.update
 
           GenerateUserMentionsForPost.new(post).call
 
@@ -23,6 +24,6 @@ module CodeCorps
           expect(mention.username).to eq mentioned_username
         end
       end
-    end 
+    end
   end
 end

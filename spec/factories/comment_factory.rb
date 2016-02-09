@@ -18,15 +18,42 @@ FactoryGirl.define do
 
   factory :comment do
     sequence(:markdown) { |n| "Comment #{n}" }
+    sequence(:markdown_preview) { |n| "Comment #{n}" }
+    sequence(:body) { |n| "<p>Comment #{n}</p>" }
+    sequence(:body_preview) { |n| "<p>Comment #{n}</p>" }
 
     association :post
     association :user
 
-    transient do
-      mention_count 5
+    trait :draft do
+      aasm_state :draft
+      markdown nil
+      body nil
+      markdown_preview "Comment content"
+      body_preview "Comment content"
+    end
+
+    trait :published do
+      aasm_state :published
+      markdown "Comment content"
+      body "Comment content"
+      markdown_preview "Comment content"
+      body_preview "Comment content"
+    end
+
+    trait :edited do
+      aasm_state :edited
+      markdown "Comment content"
+      body "Comment content"
+      markdown_preview "Comment content"
+      body_preview "Comment content"
     end
 
     trait :with_user_mentions do
+      transient do
+        mention_count 5
+      end
+
       after :create do |comment, evaluator|
         create_list(:comment_user_mention, evaluator.mention_count, comment: comment)
       end
