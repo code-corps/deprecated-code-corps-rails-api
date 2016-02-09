@@ -141,7 +141,7 @@ describe "Projects API" do
         it 'creates a project' do
           Sidekiq::Testing.inline! do
             file = File.open("#{Rails.root}/spec/sample_data/default-avatar.png", 'r')
-            base64_image = Base64.encode64(open(file) { |io| io.read })
+            base64_image = Base64.encode64(open(file, &:read))
 
             authenticated_post "/projects", {
               data: {
@@ -181,15 +181,15 @@ describe "Projects API" do
                 },
                 relationships: { organization: { data: { id: @organization.id } } }
               }
-            }, @token
+          }, @token
 
-            expect(last_response.status).to eq 200
+          expect(last_response.status).to eq 200
 
-            project = Project.last
+          project = Project.last
 
-            expect(project.icon.path).to be_nil
-            expect(project.title).to eq "Test Project Title"
-            expect(project.description).to eq "Test project description"
+          expect(project.icon.path).to be_nil
+          expect(project.title).to eq "Test Project Title"
+          expect(project.description).to eq "Test project description"
         end
       end
     end
@@ -270,26 +270,27 @@ describe "Projects API" do
         expect(@project.description).to eq "New description"
       end
 
-      it 'updates a project icon for a project without an icon' do
-        Sidekiq::Testing.inline! do
-          file = File.open("#{Rails.root}/spec/sample_data/default-avatar.png", 'r')
-          base64_image = Base64.encode64(open(file) { |io| io.read })
+      context "when updating a project icon when none exists" do
+        context "when given a base64 string" do
+          it "saves successfully" do
+            Sidekiq::Testing.inline! do
+              filename = "#{Rails.root}/spec/sample_data/base64_images/jpeg.txt"
+              base64_string = File.open(filename, "rb") { |io| io.read }
 
-          authenticated_patch "/projects/#{@project.id}", {
-            data: {
-              attributes: {
-                base64_icon_data: base64_image
-              }
-            }
-          }, @token
+              authenticated_patch "/projects/#{@project.id}", {
+                data: {
+                  attributes: {
+                    base64_icon_data: base64_string
+                  }
+                }
+              }, @token
 
-          @project.reload
+              @project.reload
 
-          expect(@project.base64_icon_data).to be_nil
-          expect(@project.icon.path).to_not be_nil
-          project_icon_file = File.open("#{Rails.root}/spec/sample_data/default-avatar.png", 'r')
-          base64_saved_image = Base64.encode64(open(project_icon_file) { |io| io.read })
-          expect(base64_saved_image).to include base64_image
+              expect(@project.base64_icon_data).to be_nil
+              expect(@project.icon.path).to_not be_nil
+            end
+          end
         end
       end
     end

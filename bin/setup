@@ -1,29 +1,43 @@
-#!/usr/bin/env ruby
-require 'pathname'
+#!/usr/bin/env bash
 
-# path to your application root.
-APP_ROOT = Pathname.new File.expand_path('../../',  __FILE__)
+# Exit if any subcommand fails
+set -e
 
-Dir.chdir APP_ROOT do
-  # This script is a starting point to setup your application.
-  # Add necessary setup steps to this file:
 
-  puts "== Installing dependencies =="
-  system "gem install bundler --conservative"
-  system "bundle check || bundle install"
+# Set up configurable environment variables
+# if [ ! -f './config/.env' ]; then
+#   echo '==| creating .env'
+#   cp config/.env.sample config/.env
+# fi
 
-  # puts "\n== Copying sample files =="
-  # unless File.exist?("config/database.yml")
-  #   system "cp config/database.yml.sample config/database.yml"
-  # end
 
-  puts "\n== Preparing database =="
-  system "bin/rake db:setup"
+  # Check for tools that need to be installed
+dependencies='redis-server postgres foreman heroku'
+for name in $dependencies
+do
+  if ! which "$name" > /dev/null; then
+    echo "== $name not installed! Exiting."
+    exit 1
+  fi
+done
 
-  puts "\n== Removing old logs and tempfiles =="
-  system "rm -f log/*"
-  system "rm -rf tmp/cache"
+echo "== Installing dependencies =="
+gem install bundler --conservative
+bundle check || bundle install
 
-  puts "\n== Restarting application server =="
-  system "touch tmp/restart.txt"
-end
+
+echo "== Preparing database =="
+# Drops & recreates the database if it already exists.
+bundle exec rake db:drop db:create db:migrate db:test:prepare db:seed
+bundle exec rake db:seed_fu
+
+echo "== Removing old logs and tempfiles =="
+rm -f log/*
+rm -rf tmp/cache
+
+echo "== Restarting application server =="
+touch tmp/restart.txt
+
+
+echo "== Setup complete."
+exit 0
