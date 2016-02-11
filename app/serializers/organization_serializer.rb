@@ -10,7 +10,7 @@
 #
 
 class OrganizationSerializer < ActiveModel::Serializer
-  attributes :id, :name, :icon_thumb_url, :icon_large_url
+  attributes :id, :name, :slug, :icon_thumb_url, :icon_large_url
 
   def icon_thumb_url
     object.icon.url(:thumb)

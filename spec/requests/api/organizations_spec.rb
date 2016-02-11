@@ -94,7 +94,6 @@ describe "Organizations API" do
 
         it 'fails on a slug with profane content' do
           authenticated_post "/organizations", { data: { attributes: { name: "Test", slug: "shit" } } }, @token
-
           expect(last_response.status).to eq 422
           expect(json).to be_a_valid_json_api_validation_error.with_message "may not be obscene"
         end
