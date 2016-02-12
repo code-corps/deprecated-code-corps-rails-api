@@ -71,8 +71,8 @@ describe "Organizations API" do
               expect(organization.icon.path).to_not be_nil
               expect(organization.name).to eq "Test"
               # expect icon saved from create action to be identical to our test photor
-              organization_icon_file = File.open("#{Rails.root}/spec/sample_data/default-avatar.png", 'r')
-              base64_saved_image = Base64.encode64(open(organization_icon_file, &:read))
+              icon_file = File.open("#{Rails.root}/spec/sample_data/default-avatar.png", "r")
+              base64_saved_image = Base64.encode64(open(icon_file, &:read))
               expect(base64_saved_image).to include base64_image
             end
           end

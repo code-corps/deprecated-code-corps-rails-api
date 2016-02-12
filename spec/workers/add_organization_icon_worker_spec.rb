@@ -31,7 +31,6 @@ describe AddOrganizationIconWorker do
 
     it "doesn't touch icon" do
       AddOrganizationIconWorker.new.perform(@organization.id)
-
       @organization.reload
       expect(@organization.icon.to_s).to eq "/icons/original/missing.png"
     end
