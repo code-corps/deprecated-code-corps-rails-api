@@ -50,6 +50,11 @@ describe ProjectSerializer, :type => :serializer do
       it "has a type set to 'projects'" do
         expect(subject["type"]).to eq "projects"
       end
+
+      it "has 'icon url's" do
+        expect(subject["attributes"]["icon_thumb_url"]).to eql resource.icon(:thumb)
+        expect(subject["attributes"]["icon_large_url"]).to eql resource.icon(:large)
+      end
     end
 
     context "attributes" do

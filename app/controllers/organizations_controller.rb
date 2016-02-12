@@ -27,6 +27,8 @@ class OrganizationsController < ApplicationController
 
     if organization.valid?
       organization.save!
+      AddOrganizationIconWorker.perform_async(organization.id)
+
       render json: organization
     else
       render_validation_errors organization.errors
@@ -35,6 +37,6 @@ class OrganizationsController < ApplicationController
 
   private
     def create_params
-      record_attributes.permit(:name, :slug)
+      record_attributes.permit(:name, :slug, :base64_icon_data)
     end
 end

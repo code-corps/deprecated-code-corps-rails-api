@@ -16,6 +16,13 @@ class Organization < ActiveRecord::Base
 
   has_one :slugged_route, as: :owner
 
+  has_attached_file :icon,
+                    styles: {
+                      large: "500x500#",
+                      thumb: "100x100#"
+                    },
+                    path: "orgnizations/:id/:style.:extension"
+
   before_validation :add_slug_if_blank
 
   validates_presence_of :name
@@ -28,6 +35,11 @@ class Organization < ActiveRecord::Base
   validates :slug, length: { maximum: 39 } # This is GitHub's maximum username limit
 
   validate :slug_is_not_duplicate
+
+  validates_attachment_content_type :icon,
+                                    content_type: %r{^image\/(png|gif|jpeg)}
+
+  validates_attachment_size :icon, less_than: 10.megabytes
 
   after_save :create_or_update_slugged_route
 
