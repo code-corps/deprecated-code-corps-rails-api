@@ -105,7 +105,6 @@ describe Organization, :type => :model do
     end
 
     context "with cloudfront" do
-
       let(:project) { create(:project, :with_s3_icon) }
 
       it "should have our cloudfront domain in the URL" do
