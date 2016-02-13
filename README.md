@@ -25,6 +25,10 @@ We need to install the Ruby on Rails framework, the PostgreSQL database, and the
    * It's best to install it as a service instead of running it manually
    * To make sure everything works and the service is running, execute `redis-cli ping` in the console. It should respond with `PONG`
 
+### Clone this git repository
+
+You'll want to [clone this repository](https://help.github.com/articles/cloning-a-repository/) with `git clone https://github.com/code-corps/code-corps-api.git`.
+
 ### Set up the Rails app
 
 1. Run `bin/setup` to set up and seed the database.
