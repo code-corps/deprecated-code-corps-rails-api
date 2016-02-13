@@ -12,33 +12,38 @@ The Code Corps API is an open source Rails::API backend that powers the Code Cor
 
 ## Developer installation guide
 
-### First steps
+### Install Rails, PostgreSQL, and Redis
 
-1. Install and configure PostgreSQL 9.3+.
+We need to install the Ruby on Rails framework, the PostgreSQL database, and the Redis data store.
+
+1. [Install Rails](http://installrails.com/).
+2. Install and configure PostgreSQL 9.3+.
   1. Run `postgres -V` to see if you already have it.
   2. Make sure that the server's messages language is English; this is [required](https://github.com/rails/rails/blob/3006c59bc7a50c925f6b744447f1d94533a64241/activerecord/lib/active_record/connection_adapters/postgresql_adapter.rb#L1140) by the ActiveRecord Postgres adapter.
-2. Install Ruby 2.2.2 and Bundler.
-3. Clone the project and bundle.
-
-### Before you start Rails
-
-1. Install and make sure you can run redis:
+3. Install and make sure you can run redis:
    * Follow the [official quickstart guide](http://redis.io/topics/quickstart)
    * It's best to install it as a service instead of running it manually
    * To make sure everything works and the service is running, execute `redis-cli ping` in the console. It should respond with `PONG`
-2. Run `bin/setup` to set up and seed the database.
-3. Try running the specs: `bundle exec rake spec`
 
-From here you can either:
+### Clone this git repository
 
-#### Use foreman to run processes
-6. Stop your existing `redis-server` process
-7. Run the api with `foreman start -f Procfile.dev`. This will start any service listed in that Procfile.
+You'll want to [clone this repository](https://help.github.com/articles/cloning-a-repository/) with `git clone https://github.com/code-corps/code-corps-api.git`.
 
-#### Alternatively, run processes individually
-6. You already have `redis-server` running. In the future, you'll need to run it, as well.
-7. Start Sidekiq with `bundle exec sidekiq`
-8. Start the Rails server with `rails s`
+### Set up the Rails app
+
+1. Run `bin/setup` to set up and seed the database.
+2. Try running the specs: `bundle exec rake spec`
+
+From here, we need to start the web server, Redis, and Sidekiq processes. You can either:
+
+#### Use [foreman](https://github.com/ddollar/foreman) to run your application's processes
+3. Stop your existing `redis-server` process
+4. Run the api with `foreman start -f Procfile.dev`. This will start any service listed in that Procfile.
+
+#### Alternatively, run your application's processes individually
+3. You already have `redis-server` running. In the future, you'll need to run it, as well.
+4. Start Sidekiq with `bundle exec sidekiq`
+5. Start the Rails server with `rails s`
 
 
 ### To make sure the API is running properly
