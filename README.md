@@ -14,7 +14,7 @@ The Code Corps API is an open source Rails::API backend that powers the Code Cor
 
 ### Install Rails, PostgreSQL, and Redis
 
-We need to install both the Ruby on Rails framework, the PostgreSQL database, and the Redis data store.
+We need to install the Ruby on Rails framework, the PostgreSQL database, and the Redis data store.
 
 1. [Install Rails](http://installrails.com/).
 2. Install and configure PostgreSQL 9.3+.
