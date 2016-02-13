@@ -16,4 +16,4 @@
 # Using secret_token for rails3 compatibility. Change to secret_key_base
 # to avoid deprecation warning.
 # Can be safely removed in a rails3 api-only application.
-CodeCorpsApi::Application.config.secret_token = '7388409182e240b4e3dc85db8926b79f839901f4ad7babcf493a5be10f0795c2f4e6242e28311926e5633c315f94dba23caff681e53c61c401d52407df521497'
+CodeCorpsApi::Application.config.secret_token = ENV['SECRET_KEY_BASE']
