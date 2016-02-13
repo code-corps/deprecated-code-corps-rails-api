@@ -2,10 +2,10 @@ deployment:
     staging:
       branch: develop
       commands:
-        - git push git@heroku.com:code-corps-api-staging.git $CIRCLE_SHA1:master
-        - heroku run rake db:migrate --app code-corps-api-staging
+        - git push git@heroku.com:code-corps-staging.git $CIRCLE_SHA1:master
+        - heroku run rake db:migrate --app code-corps-staging
     production:
       branch: master
       commands:
-        - git push git@heroku.com:code-corps-api.git $CIRCLE_SHA1:master
-        - heroku run rake db:migrate --app code-corps-api
+        - git push git@heroku.com:code-corps.git $CIRCLE_SHA1:master
+        - heroku run rake db:migrate --app code-corps
