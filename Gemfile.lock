@@ -8,16 +8,15 @@ GIT
       railties (>= 4.0)
 
 GIT
-  remote: https://github.com/thoughtbot/paperclip
-  revision: 523bd46c768226893f23889079a7aa9c73b57d68
-  ref: 523bd46c768226893f23889079a7aa9c73b57d68
+  remote: git://github.com/thoughtbot/paperclip.git
+  revision: 37589f9b0c869c8df5be1ee4d83e14fb353a7dff
   specs:
     paperclip (4.3.1)
       activemodel (>= 3.2.0)
       activesupport (>= 3.2.0)
       cocaine (~> 0.5.5)
       mime-types
-      mimemagic (= 0.3.0)
+      mimemagic (~> 0.3.0)
 
 GEM
   remote: https://rubygems.org/
@@ -163,7 +162,7 @@ GEM
       mime-types (>= 1.16, < 3)
     method_source (0.8.2)
     mime-types (2.99)
-    mimemagic (0.3.0)
+    mimemagic (0.3.1)
     mini_portile2 (2.0.0)
     minitest (5.8.4)
     multi_json (1.11.2)
@@ -268,7 +267,7 @@ GEM
     sequenced (3.1.1)
       activerecord (>= 3.0)
       activesupport (>= 3.0)
-    shoulda-matchers (3.0.1)
+    shoulda-matchers (3.1.1)
       activesupport (>= 4.0.0)
     sidekiq (4.1.0)
       concurrent-ruby (~> 1.0)
@@ -352,7 +351,7 @@ DEPENDENCIES
   rspec-sidekiq
   seed-fu
   sequenced
-  shoulda-matchers (= 3.0.1)
+  shoulda-matchers
   sidekiq
   sinatra
   spring
