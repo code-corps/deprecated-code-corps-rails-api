@@ -31,3 +31,5 @@ vendor/bundle/*
 .DS_Store
 
 dump.rdb
+
+coverage
