@@ -1,23 +1,23 @@
-# This file is copied to spec/ when you run 'rails generate rspec:install'
+# This file is copied to spec/ when you run "rails generate rspec:install"
 require "codeclimate-test-reporter"
 CodeClimate::TestReporter.start
 
-ENV["RAILS_ENV"] ||= 'test'
+ENV["RAILS_ENV"] ||= "test"
 
 ENV["S3_BUCKET_NAME"] = "test_bucket"
 ENV["CLOUDFRONT_DOMAIN"] = "test.cloudfront.com"
 
-require 'spec_helper'
+require "spec_helper"
 require File.expand_path("../../config/environment", __FILE__)
-require 'rspec/rails'
+require "rspec/rails"
 
 # Add additional requires below this line. Rails is not loaded until this point!
-require 'sidekiq/testing'
-require 'clearance/rspec'
-require 'paperclip/matchers'
-require 'pundit/rspec'
-require 'aasm/rspec'
-require 'database_cleaner'
+require "sidekiq/testing"
+require "clearance/rspec"
+require "paperclip/matchers"
+require "pundit/rspec"
+require "aasm/rspec"
+require "database_cleaner"
 
 # Requires supporting ruby files with custom matchers and macros, etc, in
 # spec/support/ and its subdirectories. Files matching `spec/**/*_spec.rb` are
@@ -40,7 +40,7 @@ ActiveRecord::Migration.maintain_test_schema!
 
 VCR.configure do |config|
   # Allow results to reported to codeclimate, bypassing VCR
-  config.ignore_hosts 'codeclimate.com'
+  config.ignore_hosts "codeclimate.com"
 end
 
 RSpec.configure do |config|
