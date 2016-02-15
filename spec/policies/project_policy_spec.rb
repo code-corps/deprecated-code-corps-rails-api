@@ -7,10 +7,10 @@ describe ProjectPolicy do
 
   before do
     @organization = create(:organization)
-    @another_organization = create(:organization)
+    @unaffiliated_organization = create(:organization)
 
     @project = create(:project, organization: @organization)
-    @another_project = create(:project, organization: @another_organization)
+    @unaffiliated_project = create(:project, organization: @unaffiliated_organization)
 
     @unaffiliated_user = create(:user)
 
@@ -50,49 +50,49 @@ describe ProjectPolicy do
     context "as a logged out user" do
       it "can view all projects" do
         expect(subject).to permit(nil, @project)
-        expect(subject).to permit(nil, @another_project)
+        expect(subject).to permit(nil, @unaffiliated_project)
       end
     end
 
     context "as an unaffiliated user" do
       it "can view all projects" do
         expect(subject).to permit(@unaffiliated_user, @project)
-        expect(subject).to permit(@unaffiliated_user, @another_project)
+        expect(subject).to permit(@unaffiliated_user, @unaffiliated_project)
       end
     end
 
     context "as a pending user" do
       it "can view all projects" do
         expect(subject).to permit(@pending_user, @project)
-        expect(subject).to permit(@pending_user, @another_project)
+        expect(subject).to permit(@pending_user, @unaffiliated_project)
       end
     end
 
     context "as a contributor user" do
       it "can view all projects" do
         expect(subject).to permit(@contributor_user, @project)
-        expect(subject).to permit(@contributor_user, @another_project)
+        expect(subject).to permit(@contributor_user, @unaffiliated_project)
       end
     end
 
     context "as an admin user" do
       it "can view all projects" do
         expect(subject).to permit(@admin_user, @project)
-        expect(subject).to permit(@admin_user, @another_project)
+        expect(subject).to permit(@admin_user, @unaffiliated_project)
       end
     end
 
     context "as an owner user" do
       it "can view all projects" do
         expect(subject).to permit(@owner_user, @project)
-        expect(subject).to permit(@owner_user, @another_project)
+        expect(subject).to permit(@owner_user, @unaffiliated_project)
       end
     end
 
     context "as a site admin" do
       it "can view all projects" do
         expect(subject).to permit(@site_admin, @project)
-        expect(subject).to permit(@site_admin, @another_project)
+        expect(subject).to permit(@site_admin, @unaffiliated_project)
       end
     end
   end
@@ -107,7 +107,7 @@ describe ProjectPolicy do
 
     context "as an unaffiliated user" do
       it "is not permitted to create/update projects in other organizations" do
-        expect(subject).to_not permit(@unaffiliated_user, @another_project)
+        expect(subject).to_not permit(@unaffiliated_user, @unaffiliated_project)
       end
 
       it "is not permitted to create/update projects in their organization" do
@@ -117,7 +117,7 @@ describe ProjectPolicy do
 
     context "as a pending user" do
       it "is not permitted to create/update projects in other organizations" do
-        expect(subject).to_not permit(@pending_user, @project)
+        expect(subject).to_not permit(@pending_user, @unaffiliated_project)
       end
 
       it "is not permitted to create/update projects in their organization" do
@@ -127,7 +127,7 @@ describe ProjectPolicy do
 
     context "as a contributor user" do
       it "is not permitted to create/update projects in other organizations" do
-        expect(subject).to_not permit(@contributor_user, @project)
+        expect(subject).to_not permit(@contributor_user, @unaffiliated_project)
       end
 
       it "is not permitted to create/update projects in their organization" do
@@ -137,7 +137,7 @@ describe ProjectPolicy do
 
     context "as an admin user" do
       it "is not permitted to create/update projects in other organizations" do
-        expect(subject).to_not permit(@admin_user, @another_project)
+        expect(subject).to_not permit(@admin_user, @unaffiliated_project)
       end
 
       it "is permitted to create/update projects in their organization" do
@@ -147,7 +147,7 @@ describe ProjectPolicy do
 
     context "as an owner user" do
       it "is not permitted to create/update projects in other organizations" do
-        expect(subject).to_not permit(@owner_user, @another_project)
+        expect(subject).to_not permit(@owner_user, @unaffiliated_project)
       end
 
       it "is permitted to create/update projects in their organization" do
@@ -157,7 +157,7 @@ describe ProjectPolicy do
 
     context "as a site admin" do
       it "is permitted to create projects in other organizations" do
-        expect(subject).to permit(@site_admin, @another_project)
+        expect(subject).to permit(@site_admin, @unaffiliated_project)
       end
 
       it "is permitted to create projects in their organization" do
