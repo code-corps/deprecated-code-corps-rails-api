@@ -10,7 +10,7 @@
 #
 
 class OrganizationsController < ApplicationController
-  before_action :doorkeeper_authorize!, only: [:create]
+  before_action :doorkeeper_authorize!, only: [:create, :update]
 
   def show
     organization = Organization.find(params[:id])
@@ -35,8 +35,28 @@ class OrganizationsController < ApplicationController
     end
   end
 
+  def update
+    organization = Organization.find(params[:id])
+
+    authorize organization
+
+    organization.update(update_params)
+
+    if organization.save
+      AddOrganizationIconWorker.perform_async(organization.id)
+      render json: organization
+    else
+      render_validation_errors(organization.errors)
+    end
+  end
+
   private
     def create_params
       record_attributes.permit(:name, :slug, :base64_icon_data)
+    end
+
+    def update_params
+      # For now, slugs should not be updated until we've thought through repercussions more
+      record_attributes.permit(:name, :base64_icon_data)
     end
 end
