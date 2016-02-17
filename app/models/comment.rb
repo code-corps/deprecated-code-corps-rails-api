@@ -2,14 +2,16 @@
 #
 # Table name: comments
 #
-#  id         :integer          not null, primary key
-#  body       :text             not null
-#  user_id    :integer          not null
-#  post_id    :integer          not null
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
-#  markdown   :text             not null
-#  aasm_state :string
+#  id               :integer          not null, primary key
+#  body             :text
+#  user_id          :integer          not null
+#  post_id          :integer          not null
+#  created_at       :datetime         not null
+#  updated_at       :datetime         not null
+#  markdown         :text
+#  aasm_state       :string
+#  body_preview     :text
+#  markdown_preview :text
 #
 
 require 'html/pipeline'

@@ -1,32 +1,36 @@
 require "rails_helper"
 
-describe UserSerializerWithoutIncludes, :type => :serializer do
-
+describe AuthenticatedUserSerializer, type: :serializer do
   context "individual resource representation" do
-    let(:resource) {
+    let(:resource) do
       user = create(:user,
-        email: "user@mail.com",
-        username: "randomer",
-        website: "example.com",
-        twitter: "@user",
-        biography: "Lorem ipsum")
-      create_list(:user_skill, 10, user: user)
-      user
-    }
+                    email: "user@mail.com",
+                    name: "Josh Smith",
+                    username: "joshsmith",
+                    website: "example.com",
+                    twitter: "@user",
+                    biography: "Lorem ipsum",
+                    facebook_id: "some_id",
+                    facebook_access_token: "some_token")
 
-    let(:serializer) { UserSerializerWithoutIncludes.new(resource) }
+      create_list(:user_skill, 2, user: user)
+
+      user
+    end
+
+    let(:serializer) { AuthenticatedUserSerializer.new(resource) }
     let(:serialization) { ActiveModel::Serializer::Adapter.create(serializer) }
 
     context "root" do
       subject do
-        JSON.parse(serialization.to_json)['data']
+        JSON.parse(serialization.to_json)["data"]
       end
 
       it "has an attributes object" do
         expect(subject["attributes"]).not_to be_nil
       end
 
-      it "has a relationships object" do
+      it "has a nil relationships object" do
         expect(subject["relationships"]).to be_nil
       end
 
@@ -39,21 +43,21 @@ describe UserSerializerWithoutIncludes, :type => :serializer do
       end
     end
 
-    context 'attributes' do
+    context "attributes" do
       subject do
-        JSON.parse(serialization.to_json)['data']['attributes']
+        JSON.parse(serialization.to_json)["data"]["attributes"]
       end
 
       it "has an 'email'" do
         expect(subject["email"]).to eq resource.email
       end
 
-      it "has a 'name'" do
-        expect(subject["name"]).to eq resource.name
-      end
-
       it "has a 'username'" do
         expect(subject["username"]).to eq resource.username
+      end
+
+      it "has a 'name'" do
+        expect(subject["name"]).to eq resource.name
       end
 
       it "has a 'twitter'" do
