@@ -45,13 +45,18 @@ describe SluggedRouteSerializer, type: :serializer do
     end
 
     context "attributes" do
-
       subject do
         JSON.parse(serialization.to_json)["data"]["attributes"]
       end
 
       it "has a 'slug'" do
+        expect(subject["slug"]).to_not be_nil
         expect(subject["slug"]).to eql resource.slug
+      end
+
+      it "has an 'owner_type'" do
+        expect(subject["owner_type"]).to_not be_nil
+        expect(subject["owner_type"]).to eql resource.owner_type
       end
     end
 
