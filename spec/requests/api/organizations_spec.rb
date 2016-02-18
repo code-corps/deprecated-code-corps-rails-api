@@ -153,11 +153,14 @@ describe "Organizations API" do
         expect(json).to be_a_valid_json_api_error.with_id "RECORD_NOT_FOUND"
       end
 
-      context "when updating the name" do
+      context "when updating the name and description" do
         it "updates a organization name" do
           authenticated_patch "/organizations/#{@organization.id}", {
             data: {
-              attributes: { name: "New Name" },
+              attributes: {
+                name: "New Name",
+                description: "New Description"
+              },
             }
           }, @token
 

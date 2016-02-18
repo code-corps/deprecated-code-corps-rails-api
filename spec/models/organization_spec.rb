@@ -20,6 +20,7 @@ describe Organization, :type => :model do
   describe "schema" do
     it { should have_db_column(:name).of_type(:string) }
     it { should have_db_column(:slug).of_type(:string).with_options(null: false) }
+    it { should have_db_column(:description).of_type(:text) }
     it { should have_db_column(:icon_file_name).of_type(:string) }
     it { should have_db_column(:icon_content_type).of_type(:string) }
     it { should have_db_column(:icon_file_size).of_type(:integer) }

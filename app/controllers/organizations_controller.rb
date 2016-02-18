@@ -57,7 +57,11 @@ class OrganizationsController < ApplicationController
 
   private
     def create_params
-      record_attributes.permit(:name, :slug, :base64_icon_data)
+      record_attributes.permit(:name, :slug, :description, :base64_icon_data)
+    end
+
+    def update_params
+      record_attributes.permit(:name, :description, :base64_icon_data)
     end
 
     def update_params

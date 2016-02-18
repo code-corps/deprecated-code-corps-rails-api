@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160204223727) do
+ActiveRecord::Schema.define(version: 20160215223422) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -130,6 +130,7 @@ ActiveRecord::Schema.define(version: 20160204223727) do
     t.integer  "icon_file_size"
     t.datetime "icon_updated_at"
     t.text     "base64_icon_data"
+    t.text     "description"
   end
 
   add_index "organizations", ["slug"], name: "index_organizations_on_slug", unique: true, using: :btree
