@@ -12,7 +12,7 @@ describe AddOrganizationIconWorker do
       AddOrganizationIconWorker.new.perform(@organization.id)
 
       @organization.reload
-      expect(@organization.icon.to_s).not_to eq "/icons/original/missing.png"
+      expect(@organization.icon.to_s).not_to include "organization_default"
       expect(@organization.icon.to_s).not_to be_nil
       expect(@organization.base64_icon_data).to be_nil
     end
@@ -32,7 +32,7 @@ describe AddOrganizationIconWorker do
     it "doesn't touch icon" do
       AddOrganizationIconWorker.new.perform(@organization.id)
       @organization.reload
-      expect(@organization.icon.to_s).to eq "/icons/original/missing.png"
+      expect(@organization.icon.to_s).to include "organization_default"
     end
   end
 end
