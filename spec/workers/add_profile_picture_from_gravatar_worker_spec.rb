@@ -12,7 +12,7 @@ describe AddProfilePictureFromGravatarWorker do
 
       @user.reload
 
-      expect(@user.photo.to_s).to eq "/photos/original/missing.png"
+      expect(@user.photo.to_s).to include "user_default"
     end
   end
 
@@ -22,7 +22,7 @@ describe AddProfilePictureFromGravatarWorker do
 
       @user_gravatar.reload
 
-      expect(@user_gravatar.photo.to_s).to_not eq "/photos/original/missing.png"
+      expect(@user_gravatar.photo.to_s).to_not include "user_default"
     end
   end
 end

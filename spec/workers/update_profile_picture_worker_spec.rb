@@ -13,7 +13,7 @@ describe UpdateProfilePictureWorker do
       UpdateProfilePictureWorker.new.perform(@user.id)
 
       @user.reload
-      expect(@user.photo.to_s).not_to eq "/photos/original/missing.png"
+      expect(@user.photo.to_s).not_to include "user_default"
       expect(@user.photo.to_s).not_to be_nil
       expect(@user.base64_photo_data).to be_nil
     end
@@ -34,7 +34,7 @@ describe UpdateProfilePictureWorker do
       UpdateProfilePictureWorker.new.perform(@user.id)
 
       @user.reload
-      expect(@user.photo.to_s).to eq "/photos/original/missing.png"
+      expect(@user.photo.to_s).to include "user_default"
     end
   end
 end
