@@ -20,7 +20,29 @@ describe "Projects API" do
         expect(json).to serialize_collection(@projects).with(ProjectSerializer)
       end
     end
+  end
 
+  context "GET /projects/:id" do
+    before do
+      @project = create(:project, organization: create(:organization))
+      create_list(:github_repository, 10, project: @project)
+    end
+
+    context "when successful" do
+      before do
+        get "#{host}/projects/#{@project.id}"
+      end
+
+      it "responds with a 200" do
+        expect(last_response.status).to eq 200
+      end
+
+      it "returns the specified project" do
+        expect(json).to serialize_object(@project).
+          with(ProjectSerializer).
+          with_includes(:github_repositories)
+      end
+    end
   end
 
   context "GET /:slug/projects" do
@@ -48,7 +70,7 @@ describe "Projects API" do
   context "GET /:slug/:project_slug" do
     before do
       @project = create(:project, organization: create(:organization))
-      github_repositories = create_list(:github_repository, 10, project: @project)
+      create_list(:github_repository, 10, project: @project)
     end
 
     context "when successful" do
@@ -61,7 +83,9 @@ describe "Projects API" do
       end
 
       it "returns the specified project" do
-        expect(json).to serialize_object(@project).with(ProjectSerializer).with_includes(:github_repositories)
+        expect(json).to serialize_object(@project).
+          with(ProjectSerializer).
+          with_includes(:github_repositories)
       end
     end
 

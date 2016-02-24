@@ -16,7 +16,7 @@ class SluggedRoutesController < ApplicationController
 
     authorize slugged_route
 
-    render json: slugged_route, include: ["owner"]
+    render json: slugged_route
   end
 
   def slug

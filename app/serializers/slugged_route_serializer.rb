@@ -13,5 +13,5 @@
 class SluggedRouteSerializer < ActiveModel::Serializer
   attributes :id, :slug, :owner_type
 
-  belongs_to :owner
+  belongs_to :owner, polymorphic: true
 end

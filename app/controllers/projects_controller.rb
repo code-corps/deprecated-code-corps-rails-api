@@ -32,7 +32,11 @@ class ProjectsController < ApplicationController
   end
 
   def show
-    project = find_project_with_slugged_route!
+    if project_show?
+      project = Project.find(params[:id])
+    elsif for_slugged_route?
+      project = find_project_with_slugged_route!
+    end
 
     authorize project
 
@@ -99,6 +103,10 @@ class ProjectsController < ApplicationController
 
     def for_slugged_route?
       slugged_route_slug.present?
+    end
+
+    def project_show?
+      slugged_route_slug == "projects"
     end
 
     def find_project_with_slugged_route!
