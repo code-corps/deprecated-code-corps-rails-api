@@ -69,6 +69,28 @@ Any server request pointing to the main domain and not the `api.` subdomain is r
 * A plain text string containing "INDEX NOT FOUND" if a revision was specified, but the key for the specified revision was not found by redis
 
 
+### Debugging the API
+
+Because the app is running foreman, debugging use `pry` won't work the same way. If you want to use `pry`, you'll need to [debug remotely](https://github.com/nixme/pry-debugger#remote-debugging).
+
+Add `binding.remote_pry` where you want to pause:
+
+```ruby
+class UsersController < ApplicationController
+  def index
+    binding.remote_pry
+    ...
+  end
+end
+```
+
+Load a page that triggers the code. Connect to the session:
+
+```
+$ bundle exec pry-remote
+```
+
+
 ## Built with
 
 - [Rails::API](https://github.com/rails-api/rails-api) — Our backend API is a Rails::API app which uses JSON API to respond RESTfully to requests.
