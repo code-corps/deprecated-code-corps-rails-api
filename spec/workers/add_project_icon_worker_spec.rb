@@ -12,7 +12,7 @@ describe AddProjectIconWorker do
       AddProjectIconWorker.new.perform(@project.id)
 
       @project.reload
-      expect(@project.icon.to_s).not_to eq "/icons/original/missing.png"
+      expect(@project.icon.to_s).not_to include "project_default"
       expect(@project.icon.to_s).not_to be_nil
       expect(@project.base64_icon_data).to be_nil
     end
@@ -33,7 +33,7 @@ describe AddProjectIconWorker do
       AddProjectIconWorker.new.perform(@project.id)
 
       @project.reload
-      expect(@project.icon.to_s).to eq "/icons/original/missing.png"
+      expect(@project.icon.to_s).to include "project_default"
     end
   end
 end

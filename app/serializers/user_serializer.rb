@@ -30,6 +30,7 @@ class UserSerializer < ActiveModel::Serializer
              :photo_large_url
 
   has_many :skills
+  has_many :organizations
 
   def photo_thumb_url
     object.photo.url(:thumb)

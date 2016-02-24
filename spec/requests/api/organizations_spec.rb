@@ -121,4 +121,87 @@ describe "Organizations API" do
       end
     end
   end
+
+  context "PATCH /organizations/:id" do
+
+     let(:organization) { create(:organization) }
+
+    context "when unauthenticated" do
+      it "should return a 401 with a proper error" do
+        patch "#{host}/organizations/#{organization.id}", { data: { type: "organization" } }
+        expect(last_response.status).to eq 401
+        expect(json).to be_a_valid_json_api_error.with_id "NOT_AUTHORIZED"
+      end
+    end
+
+    context "when authenticated" do
+      before do
+        @user = create(:user, email: "test_user@mail.com", password: "password")
+        @organization = create(:organization)
+        create(:organization_membership, member: @user, organization: @organization, role: "admin")
+        @token = authenticate(email: "test_user@mail.com", password: "password")
+      end
+
+      it "returns a 404 if the organization doesn't exist" do
+        authenticated_patch "/organizations/22", {
+          data: {
+            attributes: { name: "Organization" },
+          }
+        }, @token
+
+        expect(last_response.status).to eq 404
+        expect(json).to be_a_valid_json_api_error.with_id "RECORD_NOT_FOUND"
+      end
+
+      context "when updating the name" do
+        it "updates a organization name" do
+          authenticated_patch "/organizations/#{@organization.id}", {
+            data: {
+              attributes: { name: "New Name" },
+            }
+          }, @token
+
+          @organization.reload
+          expect(@organization.name).to eq "New Name"
+        end
+      end
+
+      it "returns an error when with a nil name" do
+        authenticated_patch "/organizations/#{@organization.id}", {
+          data: {
+            attributes: {
+              name: nil
+            }
+          }
+        }, @token
+
+        expect(last_response.status).to eq 422
+        expect(json).to be_a_valid_json_api_validation_error.with_message "can't be blank"
+      end
+
+      context "when updating a organization icon when none exists" do
+        context "when given a base64 string" do
+          it "saves successfully" do
+            Sidekiq::Testing.inline! do
+              filename = "#{Rails.root}/spec/sample_data/base64_images/jpeg.txt"
+              base64_saved_image = File.open(filename, &:read)
+
+              authenticated_patch "/organizations/#{@organization.id}", {
+                data: {
+                  attributes: {
+                    base64_icon_data: base64_saved_image
+                  }
+                }
+              }, @token
+
+              @organization.reload
+
+              expect(@organization.base64_icon_data).to be_nil
+              expect(@organization.icon.path).to_not be_nil
+            end
+          end
+        end
+      end
+    end
+  end
 end

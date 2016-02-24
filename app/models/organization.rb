@@ -2,14 +2,21 @@
 #
 # Table name: organizations
 #
-#  id         :integer          not null, primary key
-#  name       :string           not null
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
-#  slug       :string           not null
+#  id                :integer          not null, primary key
+#  name              :string           not null
+#  created_at        :datetime         not null
+#  updated_at        :datetime         not null
+#  slug              :string           not null
+#  icon_file_name    :string
+#  icon_content_type :string
+#  icon_file_size    :integer
+#  icon_updated_at   :datetime
+#  base64_icon_data  :text
 #
 
 class Organization < ActiveRecord::Base
+  ASSET_HOST_FOR_DEFAULT_ICON = "https://d3pgew4wbk2vb1.cloudfront.net/icons".freeze
+
   has_many :organization_memberships
   has_many :members, through: :organization_memberships
   has_many :projects
@@ -21,7 +28,8 @@ class Organization < ActiveRecord::Base
                       large: "500x500#",
                       thumb: "100x100#"
                     },
-                    path: "orgnizations/:id/:style.:extension"
+                    path: "orgnizations/:id/:style.:extension",
+                    default_url: ASSET_HOST_FOR_DEFAULT_ICON + "/organization_default_:style.png"
 
   before_validation :add_slug_if_blank
 

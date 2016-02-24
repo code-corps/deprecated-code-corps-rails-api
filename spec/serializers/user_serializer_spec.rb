@@ -42,6 +42,9 @@ describe UserSerializer, :type => :serializer do
 
       create_list(:user_skill, 2, user: user)
 
+      organization = create(:organization)
+      create(:organization_membership, organization: organization, member: user)
+
       user
     }
 
@@ -106,6 +109,14 @@ describe UserSerializer, :type => :serializer do
       it "has a 'facebook_access_token'" do
         expect(subject["facebook_access_token"]).to eq resource.facebook_access_token
       end
+
+      it "has a 'photo_thumb_url'" do
+        expect(subject["photo_thumb_url"]).to eq resource.photo.url(:thumb)
+      end
+
+      it "has a 'photo_large_url'" do
+        expect(subject["photo_large_url"]).to eq resource.photo.url(:large)
+      end
     end
 
     context "relationships" do
@@ -116,6 +127,11 @@ describe UserSerializer, :type => :serializer do
       it "has a 'skills' relationship" do
         expect(subject["skills"]).not_to be_nil
         expect(subject["skills"]["data"].count).to eq 2
+      end
+
+      it "has an 'organizations' relationship" do
+        expect(subject["organizations"]).not_to be_nil
+        expect(subject["organizations"]["data"].count).to eq 1
       end
     end
 
@@ -131,7 +147,9 @@ describe UserSerializer, :type => :serializer do
       end
 
       context "when including skills" do
-        let(:serialization) { ActiveModel::Serializer::Adapter.create(serializer, include: ["skills"]) }
+        let(:serialization) do
+          ActiveModel::Serializer::Adapter.create(serializer, include: ["skills"])
+        end
 
         subject do
           JSON.parse(serialization.to_json)["included"]
@@ -139,7 +157,22 @@ describe UserSerializer, :type => :serializer do
 
         it "should contain the user's skills" do
           expect(subject).not_to be_nil
-          expect(subject.select{ |i| i["type"] == "skills"}.length).to eq 2
+          expect(subject.select { |i| i["type"] == "skills" }.length).to eq 2
+        end
+      end
+
+      context "when including organizations" do
+        let(:serialization) do
+          ActiveModel::Serializer::Adapter.create(serializer, include: ["organizations"])
+        end
+
+        subject do
+          JSON.parse(serialization.to_json)["included"]
+        end
+
+        it "should contain the user's organizations" do
+          expect(subject).not_to be_nil
+          expect(subject.select { |i| i["type"] == "organizations" }.length).to eq 1
         end
       end
     end

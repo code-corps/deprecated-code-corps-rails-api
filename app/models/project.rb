@@ -17,6 +17,8 @@
 #
 
 class Project < ActiveRecord::Base
+  ASSET_HOST_FOR_DEFAULT_ICON = "https://d3pgew4wbk2vb1.cloudfront.net/icons".freeze
+
   belongs_to :organization
 
   has_many :posts
@@ -27,7 +29,8 @@ class Project < ActiveRecord::Base
                       large: "500x500#",
                       thumb: "100x100#"
                     },
-                    path: "projects/:id/:style.:extension"
+                    path: "projects/:id/:style.:extension",
+                    default_url: ASSET_HOST_FOR_DEFAULT_ICON + "/project_default_:style.png"
 
   before_validation :add_slug_if_blank
 

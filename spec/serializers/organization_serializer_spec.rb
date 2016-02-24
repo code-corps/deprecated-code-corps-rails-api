@@ -2,11 +2,16 @@
 #
 # Table name: organizations
 #
-#  id         :integer          not null, primary key
-#  name       :string           not null
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
-#  slug       :string           not null
+#  id                :integer          not null, primary key
+#  name              :string           not null
+#  created_at        :datetime         not null
+#  updated_at        :datetime         not null
+#  slug              :string           not null
+#  icon_file_name    :string
+#  icon_content_type :string
+#  icon_file_size    :integer
+#  icon_updated_at   :datetime
+#  base64_icon_data  :text
 #
 
 require "rails_helper"
@@ -14,7 +19,12 @@ require "rails_helper"
 describe OrganizationSerializer, :type => :serializer do
 
   context "individual resource representation" do
-    let(:resource) { create(:organization) }
+    let(:resource) do
+      organization = create(:organization)
+      create_list(:project, 10, organization: organization)
+      create(:organization_membership, member: create(:user), organization: organization)
+      organization
+    end
 
     let(:serializer) { OrganizationSerializer.new(resource) }
     let(:serialization) { ActiveModel::Serializer::Adapter.create(serializer) }
@@ -60,6 +70,18 @@ describe OrganizationSerializer, :type => :serializer do
     context "relationships" do
       subject do
         JSON.parse(serialization.to_json)["data"]["relationships"]
+      end
+
+      it "should have a 'projects' relationship" do
+        expect(subject["projects"]).not_to be_nil
+        expect(subject["projects"]["data"].length).to eq 10
+        expect(subject["projects"]["data"].all? { |r| r["type"] == "projects" }).to be true
+      end
+
+      it "should have a 'members' relationship" do
+        expect(subject["members"]).not_to be_nil
+        expect(subject["members"]["data"].length).to eq 1
+        expect(subject["members"]["data"].all? { |r| r["type"] == "users" }).to be true
       end
     end
 
