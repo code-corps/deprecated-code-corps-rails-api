@@ -50,25 +50,36 @@ describe ProjectSerializer, :type => :serializer do
       it "has a type set to 'projects'" do
         expect(subject["type"]).to eq "projects"
       end
-
-      it "has 'icon url's" do
-        expect(subject["attributes"]["icon_thumb_url"]).to eql resource.icon(:thumb)
-        expect(subject["attributes"]["icon_large_url"]).to eql resource.icon(:large)
-      end
     end
 
     context "attributes" do
-
       subject do
         JSON.parse(serialization.to_json)["data"]["attributes"]
       end
 
       it "has a 'title'" do
+        expect(subject["title"]).to_not be_nil
         expect(subject["title"]).to eql resource.title
       end
 
       it "has a 'description'" do
+        expect(subject["description"]).to_not be_nil
         expect(subject["description"]).to eql resource.description
+      end
+
+      it "has a 'slug'" do
+        expect(subject["slug"]).to_not be_nil
+        expect(subject["slug"]).to eql resource.slug
+      end
+
+      it "has a 'icon_thumb_url'" do
+        expect(subject["icon_thumb_url"]).to_not be_nil
+        expect(subject["icon_thumb_url"]).to eql resource.icon.url(:thumb)
+      end
+
+      it "has a 'icon_large_url'" do
+        expect(subject["icon_large_url"]).to_not be_nil
+        expect(subject["icon_large_url"]).to eql resource.icon.url(:large)
       end
     end
 

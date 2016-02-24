@@ -17,6 +17,9 @@
 class OrganizationSerializer < ActiveModel::Serializer
   attributes :id, :name, :slug, :icon_thumb_url, :icon_large_url
 
+  has_many :projects
+  has_many :members
+
   def icon_thumb_url
     object.icon.url(:thumb)
   end
