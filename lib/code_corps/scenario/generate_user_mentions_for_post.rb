@@ -9,7 +9,7 @@ module CodeCorps
         result = []
         mentions = []
 
-        @post.body.scan(/\B@((?:(?:(?:[^-\W]-?))*)(?:[^\/\W]\/?)?(?:(?:(?:[^-\W]-?))*)\w+)/) do |temp|
+        @post.body_preview.scan(/\B@((?:(?:(?:[^-\W]-?))*)(?:[^\/\W]\/?)?(?:(?:(?:[^-\W]-?))*)\w+)/) do |temp|
           username = temp.first
           start_index = Regexp.last_match.offset(0).first
           end_index = start_index + username.length
@@ -36,6 +36,6 @@ module CodeCorps
           end
         end
       end
-    end 
+    end
   end
 end

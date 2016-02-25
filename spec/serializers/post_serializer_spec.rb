@@ -22,15 +22,16 @@
 
 require "rails_helper"
 
-describe PostSerializer, :type => :serializer do
-
+describe PostSerializer, type: :serializer do
   # We only use before all here because we know the context does not change
   before :all do
-    @post = create(:post,
+    @post = create(
+      :post,
       title: "Post title",
       user: create(:user),
       project: create(:project),
-      number: 1)
+      number: 1
+    )
 
     @post.publish!
     @post.edit!
@@ -43,7 +44,6 @@ describe PostSerializer, :type => :serializer do
   end
 
   context "individual resource representation" do
-
     let(:resource) { @post }
 
     let(:serializer) { PostSerializer.new(resource) }
@@ -77,11 +77,23 @@ describe PostSerializer, :type => :serializer do
       end
 
       it "has a 'body'" do
+        expect(subject["body"]).not_to be_nil
         expect(subject["body"]).to eql resource.body
       end
 
       it "has 'markdown'" do
+        expect(subject["markdown"]).not_to be_nil
         expect(subject["markdown"]).to eql resource.markdown
+      end
+
+      it "has a 'body_preview'" do
+        expect(subject["body_preview"]).not_to be_nil
+        expect(subject["body_preview"]).to eql resource.body_preview
+      end
+
+      it "has 'markdown_preview'" do
+        expect(subject["markdown_preview"]).not_to be_nil
+        expect(subject["markdown_preview"]).to eql resource.markdown_preview
       end
 
       it "has a 'status'" do

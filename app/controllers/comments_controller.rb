@@ -18,7 +18,7 @@ class CommentsController < ApplicationController
   before_action :doorkeeper_authorize!, only: [:create, :update]
 
   def index
-    comments = Comment.where(post: params[:post_id]).includes(:user, :post)
+    comments = Comment.active.where(post: params[:post_id]).includes(:user, :post)
     authorize comments
 
     render json: comments
@@ -34,10 +34,11 @@ class CommentsController < ApplicationController
 
   def create
     comment = Comment.new(create_params)
+
     authorize comment
 
-    if comment.save
-      GenerateCommentUserNotificationsWorker.perform_async(comment.id)
+    if comment.update publish?
+      GenerateCommentUserNotificationsWorker.perform_async(comment.id) if publish?
       render json: comment
     else
       render_validation_errors comment.errors
@@ -51,7 +52,8 @@ class CommentsController < ApplicationController
 
     comment.assign_attributes(update_params)
 
-    if comment.update!
+    if comment.update publish?
+      GenerateCommentUserNotificationsWorker.perform_async(comment.id) if publish?
       render json: comment
     else
       render_validation_errors comment.errors
@@ -59,12 +61,16 @@ class CommentsController < ApplicationController
   end
 
   private
+    def publish?
+      true unless record_attributes.fetch(:preview, false)
+    end
+
     def create_params
-      record_attributes.permit(:markdown, :state).merge(relationships)
+      record_attributes.permit(:markdown_preview).merge(relationships)
     end
 
     def update_params
-      record_attributes.permit(:markdown, :state).merge(relationships)
+      record_attributes.permit(:markdown_preview)
     end
 
     def post_id

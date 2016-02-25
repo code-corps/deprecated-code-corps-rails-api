@@ -44,23 +44,34 @@ describe CommentSerializer, :type => :serializer do
         expect(subject["id"]).not_to be nil
       end
 
-      it "has a type set to 'projects'" do
+      it "has a type set to 'comments'" do
         expect(subject["type"]).to eq "comments"
       end
     end
 
     context "attributes" do
-
       subject do
         JSON.parse(serialization.to_json)["data"]["attributes"]
       end
 
       it "has a 'body'" do
+        expect(subject["body"]).not_to be_nil
         expect(subject["body"]).to eql resource.body
       end
 
       it "has 'markdown'" do
+        expect(subject["markdown"]).not_to be_nil
         expect(subject["markdown"]).to eql resource.markdown
+      end
+
+      it "has a 'body_preview'" do
+        expect(subject["body_preview"]).not_to be_nil
+        expect(subject["body_preview"]).to eql resource.body_preview
+      end
+
+      it "has 'markdown_preview'" do
+        expect(subject["markdown_preview"]).not_to be_nil
+        expect(subject["markdown_preview"]).to eql resource.markdown_preview
       end
 
       it "has a 'state'" do

@@ -38,14 +38,14 @@ class Post < ActiveRecord::Base
 
   validates_presence_of :project
   validates_presence_of :user
-  validates_presence_of :title
-  validates_presence_of :body
-  validates_presence_of :markdown
+
+  validates :title, presence: true, unless: :draft?
+  validates :body, presence: true, unless: :draft?
+  validates :markdown, presence: true, unless: :draft?
+
   validates_presence_of :post_type
 
   validates_uniqueness_of :number, scope: :project_id, allow_nil: true
-
-  before_validation :render_markdown_to_body
 
   after_save :generate_mentions # Still safe because it runs inside transaction
 
@@ -77,18 +77,16 @@ class Post < ActiveRecord::Base
 
   default_scope  { order(number: :desc) }
 
-  scope :active, -> { published.merge edited }
+  scope :active, -> { where("aasm_state=? OR aasm_state=?", "published", "edited") }
 
   def likes_count
     self.post_likes_count
   end
 
-  def update!
-    if aasm_state_was == "published" && self.changed?
-      self.edit!
-    else
-      self.save
-    end
+  def update(publish = false)
+    render_markdown_to_body
+    publish_changes if publish
+    save
   end
 
   def state
@@ -110,9 +108,9 @@ class Post < ActiveRecord::Base
     end
 
     def render_markdown_to_body
-      if markdown.present?
-        html = pipeline.call(markdown)
-        self.body = html[:output].to_s
+      if markdown_preview_changed?
+        html = pipeline.call(markdown_preview)
+        self.body_preview = html[:output].to_s
       end
     end
 
@@ -122,5 +120,12 @@ class Post < ActiveRecord::Base
       ], {
         gfm: true # Github-flavored markdown
       }
+    end
+
+    def publish_changes
+      assign_attributes markdown: markdown_preview, body: body_preview
+
+      edit if published?
+      publish if draft?
     end
 end

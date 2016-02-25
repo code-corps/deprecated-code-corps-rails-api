@@ -41,8 +41,8 @@ class PostsController < ApplicationController
 
     authorize post
 
-    if post.update!
-      GeneratePostUserNotificationsWorker.perform_async(post.id) if post.published?
+    if post.update publish?
+      GeneratePostUserNotificationsWorker.perform_async(post.id) if publish?
       render json: post
     else
       render_validation_errors post.errors
@@ -51,12 +51,13 @@ class PostsController < ApplicationController
 
   def update
     post = Post.find(params[:id])
+
     authorize post
 
     post.assign_attributes(update_params)
 
-    if post.update!
-      GeneratePostUserNotificationsWorker.perform_async(post.id) if post.edited?
+    if post.update publish?
+      GeneratePostUserNotificationsWorker.perform_async(post.id) if publish?
       render json: post
     else
       render_validation_errors post.errors
@@ -65,12 +66,16 @@ class PostsController < ApplicationController
 
   private
 
+    def publish?
+      true unless record_attributes.fetch(:preview, false)
+    end
+
     def update_params
-      record_attributes.permit(:markdown, :title, :state)
+      record_attributes.permit(:markdown_preview, :title)
     end
 
     def create_params
-      record_attributes.permit(:markdown, :title, :state, :post_type).merge(relationships)
+      record_attributes.permit(:markdown_preview, :title, :post_type).merge(relationships)
     end
 
     def filter_params
@@ -112,18 +117,19 @@ class PostsController < ApplicationController
 
     def find_posts!
       project = find_project!
-      Post.includes(:user).
+
+      Post.active.
+        includes(:user).
         includes(:project).
         includes(comments: :user).
         includes(:post_user_mentions).
         includes(:comment_user_mentions).
-        published.
         where(filter_params.merge(project: project)).
         page(page_number).
         per(page_size)
     end
 
     def post_count
-      Post.published.where(filter_params.merge(project_id: project_id)).count
+      Post.active.where(filter_params.merge(project_id: project_id)).count
     end
 end

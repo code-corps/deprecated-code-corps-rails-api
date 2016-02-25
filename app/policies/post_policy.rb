@@ -15,40 +15,36 @@ class PostPolicy
   end
 
   def create?
-    # Cannot create if there's no user
-    return unless user.present?
+    # unauthenticated user cannot create
+    return false unless user.present?
 
-    # Cannot create if not the user who's posting
+    # user cannot create posts for other users
     return false unless post.user == user
 
-    # Can create issue and idea posts for any user
-    return true if post.issue? or post.idea?
+    # non-contributors can create issues or ideas
+    return true if post.issue?
+    return true if post.idea?
 
-    # Cannot create if not a contributor
-    return false unless organization_member_for_user
-
-    # Can create if a contributor with permissions
+    # contributors can create all types of posts
     return true if current_user_is_at_least_contributor_to_organization?
   end
 
   def update?
-    # Cannot update if there's no user
-    return unless user.present?
+    # unauthenticated user cannot update
+    return false unless user.present?
 
-    # Can update if the user is a project admin
+    # admin can update any post, even that belonging to other users
     return true if current_user_is_at_least_admin_in_organization?
 
-    # Cannot update if not the user who posted
-    return false unless post.user == user
-
-    # Can create issue posts for any user
-    return true if post.issue?
-
-    # Can create if a contributor with permissions
-    return true if current_user_is_at_least_contributor_to_organization?
+    # user can update their own post
+    return true if post.user == user
   end
 
   private
+
+    def user_is_member_of_organization
+      organization_member_for_user.present?
+    end
 
     def organization_member_for_user
       @organization_member_for_user ||= OrganizationMembership.find_by(
@@ -57,14 +53,13 @@ class PostPolicy
 
     def current_user_is_at_least_contributor_to_organization?
       return false unless organization_member_for_user
-      return true if (
-        organization_member_for_user.contributor? or
-        organization_member_for_user.admin? or
-        organization_member_for_user.owner?)
+      return true if organization_member_for_user.contributor? ||
+                     organization_member_for_user.admin? ||
+                     organization_member_for_user.owner?
     end
 
     def current_user_is_at_least_admin_in_organization?
       return false unless organization_member_for_user
-      return true if organization_member_for_user.admin? or organization_member_for_user.owner?
+      return true if organization_member_for_user.admin? || organization_member_for_user.owner?
     end
 end
