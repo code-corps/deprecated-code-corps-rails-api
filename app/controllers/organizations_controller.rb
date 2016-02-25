@@ -61,11 +61,7 @@ class OrganizationsController < ApplicationController
     end
 
     def update_params
-      record_attributes.permit(:name, :description, :base64_icon_data)
-    end
-
-    def update_params
       # For now, slugs should not be updated until we've thought through repercussions more
-      record_attributes.permit(:name, :base64_icon_data)
+      record_attributes.permit(:name, :description, :base64_icon_data)
     end
 end

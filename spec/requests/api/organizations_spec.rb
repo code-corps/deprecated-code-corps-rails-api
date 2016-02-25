@@ -166,6 +166,7 @@ describe "Organizations API" do
 
           @organization.reload
           expect(@organization.name).to eq "New Name"
+          expect(@organization.description).to eq "New Description"
         end
       end
 

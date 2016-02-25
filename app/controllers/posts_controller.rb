@@ -26,7 +26,7 @@ class PostsController < ApplicationController
   def index
     authorize Post
     posts = find_posts!
-    render json: posts, meta: meta_for(post_count), each_serializer: PostSerializerWithoutIncludes
+    render json: posts, meta: meta_for(post_count), each_serializer: PostSerializer
   end
 
   def show
@@ -105,15 +105,22 @@ class PostsController < ApplicationController
 
     def find_post!
       project = find_project!
-      Post.includes(comments: :user)
-          .includes(:post_user_mentions, :comment_user_mentions)
-          .find_by!(project: project, number: post_id)
+      Post.includes(comments: :user).
+        includes(:post_user_mentions, :comment_user_mentions).
+        find_by!(project: project, number: post_id)
     end
 
     def find_posts!
       project = find_project!
-      Post.published.where(filter_params.merge(project: project))
-        .page(page_number).per(page_size)
+      Post.includes(:user).
+        includes(:project).
+        includes(comments: :user).
+        includes(:post_user_mentions).
+        includes(:comment_user_mentions).
+        published.
+        where(filter_params.merge(project: project)).
+        page(page_number).
+        per(page_size)
     end
 
     def post_count
