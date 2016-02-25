@@ -20,8 +20,8 @@
 #  markdown_preview :text
 #
 
-require 'html/pipeline'
-require 'code_corps/scenario/generate_user_mentions_for_post'
+require "html/pipeline"
+require "code_corps/scenario/generate_user_mentions_for_post"
 
 class Post < ActiveRecord::Base
   include AASM
@@ -34,7 +34,7 @@ class Post < ActiveRecord::Base
   has_many :post_user_mentions
   has_many :comment_user_mentions
 
-  acts_as_sequenced scope: :project_id, column: :number, skip: lambda { |r| r.draft? }
+  acts_as_sequenced scope: :project_id, column: :number, skip: ->(r) { r.draft? }
 
   validates_presence_of :project
   validates_presence_of :user
@@ -47,7 +47,12 @@ class Post < ActiveRecord::Base
 
   validates_uniqueness_of :number, scope: :project_id, allow_nil: true
 
-  after_save :generate_mentions # Still safe because it runs inside transaction
+  before_validation :render_markdown_to_body
+  before_validation :publish_changes
+  after_save :generate_mentions
+
+  attr_accessor :publishing
+  alias_method :publishing?, :publishing
 
   enum status: {
     open: "open",
@@ -80,12 +85,11 @@ class Post < ActiveRecord::Base
   scope :active, -> { where("aasm_state=? OR aasm_state=?", "published", "edited") }
 
   def likes_count
-    self.post_likes_count
+    post_likes_count
   end
 
-  def update(publish = false)
-    render_markdown_to_body
-    publish_changes if publish
+  def update(publishing)
+    @publishing = publishing
     save
   end
 
@@ -94,7 +98,7 @@ class Post < ActiveRecord::Base
   end
 
   def state=(value)
-    self.publish if value == "published" && self.draft?
+    publish if value == "published" && draft?
   end
 
   def edited_at
@@ -103,29 +107,28 @@ class Post < ActiveRecord::Base
 
   private
 
-    def generate_mentions
-      CodeCorps::Scenario::GenerateUserMentionsForPost.new(self).call
-    end
-
     def render_markdown_to_body
-      if markdown_preview_changed?
-        html = pipeline.call(markdown_preview)
-        self.body_preview = html[:output].to_s
-      end
+      return unless markdown_preview_changed?
+      html = pipeline.call(markdown_preview)
+      self.body_preview = html[:output].to_s
     end
 
     def pipeline
       @pipeline ||= HTML::Pipeline.new [
         HTML::Pipeline::MarkdownFilter
-      ], {
-        gfm: true # Github-flavored markdown
-      }
+      ], gfm: true # Github-flavored markdown
     end
 
     def publish_changes
-      assign_attributes markdown: markdown_preview, body: body_preview
+      return unless publishing?
 
       edit if published?
       publish if draft?
+
+      assign_attributes markdown: markdown_preview, body: body_preview
+    end
+
+    def generate_mentions
+      CodeCorps::Scenario::GenerateUserMentionsForPost.new(self).call
     end
 end

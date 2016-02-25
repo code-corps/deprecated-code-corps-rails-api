@@ -14,9 +14,7 @@
 #  markdown_preview :text
 #
 
-require 'rails_helper'
-
-describe Comment, :type => :model do
+describe Comment, type: :model do
   describe "schema" do
     it { should have_db_column(:body).of_type(:text).with_options(null: true) }
     it { should have_db_column(:markdown).of_type(:text).with_options(null: true) }
@@ -98,14 +96,14 @@ describe Comment, :type => :model do
   describe "#update" do
     it "renders markdown_preview to body_preview" do
       comment = build(:comment, markdown_preview: "# Hello World\n\nHello, world.")
-      comment.update
+      comment.update(false)
       expect(comment.body_preview).to eq "<h1>Hello World</h1>\n\n<p>Hello, world.</p>"
     end
 
     it "overwrites existing body_preview if new markdown_preview is emtpy" do
       comment = create(:comment, body_preview: "<p>There's something happening here</p>")
       comment.markdown_preview = "what it is aint exactly clear"
-      comment.update
+      comment.update(false)
       expect(comment.body_preview).to eq "<p>what it is aint exactly clear</p>".html_safe
     end
 
@@ -184,28 +182,44 @@ describe Comment, :type => :model do
       it "creates mentions only for existing users" do
         real_user = create(:user, username: "joshsmith")
 
-        comment = build(
-          :comment, markdown_preview: "Hello @joshsmith and @someone_who_doesnt_exist"
-        )
+        comment = build(:comment, markdown_preview: "@joshsmith and @someone_who_doesnt_exist")
 
-        comment.update
-        comment.reload
+        comment.update(false)
         mentions = comment.comment_user_mentions
 
         expect(mentions.count).to eq 1
         expect(mentions.first.user).to eq real_user
       end
 
+      context "when mentions already exist" do
+        let(:comment) do
+          comment = create(:comment, markdown_preview: "Hello @joshsmith")
+          create(:user, username: "joshsmith")
+          create_list(:comment_user_mention, 2, comment: comment, status: :published)
+          create_list(:comment_user_mention, 3, comment: comment, status: :preview)
+          comment
+        end
+
+        it "destroys preview mentions if preview was requested, leaves published mentions" do
+          comment.update(false)
+          expect(comment.comment_user_mentions.published.count).to eq 2
+          expect(comment.comment_user_mentions.preview.count).to eq 1
+        end
+
+        it "destroys published mentions if publish was requested, leaves preview mentions" do
+          comment.update(true)
+          expect(comment.comment_user_mentions.published.count).to eq 1
+          expect(comment.comment_user_mentions.preview.count).to eq 3
+        end
+      end
+
       context "when usernames contain underscores" do
         it "creates mentions and not <em> tags" do
           underscored_user = create(:user, username: "a_real_username")
 
-          comment = build(
-            :comment, markdown_preview: "Hello @a_real_username and @not_a_real_username"
-          )
+          comment = build(:comment, markdown_preview: "@a_real_username and @not_a_real_username")
 
-          comment.update
-          comment.reload
+          comment.update(false)
           mentions = comment.comment_user_mentions
 
           expect(mentions.count).to eq 1

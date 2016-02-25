@@ -14,8 +14,8 @@
 #  markdown_preview :text
 #
 
-require 'html/pipeline'
-require 'code_corps/scenario/generate_user_mentions_for_comment'
+require "html/pipeline"
+require "code_corps/scenario/generate_user_mentions_for_comment"
 
 class Comment < ActiveRecord::Base
   include AASM
@@ -31,7 +31,12 @@ class Comment < ActiveRecord::Base
   validates_presence_of :user
   validates_presence_of :post
 
-  after_save :generate_mentions # Still safe because it runs inside transaction
+  before_validation :render_markdown_to_body
+  before_validation :publish_changes
+  after_save :generate_mentions
+
+  attr_accessor :publishing
+  alias_method :publishing?, :publishing
 
   aasm do
     state :draft, initial: true
@@ -49,9 +54,8 @@ class Comment < ActiveRecord::Base
 
   scope :active, -> { where("aasm_state=? OR aasm_state=?", "published", "edited") }
 
-  def update(publish = false)
-    render_markdown_to_body
-    publish_changes if publish
+  def update(publishing)
+    @publishing = publishing
     save
   end
 
@@ -60,7 +64,7 @@ class Comment < ActiveRecord::Base
   end
 
   def state=(value)
-    self.publish if value == "published" && self.draft?
+    publish if value == "published" && draft?
   end
 
   def edited_at
@@ -74,24 +78,23 @@ class Comment < ActiveRecord::Base
     end
 
     def render_markdown_to_body
-      if markdown_preview_changed?
-        html = pipeline.call(markdown_preview)
-        self.body_preview = html[:output].to_s
-      end
+      return unless markdown_preview_changed?
+      html = pipeline.call(markdown_preview)
+      self.body_preview = html[:output].to_s
     end
 
     def publish_changes
-      assign_attributes markdown: markdown_preview, body: body_preview
+      return unless publishing?
 
       edit if published?
       publish if draft?
+
+      assign_attributes markdown: markdown_preview, body: body_preview
     end
 
     def pipeline
       @pipeline ||= HTML::Pipeline.new [
         HTML::Pipeline::MarkdownFilter
-      ], {
-        gfm: true # Github-flavored markdown
-      }
+      ], gfm: true # Github-flavored markdown
     end
 end

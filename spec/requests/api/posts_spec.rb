@@ -426,27 +426,6 @@ describe "Posts API" do
             expect(ActionMailer::Base.deliveries.count).to eq 2
           end
         end
-
-        context "when the attributes are invalid" do
-          let(:invalid_attributes) do
-            {
-              data: {
-                attributes: {
-                  title: "", markdown_preview: ""
-                },
-                relationships: {
-                  project: { data: { id: project.id, type: "projects" } }
-                }
-              }
-            }
-          end
-
-          it "responds with a 422 validation error" do
-            authenticated_patch "/posts/#{post.id}", invalid_attributes, token
-            expect(last_response.status).to eq 422
-            expect(json).to be_a_valid_json_api_validation_error
-          end
-        end
       end
 
       context "when post is published" do

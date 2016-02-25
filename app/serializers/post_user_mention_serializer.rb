@@ -13,7 +13,7 @@
 #
 
 class PostUserMentionSerializer < ActiveModel::Serializer
-  attributes :id, :indices, :username
+  attributes :id, :indices, :username, :status
 
   belongs_to :user
   belongs_to :post, serializer: PostSerializerWithoutIncludes

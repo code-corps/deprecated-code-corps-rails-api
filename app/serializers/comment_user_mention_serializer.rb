@@ -14,7 +14,7 @@
 #
 
 class CommentUserMentionSerializer < ActiveModel::Serializer
-  attributes :id, :indices, :username
+  attributes :id, :indices, :username, :status
 
   belongs_to :user
   belongs_to :comment, serializer: CommentSerializer
