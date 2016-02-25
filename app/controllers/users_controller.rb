@@ -58,7 +58,7 @@ class UsersController < ApplicationController
   end
 
   def show_authenticated_user
-    render json: current_user, serializer: AuthenticatedUserSerializer
+    render json: current_user, serializer: UserSerializer
   end
 
   def update_authenticated_user

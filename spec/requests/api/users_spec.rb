@@ -26,7 +26,7 @@ describe "Users API" do
 
       it "returns a proper response", aggregate_failures: true do
         expect(last_response.status).to eq 200
-        expect(json).to serialize_object(@user).with(AuthenticatedUserSerializer)
+        expect(json).to serialize_object(@user).with(UserSerializer)
       end
     end
   end
