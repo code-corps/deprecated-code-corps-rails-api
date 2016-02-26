@@ -37,7 +37,7 @@ class CommentsController < ApplicationController
 
     authorize comment
 
-    if comment.update publish?
+    if comment.update(publish?)
       GenerateCommentUserNotificationsWorker.perform_async(comment.id) if publish?
       render json: comment
     else
@@ -52,7 +52,7 @@ class CommentsController < ApplicationController
 
     comment.assign_attributes(update_params)
 
-    if comment.update publish?
+    if comment.update(publish?)
       GenerateCommentUserNotificationsWorker.perform_async(comment.id) if publish?
       render json: comment
     else
@@ -61,6 +61,7 @@ class CommentsController < ApplicationController
   end
 
   private
+
     def publish?
       true unless record_attributes.fetch(:preview, false)
     end

@@ -13,8 +13,6 @@
 #  updated_at  :datetime         not null
 #
 
-require 'rails_helper'
-
 RSpec.describe CommentUserMention, type: :model do
   describe "schema" do
     it { should have_db_column(:comment_id).of_type(:integer).with_options(null: false) }
@@ -23,6 +21,9 @@ RSpec.describe CommentUserMention, type: :model do
     it { should have_db_column(:username).of_type(:string).with_options(null: false) }
     it { should have_db_column(:start_index).of_type(:integer).with_options(null: false) }
     it { should have_db_column(:end_index).of_type(:integer).with_options(null: false) }
+    it do
+      should have_db_column(:status).of_type(:string).with_options(null: false, default: "preview")
+    end
     it { should have_db_column(:updated_at) }
     it { should have_db_column(:created_at) }
   end
@@ -42,6 +43,10 @@ RSpec.describe CommentUserMention, type: :model do
     it { should validate_presence_of(:end_index) }
   end
 
+  describe "behavior" do
+    it { should define_enum_for(:status).with(preview: "preview", published: "published") }
+  end
+
   describe "before_validation" do
     it "automatically adds the user's username" do
       user = create(:user, username: "joshsmith")
@@ -53,7 +58,7 @@ RSpec.describe CommentUserMention, type: :model do
   describe "indices" do
     it "wraps the indices inside of an array" do
       mention = create(:comment_user_mention, start_index: 0, end_index: 140)
-      expect(mention.indices).to eq [0,140]
+      expect(mention.indices).to eq [0, 140]
     end
   end
 end

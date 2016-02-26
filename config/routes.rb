@@ -9,7 +9,6 @@ Rails.application.routes.draw do
   end
 
   constraints subdomain: "api" do
-
     get "ping", to: "ping#index"
 
     get "user", to: "users#show_authenticated_user"
@@ -28,7 +27,7 @@ Rails.application.routes.draw do
     resources :skill_categories, only: [:index]
 
     resources :projects, only: [:index, :create, :update] do
-        resources :posts, only: [:index, :show]
+      resources :posts, only: [:index, :show]
     end
 
     resources :posts, only: [:create, :update] do
@@ -42,6 +41,9 @@ Rails.application.routes.draw do
     resources :comment_images, only: [:create]
 
     resources :organizations, only: [:show, :create, :update]
+
+    resources :post_user_mentions, only: [:index]
+    resources :comment_user_mentions, only: [:index]
 
     resources :slugged_routes, path: "", only: [:show] do
       get "projects", to: "projects#index"

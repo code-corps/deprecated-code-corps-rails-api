@@ -27,6 +27,8 @@ class CommentUserMention < ActiveRecord::Base
 
   before_validation :add_username_from_user
 
+  enum status: { preview: "preview", published: "published" }
+
   def indices
     [start_index, end_index]
   end
@@ -34,6 +36,6 @@ class CommentUserMention < ActiveRecord::Base
   private
 
     def add_username_from_user
-      self.username = self.user.username if self.user.present?
+      self.username = user.username if user.present?
     end
 end

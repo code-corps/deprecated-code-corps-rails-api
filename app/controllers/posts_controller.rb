@@ -41,7 +41,7 @@ class PostsController < ApplicationController
 
     authorize post
 
-    if post.update publish?
+    if post.update(publish?)
       GeneratePostUserNotificationsWorker.perform_async(post.id) if publish?
       render json: post
     else

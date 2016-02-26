@@ -178,14 +178,14 @@ describe Post, type: :model do
   describe "#update" do
     it "renders markdown_preview to body_preview" do
       post = build(:post, markdown_preview: "# Hello World\n\nHello, world.")
-      post.update
+      post.update(false)
       expect(post.body_preview).to eq "<h1>Hello World</h1>\n\n<p>Hello, world.</p>"
     end
 
     it "overwrites existing body_preview if new markdown_preview is emtpy" do
       post = build(:post, body_preview: "<p>There's something happening here</p>")
       post.markdown_preview = "what it is aint exactly clear"
-      post.update
+      post.update(false)
       expect(post.body_preview).to eq "<p>what it is aint exactly clear</p>".html_safe
     end
 
@@ -262,12 +262,33 @@ describe Post, type: :model do
 
         post = build(:post, markdown_preview: "Hello @joshsmith and @someone_who_doesnt_exist")
 
-        post.update
-        post.reload
+        post.update(false)
         mentions = post.post_user_mentions
 
         expect(mentions.count).to eq 1
         expect(mentions.first.user).to eq real_user
+      end
+
+      context "when mentions already exist" do
+        let(:post) do
+          post = create(:post, markdown_preview: "Hello @joshsmith")
+          create(:user, username: "joshsmith")
+          create_list(:post_user_mention, 2, post: post, status: :published)
+          create_list(:post_user_mention, 3, post: post, status: :preview)
+          post
+        end
+
+        it "destroys preview mentions if preview was requested, leaves published mentions" do
+          post.update(false)
+          expect(post.post_user_mentions.published.count).to eq 2
+          expect(post.post_user_mentions.preview.count).to eq 1
+        end
+
+        it "destroys published mentions if publish was requested, leaves preview mentions" do
+          post.update(true)
+          expect(post.post_user_mentions.published.count).to eq 1
+          expect(post.post_user_mentions.preview.count).to eq 3
+        end
       end
 
       context "when usernames contain underscores" do
@@ -275,8 +296,7 @@ describe Post, type: :model do
           underscored_user = create(:user, username: "a_real_username")
 
           post = build(:post, markdown_preview: "Hello @a_real_username and @not_a_real_username")
-          post.update
-          post.reload
+          post.update(false)
           mentions = post.post_user_mentions
 
           expect(mentions.count).to eq 1

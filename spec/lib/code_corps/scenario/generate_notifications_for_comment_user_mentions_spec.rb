@@ -5,7 +5,6 @@ module CodeCorps
   module Scenario
     describe GenerateNotificationsForCommentUserMentions do
       describe "#call" do
-
         let(:user) { create(:user) }
         let(:comment) { create(:comment) }
 
