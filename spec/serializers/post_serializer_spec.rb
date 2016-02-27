@@ -97,20 +97,23 @@ describe PostSerializer, type: :serializer do
       end
 
       it "has a 'status'" do
+        expect(subject["status"]).to_not be_nil
         expect(subject["status"]).to eql resource.status
-      end
-
-      it "has a 'post_type'" do
-        expect(subject["post_type"]).to eql resource.post_type
-      end
-
-      it "has a 'likes_count'" do
-        expect(subject["likes_count"]).to eql resource.likes_count
       end
 
       it "has a 'number'" do
         expect(subject["number"]).to_not be_nil
         expect(subject["number"]).to eql resource.number
+      end
+
+      it "has a 'post_type'" do
+        expect(subject["post_type"]).to_not be_nil
+        expect(subject["post_type"]).to eql resource.post_type
+      end
+
+      it "has a 'likes_count'" do
+        expect(subject["likes_count"]).to_not be_nil
+        expect(subject["likes_count"]).to eql resource.post_likes_count
       end
 
       it "has a 'state'" do
@@ -120,6 +123,7 @@ describe PostSerializer, type: :serializer do
       it "has an 'edited_at'" do
         expect(subject["edited_at"]).to be_the_same_time_as resource.edited_at
       end
+
       it "has a 'comments_count'" do
         expect(subject["comments_count"]).to eql resource.comments_count
       end

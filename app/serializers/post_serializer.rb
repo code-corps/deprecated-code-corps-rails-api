@@ -32,4 +32,8 @@ class PostSerializer < ActiveModel::Serializer
 
   belongs_to :user
   belongs_to :project
+
+  def likes_count
+    object.post_likes_count
+  end
 end
