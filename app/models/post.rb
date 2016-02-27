@@ -84,10 +84,6 @@ class Post < ActiveRecord::Base
 
   scope :active, -> { where("aasm_state=? OR aasm_state=?", "published", "edited") }
 
-  def likes_count
-    post_likes_count
-  end
-
   def update(publishing)
     @publishing = publishing
     save

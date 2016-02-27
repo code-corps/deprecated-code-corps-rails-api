@@ -10,6 +10,9 @@ describe PostSerializerWithoutIncludes, :type => :serializer do
         project: create(:project),
         number: 1)
 
+      post.publish!
+      post.edit!
+
       create_list(:comment, 10, post: post)
       post.reload
     }
@@ -41,8 +44,27 @@ describe PostSerializerWithoutIncludes, :type => :serializer do
       end
 
       it "has a 'title'" do
-        expect(subject["title"]).to_not be_nil
         expect(subject["title"]).to eql resource.title
+      end
+
+      it "has a 'body'" do
+        expect(subject["body"]).not_to be_nil
+        expect(subject["body"]).to eql resource.body
+      end
+
+      it "has 'markdown'" do
+        expect(subject["markdown"]).not_to be_nil
+        expect(subject["markdown"]).to eql resource.markdown
+      end
+
+      it "has a 'body_preview'" do
+        expect(subject["body_preview"]).not_to be_nil
+        expect(subject["body_preview"]).to eql resource.body_preview
+      end
+
+      it "has 'markdown_preview'" do
+        expect(subject["markdown_preview"]).not_to be_nil
+        expect(subject["markdown_preview"]).to eql resource.markdown_preview
       end
 
       it "has a 'status'" do
@@ -62,7 +84,19 @@ describe PostSerializerWithoutIncludes, :type => :serializer do
 
       it "has a 'likes_count'" do
         expect(subject["likes_count"]).to_not be_nil
-        expect(subject["likes_count"]).to eql resource.likes_count
+        expect(subject["likes_count"]).to eql resource.post_likes_count
+      end
+
+      it "has a 'state'" do
+        expect(subject["state"]).to eql resource.state
+      end
+
+      it "has an 'edited_at'" do
+        expect(subject["edited_at"]).to be_the_same_time_as resource.edited_at
+      end
+
+      it "has a 'comments_count'" do
+        expect(subject["comments_count"]).to eql resource.comments_count
       end
     end
 
