@@ -52,6 +52,8 @@ class Comment < ActiveRecord::Base
     end
   end
 
+  default_scope { order(id: :asc) }
+
   scope :active, -> { where("aasm_state=? OR aasm_state=?", "published", "edited") }
 
   def update(publishing)

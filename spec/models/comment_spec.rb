@@ -14,6 +14,8 @@
 #  markdown_preview :text
 #
 
+require "rails_helper"
+
 describe Comment, type: :model do
   describe "schema" do
     it { should have_db_column(:body).of_type(:text).with_options(null: true) }
@@ -174,6 +176,20 @@ describe Comment, type: :model do
       comment.save
 
       expect(comment).to be_published
+    end
+  end
+
+  describe "default_scope" do
+    it "orders by id asc by default" do
+      create_list(:comment, 3, :published)
+      comments = Comment.all
+
+      # Force the comments to change order
+      comments.first.edit!
+
+      comment_ids = comments.map(&:id)
+      ids_ascending = comment_ids.sort
+      expect(comment_ids).to eq ids_ascending
     end
   end
 
