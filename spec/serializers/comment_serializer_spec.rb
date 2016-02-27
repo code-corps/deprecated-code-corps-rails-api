@@ -78,6 +78,10 @@ describe CommentSerializer, :type => :serializer do
         expect(subject["state"]).to eql resource.state
       end
 
+      it "has a 'created_at'" do
+        expect(subject["created_at"]).to be_the_same_time_as resource.created_at
+      end
+
       it "has an 'edited_at'" do
         expect(subject["edited_at"]).to be_the_same_time_as resource.edited_at
       end

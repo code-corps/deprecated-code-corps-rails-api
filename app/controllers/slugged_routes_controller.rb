@@ -12,14 +12,20 @@
 
 class SluggedRoutesController < ApplicationController
   def show
-    slugged_route = SluggedRoute.find_by_slug!(slug)
+    slugged_route = SluggedRoute.where("lower(slug) = ?", downcased_slug).first!
 
     authorize slugged_route
 
     render json: slugged_route
   end
 
-  def slug
-    params[:id]
-  end
+  private
+
+    def downcased_slug
+      slug.downcase
+    end
+
+    def slug
+      params[:id]
+    end
 end

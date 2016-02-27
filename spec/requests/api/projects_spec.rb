@@ -89,6 +89,24 @@ describe "Projects API" do
       end
     end
 
+    context "when the slugs are different cases" do
+      before do
+        upcased_slugged_route_slug = @project.organization.slugged_route.slug.upcase
+        upcased_project_slug = @project.slug.upcase
+        get "#{host}/#{upcased_slugged_route_slug}/#{upcased_project_slug}"
+      end
+
+      it "responds with a 200" do
+        expect(last_response.status).to eq 200
+      end
+
+      it "returns the specified project" do
+        expect(json).to serialize_object(@project).
+          with(ProjectSerializer).
+          with_includes(:github_repositories)
+      end
+    end
+
     context "when there's no organization" do
       before do
         get "#{host}/slug_1/slug_2"

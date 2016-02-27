@@ -15,9 +15,8 @@
 #
 
 class CommentSerializer < ActiveModel::Serializer
-  attributes :id, :state,
-             :body, :body_preview, :markdown, :markdown_preview,
-             :edited_at
+  attributes :id, :state, :body, :body_preview, :markdown, :markdown_preview,
+             :edited_at, :created_at
 
   belongs_to :post
   belongs_to :user

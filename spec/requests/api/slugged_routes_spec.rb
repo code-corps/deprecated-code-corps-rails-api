@@ -18,6 +18,22 @@ describe "Slugged Routes API" do
       end
     end
 
+    context "when the slug is a different case" do
+      before do
+        @slugged_route = create(:organization).slugged_route
+        get "#{host}/#{@slugged_route.slug.upcase}"
+      end
+
+      it "responds with a 200" do
+        expect(last_response.status).to eq 200
+      end
+
+      it "returns a SluggedRoute, serialized with SluggedRouteSerializer, with owner included" do
+        expect(json).to serialize_object(@slugged_route).
+          with(SluggedRouteSerializer)
+      end
+    end
+
     context "when the slugged_route doesn't exist" do
       before do
         get "#{host}/random_slug"
