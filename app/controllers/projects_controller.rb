@@ -111,7 +111,9 @@ class ProjectsController < ApplicationController
 
     def find_project_with_slugged_route!
       slugged_route = find_slugged_route!
-      Project.includes(:github_repositories, :organization).find_by!(slug: project_slug, organization: slugged_route.owner)
+      Project.includes(:github_repositories, :organization).
+        where("lower(slug) = ?", project_slug.downcase).
+        find_by!(organization: slugged_route.owner)
     end
 
     def find_projects_with_slugged_route!
@@ -120,6 +122,6 @@ class ProjectsController < ApplicationController
     end
 
     def find_slugged_route!
-      SluggedRoute.find_by_slug!(slugged_route_slug)
+      SluggedRoute.where("lower(slug) = ?", slugged_route_slug.downcase).first!
     end
 end
