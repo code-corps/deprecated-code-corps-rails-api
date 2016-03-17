@@ -30,6 +30,7 @@ describe PostSerializer, type: :serializer do
       title: "Post title",
       user: create(:user),
       project: create(:project),
+      body: "Random body",
       number: 1
     )
 

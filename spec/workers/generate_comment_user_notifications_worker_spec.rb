@@ -2,8 +2,8 @@ require 'rails_helper'
 
 describe GenerateCommentUserNotificationsWorker do
 
-  let(:draft_comment) { create(:comment, :with_user_mentions, mention_count: 4,  aasm_state: "draft") }
-  let(:published_comment) { create(:comment, :with_user_mentions, mention_count: 4,  aasm_state: "published") }
+  let(:draft_comment) { create(:comment, :draft, :with_user_mentions, mention_count: 4) }
+  let(:published_comment) { create(:comment, :published, :with_user_mentions, mention_count: 4) }
 
   context "when there are no pre-existing notifications" do
     context "when the comment is a draft" do

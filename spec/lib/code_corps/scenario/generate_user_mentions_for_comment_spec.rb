@@ -6,11 +6,17 @@ module CodeCorps
     describe GenerateUserMentionsForComment do
       describe "#call" do
         let(:user) { create(:user, username: "joshsmith") }
+        let(:comment) { create(:comment) }
+
+        before do
+          # need to disable the default after save hook which generates mentions
+          allow_any_instance_of(Comment).to receive(:generate_mentions)
+        end
 
         it "creates user mentions for body_preview when previewing" do
-          comment = create(:comment, markdown_preview: "Mentioning @#{user.username}")
+          comment.markdown_preview = "Mentioning @#{user.username}"
+          comment.update(false)
 
-          comment.publishing = false
           GenerateUserMentionsForComment.new(comment).call
 
           mention = CommentUserMention.last
@@ -23,9 +29,9 @@ module CodeCorps
         end
 
         it "creates user mentions from body when publishing" do
-          comment = create(:comment, markdown_preview: "Mentioning @#{user.username}")
+          comment.markdown_preview = "Mentioning @#{user.username}"
+          comment.update(true)
 
-          comment.publishing = true
           GenerateUserMentionsForComment.new(comment).call
 
           mention = CommentUserMention.last
@@ -37,9 +43,13 @@ module CodeCorps
           expect(post.comment_user_mentions).to include mention
         end
 
-        context "when mentions already exist" do
-          let(:comment) { create(:comment) }
+        it "does not fail when content is nil" do
+          comment.markdown_preview = nil
+          comment.update(false)
+          expect { GenerateUserMentionsForComment.new(comment).call }.not_to raise_error
+        end
 
+        context "when mentions already exist" do
           before do
             create_list(:comment_user_mention, 2, comment: comment, status: :published)
             create_list(:comment_user_mention, 3, comment: comment, status: :preview)

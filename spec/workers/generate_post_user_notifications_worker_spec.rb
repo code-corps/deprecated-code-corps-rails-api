@@ -2,8 +2,8 @@ require 'rails_helper'
 
 describe GeneratePostUserNotificationsWorker do
 
-  let(:draft_post) { create(:post, :with_user_mentions, mention_count: 4, aasm_state: "draft") }
-  let(:published_post) { create(:post, :with_user_mentions, mention_count: 4, aasm_state: "published") }
+  let(:draft_post) { create(:post, :draft, :with_user_mentions, mention_count: 4) }
+  let(:published_post) { create(:post, :published, :with_user_mentions, mention_count: 4) }
 
   context "when there are no pre-existing notifications" do
     context "when the post is a draft" do

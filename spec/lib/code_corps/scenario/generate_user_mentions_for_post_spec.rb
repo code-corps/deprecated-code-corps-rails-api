@@ -6,11 +6,17 @@ module CodeCorps
     describe GenerateUserMentionsForPost do
       describe "#call" do
         let(:user) { create(:user, username: "joshsmith") }
+        let(:post) { create(:post) }
+
+        before do
+          # need to skip the default hook for generating mentions
+          allow_any_instance_of(Post).to receive(:generate_mentions)
+        end
 
         it "creates user mentions for body_preview when previewing" do
-          post = create(:post, markdown_preview: "Mentioning @#{user.username}")
+          post.markdown_preview = "Mentioning @#{user.username}"
+          post.update(false)
 
-          post.publishing = false
           GenerateUserMentionsForPost.new(post).call
 
           mention = PostUserMention.last
@@ -20,9 +26,9 @@ module CodeCorps
         end
 
         it "creates user mentions from body when publishing" do
-          post = create(:post, markdown_preview: "Mentioning @#{user.username}")
+          post.markdown_preview = "Mentioning @#{user.username}"
+          post.update(true)
 
-          post.publishing = true
           GenerateUserMentionsForPost.new(post).call
 
           mention = PostUserMention.last
@@ -31,9 +37,13 @@ module CodeCorps
           expect(mention.username).to eq user.username
         end
 
-        context "when mentions already exist" do
-          let(:post) { create(:post) }
+        it "does not fail when content is nil" do
+          post.markdown_preview = nil
+          post.update(false)
+          expect { GenerateUserMentionsForPost.new(post).call }.not_to raise_error
+        end
 
+        context "when mentions already exist" do
           before do
             create_list(:post_user_mention, 2, post: post, status: :published)
             create_list(:post_user_mention, 3, post: post, status: :preview)

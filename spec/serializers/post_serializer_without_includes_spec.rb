@@ -8,6 +8,7 @@ describe PostSerializerWithoutIncludes, :type => :serializer do
         title: "Post title",
         user: create(:user),
         project: create(:project),
+        body: "Some body",
         number: 1)
 
       post.publish!
