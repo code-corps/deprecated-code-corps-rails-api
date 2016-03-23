@@ -68,31 +68,80 @@ describe "OrganizationMemberships API" do
   end
 
   context "POST /organization_memberships" do
-    context "when unauthenticated" do
-      it "allows creating a 'pending' membership"
+    let(:organization) { create(:organization) }
+    let(:applicant) { create(:user, password: "password") }
 
-      it "responds with a 401 for any other membership role" do
-        %w(contributor admin owner).each do |role|
-          post "#{host}/organization_memberships", data: { role: role }
-          expect(last_response.status).to eq 401
-          expect(json).to be_a_valid_json_api_error.with_id "NOT_AUTHORIZED"
-        end
+    context "when unauthenticated" do
+      it "responds with a 401 NOT_AUTHORIZED" do
+        post "#{host}/organization_memberships", data: {
+          type: "organization_memberships",
+          attributes: { role: :pending },
+          relationships: {
+            member: { data: { id: applicant.id, type: "users" } },
+            organization: { data: { id: organization.id, type: "organizations" } }
+          }
+        }
+
+        expect(last_response.status).to eq 401
+        expect(json).to be_a_valid_json_api_error.with_id "NOT_AUTHORIZED"
       end
     end
 
     context "when authenticated" do
-      pending "contributors cannot create anything"
-      pending "pending members cannot create anything"
-      pending "'admin' create 'pending' or 'contributor' roles"
-      pending "'admin' cannot create 'admin' or 'owner' roles"
-      pending "'owner' can create all roles"
-      pending "what happens when 'owner' creates an 'owner'?"
+      let(:token) { authenticate email: applicant.email, password: "password" }
+
+      context "when unauthorized" do
+        it "respond with 401 ACCESS_DENIED" do
+          authenticated_post "/organization_memberships", {
+            data: {
+              type: "organization_memberships",
+              attributes: { role: :contributor },
+              relationships: {
+                member: { data: { id: applicant.id, type: "users" } },
+                organization: { data: { id: organization.id, type: "organizations" } }
+              }
+            }
+          }, token
+
+          expect(last_response.status).to eq 401
+          expect(json).to be_a_valid_json_api_error.with_id "ACCESS_DENIED"
+        end
+      end
+
+      context "when authorized" do
+        it "creates an organization_membership" do
+          authenticated_post "/organization_memberships", {
+            data: {
+              type: "organization_memberships",
+              attributes: { role: :pending },
+              relationships: {
+                member: { data: { id: applicant.id, type: "users" } },
+                organization: { data: { id: organization.id, type: "organizations" } }
+              }
+            }
+          }, token
+
+          expect(last_response.status).to eq 200
+          expect(json)
+            .to serialize_object(OrganizationMembership.last)
+            .with(OrganizationMembershipSerializer)
+        end
+      end
     end
   end
 
-  context "PATCH /posts/:id" do
+  context "PATCH /organization_memberships/:id" do
+    let(:organization) { create(:organization) }
+    let(:applicant) { create(:user, password: "password") }
+    let(:admin) { create(:user, password: "password") }
+    let(:membership) do
+      create(
+        :organization_membership,
+        role: :pending, member: applicant, organization: organization)
+    end
+
     context "when unauthenticated" do
-      it "responds with a proper 401" do
+      it "responds with a 401 NOT_AUTHORIZED" do
         patch "#{host}/organization_memberships/1"
         expect(last_response.status).to eq 401
         expect(json).to be_a_valid_json_api_error.with_id "NOT_AUTHORIZED"
@@ -100,27 +149,90 @@ describe "OrganizationMemberships API" do
     end
 
     context "when authenticated" do
-      pending "'pending' and 'contributor' members cannot do anything"
-      pending "'admin' and 'owner' can approve 'pending' members"
-      pending "'admin' and 'owner' can promote 'contributor' to 'admin'"
-      pending "what happens when 'owner' promotes another member to an 'owner'?"
+      context "when unauthorized" do
+        it "respond with 401 ACCESS_DENIED" do
+          token = authenticate(email: applicant.email, password: "password")
+
+          authenticated_patch "/organization_memberships/#{membership.id}", {
+            data: {
+              type: "organization_memberships",
+              attributes: { role: :contributor }
+            }
+          }, token
+
+          expect(last_response.status).to eq 401
+          expect(json).to be_a_valid_json_api_error.with_id "ACCESS_DENIED"
+        end
+      end
+
+      context "when authorized" do
+        it "updates an organization_membership" do
+          create(:organization_membership, role: :admin, member: admin, organization: organization)
+
+          token = authenticate(email: admin.email, password: "password")
+
+          authenticated_patch "/organization_memberships/#{membership.id}", {
+            data: {
+              type: "organization_memberships",
+              attributes: { role: :contributor }
+            }
+          }, token
+
+          expect(last_response.status).to eq 200
+          expect(json)
+            .to serialize_object(membership.reload)
+            .with(OrganizationMembershipSerializer)
+        end
+      end
     end
   end
 
   context "DELETE /organization_memberships/:id" do
+    let(:applicant) { create(:user, password: "password") }
+    let(:user) { create(:user, password: "password") }
+    let(:membership) { create(:organization_membership, role: :pending, member: applicant) }
+
     context "when unauthenticated" do
-      it "responds with a proper 401" do
-        delete "#{host}/organization_memberships/1"
+      it "responds with a 401 NOT_AUTHORIZED" do
+        delete "#{host}/organization_memberships/#{membership.id}", {}
         expect(last_response.status).to eq 401
         expect(json).to be_a_valid_json_api_error.with_id "NOT_AUTHORIZED"
       end
     end
 
     context "when authenticated" do
-      pending "'pending', 'contributor' and 'admin' members can destroy their own memberships"
-      pending "'admin' and 'owner' can destroy other 'pending' and 'contributor' members"
-      pending "'owner' can destroy other 'pending', 'contributor' or 'admin' members"
-      pending "'onwer' cannot destroy their own membership"
+      context "when non-existant" do
+        it "responds with a 404" do
+          token = authenticate(email: user.email, password: "password")
+
+          authenticated_delete "/organization_memberships/wrong_id", {}, token
+
+          expect(last_response.status).to eq 404
+          expect(json).to be_a_valid_json_api_error.with_id "RECORD_NOT_FOUND"
+        end
+      end
+
+      context "when unauthorized" do
+        it "responds with 401 ACCESS_DENIED" do
+          token = authenticate(email: user.email, password: "password")
+
+          authenticated_delete "/organization_memberships/#{membership.id}", {}, token
+
+          expect(last_response.status).to eq 401
+          expect(json).to be_a_valid_json_api_error.with_id "ACCESS_DENIED"
+        end
+      end
+
+      context "when authorized" do
+        it "destroys an organization_membership" do
+          token = authenticate(email: applicant.email, password: "password")
+
+          authenticated_delete "/organization_memberships/#{membership.id}", {}, token
+
+          expect(last_response.status).to eq 204
+          expect(applicant.organization_memberships.count).to eq 0
+        end
+      end
     end
   end
 end

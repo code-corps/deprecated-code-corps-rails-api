@@ -44,7 +44,7 @@ Rails.application.routes.draw do
       get "memberships", to: "organization_memberships#index"
     end
 
-    resources :organization_memberships, only: [:post, :patch]
+    resources :organization_memberships, only: [:create, :update, :destroy]
 
     resources :post_user_mentions, only: [:index]
     resources :comment_user_mentions, only: [:index]

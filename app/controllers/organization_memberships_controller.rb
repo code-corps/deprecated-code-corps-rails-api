@@ -1,17 +1,48 @@
 class OrganizationMembershipsController < ApplicationController
+  before_action :doorkeeper_authorize!, only: [:create, :update, :destroy]
+
   def index
+    authorize organization_memberships
     render json: organization_memberships,
            meta: meta_for(organization_membership_count),
            each_serializer: OrganizationMembershipSerializer
   end
 
   def create
+    organization_membership = OrganizationMembership.new(create_params)
+
+    authorize organization_membership
+
+    if organization_membership.save
+      render json: organization_membership
+    else
+      render_validation_errors organization_membership.errors
+    end
   end
 
   def update
+    organization_membership = OrganizationMembership.find(params[:id])
+    organization_membership.assign_attributes(update_params)
+
+    authorize organization_membership
+
+    if organization_membership.save
+      render json: organization_membership
+    else
+      render_validation_errors organization_membership.errors
+    end
+  end
+
+  def destroy
+    organization_membership = OrganizationMembership.find(params[:id])
+    authorize organization_membership
+    organization_membership.destroy!
+    render json: :nothing, status: :no_content
   end
 
   private
+
+    # for index
 
     def filter_params
       filter_params = {}
@@ -21,7 +52,6 @@ class OrganizationMembershipsController < ApplicationController
     end
 
     def organization_memberships
-      pp params
       OrganizationMembership
         .includes(:member)
         .includes(:organization)
@@ -36,5 +66,27 @@ class OrganizationMembershipsController < ApplicationController
 
     def organization
       Organization.find(params[:organization_id])
+    end
+
+    # for create and update
+
+    def organization_id
+      record_relationships.fetch(:organization, {}).fetch(:data, {})[:id]
+    end
+
+    def member_id
+      record_relationships.fetch(:member, {}).fetch(:data, {})[:id]
+    end
+
+    def relationships
+      { organization_id: organization_id, member_id: member_id }
+    end
+
+    def update_params
+      record_attributes.permit(:role)
+    end
+
+    def create_params
+      update_params.merge(relationships)
     end
 end
