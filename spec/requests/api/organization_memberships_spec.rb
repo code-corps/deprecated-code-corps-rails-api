@@ -5,8 +5,6 @@ require "rails_helper"
 # - not found
 # - not allowed
 # - successful
-
-
 describe "OrganizationMemberships API" do
   context "GET /organizations/:id/memberships" do
     context "when the organization doesn't exist" do
@@ -18,17 +16,53 @@ describe "OrganizationMemberships API" do
     end
 
     context "when successful" do
+      let(:organization) { create(:organization) }
+
       before do
-        # create records
+        create_list(:organization_membership, 7, organization: organization, role: :pending)
+        create_list(:organization_membership, 12, organization: organization, role: :contributor)
+        create_list(:organization_membership, 5, organization: organization, role: :admin)
+        create(:organization_membership, organization: organization, role: :owner)
       end
 
-      it "returns all memberships"
-      it "allows filtering by role"
+      it "returns the first page of memberships" do
+        get "#{host}/organizations/#{organization.id}/memberships"
 
-      context "paging" do
-        it "returns the first page by default"
-        it "returns the specified page"
-        it "works with the 'role' filter"
+        expect(last_response.status).to eq 200
+        expect(json)
+          .to serialize_collection(organization.organization_memberships.page(1).per(10))
+          .with(OrganizationMembershipSerializer)
+          .with_meta(total_records: 25, total_pages: 3, page_size: 10, current_page: 1)
+      end
+
+      it "allows filtering by role" do
+        get "#{host}/organizations/#{organization.id}/memberships", role: "pending"
+        expect(last_response.status).to eq 200
+        expect(json)
+          .to serialize_collection(organization.organization_memberships.where(role: :pending))
+          .with(OrganizationMembershipSerializer)
+          .with_meta(total_records: 7, total_pages: 1, page_size: 10, current_page: 1)
+      end
+
+      it "allows specifying the page" do
+        get "#{host}/organizations/#{organization.id}/memberships", page: { number: 2 }
+        expect(last_response.status).to eq 200
+        expect(json)
+          .to serialize_collection(organization.organization_memberships.page(2).per(10))
+          .with(OrganizationMembershipSerializer)
+          .with_meta(total_records: 25, total_pages: 3, page_size: 10, current_page: 2)
+      end
+
+      it "allows both page and role" do
+        get "#{host}/organizations/#{organization.id}/memberships",
+            page: { number: 2 }, role: "contributor"
+        expect(last_response.status).to eq 200
+        expected_collection = organization
+                              .organization_memberships.where(role: :contributor).page(2).per(10)
+        expect(json)
+          .to serialize_collection(expected_collection)
+          .with(OrganizationMembershipSerializer)
+          .with_meta(total_records: 12, total_pages: 2, page_size: 10, current_page: 2)
       end
     end
   end
@@ -52,7 +86,7 @@ describe "OrganizationMemberships API" do
       pending "'admin' create 'pending' or 'contributor' roles"
       pending "'admin' cannot create 'admin' or 'owner' roles"
       pending "'owner' can create all roles"
-      pending "what happens when 'owner' creates an 'owner'? should their own role be demoted to admin?"
+      pending "what happens when 'owner' creates an 'owner'?"
     end
   end
 
@@ -69,7 +103,7 @@ describe "OrganizationMemberships API" do
       pending "'pending' and 'contributor' members cannot do anything"
       pending "'admin' and 'owner' can approve 'pending' members"
       pending "'admin' and 'owner' can promote 'contributor' to 'admin'"
-      pending "what happens when 'owner' promotes another member to an 'owner'? should their own role be demoted to 'admin'?"
+      pending "what happens when 'owner' promotes another member to an 'owner'?"
     end
   end
 
