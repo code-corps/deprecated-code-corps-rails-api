@@ -144,8 +144,8 @@ describe Post, type: :model do
     context "when published with bang (auto-save) methods" do
       it "numbers posts for each project" do
         project = create(:project)
-        first_post = create(:post, project: project)
-        second_post = create(:post, project: project)
+        first_post = create(:post, project: project, body: "A body")
+        second_post = create(:post, project: project, body: "A body")
         first_post.publish!
         second_post.publish!
 
@@ -155,7 +155,7 @@ describe Post, type: :model do
 
       it "should not allow a duplicate number to be set for the same project" do
         project = create(:project)
-        first_post = create(:post, project: project)
+        first_post = create(:post, project: project, body: "A body")
         first_post.publish!
 
         expect { create(:post, project: project, number: 1) }.to raise_error ActiveRecord::RecordInvalid

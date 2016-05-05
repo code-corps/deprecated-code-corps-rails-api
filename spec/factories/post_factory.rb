@@ -26,8 +26,6 @@ FactoryGirl.define do
     sequence(:title) { |n| "Post #{n}" }
     sequence(:markdown) { |n| "Post content #{n}" }
     sequence(:markdown_preview) { |n| "Post content #{n}" }
-    sequence(:body) { |n| "<p>Post content #{n}</p>" }
-    sequence(:body_preview) { |n| "<p>Post content #{n}</p>" }
 
     association :user
     association :project

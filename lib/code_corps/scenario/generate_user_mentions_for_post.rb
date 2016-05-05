@@ -41,6 +41,8 @@ module CodeCorps
 
           content = publishing? ? post.body : post.body_preview
 
+          return if content.nil?
+
           content.scan(regex) do |temp|
             username = temp.first
             start_index = Regexp.last_match.offset(0).first
