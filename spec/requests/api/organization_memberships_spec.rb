@@ -29,40 +29,40 @@ describe "OrganizationMemberships API" do
         get "#{host}/organizations/#{organization.id}/memberships"
 
         expect(last_response.status).to eq 200
-        expect(json)
-          .to serialize_collection(organization.organization_memberships.page(1).per(10))
-          .with(OrganizationMembershipSerializer)
-          .with_meta(total_records: 25, total_pages: 3, page_size: 10, current_page: 1)
+        expect(json).
+          to serialize_collection(organization.organization_memberships.page(1).per(10)).
+          with(OrganizationMembershipSerializer).
+          with_meta(total_records: 25, total_pages: 3, page_size: 10, current_page: 1)
       end
 
       it "allows filtering by role" do
         get "#{host}/organizations/#{organization.id}/memberships", role: "pending"
         expect(last_response.status).to eq 200
-        expect(json)
-          .to serialize_collection(organization.organization_memberships.where(role: :pending))
-          .with(OrganizationMembershipSerializer)
-          .with_meta(total_records: 7, total_pages: 1, page_size: 10, current_page: 1)
+        expect(json).
+          to serialize_collection(organization.organization_memberships.where(role: :pending)).
+          with(OrganizationMembershipSerializer).
+          with_meta(total_records: 7, total_pages: 1, page_size: 10, current_page: 1)
       end
 
       it "allows specifying the page" do
         get "#{host}/organizations/#{organization.id}/memberships", page: { number: 2 }
         expect(last_response.status).to eq 200
-        expect(json)
-          .to serialize_collection(organization.organization_memberships.page(2).per(10))
-          .with(OrganizationMembershipSerializer)
-          .with_meta(total_records: 25, total_pages: 3, page_size: 10, current_page: 2)
+        expect(json).
+          to serialize_collection(organization.organization_memberships.page(2).per(10)).
+          with(OrganizationMembershipSerializer).
+          with_meta(total_records: 25, total_pages: 3, page_size: 10, current_page: 2)
       end
 
       it "allows both page and role" do
         get "#{host}/organizations/#{organization.id}/memberships",
             page: { number: 2 }, role: "contributor"
         expect(last_response.status).to eq 200
-        expected_collection = organization
-                              .organization_memberships.where(role: :contributor).page(2).per(10)
-        expect(json)
-          .to serialize_collection(expected_collection)
-          .with(OrganizationMembershipSerializer)
-          .with_meta(total_records: 12, total_pages: 2, page_size: 10, current_page: 2)
+        expected_collection = organization.organization_memberships.
+                              where(role: :contributor).page(2).per(10)
+        expect(json).
+          to serialize_collection(expected_collection).
+          with(OrganizationMembershipSerializer).
+          with_meta(total_records: 12, total_pages: 2, page_size: 10, current_page: 2)
       end
     end
   end
@@ -122,9 +122,9 @@ describe "OrganizationMemberships API" do
           }, token
 
           expect(last_response.status).to eq 200
-          expect(json)
-            .to serialize_object(OrganizationMembership.last)
-            .with(OrganizationMembershipSerializer)
+          expect(json).
+            to serialize_object(OrganizationMembership.last).
+            with(OrganizationMembershipSerializer)
         end
       end
     end
@@ -179,9 +179,9 @@ describe "OrganizationMemberships API" do
           }, token
 
           expect(last_response.status).to eq 200
-          expect(json)
-            .to serialize_object(membership.reload)
-            .with(OrganizationMembershipSerializer)
+          expect(json).
+            to serialize_object(membership.reload).
+            with(OrganizationMembershipSerializer)
         end
       end
     end

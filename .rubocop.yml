@@ -1,3 +1,5 @@
+inherit_from: .hound_defaults.yml
+
 Documentation:
   Enabled: false
 Style/StringLiterals:
