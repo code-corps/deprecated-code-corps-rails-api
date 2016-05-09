@@ -52,12 +52,12 @@ class OrganizationMembershipsController < ApplicationController
     end
 
     def organization_memberships
-      OrganizationMembership
-        .includes(:member)
-        .includes(:organization)
-        .where(filter_params)
-        .page(page_number)
-        .per(page_size)
+      OrganizationMembership.
+        includes(:member).
+        includes(:organization).
+        where(filter_params).
+        page(page_number).
+        per(page_size)
     end
 
     def organization_membership_count
