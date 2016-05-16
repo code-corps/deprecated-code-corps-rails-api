@@ -3,7 +3,7 @@ require "rails_helper"
 describe OrganizationMembershipPolicy do
   subject { described_class }
 
-  let(:primary_organization) { create(:organization) }
+  let(:test_organization) { create(:organization) }
 
   let(:non_member) { create(:user) }
   let(:pending_user) { create(:user) }
@@ -11,11 +11,11 @@ describe OrganizationMembershipPolicy do
   let(:admin) { create(:user) }
   let(:owner) { create(:user) }
 
-  def new_membership_for(member: create(:user), role: "pending", organization: primary_organization)
+  def new_membership_for(member: create(:user), role: "pending", organization: test_organization)
     build(:organization_membership, member: member, organization: organization, role: role)
   end
 
-  def create_membership_for(member: create(:user), role: "pending", organization: primary_organization)
+  def create_membership_for(member: create(:user), role: "pending", organization: test_organization)
     create(:organization_membership, member: member, organization: organization, role: role)
   end
 
