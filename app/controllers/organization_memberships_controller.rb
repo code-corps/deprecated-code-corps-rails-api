@@ -1,6 +1,7 @@
 class OrganizationMembershipsController < ApplicationController
   before_action :doorkeeper_authorize!, only: [:create, :update, :destroy]
 
+  # /organizations/:id/memberships
   def index
     authorize organization_memberships
     render json: organization_memberships,
