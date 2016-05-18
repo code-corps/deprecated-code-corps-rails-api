@@ -24,7 +24,10 @@ Rails.application.routes.draw do
     resources :skills, only: [:index, :create]
 
     resources :post_likes, only: [:create, :destroy]
+
     resources :user_skills, only: [:create, :destroy]
+    resources :user_roles, only: [:create, :destroy]
+
     resources :github_repositories, only: [:create]
 
     resources :roles, only: [:index, :create]
