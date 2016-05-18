@@ -15,7 +15,6 @@ class RolesController < ApplicationController
     render json: Role.all.includes(:skills)
   end
 
-
   def create
     role = Role.new(permitted_params)
 

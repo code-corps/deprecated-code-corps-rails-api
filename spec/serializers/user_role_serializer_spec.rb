@@ -74,7 +74,9 @@ describe UserRoleSerializer, type: :serializer do
       end
 
       context "when including 'role'" do
-        let(:serialization) { ActiveModel::Serializer::Adapter.create(serializer, include: ["role"]) }
+        let(:serialization) do
+          ActiveModel::Serializer::Adapter.create(serializer, include: ["role"])
+        end
 
         subject do
           JSON.parse(serialization.to_json)["included"]
