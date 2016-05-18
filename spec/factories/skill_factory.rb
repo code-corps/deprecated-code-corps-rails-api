@@ -2,12 +2,12 @@
 #
 # Table name: skills
 #
-#  id                :integer          not null, primary key
-#  title             :string           not null
-#  description       :string
-#  skill_category_id :integer
-#  created_at        :datetime         not null
-#  updated_at        :datetime         not null
+#  id          :integer          not null, primary key
+#  title       :string           not null
+#  description :string
+#  role_id     :integer
+#  created_at  :datetime         not null
+#  updated_at  :datetime         not null
 #
 
 FactoryGirl.define do
@@ -16,7 +16,7 @@ FactoryGirl.define do
     sequence(:title) { |n| "Skill #{n}" }
     sequence(:description) { |n| "Skill description #{n}" }
 
-    association :skill_category
+    association :role
   end
 
 end

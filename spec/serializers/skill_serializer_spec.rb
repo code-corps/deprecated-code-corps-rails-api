@@ -2,12 +2,12 @@
 #
 # Table name: skills
 #
-#  id                :integer          not null, primary key
-#  title             :string           not null
-#  description       :string
-#  skill_category_id :integer
-#  created_at        :datetime         not null
-#  updated_at        :datetime         not null
+#  id          :integer          not null, primary key
+#  title       :string           not null
+#  description :string
+#  role_id     :integer
+#  created_at  :datetime         not null
+#  updated_at  :datetime         not null
 #
 
 require "rails_helper"
@@ -62,10 +62,10 @@ describe SkillSerializer, :type => :serializer do
         JSON.parse(serialization.to_json)["data"]["relationships"]
       end
 
-      it "contains a 'skill_category' relationship" do
-        expect(subject["skill_category"]).not_to be_nil
-        expect(subject["skill_category"]["data"]["type"]).to eq "skill_categories"
-        expect(subject["skill_category"]["data"]["id"]).to eq resource.skill_category.id.to_s
+      it "contains a 'role' relationship" do
+        expect(subject["role"]).not_to be_nil
+        expect(subject["role"]["data"]["type"]).to eq "roles"
+        expect(subject["role"]["data"]["id"]).to eq resource.role.id.to_s
       end
     end
 

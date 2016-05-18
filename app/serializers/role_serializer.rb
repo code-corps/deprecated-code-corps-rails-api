@@ -1,13 +1,16 @@
 # == Schema Information
 #
-# Table name: skill_categories
+# Table name: roles
 #
 #  id         :integer          not null, primary key
-#  title      :string           not null
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
+#  name       :string           not null
+#  ability    :string           not null
 #
 
-class SkillCategory < ActiveRecord::Base
+class RoleSerializer < ActiveModel::Serializer
+  attributes :id, :name, :ability
+
   has_many :skills
 end
