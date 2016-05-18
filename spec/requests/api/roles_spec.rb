@@ -16,9 +16,9 @@ describe "Roles API" do
       end
 
       it "returns a list of roles, serialized using RoleSerializer, with skill includes" do
-        expect(json).to serialize_collection(@roles)
-                          .with(RoleSerializer)
-                          .with_includes("skills")
+        expect(json).to serialize_collection(@roles).
+          with(RoleSerializer).
+          with_includes("skills")
       end
     end
   end
@@ -68,8 +68,8 @@ describe "Roles API" do
           it "works" do
             make_request(params)
             expect(last_response.status).to eq 200
-            expect(json).to serialize_object(Role.last)
-              .with(RoleSerializer)
+            expect(json).to serialize_object(Role.last).
+              with(RoleSerializer)
           end
         end
 

@@ -9,7 +9,7 @@
 #  ability    :string           not null
 #
 
-require 'rails_helper'
+require "rails_helper"
 
 describe Role, type: :model do
   describe "schema" do
