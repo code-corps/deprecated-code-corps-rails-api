@@ -12,4 +12,7 @@
 class Role < ActiveRecord::Base
   has_many :role_skills
   has_many :skills, through: :role_skills
+
+  validates_presence_of :name
+  validates_presence_of :ability
 end

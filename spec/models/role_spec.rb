@@ -21,4 +21,9 @@ describe Role, type: :model do
     it { should have_many(:role_skills) }
     it { should have_many(:skills).through(:role_skills) }
   end
+
+  describe "validations" do
+    it { should validate_presence_of :name }
+    it { should validate_presence_of :ability }
+  end
 end

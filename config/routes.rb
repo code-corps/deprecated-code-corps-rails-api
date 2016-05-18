@@ -27,7 +27,7 @@ Rails.application.routes.draw do
     resources :user_skills, only: [:create, :destroy]
     resources :github_repositories, only: [:create]
 
-    resources :roles, only: [:index]
+    resources :roles, only: [:index, :create]
 
     resources :projects, only: [:index, :create, :update] do
       resources :posts, only: [:index, :show]

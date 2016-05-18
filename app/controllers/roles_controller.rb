@@ -14,4 +14,23 @@ class RolesController < ApplicationController
     authorize Role
     render json: Role.all.includes(:skills)
   end
+
+
+  def create
+    role = Role.new(permitted_params)
+
+    authorize role
+
+    if role.save
+      render json: role
+    else
+      render_validation_errors role.errors
+    end
+  end
+
+  private
+
+    def permitted_params
+      record_attributes.permit(:name, :ability)
+    end
 end
