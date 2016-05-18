@@ -16,7 +16,7 @@ describe RoleSerializer, :type => :serializer do
   context "individual resource representation" do
     let(:resource) {
       role = create(:role)
-      create_list(:skill, 10, role: role)
+      create_list(:role_skill, 10, role: role)
       role
     }
 

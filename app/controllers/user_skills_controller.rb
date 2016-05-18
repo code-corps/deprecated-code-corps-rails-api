@@ -13,9 +13,9 @@ class UserSkillsController < ApplicationController
   before_action :doorkeeper_authorize!
 
   def create
-    authorize UserSkill
-
     user_skill = UserSkill.new(create_params)
+
+    authorize user_skill
 
     if user_skill.valid?
       user_skill.save!
