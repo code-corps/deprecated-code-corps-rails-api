@@ -1,4 +1,6 @@
 class RolePolicy
+  attr_reader :user, :role
+
   def initialize(user, role)
     @user = user
     @role = role
@@ -9,12 +11,12 @@ class RolePolicy
   end
 
   def create?
-    return unless @user.present?
-    @user.admin?
+    return unless user.present?
+    user.admin?
   end
 
   def update?
-    return unless @user.present?
-    @user.admin?
+    return unless user.present?
+    user.admin?
   end
 end
