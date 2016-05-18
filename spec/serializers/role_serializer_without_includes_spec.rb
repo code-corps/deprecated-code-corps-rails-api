@@ -1,13 +1,12 @@
 require "rails_helper"
 
-describe RoleSerializerWithoutIncludes, :type => :serializer do
-
+describe RoleSerializerWithoutIncludes, type: :serializer do
   context "individual resource representation" do
-    let(:resource) {
+    let(:resource) do
       role = create(:role)
       create_list(:role_skill, 10, role: role)
       role
-    }
+    end
 
     let(:serializer) { RoleSerializerWithoutIncludes.new(resource) }
     let(:serialization) { ActiveModel::Serializer::Adapter.create(serializer) }

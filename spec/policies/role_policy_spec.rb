@@ -1,7 +1,6 @@
 require "rails_helper"
 
 describe RolePolicy do
-
   subject { described_class }
 
   before do

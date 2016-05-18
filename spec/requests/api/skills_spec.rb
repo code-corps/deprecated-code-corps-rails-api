@@ -1,7 +1,6 @@
 require "rails_helper"
 
 describe "Skills API" do
-
   context "GET /skills" do
     before do
       @skills = create_list(:skill, 10)
@@ -17,11 +16,10 @@ describe "Skills API" do
       end
 
       it "returns a list of skills, serialized using SkillSerializer, with skill includes" do
-        expect(json).to serialize_collection(@skills)
-                          .with(SkillSerializer)
+        expect(json).to serialize_collection(@skills).
+          with(SkillSerializer)
       end
     end
-
   end
 
   context "POST /skills" do
@@ -68,8 +66,8 @@ describe "Skills API" do
           it "works" do
             make_request(params)
             expect(last_response.status).to eq 200
-            expect(json).to serialize_object(Skill.last)
-              .with(SkillSerializer)
+            expect(json).to serialize_object(Skill.last).
+              with(SkillSerializer)
           end
         end
 

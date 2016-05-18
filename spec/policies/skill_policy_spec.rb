@@ -1,7 +1,6 @@
 require "rails_helper"
 
 describe SkillPolicy do
-
   subject { described_class }
 
   before do
