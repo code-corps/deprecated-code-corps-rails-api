@@ -12,5 +12,5 @@
 class SkillSerializer < ActiveModel::Serializer
   attributes :id, :title, :description
 
-  belongs_to :role
+  has_many :roles
 end

@@ -14,7 +14,13 @@ require "rails_helper"
 describe SkillSerializer, :type => :serializer do
 
   context "individual resource representation" do
-    let(:resource) { create(:skill) }
+    let(:resource) do
+      skill = create(:skill)
+
+      create_list(:role_skill, 2, skill: skill)
+
+      skill
+    end
 
     let(:serializer) { SkillSerializer.new(resource) }
     let(:serialization) { ActiveModel::Serializer::Adapter.create(serializer) }
@@ -61,10 +67,9 @@ describe SkillSerializer, :type => :serializer do
         JSON.parse(serialization.to_json)["data"]["relationships"]
       end
 
-      it "contains a 'role' relationship" do
-        expect(subject["role"]).not_to be_nil
-        expect(subject["role"]["data"]["type"]).to eq "roles"
-        expect(subject["role"]["data"]["id"]).to eq resource.role.id.to_s
+      it "has a 'roles' relationship" do
+        expect(subject["roles"]).not_to be_nil
+        expect(subject["roles"]["data"].count).to eq 2
       end
     end
 

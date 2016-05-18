@@ -1,10 +1,7 @@
 require 'rails_helper'
 
 describe "UserSkills API" do
-
-
   describe "POST /user_skills" do
-
     context "when unauthenticated" do
       it "responds with a 401" do
         post "#{host}/user_skills", { data: { } }
@@ -101,7 +98,6 @@ describe "UserSkills API" do
     end
 
     context "when authenticated" do
-
       let(:token) { authenticate(email: "josh@coderly.com", password: "password") }
 
       before do
