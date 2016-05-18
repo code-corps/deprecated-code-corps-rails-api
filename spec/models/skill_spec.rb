@@ -16,15 +16,14 @@ describe Skill, type: :model do
   describe "schema" do
     it { should have_db_column(:title).of_type(:string).with_options(null: false) }
     it { should have_db_column(:description).of_type(:string) }
-    it { should have_db_column(:role_id).of_type(:integer) }
   end
 
   describe "relationships" do
-    it { should belong_to(:role) }
+    it { should have_many(:role_skills) }
+    it { should have_many(:roles).through(:role_skills) }
   end
 
   describe "validations" do
     it { should validate_presence_of(:title) }
-    it { should validate_presence_of(:role) }
   end
 end

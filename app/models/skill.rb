@@ -11,8 +11,8 @@
 #
 
 class Skill < ActiveRecord::Base
-  belongs_to :role
+  has_many :role_skills
+  has_many :roles, through: :role_skills
 
   validates_presence_of :title
-  validates_presence_of :role
 end

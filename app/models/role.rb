@@ -10,5 +10,6 @@
 #
 
 class Role < ActiveRecord::Base
-  has_many :skills
+  has_many :role_skills
+  has_many :skills, through: :role_skills
 end

@@ -18,6 +18,7 @@ describe Role, type: :model do
   end
 
   describe "relationships" do
-    it { should have_many(:skills) }
+    it { should have_many(:role_skills) }
+    it { should have_many(:skills).through(:role_skills) }
   end
 end
