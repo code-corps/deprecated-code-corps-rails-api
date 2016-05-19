@@ -7,6 +7,11 @@ RSpec.describe Category, type: :model do
     it { should have_db_index(:slug).unique }
   end
 
+  describe "relationships" do
+    it { should have_many(:project_categories) }
+    it { should have_many(:projects).through(:project_categories) }
+  end
+
   describe "validations" do
     it { should validate_presence_of(:name) }
     it { should validate_presence_of(:slug) }

@@ -30,8 +30,10 @@ describe Project, type: :model do
 
   describe "relationships" do
     it { should belong_to(:organization) }
-    it { should have_many(:posts) }
+    it { should have_many(:project_categories) }
+    it { should have_many(:categories).through(:project_categories) }
     it { should have_many(:github_repositories) }
+    it { should have_many(:posts) }
   end
 
   describe "validations" do
