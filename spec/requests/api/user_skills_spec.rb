@@ -42,14 +42,14 @@ describe "UserSkills API" do
         it "includes user in the response" do
           expect(json.included).not_to be_nil
 
-          included_users = json.included.select{ |i| i.type == "users" }
+          included_users = json.included.select { |i| i.type == "users" }
           expect(included_users.count).to eq 1
         end
 
         it "includes skill in the response" do
           expect(json.included).not_to be_nil
 
-          included_users = json.included.select{ |i| i.type == "skills" }
+          included_users = json.included.select { |i| i.type == "skills" }
           expect(included_users.count).to eq 1
         end
       end

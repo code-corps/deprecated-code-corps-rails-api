@@ -47,7 +47,11 @@ Rails.application.routes.draw do
 
     resources :comment_images, only: [:create]
 
-    resources :organizations, only: [:show, :create, :update]
+    resources :organizations, only: [:show, :create, :update] do
+      get "memberships", to: "organization_memberships#index"
+    end
+
+    resources :organization_memberships, only: [:create, :update, :destroy]
 
     resources :post_user_mentions, only: [:index]
     resources :comment_user_mentions, only: [:index]
