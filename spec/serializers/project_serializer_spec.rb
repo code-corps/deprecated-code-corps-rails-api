@@ -20,12 +20,12 @@ require "rails_helper"
 
 describe ProjectSerializer, type: :serializer do
   context "individual resource representation" do
-    let(:resource) {
+    let(:resource) do
       project = create(:project)
       create_list(:project_category, 10, project: project)
       create_list(:github_repository, 10, project: project)
       project
-    }
+    end
 
     let(:serializer) { ProjectSerializer.new(resource) }
     let(:serialization) { ActiveModel::Serializer::Adapter.create(serializer) }
