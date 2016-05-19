@@ -38,18 +38,8 @@ class UserSkillsController < ApplicationController
   private
 
     def create_params
-      relationships
-    end
-
-    def relationships
-      { user_id: user_id, skill_id: skill_id }
-    end
-
-    def user_id
-      current_user.id
-    end
-
-    def skill_id
-      record_relationships.fetch(:skill, {}).fetch(:data, {})[:id]
+      params_for_user(
+        parse_params(params, only: [:skill])
+      )
     end
 end

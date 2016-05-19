@@ -16,7 +16,6 @@
 #
 
 class CommentImagesController < ApplicationController
-
   before_action :doorkeeper_authorize!, only: [:create]
 
   def create
@@ -35,18 +34,6 @@ class CommentImagesController < ApplicationController
   private
 
     def create_params
-      record_attributes.permit(:filename, :base64_photo_data).merge(relationships)
-    end
-
-    def user_id
-      current_user.id
-    end
-
-    def relationships
-      { comment_id: comment_id, user_id: user_id }
-    end
-
-    def comment_id
-      record_relationships.fetch(:comment, {}).fetch(:data, {})[:id]
+      params_for_user(deserialized_params)
     end
 end

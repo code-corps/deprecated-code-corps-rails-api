@@ -30,6 +30,6 @@ class RolesController < ApplicationController
   private
 
     def permitted_params
-      record_attributes.permit(:name, :ability)
+      parse_params(params, only: [:name, :ability])
     end
 end

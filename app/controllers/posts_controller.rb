@@ -67,33 +67,23 @@ class PostsController < ApplicationController
   private
 
     def publish?
-      true unless record_attributes.fetch(:preview, false)
+      true unless deserialized_params.fetch(:preview, false)
     end
 
     def update_params
-      record_attributes.permit(:markdown_preview, :title)
+      parse_params(params, only: [:markdown_preview, :title])
     end
 
     def create_params
-      record_attributes.permit(:markdown_preview, :title, :post_type).merge(relationships)
+      params_for_user(
+        parse_params(params, only: [:markdown_preview, :title, :post_type, :project])
+      )
     end
 
     def filter_params
       filter_params = {}
       filter_params[:post_type] = params[:post_type] if params[:post_type]
       filter_params
-    end
-
-    def project_relationship_id
-      record_relationships.fetch(:project, {}).fetch(:data, {})[:id]
-    end
-
-    def user_id
-      current_user.id
-    end
-
-    def relationships
-      { project_id: project_relationship_id, user_id: user_id }
     end
 
     def project_id
