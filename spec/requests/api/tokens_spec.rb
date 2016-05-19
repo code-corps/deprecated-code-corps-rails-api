@@ -1,4 +1,5 @@
 require 'rails_helper'
+require_relative "../../utils"
 
 describe "Tokens API" do
 
@@ -42,7 +43,7 @@ describe "Tokens API" do
       end
     end
 
-    context "with a facebook_auth_code" do
+    context "with a facebook_auth_code", skip: FB_ENABLED do
 
       context "when facebook user doesn't exist", vcr: { cassette_name: 'requests/api/tokens/facebook_user_not_found' } do
         it "fails with 400" do

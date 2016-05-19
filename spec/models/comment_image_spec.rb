@@ -16,6 +16,7 @@
 #
 
 require "rails_helper"
+require_relative "../utils"
 
 RSpec.describe CommentImage, type: :model do
   let(:gif_string) {
@@ -51,7 +52,9 @@ RSpec.describe CommentImage, type: :model do
     it { should allow_value(gif_string).for(:base64_photo_data) }
     it { should_not allow_value(jpeg_without_data_string).for(:base64_photo_data) }
 
-    context "paperclip", vcr: { cassette_name: "models/comment_image/validation" } do
+    context "paperclip",
+            vcr: { cassette_name: "models/comment_image/validation" },
+            skip: S3_ENABLED do
       it { should validate_attachment_size(:image).less_than(10.megabytes) }
     end
   end
@@ -65,7 +68,7 @@ RSpec.describe CommentImage, type: :model do
       }
     end
 
-    context "with cloudfront" do
+    context "with cloudfront", skip: CLOUDFRONT_ENABLED do
       let(:comment) { create(:comment, id: 1) }
       let(:comment_image) { create(:comment_image, :with_s3_image, id: 1, comment: comment, filename: "default-avatar.gif", base64_photo_data: gif_string) }
 
