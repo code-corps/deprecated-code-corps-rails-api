@@ -47,7 +47,7 @@ describe ProjectCategoryPolicy do
     @site_admin = create(:user, admin: true)
   end
 
-  permissions :create?, :delete? do
+  permissions :create?, :destroy? do
     context "as a logged out user" do
       it "is not permitted" do
         expect(subject).to_not permit(nil, create(:project))

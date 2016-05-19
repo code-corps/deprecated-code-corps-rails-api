@@ -7,23 +7,28 @@ class ProjectCategoryPolicy
   end
 
   def create?
-    return unless @user.present?
-    return true if @user.admin?
+    return unless user.present?
+    return true if user.admin?
     return true if current_user_is_at_least_admin_in_organization?
   end
 
-  def delete?
-    return unless @user.present?
-    return true if @user.admin?
+  def destroy?
+    return unless user.present?
+    return true if user.admin?
     return true if current_user_is_at_least_admin_in_organization?
   end
 
   private
 
+    def organization
+      @organization ||=
+        Organization.find(project_category.project.organization_id)
+    end
+
     def organization_member_for_user
       @organization_member_for_user ||=
         OrganizationMembership.find_by(
-          member: user, organization: project_category.project.organization
+          member: user, organization: organization
         )
     end
 

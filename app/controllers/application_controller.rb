@@ -64,6 +64,14 @@ class ApplicationController < ActionController::API
     render json: error_hash, status: error_hash[:errors][0][:status]
   end
 
+  def deserialized_params
+    ActiveModelSerializers::Deserialization.jsonapi_parse(params)
+  end
+
+  def require_param key
+    deserialized_params[key].presence || raise(ActionController::ParameterMissing.new(key))
+  end
+
   private
 
     def current_resource_owner
