@@ -25,10 +25,10 @@ describe "Roles API" do
 
   context "POST /roles" do
     context "when unauthenticated" do
-      it "responds with a 401 access denied" do
+      it "responds with a 401 not authorized" do
         post "#{host}/roles", data: { type: "roles" }
         expect(last_response.status).to eq 401
-        expect(json).to be_a_valid_json_api_error.with_id "ACCESS_DENIED"
+        expect(json).to be_a_valid_json_api_error.with_id "NOT_AUTHORIZED"
       end
     end
 
