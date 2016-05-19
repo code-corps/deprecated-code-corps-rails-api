@@ -6,11 +6,21 @@ class UserSkillPolicy
     @user_skill = user_skill
   end
 
+  def index?
+    true
+  end
+
+  def show?
+    true
+  end
+
   def create?
-    user.present?
+    return unless user.present?
+    user_skill.user_id == user.id
   end
 
   def destroy?
-    user.admin? || user_skill.user_id == user.id
+    return unless user.present?
+    user_skill.user_id == user.id
   end
 end

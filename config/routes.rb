@@ -20,11 +20,18 @@ Rails.application.routes.draw do
     resource :users, only: [:forgot_password] do
       post :forgot_password
     end
+
+    resources :skills, only: [:index, :create]
+
     resources :post_likes, only: [:create, :destroy]
+
     resources :user_skills, only: [:create, :destroy]
+    resources :user_roles, only: [:create, :destroy]
+
     resources :github_repositories, only: [:create]
 
-    resources :skill_categories, only: [:index]
+    resources :roles, only: [:index, :create]
+    resources :role_skills, only: [:create]
 
     resources :projects, only: [:index, :create, :update] do
       resources :posts, only: [:index, :show]

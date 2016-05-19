@@ -1,25 +1,25 @@
 # == Schema Information
 #
-# Table name: skill_categories
+# Table name: roles
 #
 #  id         :integer          not null, primary key
-#  title      :string           not null
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
+#  name       :string           not null
+#  ability    :string           not null
 #
 
 require "rails_helper"
 
-describe SkillCategorySerializer, :type => :serializer do
-
+describe RoleSerializer, type: :serializer do
   context "individual resource representation" do
-    let(:resource) {
-      skill_category = create(:skill_category)
-      create_list(:skill, 10, skill_category: skill_category)
-      skill_category
-    }
+    let(:resource) do
+      role = create(:role)
+      create_list(:role_skill, 10, role: role)
+      role
+    end
 
-    let(:serializer) { SkillCategorySerializer.new(resource) }
+    let(:serializer) { RoleSerializer.new(resource) }
     let(:serialization) { ActiveModel::Serializer::Adapter.create(serializer) }
 
     context "root" do
@@ -39,19 +39,24 @@ describe SkillCategorySerializer, :type => :serializer do
         expect(subject["id"]).not_to be_nil
       end
 
-      it "has a type set to 'projects'" do
-        expect(subject["type"]).to eq "skill_categories"
+      it "has a type set to 'roles'" do
+        expect(subject["type"]).to eq "roles"
       end
     end
 
     context "attributes" do
-
       subject do
         JSON.parse(serialization.to_json)["data"]["attributes"]
       end
 
-      it "has a 'title'" do
-        expect(subject["title"]).to eql resource.title
+      it "has a 'name'" do
+        expect(subject["name"]).to eql resource.name
+        expect(subject["name"]).to_not be_nil
+      end
+
+      it "has an 'ability'" do
+        expect(subject["ability"]).to eql resource.ability
+        expect(subject["ability"]).to_not be_nil
       end
     end
 
@@ -84,7 +89,7 @@ describe SkillCategorySerializer, :type => :serializer do
           JSON.parse(serialization.to_json)["included"]
         end
 
-        it "should contain the skill category's skills" do
+        it "should contain the role's skills" do
           expect(subject).not_to be_nil
           expect(subject.select{ |i| i["type"] == "skills"}.length).to eq 10
         end
