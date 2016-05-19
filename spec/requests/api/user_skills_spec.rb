@@ -1,10 +1,10 @@
-require 'rails_helper'
+require "rails_helper"
 
 describe "UserSkills API" do
   describe "POST /user_skills" do
     context "when unauthenticated" do
       it "responds with a 401" do
-        post "#{host}/user_skills", { data: { } }
+        post "#{host}/user_skills", data: {}
         expect(last_response.status).to eq 401
         expect(json).to be_a_valid_json_api_error.with_id "NOT_AUTHORIZED"
       end

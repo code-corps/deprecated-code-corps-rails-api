@@ -36,6 +36,7 @@ class UserSkillsController < ApplicationController
   end
 
   private
+
     def create_params
       relationships
     end

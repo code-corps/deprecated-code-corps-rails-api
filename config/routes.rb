@@ -31,6 +31,7 @@ Rails.application.routes.draw do
     resources :github_repositories, only: [:create]
 
     resources :roles, only: [:index, :create]
+    resources :role_skills, only: [:create]
 
     resources :projects, only: [:index, :create, :update] do
       resources :posts, only: [:index, :show]
