@@ -4,7 +4,7 @@ describe "RoleSkills API" do
   describe "POST /role_skills" do
     context "when unauthenticated" do
       it "responds with a 401" do
-        post "#{host}/role_skills", { data: { } }
+        post "#{host}/role_skills", data: {}
         expect(last_response.status).to eq 401
         expect(json).to be_a_valid_json_api_error.with_id "NOT_AUTHORIZED"
       end
@@ -82,7 +82,7 @@ describe "RoleSkills API" do
 
         context "when there's a role_skill with that pair of role_id and skill_id already" do
           before do
-          create(:role_skill, role: @role, skill: @skill)
+            create(:role_skill, role: @role, skill: @skill)
             authenticated_post "/role_skills", {
               data: {
                 relationships: {
