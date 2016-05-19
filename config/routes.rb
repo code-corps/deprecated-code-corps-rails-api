@@ -24,7 +24,7 @@ Rails.application.routes.draw do
 
     get "ping", to: "ping#index"
 
-     resources :posts, only: [:create, :update] do
+    resources :posts, only: [:create, :update] do
       resources :comments, only: [:index]
     end
     resources :post_images, only: [:create]
