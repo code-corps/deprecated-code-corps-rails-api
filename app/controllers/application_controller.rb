@@ -38,8 +38,8 @@ class ApplicationController < ActionController::API
     params.fetch(:page, {}).fetch(:number, 1).to_i
   end
 
-  def meta_for object_count
-    return {
+  def meta_for(object_count)
+    {
       total_records: object_count,
       total_pages: (object_count.to_f / page_size).ceil,
       page_size: page_size,
@@ -55,7 +55,7 @@ class ApplicationController < ActionController::API
     params.fetch(:data, {}).fetch(:relationships, {})
   end
 
-  def render_validation_errors errors
+  def render_validation_errors(errors)
     render_error errors
   end
 
@@ -68,7 +68,7 @@ class ApplicationController < ActionController::API
     ActiveModelSerializers::Deserialization.jsonapi_parse(params)
   end
 
-  def require_param key
+  def require_param(key)
     deserialized_params[key].presence || raise(ActionController::ParameterMissing.new(key))
   end
 

@@ -66,7 +66,7 @@ describe "ProjectCategories API" do
         end
       end
 
-      context "when there's a project_category with that pair of category_id and project_id already" do
+      context "when that project_category already exists" do
         before do
           create(:project_category, category: @category, project: @project)
           authenticated_post "/project_categories", { data: { relationships: {
