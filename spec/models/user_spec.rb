@@ -26,8 +26,7 @@
 
 require "rails_helper"
 
-describe User, :type => :model do
-
+describe User, type: :model do
   describe "schema" do
     it { should have_db_column(:username).of_type(:string) }
     it { should have_db_column(:email).of_type(:string).with_options(null: false) }
@@ -69,7 +68,6 @@ describe User, :type => :model do
       it { should validate_attachment_size(:photo).less_than(10.megabytes) }
     end
 
-
     describe "website" do
       it { should allow_value("www.example.com").for(:website) }
       it { should allow_value("http://www.example.com").for(:website) }
@@ -96,24 +94,8 @@ describe User, :type => :model do
         it { should validate_length_of(:username).is_at_most(39) }
       end
 
-      it { should allow_value("code_corps").for(:username) }
-      it { should allow_value("codecorps").for(:username) }
-      it { should allow_value("codecorps12345").for(:username) }
-      it { should allow_value("code12345corps").for(:username) }
-      it { should allow_value("code____corps").for(:username) }
-      it { should allow_value("code-corps").for(:username) }
-      it { should allow_value("code-corps-corps").for(:username) }
-      it { should allow_value("code_corps_corps").for(:username) }
-      it { should allow_value("c").for(:username) }
-      it { should_not allow_value("-codecorps").for(:username) }
-      it { should_not allow_value("codecorps-").for(:username) }
-      it { should_not allow_value("@codecorps").for(:username) }
-      it { should_not allow_value("code----corps").for(:username) }
-      it { should_not allow_value("code/corps").for(:username) }
-      it { should_not allow_value("code_corps/code_corps").for(:username) }
-      it { should_not allow_value("code///corps").for(:username) }
-      it { should_not allow_value("@code/corps/code").for(:username) }
-      it { should_not allow_value("@code/corps/code/corps").for(:username) }
+      it_behaves_like "a slug validating model", :username
+
       it { expect(user.username).to_not be_profane }
 
       # Checks reserved routes

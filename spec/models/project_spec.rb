@@ -18,7 +18,7 @@
 
 require "rails_helper"
 
-describe Project, :type => :model do
+describe Project, type: :model do
   describe "schema" do
     it { should have_db_column(:title).of_type(:string).with_options(null: false) }
     it { should have_db_column(:description).of_type(:string) }
@@ -35,7 +35,6 @@ describe Project, :type => :model do
   end
 
   describe "validations" do
-
     context "paperclip", vcr: { cassette_name: "models/project/validation" } do
       it { should validate_attachment_size(:icon).less_than(10.megabytes) }
     end
@@ -47,26 +46,9 @@ describe Project, :type => :model do
         subject { create(:project) }
         it { should validate_presence_of(:title) }
       end
-
-      it { should allow_value("code_corps").for(:slug) }
-      it { should allow_value("codecorps").for(:slug) }
-      it { should allow_value("codecorps12345").for(:slug) }
-      it { should allow_value("code12345corps").for(:slug) }
-      it { should allow_value("code____corps").for(:slug) }
-      it { should allow_value("code-corps").for(:slug) }
-      it { should allow_value("code-corps-corps").for(:slug) }
-      it { should allow_value("code_corps_corps").for(:slug) }
-      it { should allow_value("c").for(:slug) }
-      it { should_not allow_value("-codecorps").for(:slug) }
-      it { should_not allow_value("codecorps-").for(:slug) }
-      it { should_not allow_value("@codecorps").for(:slug) }
-      it { should_not allow_value("code----corps").for(:slug) }
-      it { should_not allow_value("code/corps").for(:slug) }
-      it { should_not allow_value("code_corps/code_corps").for(:slug) }
-      it { should_not allow_value("code///corps").for(:slug) }
-      it { should_not allow_value("@code/corps/code").for(:slug) }
-      it { should_not allow_value("@code/corps/code/corps").for(:slug) }
     end
+
+    it_behaves_like "a slug validating model", :slug
 
     describe "duplicate slug validation" do
       context "when an project with a different cased slug exists" do
@@ -111,7 +93,6 @@ describe Project, :type => :model do
     end
 
     context "with cloudfront" do
-
       let(:project) { create(:project, :with_s3_icon) }
 
       it "should have our cloudfront domain in the URL" do
@@ -123,6 +104,4 @@ describe Project, :type => :model do
       end
     end
   end
-
 end
-

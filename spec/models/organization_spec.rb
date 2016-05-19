@@ -52,26 +52,9 @@ describe Organization, :type => :model do
         it { should validate_length_of(:slug).is_at_most(39) }
       end
 
-      let(:organization) { Organization.create(name: "Test") }
+      it_behaves_like "a slug validating model", :slug
 
-      it { should allow_value("code_corps").for(:slug) }
-      it { should allow_value("codecorps").for(:slug) }
-      it { should allow_value("codecorps12345").for(:slug) }
-      it { should allow_value("code12345corps").for(:slug) }
-      it { should allow_value("code____corps").for(:slug) }
-      it { should allow_value("code-corps").for(:slug) }
-      it { should allow_value("code-corps-corps").for(:slug) }
-      it { should allow_value("code_corps_corps").for(:slug) }
-      it { should allow_value("c").for(:slug) }
-      it { should_not allow_value("-codecorps").for(:slug) }
-      it { should_not allow_value("codecorps-").for(:slug) }
-      it { should_not allow_value("@codecorps").for(:slug) }
-      it { should_not allow_value("code----corps").for(:slug) }
-      it { should_not allow_value("code/corps").for(:slug) }
-      it { should_not allow_value("code_corps/code_corps").for(:slug) }
-      it { should_not allow_value("code///corps").for(:slug) }
-      it { should_not allow_value("@code/corps/code").for(:slug) }
-      it { should_not allow_value("@code/corps/code/corps").for(:slug) }
+      let(:organization) { Organization.create(name: "Test") }
       it { expect(organization.slug).to_not be_profane }
 
       # Checks reserved routes
