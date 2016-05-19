@@ -1,17 +1,17 @@
 # == Schema Information
 #
-# Table name: skill_categories
+# Table name: user_roles
 #
 #  id         :integer          not null, primary key
-#  title      :string           not null
+#  user_id    :integer
+#  role_id    :integer
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #
 
 FactoryGirl.define do
-
-  factory :skill_category do
-    sequence(:title) { |n| "Category #{n}" }
+  factory :user_role do
+    association :user
+    association :role
   end
-
 end

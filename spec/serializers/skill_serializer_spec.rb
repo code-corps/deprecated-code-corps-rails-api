@@ -2,12 +2,11 @@
 #
 # Table name: skills
 #
-#  id                :integer          not null, primary key
-#  title             :string           not null
-#  description       :string
-#  skill_category_id :integer
-#  created_at        :datetime         not null
-#  updated_at        :datetime         not null
+#  id          :integer          not null, primary key
+#  title       :string           not null
+#  description :string
+#  created_at  :datetime         not null
+#  updated_at  :datetime         not null
 #
 
 require "rails_helper"
@@ -15,7 +14,13 @@ require "rails_helper"
 describe SkillSerializer, :type => :serializer do
 
   context "individual resource representation" do
-    let(:resource) { create(:skill) }
+    let(:resource) do
+      skill = create(:skill)
+
+      create_list(:role_skill, 2, skill: skill)
+
+      skill
+    end
 
     let(:serializer) { SkillSerializer.new(resource) }
     let(:serialization) { ActiveModel::Serializer::Adapter.create(serializer) }
@@ -62,10 +67,9 @@ describe SkillSerializer, :type => :serializer do
         JSON.parse(serialization.to_json)["data"]["relationships"]
       end
 
-      it "contains a 'skill_category' relationship" do
-        expect(subject["skill_category"]).not_to be_nil
-        expect(subject["skill_category"]["data"]["type"]).to eq "skill_categories"
-        expect(subject["skill_category"]["data"]["id"]).to eq resource.skill_category.id.to_s
+      it "has a 'roles' relationship" do
+        expect(subject["roles"]).not_to be_nil
+        expect(subject["roles"]["data"].count).to eq 2
       end
     end
 

@@ -10,6 +10,7 @@
 #  end_index   :integer          not null
 #  created_at  :datetime         not null
 #  updated_at  :datetime         not null
+#  status      :string           default("preview"), not null
 #
 
 class PostUserMention < ActiveRecord::Base

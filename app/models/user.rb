@@ -35,6 +35,8 @@ class User < ActiveRecord::Base
   has_many :comments
   has_many :user_skills
   has_many :skills, through: :user_skills
+  has_many :user_roles
+  has_many :roles, through: :user_roles
 
   has_many :active_relationships, class_name: "UserRelationship", foreign_key: "follower_id", dependent: :destroy
   has_many :passive_relationships, class_name: "UserRelationship", foreign_key: "following_id", dependent: :destroy

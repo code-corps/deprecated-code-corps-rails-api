@@ -12,6 +12,7 @@
 #  icon_file_size    :integer
 #  icon_updated_at   :datetime
 #  base64_icon_data  :text
+#  description       :text
 #
 
 FactoryGirl.define do

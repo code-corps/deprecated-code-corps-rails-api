@@ -1,13 +1,10 @@
-require 'rails_helper'
+require "rails_helper"
 
 describe "UserSkills API" do
-
-
   describe "POST /user_skills" do
-
     context "when unauthenticated" do
       it "responds with a 401" do
-        post "#{host}/user_skills", { data: { } }
+        post "#{host}/user_skills", data: {}
         expect(last_response.status).to eq 401
         expect(json).to be_a_valid_json_api_error.with_id "NOT_AUTHORIZED"
       end
@@ -45,14 +42,14 @@ describe "UserSkills API" do
         it "includes user in the response" do
           expect(json.included).not_to be_nil
 
-          included_users = json.included.select{ |i| i.type == "users" }
+          included_users = json.included.select { |i| i.type == "users" }
           expect(included_users.count).to eq 1
         end
 
         it "includes skill in the response" do
           expect(json.included).not_to be_nil
 
-          included_users = json.included.select{ |i| i.type == "skills" }
+          included_users = json.included.select { |i| i.type == "skills" }
           expect(included_users.count).to eq 1
         end
       end
@@ -101,7 +98,6 @@ describe "UserSkills API" do
     end
 
     context "when authenticated" do
-
       let(:token) { authenticate(email: "josh@coderly.com", password: "password") }
 
       before do
