@@ -80,10 +80,6 @@ class ApplicationController < ActionController::API
     params.merge(user_id: current_user.id)
   end
 
-  def filtered_params
-    ActionController::Parameters.new(deserialized_params)
-  end
-
   private
 
     def current_resource_owner
