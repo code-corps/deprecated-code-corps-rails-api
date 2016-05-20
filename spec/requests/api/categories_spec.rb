@@ -1,6 +1,6 @@
 require "rails_helper"
 
-describe "Categorys API" do
+describe "Categories API" do
   context "GET /categories" do
     before do
       @categories = create_list(:category, 10)
