@@ -34,18 +34,8 @@ class PostImagesController < ApplicationController
   private
 
     def create_params
-      record_attributes.permit(:filename, :base64_photo_data).merge(relationships)
-    end
-
-    def user_id
-      current_user.id
-    end
-
-    def relationships
-      { post_id: post_id, user_id: user_id }
-    end
-
-    def post_id
-      record_relationships.fetch(:post, {}).fetch(:data, {})[:id]
+      params_for_user(
+        parse_params(params, only: [:filename, :base64_photo_data, :post])
+      )
     end
 end

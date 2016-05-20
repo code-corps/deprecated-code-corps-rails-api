@@ -71,23 +71,11 @@ class OrganizationMembershipsController < ApplicationController
 
     # for create and update
 
-    def organization_id
-      record_relationships.fetch(:organization, {}).fetch(:data, {})[:id]
-    end
-
-    def member_id
-      record_relationships.fetch(:member, {}).fetch(:data, {})[:id]
-    end
-
-    def relationships
-      { organization_id: organization_id, member_id: member_id }
-    end
-
     def update_params
-      record_attributes.permit(:role)
+      parse_params(params, only: [:role])
     end
 
     def create_params
-      update_params.merge(relationships)
+      parse_params(params, only: [:role, :organization, :member])
     end
 end

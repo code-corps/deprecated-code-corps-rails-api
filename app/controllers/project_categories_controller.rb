@@ -39,6 +39,6 @@ class ProjectCategoriesController < ApplicationController
     end
 
     def create_params
-      deserialized_params
+      parse_params(params)
     end
 end

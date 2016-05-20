@@ -32,6 +32,6 @@ class SkillsController < ApplicationController
   private
 
     def permitted_params
-      record_attributes.permit(:title)
+      parse_params(params, only: [:title])
     end
 end

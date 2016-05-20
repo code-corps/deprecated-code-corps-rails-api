@@ -38,18 +38,8 @@ class UserRolesController < ApplicationController
   private
 
     def create_params
-      relationships
-    end
-
-    def relationships
-      { user_id: user_id, role_id: role_id }
-    end
-
-    def user_id
-      current_user.id
-    end
-
-    def role_id
-      record_relationships.fetch(:role, {}).fetch(:data, {})[:id]
+      params_for_user(
+        parse_params(params, only: [:role])
+      )
     end
 end

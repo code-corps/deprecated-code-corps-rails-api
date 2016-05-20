@@ -64,12 +64,16 @@ class ApplicationController < ActionController::API
     render json: error_hash, status: error_hash[:errors][0][:status]
   end
 
-  def deserialized_params
-    ActiveModelSerializers::Deserialization.jsonapi_parse(params)
+  def parse_params(params, options = {})
+    ActiveModelSerializers::Deserialization.jsonapi_parse(params, options)
   end
 
   def require_param(key)
-    deserialized_params[key].presence || raise(ActionController::ParameterMissing.new(key))
+    parse_params(params)[key].presence || raise(ActionController::ParameterMissing.new(key))
+  end
+
+  def params_for_user(params)
+    params.merge(user_id: current_user.id)
   end
 
   private

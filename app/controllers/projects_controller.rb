@@ -76,23 +76,11 @@ class ProjectsController < ApplicationController
   private
 
     def create_params
-      permitted_params.merge(relationships)
+      parse_params(params, only: [:base64_icon_data, :title, :description, :slug, :organization])
     end
 
     def update_params
-      permitted_params
-    end
-
-    def relationships
-      { organization_id: organization_id }
-    end
-
-    def organization_id
-      record_relationships.fetch(:organization, {}).fetch(:data, {})[:id]
-    end
-
-    def permitted_params
-      record_attributes.permit(:base64_icon_data, :title, :description, :slug)
+      parse_params(params, only: [:base64_icon_data, :title, :description, :slug])
     end
 
     def slugged_route_slug

@@ -25,16 +25,15 @@
 #
 
 class UsersController < ApplicationController
-
-  before_action :doorkeeper_authorize!, only: [:show_authenticated_user, :update, :update_authenticated_user]
+  before_action :doorkeeper_authorize!, only: [:show_authenticated_user,
+                                               :update,
+                                               :update_authenticated_user]
 
   skip_before_action do
     load_and_authorize_resource param_method: :reset_password_params, only: [:reset_password]
   end
 
   def create
-    user = User.new(create_params)
-
     if creating_with_facebook?
       create_user_from_facebook_and_render_json
     else
@@ -103,20 +102,21 @@ class UsersController < ApplicationController
     end
 
     def forgot_password_params
-      record_attributes.permit(:email)
+      parse_params(params, only: [:email])
     end
 
     def reset_password_params
-      record_attributes.permit(:confirmation_token, :password)
+      parse_params(params, only: [:confirmation_token, :password])
     end
 
     def create_params
-      record_attributes.permit(:email, :username, :password, :facebook_id,
-                               :facebook_access_token, :base64_photo_data)
+      parse_params(params, only: [:email, :username, :password, :facebook_id,
+                                  :facebook_access_token, :base64_photo_data])
     end
 
     def update_params
-      record_attributes.permit(:name, :website, :biography, :twitter, :base64_photo_data)
+      parse_params(params, only: [:name, :website, :biography, :twitter,
+                                  :base64_photo_data])
     end
 
     def render_no_such_email_error
@@ -127,7 +127,7 @@ class UsersController < ApplicationController
       render_custom_validation_errors :password, "couldn't be reset"
     end
 
-    def render_custom_validation_errors field, message
+    def render_custom_validation_errors(field, message)
       errors = ActiveModel::Errors.new(User.new)
       errors.add field, message
       render_error errors
@@ -142,7 +142,11 @@ class UsersController < ApplicationController
     end
 
     def create_user_from_facebook_and_render_json
-      user = User.where("facebook_id = ? OR email = ?", create_params[:facebook_id], create_params[:email]).first_or_create
+      user = User.where(
+        "facebook_id = ? OR email = ?",
+        create_params[:facebook_id],
+        create_params[:email]
+      ).first_or_create
 
       user.update(create_params)
 
@@ -178,6 +182,6 @@ class UsersController < ApplicationController
 
     def photo_param?
       update_params[:base64_photo_data].present? ||
-      create_params[:base64_photo_data].present?
+        create_params[:base64_photo_data].present?
     end
 end

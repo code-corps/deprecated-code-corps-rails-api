@@ -63,26 +63,18 @@ class CommentsController < ApplicationController
   private
 
     def publish?
-      true unless record_attributes.fetch(:preview, false)
+      true unless parse_params(params).fetch(:preview, false)
+    end
+
+    def permitted_params
+      parse_params(params, only: [:markdown_preview, :post])
     end
 
     def create_params
-      record_attributes.permit(:markdown_preview).merge(relationships)
+      params_for_user(permitted_params)
     end
 
     def update_params
-      record_attributes.permit(:markdown_preview)
-    end
-
-    def post_id
-      record_relationships.fetch(:post, {}).fetch(:data, {})[:id]
-    end
-
-    def user_id
-      current_user.id
-    end
-
-    def relationships
-      { post_id: post_id, user_id: user_id }
+      permitted_params
     end
 end

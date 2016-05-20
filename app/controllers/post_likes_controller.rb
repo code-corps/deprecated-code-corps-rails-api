@@ -36,19 +36,10 @@ class PostLikesController < ApplicationController
   end
 
   private
+
     def create_params
-      relationships
-    end
-
-    def relationships
-      { user_id: user_id, post_id: post_id }
-    end
-
-    def user_id
-      current_user.id
-    end
-
-    def post_id
-      record_relationships.fetch(:post, {}).fetch(:data, {})[:id]
+      params_for_user(
+        parse_params(params, only: [:post])
+      )
     end
 end

@@ -57,12 +57,13 @@ class OrganizationsController < ApplicationController
   end
 
   private
+
     def create_params
-      record_attributes.permit(:name, :slug, :description, :base64_icon_data)
+      parse_params(params, only: [:name, :slug, :description, :base64_icon_data])
     end
 
     def update_params
       # For now, slugs should not be updated until we've thought through repercussions more
-      record_attributes.permit(:name, :description, :base64_icon_data)
+      parse_params(params, only: [:name, :description, :base64_icon_data])
     end
 end
