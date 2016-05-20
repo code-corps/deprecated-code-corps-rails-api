@@ -21,6 +21,7 @@ class ProjectSerializer < ActiveModel::Serializer
 
   has_many :categories
   has_many :github_repositories
+  has_many :skills
 
   belongs_to :organization
 
