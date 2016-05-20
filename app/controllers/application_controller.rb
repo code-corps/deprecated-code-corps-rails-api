@@ -68,12 +68,8 @@ class ApplicationController < ActionController::API
     ActiveModelSerializers::Deserialization.jsonapi_parse(params, options)
   end
 
-  def deserialized_params
-    parse_params(params)
-  end
-
   def require_param(key)
-    deserialized_params[key].presence || raise(ActionController::ParameterMissing.new(key))
+    parse_params(params)[key].presence || raise(ActionController::ParameterMissing.new(key))
   end
 
   def params_for_user(params)

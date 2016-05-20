@@ -63,7 +63,7 @@ class CommentsController < ApplicationController
   private
 
     def publish?
-      true unless deserialized_params.fetch(:preview, false)
+      true unless parse_params(params).fetch(:preview, false)
     end
 
     def permitted_params

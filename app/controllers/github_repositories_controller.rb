@@ -40,7 +40,7 @@ class GithubRepositoriesController < ApplicationController
     end
 
     def url
-      deserialized_params[:url]
+      parse_params(params)[:url]
     end
 
     def parsed_attributes

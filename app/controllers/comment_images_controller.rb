@@ -34,6 +34,8 @@ class CommentImagesController < ApplicationController
   private
 
     def create_params
-      params_for_user(deserialized_params)
+      params_for_user(
+        parse_params(params)
+      )
     end
 end
