@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160520040950) do
+ActiveRecord::Schema.define(version: 20160520235218) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -70,6 +70,15 @@ ActiveRecord::Schema.define(version: 20160520040950) do
     t.datetime "created_at",      null: false
     t.datetime "updated_at",      null: false
   end
+
+  create_table "interests", force: :cascade do |t|
+    t.integer  "user_id"
+    t.integer  "category_id"
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
+  end
+
+  add_index "interests", ["user_id", "category_id"], name: "index_interests_on_user_id_and_category_id", unique: true, using: :btree
 
   create_table "notifications", force: :cascade do |t|
     t.integer  "notifiable_id",   null: false
@@ -206,6 +215,24 @@ ActiveRecord::Schema.define(version: 20160520040950) do
 
   add_index "project_categories", ["project_id", "category_id"], name: "index_project_categories_on_project_id_and_category_id", unique: true, using: :btree
 
+  create_table "project_roles", force: :cascade do |t|
+    t.integer  "project_id"
+    t.integer  "role_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  add_index "project_roles", ["project_id", "role_id"], name: "index_project_roles_on_project_id_and_role_id", unique: true, using: :btree
+
+  create_table "project_skills", force: :cascade do |t|
+    t.integer  "project_id"
+    t.integer  "skill_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  add_index "project_skills", ["project_id", "skill_id"], name: "index_project_skills_on_project_id_and_skill_id", unique: true, using: :btree
+
   create_table "projects", force: :cascade do |t|
     t.string   "title",             null: false
     t.string   "description"
@@ -305,9 +332,15 @@ ActiveRecord::Schema.define(version: 20160520040950) do
 
   add_foreign_key "comments", "posts"
   add_foreign_key "comments", "users"
+  add_foreign_key "interests", "categories", on_delete: :cascade
+  add_foreign_key "interests", "users", on_delete: :cascade
   add_foreign_key "posts", "projects"
   add_foreign_key "posts", "users"
   add_foreign_key "project_categories", "categories", on_delete: :cascade
   add_foreign_key "project_categories", "projects", on_delete: :cascade
+  add_foreign_key "project_roles", "projects", on_delete: :cascade
+  add_foreign_key "project_roles", "roles", on_delete: :cascade
+  add_foreign_key "project_skills", "projects", on_delete: :cascade
+  add_foreign_key "project_skills", "skills", on_delete: :cascade
   add_foreign_key "projects", "organizations"
 end
