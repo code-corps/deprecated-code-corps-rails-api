@@ -14,6 +14,11 @@ RSpec.describe ProjectCategory, type: :model do
   describe "validations" do
     it { should validate_presence_of :project }
     it { should validate_presence_of :category }
-    it { should validate_uniqueness_of(:project_id).scoped_to(:category_id) }
+
+    describe "uniquness" do
+      subject { create(:project_category) }
+
+      it { should validate_uniqueness_of(:project_id).scoped_to(:category_id) }
+    end
   end
 end
