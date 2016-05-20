@@ -21,8 +21,10 @@ class Project < ActiveRecord::Base
 
   belongs_to :organization
 
-  has_many :posts
+  has_many :project_categories
+  has_many :categories, through: :project_categories
   has_many :github_repositories
+  has_many :posts
 
   has_attached_file :icon,
                     styles: {

@@ -16,7 +16,6 @@
 #
 
 class PostImagesController < ApplicationController
-
   before_action :doorkeeper_authorize!, only: [:create]
 
   def create

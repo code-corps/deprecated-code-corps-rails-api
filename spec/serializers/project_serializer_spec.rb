@@ -18,14 +18,14 @@
 
 require "rails_helper"
 
-describe ProjectSerializer, :type => :serializer do
-
+describe ProjectSerializer, type: :serializer do
   context "individual resource representation" do
-    let(:resource) {
+    let(:resource) do
       project = create(:project)
+      create_list(:project_category, 10, project: project)
       create_list(:github_repository, 10, project: project)
       project
-    }
+    end
 
     let(:serializer) { ProjectSerializer.new(resource) }
     let(:serialization) { ActiveModel::Serializer::Adapter.create(serializer) }
@@ -88,6 +88,12 @@ describe ProjectSerializer, :type => :serializer do
         JSON.parse(serialization.to_json)["data"]["relationships"]
       end
 
+      it "should have a 'categories' relationship" do
+        expect(subject["categories"]).not_to be_nil
+        expect(subject["categories"]["data"].length).to eq 10
+        expect(subject["categories"]["data"].all? { |r| r["type"] == "categories" }).to be true
+      end
+
       it "should have a 'github_repositories' relationship" do
         expect(subject["github_repositories"]).not_to be_nil
         expect(subject["github_repositories"]["data"].length).to eq 10
@@ -107,17 +113,34 @@ describe ProjectSerializer, :type => :serializer do
       end
     end
 
-    context "when including github_repositories" do
-        let(:serialization) { ActiveModel::Serializer::Adapter.create(serializer, include: ["github_repositories"]) }
-
-        subject do
-          JSON.parse(serialization.to_json)["included"]
-        end
-
-        it "should contain the user's github_repositories" do
-          expect(subject).not_to be_nil
-          expect(subject.select{ |i| i["type"] == "github_repositories"}.length).to eq 10
-        end
+    context "when including categories" do
+      let(:serialization) do
+        ActiveModel::Serializer::Adapter.create(serializer, include: ["categories"])
       end
+
+      subject do
+        JSON.parse(serialization.to_json)["included"]
+      end
+
+      it "should contain the user's categories" do
+        expect(subject).not_to be_nil
+        expect(subject.select { |i| i["type"] == "categories" }.length).to eq 10
+      end
+    end
+
+    context "when including github_repositories" do
+      let(:serialization) do
+        ActiveModel::Serializer::Adapter.create(serializer, include: ["github_repositories"])
+      end
+
+      subject do
+        JSON.parse(serialization.to_json)["included"]
+      end
+
+      it "should contain the user's github_repositories" do
+        expect(subject).not_to be_nil
+        expect(subject.select { |i| i["type"] == "github_repositories" }.length).to eq 10
+      end
+    end
   end
 end

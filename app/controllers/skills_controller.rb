@@ -10,6 +10,8 @@
 #
 
 class SkillsController < ApplicationController
+  before_action :doorkeeper_authorize!, only: [:create, :update]
+
   def index
     authorize Skill
     render json: Skill.all.includes(:roles)
