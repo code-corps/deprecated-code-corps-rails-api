@@ -5,9 +5,9 @@ class Category < ActiveRecord::Base
   before_validation :add_slug_if_blank
 
   validates :name, presence: true
-  validates :slug, presence: true
-  validates :slug, uniqueness: { case_sensitive: false }
-  validates :slug, slug: true
+  validates :slug, presence: true,
+                   slug: true,
+                   uniqueness: { case_sensitive: false }
 
   private
 
