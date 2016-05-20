@@ -1,3 +1,15 @@
+# == Schema Information
+#
+# Table name: organization_memberships
+#
+#  id              :integer          not null, primary key
+#  role            :string           default("pending"), not null
+#  created_at      :datetime         not null
+#  updated_at      :datetime         not null
+#  member_id       :integer
+#  organization_id :integer
+#
+
 class OrganizationMembershipsController < ApplicationController
   before_action :doorkeeper_authorize!, only: [:create, :update, :destroy]
 
