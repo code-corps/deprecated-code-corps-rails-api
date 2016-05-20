@@ -9,7 +9,37 @@ Rails.application.routes.draw do
   end
 
   constraints subdomain: "api" do
+    resources :categories, only: [:index, :create]
+
+    resources :comments, only: [:show, :create, :update]
+    resources :comment_images, only: [:create]
+    resources :comment_user_mentions, only: [:index]
+
+    resources :github_repositories, only: [:create]
+
+    resources :organizations, only: [:show, :create, :update] do
+      get "memberships", to: "organization_memberships#index"
+    end
+    resources :organization_memberships, only: [:create, :update, :destroy]
+
     get "ping", to: "ping#index"
+
+    resources :posts, only: [:create, :update] do
+      resources :comments, only: [:index]
+    end
+    resources :post_images, only: [:create]
+    resources :post_likes, only: [:create, :destroy]
+    resources :post_user_mentions, only: [:index]
+
+    resources :projects, only: [:index, :create, :update] do
+      resources :posts, only: [:index, :show]
+    end
+    resources :project_categories, only: [:create, :destroy]
+
+    resources :roles, only: [:index, :create]
+    resources :role_skills, only: [:create]
+
+    resources :skills, only: [:index, :create]
 
     get "user", to: "users#show_authenticated_user"
     patch "users/me", to: "users#update_authenticated_user"
@@ -21,40 +51,8 @@ Rails.application.routes.draw do
       post :forgot_password
     end
 
-    resources :skills, only: [:index, :create]
-
-    resources :post_likes, only: [:create, :destroy]
-
-    resources :user_skills, only: [:create, :destroy]
     resources :user_roles, only: [:create, :destroy]
-
-    resources :github_repositories, only: [:create]
-
-    resources :roles, only: [:index, :create]
-    resources :role_skills, only: [:create]
-
-    resources :projects, only: [:index, :create, :update] do
-      resources :posts, only: [:index, :show]
-    end
-
-    resources :posts, only: [:create, :update] do
-      resources :comments, only: [:index]
-    end
-
-    resources :post_images, only: [:create]
-
-    resources :comments, only: [:show, :create, :update]
-
-    resources :comment_images, only: [:create]
-
-    resources :organizations, only: [:show, :create, :update] do
-      get "memberships", to: "organization_memberships#index"
-    end
-
-    resources :organization_memberships, only: [:create, :update, :destroy]
-
-    resources :post_user_mentions, only: [:index]
-    resources :comment_user_mentions, only: [:index]
+    resources :user_skills, only: [:create, :destroy]
 
     resources :slugged_routes, path: "", only: [:show] do
       get "projects", to: "projects#index"

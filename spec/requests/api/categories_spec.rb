@@ -1,31 +1,31 @@
 require "rails_helper"
 
-describe "Skills API" do
-  context "GET /skills" do
+describe "Categories API" do
+  context "GET /categories" do
     before do
-      @skills = create_list(:skill, 10)
+      @categories = create_list(:category, 10)
     end
 
     context "when successful" do
       before do
-        get "#{host}/skills"
+        get "#{host}/categories"
       end
 
       it "responds with a 200" do
         expect(last_response.status).to eq 200
       end
 
-      it "returns a list of skills, serialized using SkillSerializer, with skill includes" do
-        expect(json).to serialize_collection(@skills).
-          with(SkillSerializer)
+      it "returns a list of categories, serialized using CategorySerializer" do
+        expect(json).to serialize_collection(@categories).
+          with(CategorySerializer)
       end
     end
   end
 
-  context "POST /skills" do
+  context "POST /categories" do
     context "when unauthenticated" do
       it "responds with a 401 not authorized" do
-        post "#{host}/skills", data: { type: "skills" }
+        post "#{host}/categories", data: { type: "categories" }
         expect(last_response.status).to eq 401
         expect(json).to be_a_valid_json_api_error.with_id "NOT_AUTHORIZED"
       end
@@ -38,16 +38,16 @@ describe "Skills API" do
       let(:params) do
         {
           data: {
-            type: "skills",
+            type: "categories",
             attributes: {
-              title: "JavaScript"
+              name: "Science"
             }
           }
         }
       end
 
       def make_request(params)
-        authenticated_post "/skills", params, token
+        authenticated_post "/categories", params, token
       end
 
       context "as a regular user" do
@@ -66,8 +66,8 @@ describe "Skills API" do
           it "works" do
             make_request(params)
             expect(last_response.status).to eq 200
-            expect(json).to serialize_object(Skill.last).
-              with(SkillSerializer)
+            expect(json).to serialize_object(Category.last).
+              with(CategorySerializer)
           end
         end
 
@@ -76,14 +76,14 @@ describe "Skills API" do
             {
               data: {
                 attributes: {
-                  title: nil
+                  name: nil
                 }
               }
             }
           end
 
           it "responds with a 422 validation error" do
-            authenticated_post "/skills", invalid_attributes, token
+            authenticated_post "/categories", invalid_attributes, token
             expect(last_response.status).to eq 422
             expect(json).to be_a_valid_json_api_validation_error
           end

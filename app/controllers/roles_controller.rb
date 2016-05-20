@@ -10,6 +10,8 @@
 #
 
 class RolesController < ApplicationController
+  before_action :doorkeeper_authorize!, only: [:create]
+
   def index
     authorize Role
     render json: Role.all.includes(:skills)
