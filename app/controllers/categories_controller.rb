@@ -21,6 +21,6 @@ class CategoriesController < ApplicationController
   private
 
     def permitted_params
-      record_attributes.permit(:name)
+      record_attributes.permit(:name, :description)
     end
 end

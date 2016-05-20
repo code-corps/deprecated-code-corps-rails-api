@@ -40,6 +40,16 @@ describe CategorySerializer, type: :serializer do
         expect(subject["name"]).to eql resource.name
         expect(subject["name"]).to_not be_nil
       end
+
+      it "has a 'slug'" do
+        expect(subject["slug"]).to eql resource.slug
+        expect(subject["slug"]).to_not be_nil
+      end
+
+      it "has a 'description'" do
+        expect(subject["description"]).to eql resource.description
+        expect(subject["description"]).to_not be_nil
+      end
     end
   end
 end
