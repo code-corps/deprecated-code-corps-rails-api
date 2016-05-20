@@ -35,6 +35,7 @@ Rails.application.routes.draw do
       resources :posts, only: [:index, :show]
     end
     resources :project_categories, only: [:create, :destroy]
+    resources :project_skills, only: [:create, :destroy]
 
     resources :roles, only: [:index, :create]
     resources :role_skills, only: [:create]
