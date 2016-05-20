@@ -23,6 +23,7 @@ describe ProjectSerializer, type: :serializer do
     let(:resource) do
       project = create(:project)
       create_list(:project_category, 10, project: project)
+      create_list(:project_role, 10, project: project)
       create_list(:github_repository, 10, project: project)
       project
     end
@@ -94,6 +95,12 @@ describe ProjectSerializer, type: :serializer do
         expect(subject["categories"]["data"].all? { |r| r["type"] == "categories" }).to be true
       end
 
+      it "should have a 'roles' relationship" do
+        expect(subject["roles"]).not_to be_nil
+        expect(subject["roles"]["data"].length).to eq 10
+        expect(subject["roles"]["data"].all? { |r| r["type"] == "roles" }).to be true
+      end
+
       it "should have a 'github_repositories' relationship" do
         expect(subject["github_repositories"]).not_to be_nil
         expect(subject["github_repositories"]["data"].length).to eq 10
@@ -122,9 +129,24 @@ describe ProjectSerializer, type: :serializer do
         JSON.parse(serialization.to_json)["included"]
       end
 
-      it "should contain the user's categories" do
+      it "should contain the project's categories" do
         expect(subject).not_to be_nil
         expect(subject.select { |i| i["type"] == "categories" }.length).to eq 10
+      end
+    end
+
+    context "when including roles" do
+      let(:serialization) do
+        ActiveModel::Serializer::Adapter.create(serializer, include: ["roles"])
+      end
+
+      subject do
+        JSON.parse(serialization.to_json)["included"]
+      end
+
+      it "should contain the project's roles" do
+        expect(subject).not_to be_nil
+        expect(subject.select { |i| i["type"] == "roles" }.length).to eq 10
       end
     end
 
@@ -137,7 +159,7 @@ describe ProjectSerializer, type: :serializer do
         JSON.parse(serialization.to_json)["included"]
       end
 
-      it "should contain the user's github_repositories" do
+      it "should contain the project's github_repositories" do
         expect(subject).not_to be_nil
         expect(subject.select { |i| i["type"] == "github_repositories" }.length).to eq 10
       end
