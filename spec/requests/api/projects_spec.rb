@@ -1,10 +1,12 @@
 require "rails_helper"
 
 describe "Projects API" do
-
   context "GET /projects" do
     before do
-      @projects = create_list(:project, 10)
+      @projects = create_list(:project, 10, :with_categories)
+      # Publish them
+      @projects.each { |p| p.update(true) }
+      create_list(:project, 10)
     end
 
     context "when successful" do
@@ -16,7 +18,7 @@ describe "Projects API" do
         expect(last_response.status).to eq 200
       end
 
-      it "returns a list of projects, serialized with ProjectSerializer, with nothing included" do
+      it "returns a list of published projects, serialized, with nothing included" do
         expect(json).to serialize_collection(@projects).with(ProjectSerializer)
       end
     end
@@ -48,7 +50,10 @@ describe "Projects API" do
   context "GET /:slug/projects" do
     before do
       @slugged_route = create(:organization).slugged_route
-      @projects = create_list(:project, 3, organization: @slugged_route.owner)
+      @projects = create_list(:project, 3, :with_categories, organization: @slugged_route.owner)
+      # Publish them
+      @projects.each { |p| p.update(true) }
+      create_list(:project, 3, organization: @slugged_route.owner)
       create_list(:project, 2, organization: create(:organization))
     end
 
@@ -310,6 +315,44 @@ describe "Projects API" do
         @project.reload
 
         expect(@project.description).to eq "New description"
+      end
+
+      context "when publishing a project" do
+        context "without enough details" do
+          it "returns an error" do
+            authenticated_patch "/projects/#{@project.id}", {
+              data: {
+                attributes: {
+                  title: "New title",
+                  publish: true
+                }
+              }
+            }, @token
+
+            expect(last_response.status).to eq 422
+            expect(json).to be_a_valid_json_api_validation_error.with_message "can't be blank"
+          end
+        end
+
+        context "with enough details" do
+          before do
+            create(:project_category, project: @project)
+          end
+
+          it "publishes the project" do
+            authenticated_patch "/projects/#{@project.id}", {
+              data: {
+                attributes: {
+                  publish: true
+                }
+              }
+            }, @token
+
+            @project.reload
+
+            expect(@project.published?).to eq true
+          end
+        end
       end
 
       context "when updating a project icon when none exists" do

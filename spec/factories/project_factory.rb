@@ -23,10 +23,16 @@ FactoryGirl.define do
 
     association :organization
 
+    trait :with_categories do
+      after(:build) do |project|
+        create(:project_category, project: project)
+      end
+    end
+
     trait :with_s3_icon do
-      after(:build) do |project, evaluator|
-        project.icon_file_name = 'project.jpg'
-        project.icon_content_type = 'image/jpeg'
+      after(:build) do |project|
+        project.icon_file_name = "project.jpg"
+        project.icon_content_type = "image/jpeg"
         project.icon_file_size = 1024
         project.icon_updated_at = Time.now
       end

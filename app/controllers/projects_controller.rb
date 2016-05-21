@@ -25,7 +25,7 @@ class ProjectsController < ApplicationController
     if for_slugged_route?
       projects = find_projects_with_slugged_route!
     else
-      projects = Project.all.includes(
+      projects = Project.published.includes(
         :categories, :github_repositories, :organization,
       )
     end
@@ -50,7 +50,7 @@ class ProjectsController < ApplicationController
 
     authorize project
 
-    if project.save
+    if project.update(publish?)
       AddProjectIconWorker.perform_async(project.id)
       render json: project
     else
@@ -63,9 +63,9 @@ class ProjectsController < ApplicationController
 
     authorize project
 
-    project.update(update_params)
+    project.assign_attributes(update_params)
 
-    if project.save
+    if project.update(publish?)
       AddProjectIconWorker.perform_async(project.id)
       render json: project
     else
@@ -74,6 +74,12 @@ class ProjectsController < ApplicationController
   end
 
   private
+
+    def publish?
+      ActiveRecord::Type::Boolean.new.type_cast_from_user(
+        parse_params(params).fetch(:publish, false)
+      )
+    end
 
     def create_params
       parse_params(params, only: [:base64_icon_data, :title, :description, :slug, :organization])
@@ -109,6 +115,7 @@ class ProjectsController < ApplicationController
     def find_projects_with_slugged_route!
       slugged_route = find_slugged_route!
       Project.
+        published.
         includes(:categories, :github_repositories, :organization).
         where(organization: slugged_route.owner)
     end
