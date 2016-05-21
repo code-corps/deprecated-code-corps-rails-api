@@ -51,6 +51,7 @@ Rails.application.routes.draw do
       post :forgot_password
     end
 
+    resources :user_categories, only: [:create, :destroy]
     resources :user_roles, only: [:create, :destroy]
     resources :user_skills, only: [:create, :destroy]
 
