@@ -25,7 +25,7 @@ class ProjectsController < ApplicationController
     if for_slugged_route?
       projects = find_projects_with_slugged_route!
     else
-      projects = Project.all.includes(
+      projects = Project.published.includes(
         :categories, :github_repositories, :organization,
       )
     end
@@ -115,6 +115,7 @@ class ProjectsController < ApplicationController
     def find_projects_with_slugged_route!
       slugged_route = find_slugged_route!
       Project.
+        published.
         includes(:categories, :github_repositories, :organization).
         where(organization: slugged_route.owner)
     end

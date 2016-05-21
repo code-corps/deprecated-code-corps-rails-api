@@ -145,6 +145,18 @@ describe Project, type: :model do
     end
   end
 
+  context ".published" do
+    it "only returns published projects" do
+      published_project = create(:project, :with_categories)
+      published_project.update(true)
+      unpublished_project = create(:project)
+
+      published_projects = Project.published
+      expect(published_projects).to include published_project
+      expect(published_projects).not_to include unpublished_project
+    end
+  end
+
   context "paperclip" do
     context "without cloudfront" do
       it { should have_attached_file(:icon) }

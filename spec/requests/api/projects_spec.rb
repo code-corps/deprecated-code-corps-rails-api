@@ -3,7 +3,10 @@ require "rails_helper"
 describe "Projects API" do
   context "GET /projects" do
     before do
-      @projects = create_list(:project, 10)
+      @projects = create_list(:project, 10, :with_categories)
+      # Publish them
+      @projects.each { |p| p.update(true) }
+      create_list(:project, 10)
     end
 
     context "when successful" do
@@ -15,7 +18,7 @@ describe "Projects API" do
         expect(last_response.status).to eq 200
       end
 
-      it "returns a list of projects, serialized with ProjectSerializer, with nothing included" do
+      it "returns a list of published projects, serialized, with nothing included" do
         expect(json).to serialize_collection(@projects).with(ProjectSerializer)
       end
     end
@@ -47,7 +50,10 @@ describe "Projects API" do
   context "GET /:slug/projects" do
     before do
       @slugged_route = create(:organization).slugged_route
-      @projects = create_list(:project, 3, organization: @slugged_route.owner)
+      @projects = create_list(:project, 3, :with_categories, organization: @slugged_route.owner)
+      # Publish them
+      @projects.each { |p| p.update(true) }
+      create_list(:project, 3, organization: @slugged_route.owner)
       create_list(:project, 2, organization: create(:organization))
     end
 
