@@ -1,4 +1,4 @@
-class Interest < ActiveRecord::Base
+class UserCategory < ActiveRecord::Base
   belongs_to :user, required: true
   belongs_to :category, required: true
 

@@ -71,15 +71,6 @@ ActiveRecord::Schema.define(version: 20160520235218) do
     t.datetime "updated_at",      null: false
   end
 
-  create_table "interests", force: :cascade do |t|
-    t.integer  "user_id"
-    t.integer  "category_id"
-    t.datetime "created_at",  null: false
-    t.datetime "updated_at",  null: false
-  end
-
-  add_index "interests", ["user_id", "category_id"], name: "index_interests_on_user_id_and_category_id", unique: true, using: :btree
-
   create_table "notifications", force: :cascade do |t|
     t.integer  "notifiable_id",   null: false
     t.string   "notifiable_type", null: false
@@ -281,6 +272,15 @@ ActiveRecord::Schema.define(version: 20160520235218) do
   add_index "slugged_routes", ["owner_id", "owner_type"], name: "index_slugged_routes_on_owner_id_and_owner_type", unique: true, using: :btree
   add_index "slugged_routes", ["slug"], name: "index_slugged_routes_on_slug", unique: true, using: :btree
 
+  create_table "user_categories", force: :cascade do |t|
+    t.integer  "user_id"
+    t.integer  "category_id"
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
+  end
+
+  add_index "user_categories", ["user_id", "category_id"], name: "index_user_categories_on_user_id_and_category_id", unique: true, using: :btree
+
   create_table "user_relationships", force: :cascade do |t|
     t.integer  "follower_id"
     t.integer  "following_id"
@@ -332,8 +332,6 @@ ActiveRecord::Schema.define(version: 20160520235218) do
 
   add_foreign_key "comments", "posts"
   add_foreign_key "comments", "users"
-  add_foreign_key "interests", "categories", on_delete: :cascade
-  add_foreign_key "interests", "users", on_delete: :cascade
   add_foreign_key "posts", "projects"
   add_foreign_key "posts", "users"
   add_foreign_key "project_categories", "categories", on_delete: :cascade
@@ -343,4 +341,6 @@ ActiveRecord::Schema.define(version: 20160520235218) do
   add_foreign_key "project_skills", "projects", on_delete: :cascade
   add_foreign_key "project_skills", "skills", on_delete: :cascade
   add_foreign_key "projects", "organizations"
+  add_foreign_key "user_categories", "categories", on_delete: :cascade
+  add_foreign_key "user_categories", "users", on_delete: :cascade
 end
