@@ -40,6 +40,7 @@ describe UserSerializer, :type => :serializer do
         facebook_id: "some_id",
         facebook_access_token: "some_token")
 
+      create_list(:user_category, 2, user: user)
       create_list(:user_skill, 2, user: user)
 
       organization = create(:organization)
@@ -124,6 +125,11 @@ describe UserSerializer, :type => :serializer do
         JSON.parse(serialization.to_json)["data"]["relationships"]
       end
 
+      it "has a 'categories' relationship" do
+        expect(subject["categories"]).not_to be_nil
+        expect(subject["categories"]["data"].count).to eq 2
+      end
+
       it "has a 'skills' relationship" do
         expect(subject["skills"]).not_to be_nil
         expect(subject["skills"]["data"].count).to eq 2
@@ -143,6 +149,21 @@ describe UserSerializer, :type => :serializer do
 
         it "should be empty" do
           expect(subject).to be_nil
+        end
+      end
+
+      context "when including categories" do
+        let(:serialization) do
+          ActiveModel::Serializer::Adapter.create(serializer, include: ["categories"])
+        end
+
+        subject do
+          JSON.parse(serialization.to_json)["included"]
+        end
+
+        it "should contain the user's categories" do
+          expect(subject).not_to be_nil
+          expect(subject.select { |i| i["type"] == "categories" }.length).to eq 2
         end
       end
 

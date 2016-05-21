@@ -29,8 +29,9 @@ class UserSerializer < ActiveModel::Serializer
              :facebook_id, :facebook_access_token, :photo_thumb_url,
              :photo_large_url
 
-  has_many :skills
+  has_many :categories
   has_many :organizations
+  has_many :skills
 
   def photo_thumb_url
     object.photo.url(:thumb)
