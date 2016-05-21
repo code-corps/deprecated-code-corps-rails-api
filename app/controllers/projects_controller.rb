@@ -50,7 +50,7 @@ class ProjectsController < ApplicationController
 
     authorize project
 
-    if project.save
+    if project.update(publish?)
       AddProjectIconWorker.perform_async(project.id)
       render json: project
     else
@@ -63,9 +63,9 @@ class ProjectsController < ApplicationController
 
     authorize project
 
-    project.update(update_params)
+    project.assign_attributes(update_params)
 
-    if project.save
+    if project.update(publish?)
       AddProjectIconWorker.perform_async(project.id)
       render json: project
     else
@@ -74,6 +74,12 @@ class ProjectsController < ApplicationController
   end
 
   private
+
+    def publish?
+      ActiveRecord::Type::Boolean.new.type_cast_from_user(
+        parse_params(params).fetch(:publish, false)
+      )
+    end
 
     def create_params
       parse_params(params, only: [:base64_icon_data, :title, :description, :slug, :organization])

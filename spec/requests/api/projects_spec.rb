@@ -1,7 +1,6 @@
 require "rails_helper"
 
 describe "Projects API" do
-
   context "GET /projects" do
     before do
       @projects = create_list(:project, 10)
@@ -310,6 +309,44 @@ describe "Projects API" do
         @project.reload
 
         expect(@project.description).to eq "New description"
+      end
+
+      context "when publishing a project" do
+        context "without enough details" do
+          it "returns an error" do
+            authenticated_patch "/projects/#{@project.id}", {
+              data: {
+                attributes: {
+                  title: "New title",
+                  publish: true
+                }
+              }
+            }, @token
+
+            expect(last_response.status).to eq 422
+            expect(json).to be_a_valid_json_api_validation_error.with_message "can't be blank"
+          end
+        end
+
+        context "with enough details" do
+          before do
+            create(:project_category, project: @project)
+          end
+
+          it "publishes the project" do
+            authenticated_patch "/projects/#{@project.id}", {
+              data: {
+                attributes: {
+                  publish: true
+                }
+              }
+            }, @token
+
+            @project.reload
+
+            expect(@project.published?).to eq true
+          end
+        end
       end
 
       context "when updating a project icon when none exists" do

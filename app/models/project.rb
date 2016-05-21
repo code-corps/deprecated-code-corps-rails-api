@@ -17,6 +17,8 @@
 #
 
 class Project < ActiveRecord::Base
+  include AASM
+
   ASSET_HOST_FOR_DEFAULT_ICON = "https://d3pgew4wbk2vb1.cloudfront.net/icons".freeze
 
   belongs_to :organization
@@ -35,10 +37,14 @@ class Project < ActiveRecord::Base
                     default_url: ASSET_HOST_FOR_DEFAULT_ICON + "/project_default_:style.png"
 
   before_validation :add_slug_if_blank
+  before_save :publish_changes
 
   validates :title, presence: true
   validates :slug, slug: true
   validate :slug_is_not_duplicate
+
+  validates :description, presence: true, if: :publishing_or_published?
+  validates :categories, presence: true, if: :publishing_or_published?
 
   validates_presence_of :organization
 
@@ -46,6 +52,23 @@ class Project < ActiveRecord::Base
                                     content_type: %r{^image\/(png|gif|jpeg)}
 
   validates_attachment_size :icon, less_than: 10.megabytes
+
+  attr_accessor :publishing
+  alias_method :publishing?, :publishing
+
+  aasm do
+    state :created, initial: true
+    state :published
+
+    event :publish do
+      transitions from: :created, to: :published, guard: :can_publish?
+    end
+  end
+
+  def update(publishing)
+    @publishing = publishing
+    save
+  end
 
   private
 
@@ -59,5 +82,22 @@ class Project < ActiveRecord::Base
       unless self.slug.present?
         self.slug = self.title.try(:parameterize)
       end
+    end
+
+    def can_publish?
+      title.present? &&
+        description.present? &&
+        categories.present?
+    end
+
+    def publish_changes
+      return unless valid?
+      return unless publishing?
+
+      publish if created?
+    end
+
+    def publishing_or_published?
+      publishing? || published?
     end
 end

@@ -26,6 +26,7 @@ describe Project, type: :model do
     it { should have_db_column(:icon_content_type).of_type(:string) }
     it { should have_db_column(:icon_file_size).of_type(:integer) }
     it { should have_db_column(:icon_updated_at).of_type(:datetime) }
+    it { should have_db_column(:aasm_state).of_type(:string) }
   end
 
   describe "relationships" do
@@ -83,6 +84,65 @@ describe Project, type: :model do
 
   describe "ownership" do
     it { should validate_presence_of :organization }
+  end
+
+  describe "state machine" do
+    let(:project) { Project.new }
+
+    it "sets the state to created initially" do
+      expect(project).to have_state(:created)
+    end
+
+    context "when project is missing details" do
+      it "does not transition" do
+        expect { project.publish }.to raise_error(AASM::InvalidTransition)
+      end
+    end
+
+    context "when project has details" do
+      let(:project) do
+        create(:project,
+               title: "Title",
+               description: "Description",
+               categories: [create(:category)])
+      end
+
+      it "transitions correctly" do
+        expect(project).to transition_from(:created).to(:published).on_event(:publish)
+      end
+    end
+  end
+
+  describe "#update" do
+    context "when not publishing" do
+      it "just saves a published project" do
+        project = create(:project, :with_categories)
+        project.publish
+        expect(project.update(false)).to be true
+
+        expect(project.published?).to be true
+      end
+    end
+
+    context "when publishing" do
+      context "without required information" do
+        it "does not publish the project" do
+          project = create(:project)
+          expect(project.update(true)).to be false
+
+          expect(project.published?).to be false
+        end
+      end
+
+      context "with required information" do
+        it "publishes a project" do
+          project = create(:project, :with_categories)
+          expect(project.update(true)).to be true
+
+          expect(project.published?).to be true
+        end
+      end
+    end
   end
 
   context "paperclip" do
