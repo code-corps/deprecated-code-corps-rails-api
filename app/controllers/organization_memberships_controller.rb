@@ -9,6 +9,14 @@ class OrganizationMembershipsController < ApplicationController
            each_serializer: OrganizationMembershipSerializer
   end
 
+  def show
+    organization_membership = OrganizationMembership.find(params[:id])
+
+    authorize organization_membership
+
+    render json: organization_membership
+  end
+
   def create
     organization_membership = OrganizationMembership.new(create_params)
 

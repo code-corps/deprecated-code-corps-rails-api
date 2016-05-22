@@ -6,6 +6,29 @@ require "rails_helper"
 # - not allowed
 # - successful
 describe "OrganizationMemberships API" do
+  context "GET /organization_memberships/:id" do
+    context "when the organization_membership doesn't exist" do
+      it "responds with a 404" do
+        get "#{host}/organization_memberships/1"
+        expect(last_response.status).to eq 404
+        expect(json).to be_a_valid_json_api_error.with_id "RECORD_NOT_FOUND"
+      end
+    end
+
+    context "when successful" do
+      let(:organization_membership) { create(:organization_membership) }
+
+      it "returns the membership" do
+        get "#{host}/organization_memberships/#{organization_membership.id}"
+
+        expect(last_response.status).to eq 200
+        expect(json).
+          to serialize_object(organization_membership).
+          with(OrganizationMembershipSerializer)
+      end
+    end
+  end
+
   context "GET /organizations/:id/memberships" do
     context "when the organization doesn't exist" do
       it "responds with a 404" do
