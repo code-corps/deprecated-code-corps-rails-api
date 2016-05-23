@@ -20,6 +20,7 @@ class OrganizationSerializer < ActiveModel::Serializer
 
   has_many :projects
   has_many :members
+  has_many :organization_memberships
 
   def icon_thumb_url
     object.icon.url(:thumb)

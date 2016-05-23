@@ -31,6 +31,7 @@ class UserSerializer < ActiveModel::Serializer
 
   has_many :categories
   has_many :organizations
+  has_many :organization_memberships
   has_many :skills
 
   def photo_thumb_url
