@@ -10,6 +10,10 @@ class OrganizationMembershipPolicy
     true
   end
 
+  def show?
+    true
+  end
+
   def create?
     # need to be logged in to do anything
     return unless user_is_logged_in?

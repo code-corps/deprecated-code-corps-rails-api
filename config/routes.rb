@@ -20,7 +20,7 @@ Rails.application.routes.draw do
     resources :organizations, only: [:show, :create, :update] do
       get "memberships", to: "organization_memberships#index"
     end
-    resources :organization_memberships, only: [:create, :update, :destroy]
+    resources :organization_memberships, only: [:show, :create, :update, :destroy]
 
     get "ping", to: "ping#index"
 
