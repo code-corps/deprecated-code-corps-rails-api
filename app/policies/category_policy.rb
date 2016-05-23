@@ -10,6 +10,10 @@ class CategoryPolicy
     true
   end
 
+  def show?
+    true
+  end
+
   def create?
     return unless user.present?
     user.admin?

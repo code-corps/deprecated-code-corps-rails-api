@@ -1,6 +1,25 @@
 require "rails_helper"
 
 describe "UserCategories API" do
+  describe "GET /user_categories/:id" do
+    let(:user_category) { create(:user_category) }
+
+    context "when successful" do
+      before do
+        get "#{host}/user_categories/#{user_category.id}"
+      end
+
+      it "responds with a 200" do
+        expect(last_response.status).to eq 200
+      end
+
+      it "returns a serialized user_category" do
+        expect(json).to serialize_object(user_category).
+          with(UserCategorySerializer)
+      end
+    end
+  end
+
   describe "POST /user_categories" do
     context "when unauthenticated" do
       it "responds with a 401" do

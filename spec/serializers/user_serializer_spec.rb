@@ -144,6 +144,11 @@ describe UserSerializer, :type => :serializer do
         expect(subject["organization_memberships"]).not_to be_nil
         expect(subject["organization_memberships"]["data"].count).to eq 1
       end
+
+      it "has a 'user_categories' relationship" do
+        expect(subject["user_categories"]).not_to be_nil
+        expect(subject["user_categories"]["data"].count).to eq 2
+      end
     end
 
     context "included" do
@@ -199,6 +204,21 @@ describe UserSerializer, :type => :serializer do
         it "should contain the user's organizations" do
           expect(subject).not_to be_nil
           expect(subject.select { |i| i["type"] == "organizations" }.length).to eq 1
+        end
+      end
+
+      context "when including user_categories" do
+        let(:serialization) do
+          ActiveModel::Serializer::Adapter.create(serializer, include: ["user_categories"])
+        end
+
+        subject do
+          JSON.parse(serialization.to_json)["included"]
+        end
+
+        it "should contain the user's user_categories" do
+          expect(subject).not_to be_nil
+          expect(subject.select { |i| i["type"] == "user_categories" }.length).to eq 2
         end
       end
     end

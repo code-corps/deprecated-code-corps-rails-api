@@ -1,5 +1,13 @@
 class UserCategoriesController < ApplicationController
-  before_action :doorkeeper_authorize!
+  before_action :doorkeeper_authorize!, only: [:create, :destroy]
+
+  def show
+    user_category = UserCategory.find(params[:id])
+
+    authorize user_category
+
+    render json: user_category
+  end
 
   def create
     user_category = UserCategory.new(create_params)

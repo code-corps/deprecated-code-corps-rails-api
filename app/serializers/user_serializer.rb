@@ -30,6 +30,7 @@ class UserSerializer < ActiveModel::Serializer
              :photo_large_url
 
   has_many :categories
+  has_many :user_categories
   has_many :organizations
   has_many :organization_memberships
   has_many :skills
