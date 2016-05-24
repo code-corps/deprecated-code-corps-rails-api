@@ -133,6 +133,11 @@ describe UserSerializer, :type => :serializer do
         expect(subject["organizations"]).not_to be_nil
         expect(subject["organizations"]["data"].count).to eq 1
       end
+
+      it "has an 'organization_memberships' relationship" do
+        expect(subject["organization_memberships"]).not_to be_nil
+        expect(subject["organization_memberships"]["data"].count).to eq 1
+      end
     end
 
     context "included" do
