@@ -5,15 +5,8 @@ class ProjectRolesController < ApplicationController
   def create
     project_role = ProjectRole.new(create_params)
 
-    if project_role.project.blank?
-      project_role.valid?
-      render_validation_errors project_role.errors
-      return
-    end
-
-    authorize project_role
-
     if project_role.valid?
+      authorize project_role
       project_role.save!
       render json: project_role, include: [:role, :project]
     else
