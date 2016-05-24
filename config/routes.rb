@@ -36,6 +36,7 @@ Rails.application.routes.draw do
     end
     resources :project_categories, only: [:create, :destroy]
     resources :project_roles, only: [:create, :destroy]
+    resources :project_skills, only: [:create, :destroy]
 
     resources :roles, only: [:index, :create]
     resources :role_skills, only: [:create]

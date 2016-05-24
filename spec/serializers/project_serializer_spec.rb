@@ -24,6 +24,7 @@ describe ProjectSerializer, type: :serializer do
       project = create(:project)
       create_list(:project_category, 10, project: project)
       create_list(:project_role, 10, project: project)
+      create_list(:project_skill, 10, project: project)
       create_list(:github_repository, 10, project: project)
       project
     end
@@ -106,6 +107,12 @@ describe ProjectSerializer, type: :serializer do
         expect(subject["github_repositories"]["data"].length).to eq 10
         expect(subject["github_repositories"]["data"].all? { |r| r["type"] == "github_repositories" }).to be true
       end
+
+      it "should have a 'skills' relationship" do
+        expect(subject["skills"]).not_to be_nil
+        expect(subject["skills"]["data"].length).to eq 10
+        expect(subject["skills"]["data"].all? { |r| r["type"] == "skills" }).to be true
+      end
     end
 
     context "included" do
@@ -162,6 +169,21 @@ describe ProjectSerializer, type: :serializer do
       it "should contain the project's github_repositories" do
         expect(subject).not_to be_nil
         expect(subject.select { |i| i["type"] == "github_repositories" }.length).to eq 10
+      end
+    end
+
+    context "when including skills" do
+      let(:serialization) do
+        ActiveModel::Serializer::Adapter.create(serializer, include: ["skills"])
+      end
+
+      subject do
+        JSON.parse(serialization.to_json)["included"]
+      end
+
+      it "should contain the project's skills" do
+        expect(subject).not_to be_nil
+        expect(subject.select { |i| i["type"] == "skills" }.length).to eq 10
       end
     end
   end

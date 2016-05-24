@@ -1,21 +1,21 @@
 # == Schema Information
 #
-# Table name: project_categories
+# Table name: project_skills
 #
-#  id          :integer          not null, primary key
-#  project_id  :integer
-#  category_id :integer
-#  created_at  :datetime         not null
-#  updated_at  :datetime         not null
+#  id         :integer          not null, primary key
+#  project_id :integer
+#  skill_id   :integer
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
 #
 
 require "rails_helper"
 
-describe ProjectCategorySerializer, type: :serializer do
+describe ProjectSkillSerializer, type: :serializer do
   context "individual resource representation" do
-    let(:resource) { create(:project_category) }
+    let(:resource) { create(:project_skill) }
 
-    let(:serializer) { ProjectCategorySerializer.new(resource) }
+    let(:serializer) { ProjectSkillSerializer.new(resource) }
     let(:serialization) { ActiveModel::Serializer::Adapter.create(serializer) }
 
     context "root" do
@@ -35,8 +35,8 @@ describe ProjectCategorySerializer, type: :serializer do
         expect(subject["id"]).not_to be_nil
       end
 
-      it "has a type set to 'project_categories'" do
-        expect(subject["type"]).to eq "project_categories"
+      it "has a type set to 'project_skills'" do
+        expect(subject["type"]).to eq "project_skills"
       end
     end
 
@@ -51,10 +51,10 @@ describe ProjectCategorySerializer, type: :serializer do
         expect(subject["project"]["data"]["id"]).to eq resource.project.id.to_s
       end
 
-      it "should contain a 'category' relationship" do
-        expect(subject["category"]).not_to be_nil
-        expect(subject["category"]["data"]["type"]).to eq "categories"
-        expect(subject["category"]["data"]["id"]).to eq resource.category.id.to_s
+      it "should contain a 'skill' relationship" do
+        expect(subject["skill"]).not_to be_nil
+        expect(subject["skill"]["data"]["type"]).to eq "skills"
+        expect(subject["skill"]["data"]["id"]).to eq resource.skill.id.to_s
       end
     end
 
@@ -84,9 +84,9 @@ describe ProjectCategorySerializer, type: :serializer do
         end
       end
 
-      context "when including 'category'" do
+      context "when including 'skill'" do
         let(:serialization) do
-          ActiveModel::Serializer::Adapter.create(serializer, include: ["category"])
+          ActiveModel::Serializer::Adapter.create(serializer, include: ["skill"])
         end
 
         subject do
@@ -95,7 +95,7 @@ describe ProjectCategorySerializer, type: :serializer do
 
         it "should not be empty" do
           expect(subject).not_to be_nil
-          expect(subject.select { |i| i["type"] == "categories" }.length).to eq 1
+          expect(subject.select { |i| i["type"] == "skills" }.length).to eq 1
         end
       end
     end
