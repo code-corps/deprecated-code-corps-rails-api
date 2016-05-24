@@ -16,15 +16,8 @@ class ProjectSkillsController < ApplicationController
   def create
     project_skill = ProjectSkill.new(create_params)
 
-    if project_skill.project.blank?
-      project_skill.valid?
-      render_validation_errors project_skill.errors
-      return
-    end
-
-    authorize project_skill
-
     if project_skill.valid?
+      authorize project_skill
       project_skill.save!
       render json: project_skill, include: [:skill, :project]
     else
