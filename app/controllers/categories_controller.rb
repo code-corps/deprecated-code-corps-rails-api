@@ -18,6 +18,14 @@ class CategoriesController < ApplicationController
     render json: Category.all
   end
 
+  def show
+    category = Category.find(params[:id])
+
+    authorize category
+
+    render json: category
+  end
+
   def create
     category = Category.new(permitted_params)
 

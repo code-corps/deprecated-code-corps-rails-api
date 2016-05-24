@@ -23,6 +23,8 @@ class Project < ActiveRecord::Base
 
   has_many :project_categories
   has_many :categories, through: :project_categories
+  has_many :project_roles
+  has_many :roles, through: :project_roles
   has_many :project_skills
   has_many :skills, through: :project_skills
   has_many :github_repositories
