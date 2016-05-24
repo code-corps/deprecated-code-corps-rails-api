@@ -9,7 +9,7 @@ Rails.application.routes.draw do
   end
 
   constraints subdomain: "api" do
-    resources :categories, only: [:index, :create]
+    resources :categories, only: [:index, :show, :create]
 
     resources :comments, only: [:show, :create, :update]
     resources :comment_images, only: [:create]
@@ -20,7 +20,7 @@ Rails.application.routes.draw do
     resources :organizations, only: [:show, :create, :update] do
       get "memberships", to: "organization_memberships#index"
     end
-    resources :organization_memberships, only: [:create, :update, :destroy]
+    resources :organization_memberships, only: [:show, :create, :update, :destroy]
 
     get "ping", to: "ping#index"
 
@@ -52,6 +52,7 @@ Rails.application.routes.draw do
       post :forgot_password
     end
 
+    resources :user_categories, only: [:show, :create, :destroy]
     resources :user_roles, only: [:create, :destroy]
     resources :user_skills, only: [:create, :destroy]
 

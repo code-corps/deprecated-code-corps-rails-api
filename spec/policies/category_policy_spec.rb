@@ -9,7 +9,7 @@ describe CategoryPolicy do
     @site_admin = create(:user, admin: true)
   end
 
-  permissions :index? do
+  permissions :index?, :show? do
     context "as a logged out user" do
       it "can view all categories" do
         expect(subject).to permit(nil, @category)

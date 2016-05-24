@@ -17,8 +17,7 @@
 
 require "rails_helper"
 
-describe OrganizationSerializer, :type => :serializer do
-
+describe OrganizationSerializer, type: :serializer do
   context "individual resource representation" do
     let(:resource) do
       organization = create(:organization)
@@ -49,7 +48,6 @@ describe OrganizationSerializer, :type => :serializer do
     end
 
     context "attributes" do
-
       subject do
         JSON.parse(serialization.to_json)["data"]["attributes"]
       end
@@ -95,6 +93,12 @@ describe OrganizationSerializer, :type => :serializer do
         expect(subject["members"]).not_to be_nil
         expect(subject["members"]["data"].length).to eq 1
         expect(subject["members"]["data"].all? { |r| r["type"] == "users" }).to be true
+      end
+
+      it "should have a 'organization_memberships' relationship" do
+        expect(subject["organization_memberships"]).not_to be_nil
+        expect(subject["organization_memberships"]["data"].length).to eq 1
+        expect(subject["organization_memberships"]["data"].all? { |r| r["type"] == "organization_memberships" }).to be true
       end
     end
 

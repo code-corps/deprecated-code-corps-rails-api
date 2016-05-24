@@ -22,6 +22,25 @@ describe "Categories API" do
     end
   end
 
+  describe "GET /categories/:id" do
+    let(:category) { create(:category) }
+
+    context "when successful" do
+      before do
+        get "#{host}/categories/#{category.id}"
+      end
+
+      it "responds with a 200" do
+        expect(last_response.status).to eq 200
+      end
+
+      it "returns a serialized category" do
+        expect(json).to serialize_object(category).
+          with(CategorySerializer)
+      end
+    end
+  end
+
   context "POST /categories" do
     context "when unauthenticated" do
       it "responds with a 401 not authorized" do

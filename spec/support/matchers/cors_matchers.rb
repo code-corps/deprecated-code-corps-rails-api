@@ -15,6 +15,6 @@ RSpec::Matchers.define :have_proper_preflight_options_response_headers do
   end
 
   def methods
-    @method_string || "GET, POST, PATCH, OPTIONS"
+    @method_string || "GET, POST, PATCH, OPTIONS, DELETE"
   end
 end
