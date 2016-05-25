@@ -82,7 +82,7 @@ class PostsController < ApplicationController
 
     def filter_params
       filter_params = {}
-      filter_params[:post_type] = params[:post_type] if params[:post_type]
+      filter_params[:post_type] = params[:post_type].split(",") if params[:post_type]
       filter_params
     end
 
