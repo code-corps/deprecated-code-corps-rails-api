@@ -35,6 +35,8 @@ gem "github-markdown"
 
 gem "html-pipeline"
 
+gem "html-pipeline-rouge_filter"
+
 gem "obscenity"
 
 gem "sequenced"

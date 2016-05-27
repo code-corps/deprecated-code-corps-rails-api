@@ -144,6 +144,10 @@ GEM
     html-pipeline (2.3.0)
       activesupport (>= 2, < 5)
       nokogiri (>= 1.4)
+    html-pipeline-rouge_filter (1.0.4)
+      activesupport
+      html-pipeline (>= 1.11)
+      rouge (~> 1.8)
     http_parser.rb (0.6.0)
     httpclient (2.7.1)
     i18n (0.7.0)
@@ -241,6 +245,7 @@ GEM
       thor (>= 0.18.1, < 2.0)
     rake (10.5.0)
     redis (3.2.2)
+    rouge (1.10.1)
     rspec (3.4.0)
       rspec-core (~> 3.4.0)
       rspec-expectations (~> 3.4.0)
@@ -336,6 +341,7 @@ DEPENDENCIES
   github-markdown
   hashie
   html-pipeline
+  html-pipeline-rouge_filter
   kaminari
   koala
   oauth2
