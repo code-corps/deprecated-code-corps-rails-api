@@ -85,12 +85,12 @@ describe "Posts API" do
       end
 
       context "when 'post_type' parameter is specified" do
-        it "only returns posts of that type, with proper meta" do
-          get "#{host}/projects/#{@project.id}/posts", post_type: "issue"
-          collection = Post.where(project: @project, post_type: "issue")
+        it "only returns posts of those types, with proper meta" do
+          get "#{host}/projects/#{@project.id}/posts", post_type: "issue,task"
+          collection = Post.where(project: @project, post_type: ["issue", "task"])
           expect(json).to serialize_collection(collection).
             with(PostSerializer).
-            with_meta(total_records: 3, total_pages: 1, page_size: 10, current_page: 1)
+            with_meta(total_records: 10, total_pages: 1, page_size: 10, current_page: 1)
         end
       end
 
