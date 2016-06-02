@@ -27,6 +27,7 @@
 class User < ActiveRecord::Base
   ASSET_HOST_FOR_DEFAULT_PHOTO = "https://d3pgew4wbk2vb1.cloudfront.net/icons".freeze
 
+  include AASM
   include Clearance::User
 
   has_many :organization_memberships, foreign_key: "member_id"
@@ -69,8 +70,36 @@ class User < ActiveRecord::Base
   validates :website, format: { with: /\A((http|https):\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,}(([0-9]{1,5})?\/.*)?#=\z/ix }, allow_blank: true
 
   validate :slug_is_not_duplicate
+  validate :can_transition
 
+  before_save :attempt_transition
   after_save :create_or_update_slugged_route
+
+  attr_accessor :state_transition
+
+  # User onboarding
+  aasm do
+    state :signed_up, initial: true
+    state :selected_categories
+    state :selected_roles
+    state :selected_skills
+
+    event :select_categories do
+      transitions from: :signed_up, to: :selected_categories
+    end
+
+    event :select_roles do
+      transitions from: :selected_categories, to: :selected_roles
+    end
+
+    event :select_skills do
+      transitions from: :selected_roles, to: :selected_skills
+    end
+  end
+
+  def state
+    aasm_state
+  end
 
   # Follows a user.
   def follow(other_user)
@@ -88,6 +117,15 @@ class User < ActiveRecord::Base
   end
 
   private
+
+    def can_transition
+      return if state_transition.blank?
+      errors.add(:state, "cannot transition") unless send("may_#{state_transition}?")
+    end
+
+    def attempt_transition
+      send(state_transition) if state_transition.present?
+    end
 
     def slug_is_not_duplicate
       if SluggedRoute.where.not(owner: self).where("lower(slug) = ?", username.try(:downcase)).present?
