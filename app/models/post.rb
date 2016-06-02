@@ -21,6 +21,7 @@
 #
 
 require "html/pipeline"
+require 'html/pipeline/rouge_filter'
 require "code_corps/scenario/generate_user_mentions_for_post"
 
 class Post < ActiveRecord::Base
@@ -111,7 +112,8 @@ class Post < ActiveRecord::Base
 
     def pipeline
       @pipeline ||= HTML::Pipeline.new [
-        HTML::Pipeline::MarkdownFilter
+        HTML::Pipeline::MarkdownFilter,
+        HTML::Pipeline::RougeFilter
       ], gfm: true # Github-flavored markdown
     end
 
