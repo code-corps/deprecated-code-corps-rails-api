@@ -158,13 +158,19 @@ describe User, type: :model do
     it "transitions correctly when state_transition is set and saved" do
       expect(user).to have_state(:signed_up)
 
-      user.select_categories!
+      user.state_transition = "select_categories"
+      user.save
+
       expect(user).to have_state(:selected_categories)
 
-      user.select_roles!
+      user.state_transition = "select_roles"
+      user.save
+
       expect(user).to have_state(:selected_roles)
 
-      user.select_skills!
+      user.state_transition = "select_skills"
+      user.save
+
       expect(user).to have_state(:selected_skills)
     end
   end
