@@ -75,6 +75,7 @@ class User < ActiveRecord::Base
   before_save :attempt_transition
   after_save :create_or_update_slugged_route
 
+  alias_attribute :state, :aasm_state
   attr_accessor :state_transition
 
   # User onboarding
@@ -95,10 +96,6 @@ class User < ActiveRecord::Base
     event :select_skills do
       transitions from: :selected_roles, to: :selected_skills
     end
-  end
-
-  def state
-    aasm_state
   end
 
   # Follows a user.
