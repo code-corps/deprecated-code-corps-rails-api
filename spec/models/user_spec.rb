@@ -44,6 +44,7 @@ describe User, type: :model do
     it { should have_db_column(:photo_content_type).of_type(:string) }
     it { should have_db_column(:photo_file_size).of_type(:integer) }
     it { should have_db_column(:photo_updated_at).of_type(:datetime) }
+    it { should have_db_column(:aasm_state).of_type(:string).with_options(default: "signed_up", null: false) }
 
     it { should have_db_index(:email) }
     it { should have_db_index(:remember_token) }

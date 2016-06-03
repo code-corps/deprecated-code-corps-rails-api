@@ -326,7 +326,7 @@ ActiveRecord::Schema.define(version: 20160602211946) do
     t.integer  "photo_file_size"
     t.datetime "photo_updated_at"
     t.text     "name"
-    t.string   "aasm_state",                        default: "signed_up"
+    t.string   "aasm_state",                        default: "signed_up", null: false
   end
 
   add_index "users", ["email"], name: "index_users_on_email", using: :btree
