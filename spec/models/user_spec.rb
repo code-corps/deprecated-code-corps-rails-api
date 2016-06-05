@@ -44,6 +44,7 @@ describe User, type: :model do
     it { should have_db_column(:photo_content_type).of_type(:string) }
     it { should have_db_column(:photo_file_size).of_type(:integer) }
     it { should have_db_column(:photo_updated_at).of_type(:datetime) }
+    it { should have_db_column(:aasm_state).of_type(:string).with_options(default: "signed_up", null: false) }
 
     it { should have_db_index(:email) }
     it { should have_db_index(:remember_token) }
@@ -148,6 +149,29 @@ describe User, type: :model do
       user.save
 
       expect(user.username).to eq "new_name"
+    end
+  end
+
+  describe "onboarding" do
+    let(:user) { create(:user) }
+
+    it "transitions correctly when state_transition is set and saved" do
+      expect(user).to have_state(:signed_up)
+
+      user.state_transition = "select_categories"
+      user.save
+
+      expect(user).to have_state(:selected_categories)
+
+      user.state_transition = "select_roles"
+      user.save
+
+      expect(user).to have_state(:selected_roles)
+
+      user.state_transition = "select_skills"
+      user.save
+
+      expect(user).to have_state(:selected_skills)
     end
   end
 

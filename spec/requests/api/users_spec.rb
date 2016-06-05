@@ -475,9 +475,23 @@ describe "Users API" do
         authenticated_patch "/users/me", @edit_params, @token
       end
 
+      it "transitions the user's state" do
+        params = json_api_params_for("users", state_transition: "select_categories")
+        authenticated_patch "/users/me", params, @token
+        expect(last_response.status).to eq 200
+        expect(User.last.state).to eq "selected_categories"
+      end
+
       it "renders validation errors if parameter values are invalid" do
         invalid_params = json_api_params_for("users", website: "multi word")
         authenticated_patch "/users/me", invalid_params, @token
+        expect(last_response.status).to eq 422
+        expect(json).to be_a_valid_json_api_validation_error
+      end
+
+      it "renders validation errors if the transition is invalid" do
+        params = json_api_params_for("users", state_transition: "select_skills")
+        authenticated_patch "/users/me", params, @token
         expect(last_response.status).to eq 422
         expect(json).to be_a_valid_json_api_validation_error
       end

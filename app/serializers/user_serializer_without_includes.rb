@@ -1,6 +1,7 @@
 class UserSerializerWithoutIncludes < ActiveModel::Serializer
   attributes :id, :email, :name, :username, :twitter, :biography, :website,
-             :photo_thumb_url, :photo_large_url
+             :facebook_id, :facebook_access_token, :photo_thumb_url,
+             :photo_large_url, :state
 
   def photo_thumb_url
     object.photo.url(:thumb)
