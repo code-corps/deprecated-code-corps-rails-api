@@ -1,5 +1,9 @@
 categories = [
   {
+    name: "Arts",
+    description: "You want to improve the arts."
+  },
+  {
     name: "Economy",
     description: "You want to improve finance and the economic climate."
   },
