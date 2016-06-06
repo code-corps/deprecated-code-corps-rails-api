@@ -47,6 +47,8 @@ gem "faraday"
 
 gem "pusher"
 
+gem "seed-fu"
+
 group :development, :test do
   gem "annotate"
 
@@ -67,7 +69,6 @@ end
 
 group :development do
   gem "foreman"
-  gem "seed-fu"
   gem "sinatra", require: nil # for Sidekiq UI to work in development
 end
 
