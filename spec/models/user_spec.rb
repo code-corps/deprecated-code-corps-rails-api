@@ -131,6 +131,12 @@ describe User, type: :model do
     end
   end
 
+  describe "strip_attributes" do
+    it { is_expected.to strip_attribute(:biography) }
+    it { is_expected.to strip_attribute(:twitter) }
+    it { is_expected.to strip_attribute(:website) }
+  end
+
   describe "admin state" do
     let(:user) { User.create(email: "joshdotsmith@gmail.com", username: "joshsmith", password: "password") }
 

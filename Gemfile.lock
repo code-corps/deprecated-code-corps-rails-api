@@ -301,6 +301,8 @@ GEM
       actionpack (>= 4.0)
       activesupport (>= 4.0)
       sprockets (>= 3.0.0)
+    strip_attributes (1.8.0)
+      activemodel (>= 3.0, < 6.0)
     thin (1.6.4)
       daemons (~> 1.0, >= 1.0.9)
       eventmachine (~> 1.0, >= 1.0.4)
@@ -368,6 +370,7 @@ DEPENDENCIES
   sidekiq
   sinatra
   spring
+  strip_attributes
   vcr
   webmock
 
