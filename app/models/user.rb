@@ -56,6 +56,8 @@ class User < ActiveRecord::Base
                     path: "users/:id/:style.:extension",
                     default_url: ASSET_HOST_FOR_DEFAULT_PHOTO + "/user_default_:style.png"
 
+  strip_attributes only: [:biography, :twitter, :website]
+
   validates_attachment_content_type :photo,
                                     content_type: %r{^image\/(png|gif|jpeg)}
 

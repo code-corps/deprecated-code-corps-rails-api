@@ -49,6 +49,8 @@ gem "pusher"
 
 gem "seed-fu"
 
+gem "strip_attributes"
+
 group :development, :test do
   gem "annotate"
 
