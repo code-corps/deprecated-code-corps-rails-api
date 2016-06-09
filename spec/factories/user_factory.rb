@@ -22,6 +22,7 @@
 #  photo_file_size       :integer
 #  photo_updated_at      :datetime
 #  name                  :text
+#  aasm_state            :string           default("signed_up"), not null
 #
 
 FactoryGirl.define do

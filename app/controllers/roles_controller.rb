@@ -7,6 +7,7 @@
 #  updated_at :datetime         not null
 #  name       :string           not null
 #  ability    :string           not null
+#  kind       :string           not null
 #
 
 class RolesController < ApplicationController
@@ -32,6 +33,6 @@ class RolesController < ApplicationController
   private
 
     def permitted_params
-      parse_params(params, only: [:name, :ability])
+      parse_params(params, only: [:name, :ability, :kind])
     end
 end

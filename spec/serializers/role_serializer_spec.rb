@@ -7,6 +7,7 @@
 #  updated_at :datetime         not null
 #  name       :string           not null
 #  ability    :string           not null
+#  kind       :string           not null
 #
 
 require "rails_helper"
@@ -14,7 +15,7 @@ require "rails_helper"
 describe RoleSerializer, type: :serializer do
   context "individual resource representation" do
     let(:resource) do
-      role = create(:role)
+      role = create(:role, kind: "technology")
       create_list(:role_skill, 10, role: role)
       role
     end
@@ -57,6 +58,11 @@ describe RoleSerializer, type: :serializer do
       it "has an 'ability'" do
         expect(subject["ability"]).to eql resource.ability
         expect(subject["ability"]).to_not be_nil
+      end
+
+      it "has a 'kind'" do
+        expect(subject["kind"]).to eql resource.kind
+        expect(subject["kind"]).to_not be_nil
       end
     end
 

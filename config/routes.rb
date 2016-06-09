@@ -54,7 +54,7 @@ Rails.application.routes.draw do
     end
 
     resources :user_categories, only: [:show, :create, :destroy]
-    resources :user_roles, only: [:create, :destroy]
+    resources :user_roles, only: [:show, :create, :destroy]
     resources :user_skills, only: [:create, :destroy]
 
     resources :slugged_routes, path: "", only: [:show] do
