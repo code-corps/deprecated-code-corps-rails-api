@@ -7,10 +7,11 @@
 #  updated_at :datetime         not null
 #  name       :string           not null
 #  ability    :string           not null
+#  kind       :string           not null
 #
 
 class RoleSerializer < ActiveModel::Serializer
-  attributes :id, :name, :ability
+  attributes :id, :name, :ability, :kind
 
   has_many :skills
 end

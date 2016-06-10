@@ -22,6 +22,7 @@
 #  photo_file_size       :integer
 #  photo_updated_at      :datetime
 #  name                  :text
+#  aasm_state            :string           default("signed_up"), not null
 #
 
 require "rails_helper"
@@ -40,6 +41,7 @@ describe UserSerializer, type: :serializer do
                     facebook_access_token: "some_token")
 
       create_list(:user_category, 2, user: user)
+      create_list(:user_role, 2, user: user)
       create_list(:user_skill, 2, user: user)
 
       organization = create(:organization)
@@ -221,6 +223,21 @@ describe UserSerializer, type: :serializer do
         end
       end
 
+      context "when including roles" do
+        let(:serialization) do
+          ActiveModel::Serializer::Adapter.create(serializer, include: ["roles"])
+        end
+
+        subject do
+          JSON.parse(serialization.to_json)["included"]
+        end
+
+        it "should contain the user's roles" do
+          expect(subject).not_to be_nil
+          expect(subject.select { |i| i["type"] == "roles" }.length).to eq 2
+        end
+      end
+
       context "when including user_categories" do
         let(:serialization) do
           ActiveModel::Serializer::Adapter.create(serializer, include: ["user_categories"])
@@ -233,6 +250,21 @@ describe UserSerializer, type: :serializer do
         it "should contain the user's user_categories" do
           expect(subject).not_to be_nil
           expect(subject.select { |i| i["type"] == "user_categories" }.length).to eq 2
+        end
+      end
+
+      context "when including user_roles" do
+        let(:serialization) do
+          ActiveModel::Serializer::Adapter.create(serializer, include: ["user_roles"])
+        end
+
+        subject do
+          JSON.parse(serialization.to_json)["included"]
+        end
+
+        it "should contain the user's user_roles" do
+          expect(subject).not_to be_nil
+          expect(subject.select { |i| i["type"] == "user_roles" }.length).to eq 2
         end
       end
     end
