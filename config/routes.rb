@@ -44,6 +44,8 @@ Rails.application.routes.draw do
     resources :skills, only: [:index, :create]
 
     get "user", to: "users#show_authenticated_user"
+    get "users/email_available", to: "users#email_available"
+    get "users/username_available", to: "users#username_available"
     patch "users/me", to: "users#update_authenticated_user"
     resources :users, only: [:show, :create, :update]
     resource :users, only: [:reset_password] do

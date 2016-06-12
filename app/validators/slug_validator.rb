@@ -1,9 +1,8 @@
 require "code_corps/slug_matcher"
 
 class SlugValidator < ActiveModel::EachValidator
-
   def validate_each(record, attribute, value)
-    return validate_property(record, attribute, value)
+    validate_property(record, attribute, value)
   end
 
   private
