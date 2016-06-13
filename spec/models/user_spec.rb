@@ -74,6 +74,39 @@ describe User, type: :model do
       it { should validate_attachment_size(:photo).less_than(10.megabytes) }
     end
 
+    describe "password" do
+      context "on create" do
+        subject { build(:user) }
+        it do
+          should validate_length_of(:password).is_at_least(6).with_message(
+            "must be at least 6 characters"
+          )
+        end
+      end
+
+      context "on update" do
+        context "when password is present" do
+          subject { create(:user) }
+          it do
+            should validate_length_of(:password).is_at_least(6).with_message(
+              "must be at least 6 characters"
+            )
+          end
+        end
+
+        context "when password is not present" do
+          it "updates without validation errors" do
+            user = create(:user)
+            user.username = "new_username"
+            user.save
+            user.reload
+
+            expect(user.username).to eq "new_username"
+          end
+        end
+      end
+    end
+
     describe "website" do
       it { should allow_value("www.example.com").for(:website) }
       it { should allow_value("http://www.example.com").for(:website) }

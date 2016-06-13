@@ -89,6 +89,32 @@ class UsersController < ApplicationController
     end
   end
 
+  def email_available
+    email = params[:email]
+    user = User.new(email: email)
+
+    if User.exists?(email: email)
+      render json: { available: false, valid: true }
+    elsif user.valid_attribute?(:email)
+      render json: { available: true, valid: true }
+    else
+      render json: { available: true, valid: false }
+    end
+  end
+
+  def username_available
+    username = params[:username]
+    user = User.new(username: username)
+
+    if User.exists?(username: username)
+      render json: { available: false, valid: true }
+    elsif user.valid_attribute?(:username)
+      render json: { available: true, valid: true }
+    else
+      render json: { available: true, valid: false }
+    end
+  end
+
   private
 
     def update_and_render_result(record)

@@ -42,8 +42,14 @@ class User < ActiveRecord::Base
   has_many :user_categories
   has_many :categories, through: :user_categories
 
-  has_many :active_relationships, class_name: "UserRelationship", foreign_key: "follower_id", dependent: :destroy
-  has_many :passive_relationships, class_name: "UserRelationship", foreign_key: "following_id", dependent: :destroy
+  has_many :active_relationships,
+           class_name: "UserRelationship",
+           foreign_key: "follower_id",
+           dependent: :destroy
+  has_many :passive_relationships,
+           class_name: "UserRelationship",
+           foreign_key: "following_id",
+           dependent: :destroy
   has_many :following, through: :active_relationships, source: :following
   has_many :followers, through: :passive_relationships, source: :follower
 
@@ -64,7 +70,23 @@ class User < ActiveRecord::Base
 
   validates_attachment_size :photo, less_than: 10.megabytes
 
-  validates :username, presence: { message: "can't be blank" }, obscenity: {message: "may not be obscene"}
+  validates :password,
+            length: {
+              minimum: 6,
+              message: "must be at least 6 characters"
+            },
+            on: :create
+
+  validates :password,
+            length: {
+              minimum: 6,
+              message: "must be at least 6 characters"
+            },
+            if: proc { |user| user.password.present? },
+            on: :update
+
+  validates :username, presence: { message: "can't be blank" },
+                       obscenity: { message: "may not be obscene" }
   validates :username, exclusion: { in: Rails.configuration.x.reserved_routes }
   validates :username, slug: true
   validates :username, uniqueness: { case_sensitive: false }
@@ -116,6 +138,11 @@ class User < ActiveRecord::Base
     following.include?(other_user)
   end
 
+  def valid_attribute?(attribute_name)
+    valid?
+    errors[attribute_name].blank?
+  end
+
   private
 
     def can_transition
@@ -128,7 +155,8 @@ class User < ActiveRecord::Base
     end
 
     def slug_is_not_duplicate
-      if SluggedRoute.where.not(owner: self).where("lower(slug) = ?", username.try(:downcase)).present?
+      slug = username.try(:downcase)
+      if SluggedRoute.where.not(owner: self).where("lower(slug) = ?", slug).present?
         errors.add(:username, "has already been taken by an organization")
       end
     end
