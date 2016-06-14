@@ -123,6 +123,14 @@ class User < ActiveRecord::Base
     end
   end
 
+  def self.email_taken?(email)
+    where("lower(email) = ?", email.try(:downcase)).exists?
+  end
+
+  def self.username_taken?(username)
+    where("lower(username) = ?", username.try(:downcase)).exists?
+  end
+
   # Follows a user.
   def follow(other_user)
     active_relationships.create(following_id: other_user.id)

@@ -171,6 +171,36 @@ describe User, type: :model do
     it { is_expected.to strip_attribute(:website) }
   end
 
+  describe ".email_taken?" do
+    context "when available" do
+      it "works" do
+        expect(User.email_taken?("josh@codecorps.org")).to eq false
+      end
+    end
+
+    context "when taken" do
+      it "works case-insensitive" do
+        create(:user, email: "JOSH@CODECORPS.ORG")
+        expect(User.email_taken?("josh@codecorps.org")).to eq true
+      end
+    end
+  end
+
+  describe ".username_taken?" do
+    context "when available" do
+      it "works" do
+        expect(User.username_taken?("joshsmith")).to eq false
+      end
+    end
+
+    context "when taken" do
+      it "works case-insensitive" do
+        create(:user, username: "JOSHSMITH")
+        expect(User.username_taken?("joshsmith")).to eq true
+      end
+    end
+  end
+
   describe "admin state" do
     let(:user) { User.create(email: "joshdotsmith@gmail.com", username: "joshsmith", password: "password") }
 
