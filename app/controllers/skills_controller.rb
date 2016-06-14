@@ -13,8 +13,14 @@ class SkillsController < ApplicationController
   before_action :doorkeeper_authorize!, only: [:create, :update]
 
   def index
+    if search_params.present?
+      skills = Skill.includes(:roles).autocomplete(search_params)
+    else
+      skills = Skill.all.includes(:roles)
+    end
+
     authorize Skill
-    render json: Skill.all.includes(:roles)
+    render json: skills
   end
 
   def create
@@ -33,5 +39,9 @@ class SkillsController < ApplicationController
 
     def permitted_params
       parse_params(params, only: [:title])
+    end
+
+    def search_params
+      params[:query]
     end
 end

@@ -2,13 +2,36 @@ require "rails_helper"
 
 describe "Skills API" do
   context "GET /skills" do
-    before do
-      @skills = create_list(:skill, 10)
+    context "when getting all" do
+      before do
+        @skills = create_list(:skill, 10)
+        get "#{host}/skills"
+      end
+
+      it "responds with a 200" do
+        expect(last_response.status).to eq 200
+      end
+
+      it "returns a list of skills, serialized using SkillSerializer, with skill includes" do
+        expect(json).to serialize_collection(@skills).
+          with(SkillSerializer)
+      end
     end
 
-    context "when successful" do
+    context "when searching" do
       before do
-        get "#{host}/skills"
+        create(:skill, title: "Perl")
+        create(:skill, title: "Python")
+        create(:skill, title: "PostgreSQL")
+        create(:skill, title: "PHP")
+        create(:skill, title: "Play")
+        create(:skill, title: "Meteor")
+
+        @skills = Skill.take(5)
+
+        query = "pe"
+        allow(Skill).to receive(:search).with(query) { Skill.all }
+        get "#{host}/skills", query: query
       end
 
       it "responds with a 200" do

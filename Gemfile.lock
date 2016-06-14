@@ -110,6 +110,14 @@ GEM
     dotenv-rails (2.1.0)
       dotenv (= 2.1.0)
       railties (>= 4.0, < 5.1)
+    elasticsearch (1.0.17)
+      elasticsearch-api (= 1.0.17)
+      elasticsearch-transport (= 1.0.17)
+    elasticsearch-api (1.0.17)
+      multi_json
+    elasticsearch-transport (1.0.17)
+      faraday
+      multi_json
     em-http-request (1.1.3)
       addressable (>= 2.3.4)
       cookiejar (<= 0.3.0)
@@ -271,6 +279,10 @@ GEM
       sidekiq (>= 2.4.0)
     rspec-support (3.4.1)
     safe_yaml (1.0.4)
+    searchkick (1.3.0)
+      activemodel
+      elasticsearch (>= 1)
+      hashie
     seed-fu (2.3.5)
       activerecord (>= 3.1, < 4.3)
       activesupport (>= 3.1, < 4.3)
@@ -364,6 +376,7 @@ DEPENDENCIES
   rails-api
   rspec-rails (~> 3.0)
   rspec-sidekiq
+  searchkick
   seed-fu
   sequenced
   shoulda-matchers (= 3.0.1)

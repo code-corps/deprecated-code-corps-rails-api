@@ -51,6 +51,8 @@ gem "seed-fu"
 
 gem "strip_attributes"
 
+gem "searchkick"
+
 group :development, :test do
   gem "annotate"
 
