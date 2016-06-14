@@ -93,7 +93,7 @@ class UsersController < ApplicationController
     email = params[:email]
     user = User.new(email: email)
 
-    if User.exists?(email: email)
+    if User.email_taken?(email)
       render json: { available: false, valid: true }
     elsif user.valid_attribute?(:email)
       render json: { available: true, valid: true }
@@ -106,7 +106,7 @@ class UsersController < ApplicationController
     username = params[:username]
     user = User.new(username: username)
 
-    if User.exists?(username: username)
+    if User.username_taken?(username)
       render json: { available: false, valid: true }
     elsif user.valid_attribute?(:username)
       render json: { available: true, valid: true }

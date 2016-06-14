@@ -39,8 +39,8 @@ describe "Users API" do
         let(:email) { "taken@example.com" }
         let!(:user) { create(:user, email: email) }
 
-        it "returns the availability" do
-          get "#{host}/users/email_available", email: email
+        it "returns the availability, case-insensitive" do
+          get "#{host}/users/email_available", email: email.upcase
 
           expect(last_response.status).to eq 200
           expect(json.available).to eq false
@@ -51,8 +51,8 @@ describe "Users API" do
       context "when email is available and invalid" do
         let(:email) { "available@" }
 
-        it "returns the availability" do
-          get "#{host}/users/email_available", email: email
+        it "returns the availability, case-insensitive" do
+          get "#{host}/users/email_available", email: email.upcase
 
           expect(last_response.status).to eq 200
           expect(json.available).to eq true
@@ -63,8 +63,8 @@ describe "Users API" do
       context "when email is available and valid" do
         let(:email) { "available@example.com" }
 
-        it "returns the availability" do
-          get "#{host}/users/email_available", email: email
+        it "returns the availability, case-insensitive" do
+          get "#{host}/users/email_available", email: email.upcase
 
           expect(last_response.status).to eq 200
           expect(json.available).to eq true
@@ -80,8 +80,8 @@ describe "Users API" do
         let(:username) { "taken" }
         let!(:user) { create(:user, username: username) }
 
-        it "returns the availability" do
-          get "#{host}/users/username_available", username: username
+        it "returns the availability, case-insensitive" do
+          get "#{host}/users/username_available", username: username.upcase
 
           expect(last_response.status).to eq 200
           expect(json.available).to eq false
@@ -92,8 +92,8 @@ describe "Users API" do
       context "when username is available and invalid" do
         let(:username) { "available!" }
 
-        it "returns the availability" do
-          get "#{host}/users/username_available", username: username
+        it "returns the availability, case-insensitive" do
+          get "#{host}/users/username_available", username: username.upcase
 
           expect(last_response.status).to eq 200
           expect(json.available).to eq true
@@ -104,8 +104,8 @@ describe "Users API" do
       context "when username is available and valid" do
         let(:username) { "available" }
 
-        it "returns the availability" do
-          get "#{host}/users/username_available", username: username
+        it "returns the availability, case-insensitive" do
+          get "#{host}/users/username_available", username: username.upcase
 
           expect(last_response.status).to eq 200
           expect(json.available).to eq true
