@@ -49,6 +49,8 @@ gem "pusher"
 
 gem "seed-fu"
 
+gem "sentry-raven"
+
 gem "strip_attributes"
 
 gem "searchkick"

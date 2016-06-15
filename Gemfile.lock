@@ -286,6 +286,8 @@ GEM
     seed-fu (2.3.5)
       activerecord (>= 3.1, < 4.3)
       activesupport (>= 3.1, < 4.3)
+    sentry-raven (1.1.0)
+      faraday (>= 0.7.6)
     sequenced (3.1.1)
       activerecord (>= 3.0)
       activesupport (>= 3.0)
@@ -378,6 +380,7 @@ DEPENDENCIES
   rspec-sidekiq
   searchkick
   seed-fu
+  sentry-raven
   sequenced
   shoulda-matchers (= 3.0.1)
   sidekiq
