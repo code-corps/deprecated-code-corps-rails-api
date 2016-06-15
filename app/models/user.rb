@@ -110,15 +110,15 @@ class User < ActiveRecord::Base
     state :selected_roles
     state :selected_skills
 
-    event :select_categories do
+    event :select_categories, after: :track_selected_categories do
       transitions from: :signed_up, to: :selected_categories
     end
 
-    event :select_roles do
+    event :select_roles, after: :track_selected_roles do
       transitions from: :selected_categories, to: :selected_roles
     end
 
-    event :select_skills do
+    event :select_skills, after: :track_selected_skills do
       transitions from: :selected_roles, to: :selected_skills
     end
   end
@@ -180,5 +180,21 @@ class User < ActiveRecord::Base
         r.slug = username
         r.save!
       end
+    end
+
+    def track_selected_categories
+      analytics.track_selected_categories
+    end
+
+    def track_selected_roles
+      analytics.track_selected_roles
+    end
+
+    def track_selected_skills
+      analytics.track_selected_skills
+    end
+
+    def analytics
+      @analytics ||= Analytics.new(self)
     end
 end

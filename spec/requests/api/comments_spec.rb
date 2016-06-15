@@ -92,6 +92,9 @@ describe "Comments API" do
         end
 
         it "creates a draft" do
+          # Analytics
+          expect_any_instance_of(Analytics).to receive(:track_previewed_new_comment)
+
           make_request_with_sidekiq_inline params
 
           comment = Comment.last
@@ -188,8 +191,6 @@ describe "Comments API" do
           expect(json).to be_a_valid_json_api_validation_error
         end
       end
-
-
     end
   end
 
@@ -252,6 +253,9 @@ describe "Comments API" do
           end
 
           it "updates the draft" do
+            # Analytics
+            expect_any_instance_of(Analytics).to receive(:track_previewed_existing_comment)
+
             make_request_with_sidekiq_inline params
 
             # response is correct

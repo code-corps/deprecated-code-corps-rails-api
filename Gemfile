@@ -4,6 +4,7 @@ ruby "2.2.3"
 gem "rails", "4.2.5.1"
 
 gem "rails-api"
+gem "active_model_serializers", github: "rails-api/active_model_serializers"
 
 gem "puma"
 
@@ -11,65 +12,40 @@ gem "spring", group: :development
 
 gem "pg"
 
-gem "active_model_serializers", github: "rails-api/active_model_serializers"
-
-gem "rack-cors", require: "rack/cors"
-
+gem "aasm"
+gem "analytics-ruby", require: "segment"
+gem "aws-sdk"
 gem "clearance"
-
 gem "doorkeeper"
-
-gem "pundit"
-
+gem "faraday"
+gem "github-markdown"
+gem "html-pipeline"
+gem "html-pipeline-rouge_filter"
+gem "kaminari"
+gem "koala"
+gem "obscenity"
 # paperclip master currently doesn"t work with new version of AWS SDK
 gem "paperclip", git: "https://github.com/thoughtbot/paperclip", ref: "523bd46c768226893f23889079a7aa9c73b57d68"
-gem "aws-sdk"
-
-gem "sidekiq"
-
-gem "kaminari"
-
-gem "koala"
-
-gem "github-markdown"
-
-gem "html-pipeline"
-
-gem "html-pipeline-rouge_filter"
-
-gem "obscenity"
-
-gem "sequenced"
-
-gem "aasm"
-
-gem "faraday"
-
+gem "pundit"
 gem "pusher"
-
-gem "seed-fu"
-
-gem "sentry-raven"
-
-gem "strip_attributes"
-
+gem "rack-cors", require: "rack/cors"
 gem "searchkick"
+gem "seed-fu"
+gem "sentry-raven"
+gem "sequenced"
+gem "sidekiq"
+gem "strip_attributes"
 
 group :development, :test do
   gem "annotate"
-
   gem "bullet"
-
   gem "dotenv-rails"
-
   gem "fakeredis", require: "fakeredis/rspec"
-
   gem "pry-rails"
   gem "pry"
   gem "pry-nav"
   gem "pry-remote"
   gem "pry-stack_explorer"
-
   gem "rspec-rails", "~> 3.0"
 end
 

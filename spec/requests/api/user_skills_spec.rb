@@ -20,6 +20,8 @@ describe "UserSkills API" do
 
       context "when creation is succesful" do
         before do
+          expect_any_instance_of(Analytics).to receive(:track_added_user_skill)
+
           authenticated_post "/user_skills", { data: { relationships: {
             skill: { data: { type: "skills", id: @skill.id } }
           } } }, token
@@ -116,7 +118,9 @@ describe "UserSkills API" do
 
       context "when deletion is successful" do
         before do
-          create(:user_skill, id: 1, user: @user)
+          user_skill = create(:user_skill, id: 1, user: @user)
+          expect_any_instance_of(Analytics).to receive(:track_removed_user_skill).
+            with(user_skill)
           authenticated_delete "/user_skills/1", {}, token
         end
 

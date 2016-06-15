@@ -24,6 +24,7 @@ class CommentImagesController < ApplicationController
     authorize comment_image
 
     if comment_image.save
+      analytics.track_created_comment_image(comment_image)
       NotifyPusherOfCommentImageWorker.perform_async(comment_image.id)
       render json: comment_image
     else

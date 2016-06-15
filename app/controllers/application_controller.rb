@@ -31,6 +31,10 @@ class ApplicationController < ActionController::API
     current_resource_owner
   end
 
+  def analytics
+    @analytics ||= Analytics.new(current_user)
+  end
+
   def page_size
     params.fetch(:page, {}).fetch(:size, 10).to_i
   end

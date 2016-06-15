@@ -164,7 +164,8 @@ describe Post, type: :model do
   end
 
   describe "state machine" do
-    let(:post) { Post.new }
+    let(:user) { create(:user) }
+    let(:post) { Post.new(user: user) }
 
     it "sets the state to draft initially" do
       expect(post).to have_state(:draft)
@@ -172,6 +173,7 @@ describe Post, type: :model do
 
     it "transitions correctly" do
       expect(post).to transition_from(:draft).to(:published).on_event(:publish)
+      expect(post).to transition_from(:published).to(:edited).on_event(:edit)
     end
   end
 
@@ -191,6 +193,8 @@ describe Post, type: :model do
 
     context "when previewing" do
       it "should just save a draft post" do
+        expect_any_instance_of(Analytics).to receive(:track_created_post)
+
         post = create(:post, :draft)
         expect(post.update(false)).to be true
 
@@ -214,6 +218,8 @@ describe Post, type: :model do
 
     context "when publishing" do
       it "publishes a draft post" do
+        expect_any_instance_of(Analytics).to receive(:track_published_post)
+
         post = create(:post, :draft)
         expect(post.update(true)).to be true
 
@@ -221,6 +227,8 @@ describe Post, type: :model do
       end
 
       it "just saves a published post, sets it to edited state" do
+        expect_any_instance_of(Analytics).to receive(:track_edited_post)
+
         post = create(:post, :published)
         expect(post.update(true)).to be true
 

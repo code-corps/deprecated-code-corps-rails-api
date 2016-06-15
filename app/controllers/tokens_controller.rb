@@ -43,12 +43,17 @@ class TokensController < Doorkeeper::TokensController
       body = response.body.merge("user_id" => user_id)
       self.response_body = body.to_json
 
+      track_signed_in_with_email(user_id)
+
       user_id
     end
 
     def authenticate_with_facebook
       user_id = get_user_id_from_facebook_information
       token_data = generate_token_data(user_id)
+
+      track_signed_in_with_facebook(user_id)
+
       render json: token_data.to_json, status: :ok
 
       user_id
@@ -74,5 +79,19 @@ class TokensController < Doorkeeper::TokensController
         expires_in: doorkeeper_access_token.expires_in,
         user_id: user_id.to_s
       }
+    end
+
+    def analytics_for(user)
+      @analytics ||= Analytics.new(user)
+    end
+
+    def track_signed_in_with_email(user_id)
+      user = User.find(user_id)
+      analytics_for(user).track_signed_in_with_email
+    end
+
+    def track_signed_in_with_facebook(user_id)
+      user = User.find(user_id)
+      analytics_for(user).track_signed_in_with_facebook
     end
 end

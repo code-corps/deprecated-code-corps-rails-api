@@ -34,6 +34,9 @@ class Comment < ActiveRecord::Base
 
   before_validation :render_markdown_to_body
   before_validation :publish_changes
+
+  after_create :track_created
+
   after_save :generate_mentions
 
   attr_accessor :publishing
@@ -44,11 +47,11 @@ class Comment < ActiveRecord::Base
     state :published
     state :edited
 
-    event :publish do
+    event :publish, after: :track_published do
       transitions from: :draft, to: :published
     end
 
-    event :edit do
+    event :edit, after: :track_edited do
       transitions from: :published, to: :edited
     end
   end
@@ -100,5 +103,21 @@ class Comment < ActiveRecord::Base
         HTML::Pipeline::MarkdownFilter,
         HTML::Pipeline::RougeFilter
       ], gfm: true # Github-flavored markdown
+    end
+
+    def track_created
+      analytics.track_created_comment(self)
+    end
+
+    def track_edited
+      analytics.track_edited_comment(self)
+    end
+
+    def track_published
+      analytics.track_published_comment(self)
+    end
+
+    def analytics
+      @analytics ||= Analytics.new(user)
     end
 end
