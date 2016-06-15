@@ -80,6 +80,11 @@ describe UserSerializer, type: :serializer do
         JSON.parse(serialization.to_json)["data"]["attributes"]
       end
 
+      it "has a 'created_at'" do
+        expect(subject["created_at"]).to be_the_same_time_as resource.created_at
+        expect(subject["created_at"]).to_not be_nil
+      end
+
       it "has an 'email'" do
         expect(subject["email"]).to eq resource.email
         expect(subject["email"]).to_not be_nil
