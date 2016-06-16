@@ -54,9 +54,10 @@ class PostsController < ApplicationController
 
     authorize post
 
-    post.assign_attributes(update_params)
+    post.assign_attributes(update_params_for_draft) if post.draft?
+    post.assign_attributes(update_params_for_published) unless post.draft?
 
-    if post.update publish?
+    if post.update(publish?)
       GeneratePostUserNotificationsWorker.perform_async(post.id) if publish?
       render json: post
     else
@@ -70,8 +71,12 @@ class PostsController < ApplicationController
       true unless parse_params(params).fetch(:preview, false)
     end
 
-    def update_params
+    def update_params_for_published
       parse_params(params, only: [:markdown_preview, :title])
+    end
+
+    def update_params_for_draft
+      parse_params(params, only: [:markdown_preview, :title, :post_type])
     end
 
     def create_params
