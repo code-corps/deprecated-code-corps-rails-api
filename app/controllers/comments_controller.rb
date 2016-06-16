@@ -38,7 +38,11 @@ class CommentsController < ApplicationController
     authorize comment
 
     if comment.update(publish?)
-      GenerateCommentUserNotificationsWorker.perform_async(comment.id) if publish?
+      if publish?
+        GenerateCommentUserNotificationsWorker.perform_async(comment.id)
+      else
+        analytics.track_previewed_new_comment
+      end
       render json: comment
     else
       render_validation_errors comment.errors
@@ -53,7 +57,11 @@ class CommentsController < ApplicationController
     comment.assign_attributes(update_params)
 
     if comment.update(publish?)
-      GenerateCommentUserNotificationsWorker.perform_async(comment.id) if publish?
+      if publish?
+        GenerateCommentUserNotificationsWorker.perform_async(comment.id)
+      else
+        analytics.track_previewed_existing_comment
+      end
       render json: comment
     else
       render_validation_errors comment.errors

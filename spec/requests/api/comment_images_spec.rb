@@ -43,6 +43,8 @@ describe "Comment Images API" do
 
         context "with valid data" do
           before do
+            expect_any_instance_of(Analytics).to receive(:track_created_comment_image)
+
             params = { data: {
               type: "comment_images",
               attributes: {

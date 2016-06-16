@@ -27,6 +27,7 @@ class UserRolesController < ApplicationController
 
     if user_role.valid?
       user_role.save!
+      analytics.track_added_user_role(user_role)
       render json: user_role, include: [:user, :role]
     else
       render_validation_errors user_role.errors
@@ -39,6 +40,8 @@ class UserRolesController < ApplicationController
     authorize user_role
 
     user_role.destroy!
+
+    analytics.track_removed_user_role(user_role)
 
     render json: :nothing, status: :no_content
   end

@@ -1,19 +1,19 @@
-require 'rails_helper'
+require "rails_helper"
 
 describe "Tokens API" do
-
   describe "POST /oauth/tokens" do
-
     context "with an email and password" do
       before do
-        @user = create(:user, id: 10, email: 'existing-user@mail.com', password: 'test_password')
+        @user = create(:user, id: 10, email: "existing-user@mail.com", password: "test_password")
       end
 
       it "returns a token when both email and password are valid" do
+        expect_any_instance_of(Analytics).to receive(:track_signed_in_with_email)
+
         post "#{host}/oauth/token", {
           grant_type: "password",
-          username: 'existing-user@mail.com',
-          password: 'test_password'
+          username: "existing-user@mail.com",
+          password: "test_password"
         }
         expect(last_response.status).to eq 200
         expect(json.access_token).not_to be nil
@@ -22,8 +22,8 @@ describe "Tokens API" do
       it "fails with 401 when email is invalid" do
         post "#{host}/oauth/token", {
           grant_type: "password",
-          username: 'invalid-email@mail.com',
-          password: 'test_password'
+          username: "invalid-email@mail.com",
+          password: "test_password"
         }
 
         expect(last_response.status).to eq 401
@@ -33,8 +33,8 @@ describe "Tokens API" do
       it "fails with 401 when password is invalid" do
         post "#{host}/oauth/token", {
           grant_type: "password",
-          username: 'existing-user@mail.com',
-          password: 'invalid_password'
+          username: "existing-user@mail.com",
+          password: "invalid_password"
         }
 
         expect(last_response.status).to eq 401
@@ -44,12 +44,12 @@ describe "Tokens API" do
 
     context "with a facebook_auth_code" do
 
-      context "when facebook user doesn't exist", vcr: { cassette_name: 'requests/api/tokens/facebook_user_not_found' } do
+      context "when facebook user doesn't exist", vcr: { cassette_name: "requests/api/tokens/facebook_user_not_found" } do
         it "fails with 400" do
           post "#{host}/oauth/token", {
             grant_type: "password",
-            username: 'facebook',
-            password: 'non-existant-token'
+            username: "facebook",
+            password: "non-existant-token"
           }
 
           expect(last_response.status).to eq 400
@@ -57,7 +57,7 @@ describe "Tokens API" do
         end
       end
 
-      context "when facebook user does exist", vcr: { cassette_name: 'requests/api/tokens/facebook_user_found' } do
+      context "when facebook user does exist", vcr: { cassette_name: "requests/api/tokens/facebook_user_found" } do
         before do
           oauth = Koala::Facebook::OAuth.new(ENV["FACEBOOK_APP_ID"], ENV["FACEBOOK_APP_SECRET"], ENV["FACEBOOK_REDIRECT_URL"])
           test_users = Koala::Facebook::TestUsers.new(app_id: ENV["FACEBOOK_APP_ID"], secret: ENV["FACEBOOK_APP_SECRET"])
@@ -72,15 +72,17 @@ describe "Tokens API" do
           @facebook_id = facebook_user["id"]
         end
 
-        context "and there's a user with facebook_id in the database" do
+        context "and theres a user with facebook_id in the database" do
           before do
             @user = create(:user, facebook_id: @facebook_id)
           end
 
           it "returns a token" do
+            expect_any_instance_of(Analytics).to receive(:track_signed_in_with_facebook)
+
             post "#{host}/oauth/token", {
               grant_type: "password",
-              username: 'facebook',
+              username: "facebook",
               password: @facebook_access_token
             }
 
@@ -89,11 +91,11 @@ describe "Tokens API" do
           end
         end
 
-        context "and there's no user with that facebook_id in the database" do
+        context "and theres no user with that facebook_id in the database" do
           it "fails with a 404" do
             post "#{host}/oauth/token", {
               grant_type: "password",
-              username: 'facebook',
+              username: "facebook",
               password: @facebook_access_token
             }
 

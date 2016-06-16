@@ -23,6 +23,10 @@ describe OrganizationMembership, :type => :model do
   end
 
   describe "validations" do
+    before do
+      create(:organization_membership, organization: create(:organization))
+    end
+
     it { should validate_uniqueness_of(:member_id).scoped_to(:organization_id) }
   end
 
@@ -48,5 +52,60 @@ describe OrganizationMembership, :type => :model do
     expect(membership.owner?).to be true
     expect(membership.admin?).to be false
     expect(membership.contributor?).to be false
+  end
+
+  describe "analytics tracking" do
+    context "when creating" do
+      it "tracks creating pending memberships" do
+        expect_any_instance_of(Analytics).
+          to receive(:track_requested_organization_membership)
+        create(:organization_membership, role: "pending")
+      end
+
+      it "tracks creating contributors" do
+        expect_any_instance_of(Analytics).
+          to receive(:track_created_organization_membership)
+        create(:organization_membership, role: "contributor")
+      end
+
+      it "tracks creating admins" do
+        expect_any_instance_of(Analytics).
+          to receive(:track_created_organization_membership)
+        create(:organization_membership, role: "admin")
+      end
+
+      it "tracks creating owners" do
+        expect_any_instance_of(Analytics).
+          to receive(:track_created_organization_membership)
+        create(:organization_membership, role: "owner")
+      end
+    end
+
+    context "when approving" do
+      it "tracks" do
+        membership = create(:organization_membership, role: "pending")
+        expect_any_instance_of(Analytics).
+          to receive(:track_approved_organization_membership)
+        membership.contributor!
+      end
+    end
+
+    context "when rejecting" do
+      it "tracks" do
+        membership = create(:organization_membership, role: "pending")
+        expect_any_instance_of(Analytics).
+          to receive(:track_rejected_organization_membership)
+        membership.destroy
+      end
+    end
+
+    context "when removing" do
+      it "tracks" do
+        membership = create(:organization_membership, role: "contributor")
+        expect_any_instance_of(Analytics).
+          to receive(:track_removed_organization_membership)
+        membership.destroy
+      end
+    end
   end
 end

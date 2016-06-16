@@ -21,7 +21,7 @@
 #
 
 require "html/pipeline"
-require 'html/pipeline/rouge_filter'
+require "html/pipeline/rouge_filter"
 require "code_corps/scenario/generate_user_mentions_for_post"
 
 class Post < ActiveRecord::Base
@@ -50,6 +50,9 @@ class Post < ActiveRecord::Base
 
   before_validation :render_markdown_to_body
   before_validation :publish_changes
+
+  after_create :track_created
+
   after_save :generate_mentions
 
   attr_accessor :publishing
@@ -72,11 +75,11 @@ class Post < ActiveRecord::Base
     state :published
     state :edited
 
-    event :publish do
+    event :publish, after: :track_published do
       transitions from: :draft, to: :published
     end
 
-    event :edit do
+    event :edit, after: :track_edited do
       transitions from: :published, to: :edited
     end
   end
@@ -104,10 +107,8 @@ class Post < ActiveRecord::Base
 
   private
 
-    def render_markdown_to_body
-      return unless markdown_preview_changed?
-      html = pipeline.call(markdown_preview)
-      self.body_preview = html[:output].to_s
+    def generate_mentions
+      CodeCorps::Scenario::GenerateUserMentionsForPost.new(self).call
     end
 
     def pipeline
@@ -126,7 +127,25 @@ class Post < ActiveRecord::Base
       assign_attributes markdown: markdown_preview, body: body_preview
     end
 
-    def generate_mentions
-      CodeCorps::Scenario::GenerateUserMentionsForPost.new(self).call
+    def render_markdown_to_body
+      return unless markdown_preview_changed?
+      html = pipeline.call(markdown_preview)
+      self.body_preview = html[:output].to_s
+    end
+
+    def track_created
+      analytics.track_created_post(self)
+    end
+
+    def track_edited
+      analytics.track_edited_post(self)
+    end
+
+    def track_published
+      analytics.track_published_post(self)
+    end
+
+    def analytics
+      @analytics ||= Analytics.new(user)
     end
 end

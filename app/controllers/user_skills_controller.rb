@@ -27,6 +27,7 @@ class UserSkillsController < ApplicationController
 
     if user_skill.valid?
       user_skill.save!
+      analytics.track_added_user_skill(user_skill)
       render json: user_skill, include: [:user, :skill]
     else
       render_validation_errors user_skill.errors
@@ -39,6 +40,8 @@ class UserSkillsController < ApplicationController
     authorize user_skill
 
     user_skill.destroy!
+
+    analytics.track_removed_user_skill(user_skill)
 
     render json: :nothing, status: :no_content
   end

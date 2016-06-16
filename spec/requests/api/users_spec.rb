@@ -164,6 +164,9 @@ describe "Users API" do
             facebook_access_token: @facebook_access_token
           }
           json_api_params = json_api_params_for("users", params)
+
+          expect_any_instance_of(Analytics).to receive(:track_signed_up_with_facebook)
+
           post "#{host}/users", json_api_params
         end
 
@@ -194,6 +197,8 @@ describe "Users API" do
       it "creates a valid user" do
         params = { email: "josh@example.com", username: "joshsmith", password: "password" }
         json_api_params = json_api_params_for("users", params)
+
+        expect_any_instance_of(Analytics).to receive(:track_signed_up_with_email)
 
         post "#{host}/users", json_api_params
 
