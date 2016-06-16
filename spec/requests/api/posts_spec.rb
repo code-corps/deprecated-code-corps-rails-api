@@ -324,7 +324,8 @@ describe "Posts API" do
             type: "posts",
             attributes: {
               title: "Edited title",
-              markdown_preview: "@#{mentioned_1.username} @#{mentioned_2.username}"
+              markdown_preview: "@#{mentioned_1.username} @#{mentioned_2.username}",
+              post_type: "task"
             },
             relationships: {
               project: { data: { id: project.id, type: "projects" } }
@@ -372,11 +373,16 @@ describe "Posts API" do
 
             # attributes are properly set
             expect(post.title).to eq "Edited title"
-            expect(post.issue?).to be true
+            # post_type parameter was accepted
+            expect(post.task?).to be true
             expect(post.body).to be_nil
             expect(post.markdown).to be_nil
-            expect(post.body_preview).to eq "<p>@#{mentioned_1.username} @#{mentioned_2.username}</p>"
+            expect(post.body_preview).
+              to eq "<p>@#{mentioned_1.username} @#{mentioned_2.username}</p>"
             expect(post.markdown_preview).to eq "@#{mentioned_1.username} @#{mentioned_2.username}"
+
+            # post type was set
+            expect(post.post_type).to eq "task"
 
             # relationships are properly set
             expect(post.user_id).to eq user.id
@@ -406,10 +412,12 @@ describe "Posts API" do
 
             # attributes are properly set
             expect(post.title).to eq "Edited title"
-            expect(post.issue?).to be true
+            # post_type parameter was accepted
+            expect(post.task?).to be true
             expect(post.body).to eq "<p>@#{mentioned_1.username} @#{mentioned_2.username}</p>"
             expect(post.markdown).to eq "@#{mentioned_1.username} @#{mentioned_2.username}"
-            expect(post.body_preview).to eq "<p>@#{mentioned_1.username} @#{mentioned_2.username}</p>"
+            expect(post.body_preview).
+              to eq "<p>@#{mentioned_1.username} @#{mentioned_2.username}</p>"
             expect(post.markdown_preview).to eq "@#{mentioned_1.username} @#{mentioned_2.username}"
 
             # relationships are properly set
@@ -439,6 +447,9 @@ describe "Posts API" do
           it "updates the published post" do
             make_request_with_sidekiq_inline params
 
+            # post_type parameter was ignored
+            expect(post.issue?).to be true
+
             # response is correct
             expect(last_response.status).to eq 200
             expect(json).to serialize_object(post.reload).with(PostSerializer)
@@ -452,6 +463,9 @@ describe "Posts API" do
           it "updates and post and sets it to edited state" do
             params[:data][:attributes][:publish] = true
             make_request_with_sidekiq_inline params
+
+            # post_type parameter was ignored
+            expect(post.task?).to be false
 
             # response is correct
             expect(last_response.status).to eq 200
