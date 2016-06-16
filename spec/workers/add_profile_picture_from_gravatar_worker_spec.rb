@@ -18,6 +18,7 @@ describe AddProfilePictureFromGravatarWorker do
 
   context "when the user has a gravatar image", vcr: { cassette_name: "workers/add gravatar image worker/adds the gravatar" } do
     it "adds the gravatar" do
+      expect_any_instance_of(Analytics).to receive(:track_added_profile_picture_from_gravatar)
       AddProfilePictureFromGravatarWorker.new.perform(@user_gravatar.id)
 
       @user_gravatar.reload

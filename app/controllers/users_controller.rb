@@ -121,6 +121,7 @@ class UsersController < ApplicationController
       record.assign_attributes update_params
 
       if record.save
+        analytics.track_updated_profile
         UpdateProfilePictureWorker.perform_async(record.id) if photo_param?
         render json: record
       else
@@ -178,6 +179,7 @@ class UsersController < ApplicationController
       user.update(create_params)
 
       if user.save
+        analytics_for(user).track_signed_up_with_facebook
         AddFacebookFriendsWorker.perform_async(user.id)
         if photo_param?
           UpdateProfilePictureWorker.perform_async(user.id)
@@ -195,6 +197,7 @@ class UsersController < ApplicationController
       user = User.new(create_params)
 
       if user.save
+        analytics_for(user).track_signed_up_with_email
         if photo_param?
           UpdateProfilePictureWorker.perform_async(user.id)
         else
@@ -210,5 +213,9 @@ class UsersController < ApplicationController
     def photo_param?
       update_params[:base64_photo_data].present? ||
         create_params[:base64_photo_data].present?
+    end
+
+    def analytics_for(user)
+      @analytics_for ||= Analytics.new(user)
     end
 end

@@ -9,5 +9,12 @@ class UpdateProfilePictureWorker
     user.photo = Base64ImageDecoder.decode(user.base64_photo_data)
     user.base64_photo_data = nil
     user.save
+    analytics_for(user).track_updated_profile_picture
   end
+
+  private
+
+    def analytics_for(user)
+      @analytics_for ||= Analytics.new(user)
+    end
 end

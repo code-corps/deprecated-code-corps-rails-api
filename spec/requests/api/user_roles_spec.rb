@@ -20,6 +20,8 @@ describe "UserRoles API" do
 
       context "when creation is succesful" do
         before do
+          expect_any_instance_of(Analytics).to receive(:track_added_user_role)
+
           authenticated_post "/user_roles", { data: { relationships: {
             role: { data: { type: "roles", id: @role.id } }
           } } }, token
@@ -116,7 +118,9 @@ describe "UserRoles API" do
 
       context "when deletion is successful" do
         before do
-          create(:user_role, id: 1, user: @user)
+          user_role = create(:user_role, id: 1, user: @user)
+          expect_any_instance_of(Analytics).to receive(:track_removed_user_role).
+            with(user_role)
           authenticated_delete "/user_roles/1", {}, token
         end
 

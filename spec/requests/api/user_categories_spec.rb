@@ -39,6 +39,8 @@ describe "UserCategories API" do
 
       context "when creation is succesful" do
         before do
+          expect_any_instance_of(Analytics).to receive(:track_added_user_category)
+
           authenticated_post "/user_categories", { data: { relationships: {
             category: { data: { type: "categories", id: @category.id } }
           } } }, token
@@ -135,7 +137,9 @@ describe "UserCategories API" do
 
       context "when deletion is successful" do
         before do
-          create(:user_category, id: 1, user: @user)
+          user_category = create(:user_category, id: 1, user: @user)
+          expect_any_instance_of(Analytics).to receive(:track_removed_user_category).
+            with(user_category)
           authenticated_delete "/user_categories/1", {}, token
         end
 

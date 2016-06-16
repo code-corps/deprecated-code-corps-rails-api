@@ -58,14 +58,16 @@ describe Comment, type: :model do
   end
 
   describe "state machine" do
-    let(:post) { Post.new }
+    let(:post) { create(:post) }
+    let(:user) { create(:user) }
+    let(:comment) { Comment.new(post: post, user: user) }
 
     it "sets the state to draft initially" do
-      expect(post).to have_state(:draft)
+      expect(comment).to have_state(:draft)
     end
 
     it "transitions correctly" do
-      expect(post).to transition_from(:draft).to(:published).on_event(:publish)
+      expect(comment).to transition_from(:draft).to(:published).on_event(:publish)
     end
   end
 
@@ -146,6 +148,8 @@ describe Comment, type: :model do
 
     context "when publishing" do
       it "publishes a draft comment" do
+        expect_any_instance_of(Analytics).to receive(:track_published_comment)
+
         comment = create(:comment, :draft)
         expect(comment.update(true)).to be true
 
@@ -153,6 +157,8 @@ describe Comment, type: :model do
       end
 
       it "just saves a published comment, sets it to edited state" do
+        expect_any_instance_of(Analytics).to receive(:track_edited_comment)
+
         comment = create(:comment, :published)
         expect(comment.update(true)).to be true
 
