@@ -83,8 +83,8 @@ describe Post, type: :model do
   end
 
   describe "behavior" do
-    it { should define_enum_for(:status).with({ open: "open", closed: "closed" }) }
-    it { should define_enum_for(:post_type).with({ idea: "idea", progress: "progress", task: "task", issue: "issue" }) }
+    it { should define_enum_for(:status).with(open: "open", closed: "closed") }
+    it { should define_enum_for(:post_type).with(idea: "idea", task: "task", issue: "issue") }
   end
 
   describe ".state" do

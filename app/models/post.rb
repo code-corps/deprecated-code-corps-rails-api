@@ -65,7 +65,6 @@ class Post < ActiveRecord::Base
 
   enum post_type: {
     idea: "idea",
-    progress: "progress",
     task: "task",
     issue: "issue"
   }
