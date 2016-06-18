@@ -562,10 +562,10 @@ describe "Users API" do
       end
 
       it "transitions the user's state" do
-        params = json_api_params_for("users", state_transition: "select_categories")
+        params = json_api_params_for("users", state_transition: "edit_profile")
         authenticated_patch "/users/me", params, @token
         expect(last_response.status).to eq 200
-        expect(User.last.state).to eq "selected_categories"
+        expect(User.last.state).to eq "edited_profile"
       end
 
       it "renders validation errors if parameter values are invalid" do
