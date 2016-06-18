@@ -106,12 +106,17 @@ class User < ActiveRecord::Base
   # User onboarding
   aasm do
     state :signed_up, initial: true
+    state :edited_profile
     state :selected_categories
     state :selected_roles
     state :selected_skills
 
+    event :edit_profile, after: :track_edited_profile do
+      transitions from: :signed_up, to: :edited_profile
+    end
+
     event :select_categories, after: :track_selected_categories do
-      transitions from: :signed_up, to: :selected_categories
+      transitions from: :edited_profile, to: :selected_categories
     end
 
     event :select_roles, after: :track_selected_roles do
@@ -180,6 +185,10 @@ class User < ActiveRecord::Base
         r.slug = username
         r.save!
       end
+    end
+
+    def track_edited_profile
+      analytics.track_edited_profile
     end
 
     def track_selected_categories

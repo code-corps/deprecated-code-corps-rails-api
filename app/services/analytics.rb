@@ -88,6 +88,10 @@ class Analytics
     )
   end
 
+  def track_edited_profile
+    track(event: "Edited Profile in Onboarding")
+  end
+
   def track_previewed_existing_comment
     track(event: "Previewed Existing Comment")
   end
