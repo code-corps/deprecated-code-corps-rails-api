@@ -9,7 +9,7 @@ describe SkillPolicy do
     @site_admin = create(:user, admin: true)
   end
 
-  permissions :index?, :search? do
+  permissions :index?, :show?, :search? do
     context "as a logged out user" do
       it "can view all skills" do
         expect(subject).to permit(nil, @skill)

@@ -20,6 +20,14 @@ class UserSkillsController < ApplicationController
     render json: user_skills
   end
 
+  def show
+    user_skill = UserSkill.find(params[:id])
+
+    authorize user_skill
+
+    render json: user_skill
+  end
+
   def create
     user_skill = UserSkill.new(create_params)
 
