@@ -39,7 +39,7 @@ describe "EmberIndex API" do
 
     context "when fetching revision" do
       before do
-        @revision = "abcd123"
+        @revision = "3f7066e370cbe41d9f60d1623d249838"
       end
 
       it "fetches 'code-corps-ember:index:{revision}' from redis" do

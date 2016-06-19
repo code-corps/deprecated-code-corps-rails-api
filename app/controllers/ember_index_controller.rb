@@ -1,7 +1,7 @@
 class EmberIndexController < ApplicationController
   before_action :set_response_format
 
-  SHORT_UUID_V4_REGEXP = /\A[0-9a-f]{7}\z/i
+  MD5_REGEXP = /\A[0-9a-f]{32}\z/i
 
   def index
     index = Sidekiq.redis { |r| r.get(fetch_index_key) }
@@ -22,7 +22,7 @@ class EmberIndexController < ApplicationController
 
     def fetch_revision
       rev = params[:revision]
-      return rev if rev =~ SHORT_UUID_V4_REGEXP
+      return rev if rev =~ MD5_REGEXP
     end
 
     def fetch_current_revision
