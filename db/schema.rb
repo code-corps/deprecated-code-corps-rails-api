@@ -236,7 +236,6 @@ ActiveRecord::Schema.define(version: 20160609202045) do
     t.text     "base64_icon_data"
     t.string   "slug",              null: false
     t.integer  "organization_id",   null: false
-    t.string   "aasm_state"
   end
 
   add_index "projects", ["organization_id"], name: "index_projects_on_organization_id", using: :btree
