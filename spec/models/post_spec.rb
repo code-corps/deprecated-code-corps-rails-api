@@ -16,8 +16,6 @@
 #  number           :integer
 #  aasm_state       :string
 #  comments_count   :integer          default(0)
-#  body_preview     :text
-#  markdown_preview :text
 #
 
 require "rails_helper"
@@ -29,8 +27,6 @@ describe Post, type: :model do
     it { should have_db_column(:title).of_type(:string).with_options(null: true) }
     it { should have_db_column(:body).of_type(:text).with_options(null: true) }
     it { should have_db_column(:markdown).of_type(:text).with_options(null: true) }
-    it { should have_db_column(:body_preview).of_type(:text).with_options(null: true) }
-    it { should have_db_column(:markdown_preview).of_type(:text).with_options(null: true) }
     it { should have_db_column(:project_id).of_type(:integer).with_options(null: false) }
     it { should have_db_column(:user_id).of_type(:integer).with_options(null: false) }
     it { should have_db_column(:updated_at) }
@@ -50,35 +46,16 @@ describe Post, type: :model do
   end
 
   describe "validations" do
-    it { should validate_presence_of(:user) }
-    it { should validate_presence_of(:project) }
-
+    it { should validate_presence_of(:body) }
+    it { should validate_presence_of(:markdown) }
     it { should validate_presence_of(:post_type) }
+    it { should validate_presence_of(:project) }
+    it { should validate_presence_of(:title) }
+    it { should validate_presence_of(:user) }
 
     context "number" do
       let(:subject) { create(:post) }
       it { should validate_uniqueness_of(:number).scoped_to(:project_id).allow_nil }
-    end
-
-    context "when post is draft" do
-      let(:subject) { create(:post, :draft) }
-      it { should_not validate_presence_of(:title) }
-      it { should_not validate_presence_of(:body) }
-      it { should_not validate_presence_of(:markdown) }
-    end
-
-    context "when post is published" do
-      let(:subject) { create(:post, :published) }
-      it { should validate_presence_of(:title) }
-      it { should validate_presence_of(:body) }
-      it { should validate_presence_of(:markdown) }
-    end
-
-    context "when post is edited" do
-      let(:subject) { create(:post, :edited) }
-      it { should validate_presence_of(:title) }
-      it { should validate_presence_of(:body) }
-      it { should validate_presence_of(:markdown) }
     end
   end
 
@@ -105,7 +82,6 @@ describe Post, type: :model do
     context "when the post has been edited" do
       it "returns the updated_at timestamp" do
         post = create(:post)
-        post.publish
         post.edit
 
         expect(post.edited_at).to eq post.updated_at
@@ -132,22 +108,11 @@ describe Post, type: :model do
   end
 
   describe "sequencing" do
-    context "when a draft" do
-      it "does not number the post" do
-        project = create(:project)
-        first_post = create(:post, project: project)
-
-        expect(first_post.number).to be_nil
-      end
-    end
-
-    context "when published with bang (auto-save) methods" do
+    context "when created" do
       it "numbers posts for each project" do
         project = create(:project)
         first_post = create(:post, project: project, body: "A body")
         second_post = create(:post, project: project, body: "A body")
-        first_post.publish!
-        second_post.publish!
 
         expect(first_post.number).to eq 1
         expect(second_post.number).to eq 2
@@ -155,10 +120,10 @@ describe Post, type: :model do
 
       it "should not allow a duplicate number to be set for the same project" do
         project = create(:project)
-        first_post = create(:post, project: project, body: "A body")
-        first_post.publish!
+        create(:post, project: project, body: "A body")
 
-        expect { create(:post, project: project, number: 1) }.to raise_error ActiveRecord::RecordInvalid
+        expect { create(:post, project: project, number: 1) }.
+          to raise_error ActiveRecord::RecordInvalid
       end
     end
   end
@@ -167,91 +132,59 @@ describe Post, type: :model do
     let(:user) { create(:user) }
     let(:post) { Post.new(user: user) }
 
-    it "sets the state to draft initially" do
-      expect(post).to have_state(:draft)
+    it "sets the state to published initially" do
+      expect(post).to have_state(:published)
     end
 
     it "transitions correctly" do
-      expect(post).to transition_from(:draft).to(:published).on_event(:publish)
       expect(post).to transition_from(:published).to(:edited).on_event(:edit)
     end
   end
 
-  describe "#update" do
-    it "renders markdown_preview to body_preview" do
-      post = build(:post, markdown_preview: "# Hello World\n\nHello, world.")
-      post.update(false)
-      expect(post.body_preview).to eq "<h1>Hello World</h1>\n\n<p>Hello, world.</p>"
+  describe "#save" do
+    it "renders markdown to body" do
+      post = build(:post, markdown: "# Hello World\n\nHello, world.")
+      post.save
+      expect(post.body).to eq "<h1>Hello World</h1>\n\n<p>Hello, world.</p>"
     end
 
-    it "overwrites existing body_preview if new markdown_preview is emtpy" do
-      post = build(:post, body_preview: "<p>There's something happening here</p>")
-      post.markdown_preview = "what it is aint exactly clear"
-      post.update(false)
-      expect(post.body_preview).to eq "<p>what it is aint exactly clear</p>".html_safe
+    it "overwrites existing body if new markdown is emtpy" do
+      post = build(:post, body: "<p>There's something happening here</p>")
+      post.markdown = "what it is aint exactly clear"
+      post.save
+      expect(post.body).to eq "<p>what it is aint exactly clear</p>".html_safe
     end
 
-    context "when previewing" do
-      it "should just save a draft post" do
-        expect_any_instance_of(Analytics).to receive(:track_created_post)
-
-        post = create(:post, :draft)
-        expect(post.update(false)).to be true
-
-        expect(post.draft?).to be true
-      end
-
-      it "should just save a published post" do
-        post = create(:post, :published)
-        expect(post.update(false)).to be true
-
-        expect(post.published?).to be true
-      end
-
-      it "should just save an edited post" do
-        post = create(:post, :edited)
-        expect(post.update(false)).to be true
-
-        expect(post.edited?).to be true
-      end
-    end
-
-    context "when publishing" do
-      it "publishes a draft post" do
-        expect_any_instance_of(Analytics).to receive(:track_published_post)
-
-        post = create(:post, :draft)
-        expect(post.update(true)).to be true
-
-        expect(post.published?).to be true
-      end
-
+    context "when editing" do
       it "just saves a published post, sets it to edited state" do
         expect_any_instance_of(Analytics).to receive(:track_edited_post)
 
         post = create(:post, :published)
-        expect(post.update(true)).to be true
+        post.state = "edited"
+        post.save
 
         expect(post.edited?).to be true
       end
 
       it "just saves an edited post" do
         post = create(:post, :edited)
-        expect(post.update(true)).to be true
+        expect_any_instance_of(Analytics).to receive(:track_edited_post)
+        post.state = "edited"
+        post.save
 
         expect(post.edited?).to be true
       end
     end
   end
 
-  describe "publishing" do
+  describe "editing" do
     let(:post) { create(:post) }
 
-    it "publishes when state is set to 'published'" do
-      post.state = "published"
+    it "edits when state is set to 'edited'" do
+      post.state = "edited"
       post.save
 
-      expect(post).to be_published
+      expect(post).to be_edited
     end
   end
 
@@ -268,9 +201,9 @@ describe Post, type: :model do
       it "creates mentions only for existing users" do
         real_user = create(:user, username: "joshsmith")
 
-        post = build(:post, markdown_preview: "Hello @joshsmith and @someone_who_doesnt_exist")
-
-        post.update(false)
+        post = build(:post, markdown: "Hello @joshsmith and @someone_who_doesnt_exist")
+        post.save
+        post.reload
         mentions = post.post_user_mentions
 
         expect(mentions.count).to eq 1
@@ -279,23 +212,16 @@ describe Post, type: :model do
 
       context "when mentions already exist" do
         let(:post) do
-          post = create(:post, markdown_preview: "Hello @joshsmith")
+          post = create(:post, markdown: "Hello @joshsmith")
           create(:user, username: "joshsmith")
-          create_list(:post_user_mention, 2, post: post, status: :published)
-          create_list(:post_user_mention, 3, post: post, status: :preview)
+          create_list(:post_user_mention, 2, post: post)
           post
         end
 
-        it "destroys preview mentions if preview was requested, leaves published mentions" do
-          post.update(false)
-          expect(post.post_user_mentions.published.count).to eq 2
-          expect(post.post_user_mentions.preview.count).to eq 1
-        end
-
-        it "destroys published mentions if publish was requested, leaves preview mentions" do
-          post.update(true)
-          expect(post.post_user_mentions.published.count).to eq 1
-          expect(post.post_user_mentions.preview.count).to eq 3
+        it "destroys old mentions" do
+          post.reload
+          post.save
+          expect(post.post_user_mentions.count).to eq 1
         end
       end
 
@@ -303,8 +229,9 @@ describe Post, type: :model do
         it "creates mentions and not <em> tags" do
           underscored_user = create(:user, username: "a_real_username")
 
-          post = build(:post, markdown_preview: "Hello @a_real_username and @not_a_real_username")
-          post.update(false)
+          post = build(:post, markdown: "Hello @a_real_username and @not_a_real_username")
+          post.save
+          post.reload
           mentions = post.post_user_mentions
 
           expect(mentions.count).to eq 1

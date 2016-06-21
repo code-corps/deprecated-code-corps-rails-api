@@ -1,11 +1,10 @@
 # == Schema Information
 #
-# Table name: comment_user_mentions
+# Table name: preview_user_mentions
 #
 #  id          :integer          not null, primary key
 #  user_id     :integer          not null
-#  comment_id  :integer          not null
-#  post_id     :integer          not null
+#  preview_id  :integer          not null
 #  username    :string           not null
 #  start_index :integer          not null
 #  end_index   :integer          not null
@@ -13,13 +12,9 @@
 #  updated_at  :datetime         not null
 #
 
-FactoryGirl.define do
-  factory :comment_user_mention do
-    association :user
-    association :comment
-    association :post
+class PreviewUserMentionSerializer < ActiveModel::Serializer
+  attributes :id, :indices, :username
 
-    sequence(:start_index) { |n| n }
-    sequence(:end_index) { |n| n }
-  end
+  belongs_to :preview
+  belongs_to :user
 end

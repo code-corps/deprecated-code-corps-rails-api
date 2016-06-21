@@ -1,29 +1,19 @@
-require 'rails_helper'
+require "rails_helper"
 
 describe GeneratePostUserNotificationsWorker do
-
-  let(:draft_post) { create(:post, :draft, :with_user_mentions, mention_count: 4) }
   let(:published_post) { create(:post, :published, :with_user_mentions, mention_count: 4) }
 
   context "when there are no pre-existing notifications" do
-    context "when the post is a draft" do
-      it "creates no notifications" do
-        expect { GeneratePostUserNotificationsWorker.new.perform(draft_post.id) }.to_not change { ActionMailer::Base.deliveries.count }
-      end
-
-      it "sends no emails" do
-        expect { GeneratePostUserNotificationsWorker.new.perform(draft_post.id) }.to_not change { Notification.sent.count }
-      end
+    it "creates correct number of notifications" do
+      expect do
+        GeneratePostUserNotificationsWorker.new.perform(published_post.id)
+      end.to change { ActionMailer::Base.deliveries.count }.by 4
     end
 
-    context "when the post is published" do
-      it "creates correct number of notifications" do
-        expect { GeneratePostUserNotificationsWorker.new.perform(published_post.id) }.to change { ActionMailer::Base.deliveries.count }.by 4
-      end
-
-      it "sends correct number of emails" do
-        expect { GeneratePostUserNotificationsWorker.new.perform(published_post.id) }.to change { Notification.sent.count }.by 4
-      end
+    it "sends correct number of emails" do
+      expect do
+        GeneratePostUserNotificationsWorker.new.perform(published_post.id)
+      end.to change { Notification.sent.count }.by 4
     end
   end
 
@@ -34,11 +24,15 @@ describe GeneratePostUserNotificationsWorker do
     end
 
     it "creates correct number of notifications" do
-      expect { GeneratePostUserNotificationsWorker.new.perform(published_post.id) }.to change { ActionMailer::Base.deliveries.count }.by 4
+      expect do
+        GeneratePostUserNotificationsWorker.new.perform(published_post.id)
+      end.to change { ActionMailer::Base.deliveries.count }.by 4
     end
 
     it "sends correct number of emails" do
-      expect { GeneratePostUserNotificationsWorker.new.perform(published_post.id) }.to change { Notification.sent.count }.by 4
+      expect do
+        GeneratePostUserNotificationsWorker.new.perform(published_post.id)
+      end.to change { Notification.sent.count }.by 4
     end
   end
 end

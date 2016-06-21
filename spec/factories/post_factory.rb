@@ -16,42 +16,26 @@
 #  number           :integer
 #  aasm_state       :string
 #  comments_count   :integer          default(0)
-#  body_preview     :text
-#  markdown_preview :text
 #
 
 FactoryGirl.define do
-
   factory :post do
     sequence(:title) { |n| "Post #{n}" }
     sequence(:markdown) { |n| "Post content #{n}" }
-    sequence(:markdown_preview) { |n| "Post content #{n}" }
 
     association :user
     association :project
-
-    trait :draft do
-      aasm_state :draft
-      markdown nil
-      body nil
-      markdown_preview "Post content"
-      body_preview "Post content"
-    end
 
     trait :published do
       aasm_state :published
       markdown "Post content"
       body "Post content"
-      markdown_preview "Post content"
-      body_preview "Post content"
     end
 
     trait :edited do
       aasm_state :edited
       markdown "Post content"
       body "Post content"
-      markdown_preview "Post content"
-      body_preview "Post content"
     end
 
     trait :with_user_mentions do
@@ -68,5 +52,4 @@ FactoryGirl.define do
       sequence(:number) { |n| n }
     end
   end
-
 end

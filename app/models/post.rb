@@ -16,8 +16,6 @@
 #  number           :integer
 #  aasm_state       :string
 #  comments_count   :integer          default(0)
-#  body_preview     :text
-#  markdown_preview :text
 #
 
 require "html/pipeline"
@@ -35,28 +33,23 @@ class Post < ActiveRecord::Base
   has_many :post_user_mentions
   has_many :comment_user_mentions
 
-  acts_as_sequenced scope: :project_id, column: :number, skip: ->(r) { r.draft? }
+  acts_as_sequenced scope: :project_id, column: :number
 
-  validates_presence_of :project
-  validates_presence_of :user
-
-  validates :title, presence: true, unless: :draft?
-  validates :body, presence: true, unless: :draft?
-  validates :markdown, presence: true, unless: :draft?
-
-  validates_presence_of :post_type
+  validates :body, presence: true
+  validates :markdown, presence: true
+  validates :post_type, presence: true
+  validates :project, presence: true
+  validates :title, presence: true
+  validates :user, presence: true
 
   validates_uniqueness_of :number, scope: :project_id, allow_nil: true
 
   before_validation :render_markdown_to_body
-  before_validation :publish_changes
 
   after_create :track_created
 
   after_save :generate_mentions
-
-  attr_accessor :publishing
-  alias_method :publishing?, :publishing
+  after_save :track_edited
 
   enum status: {
     open: "open",
@@ -70,34 +63,22 @@ class Post < ActiveRecord::Base
   }
 
   aasm do
-    state :draft, initial: true
-    state :published
+    state :published, initial: true
     state :edited
 
-    event :publish, after: :track_published do
-      transitions from: :draft, to: :published
-    end
-
-    event :edit, after: :track_edited do
+    event :edit do
       transitions from: :published, to: :edited
     end
   end
 
-  default_scope  { order(number: :desc) }
-
-  scope :active, -> { where("aasm_state=? OR aasm_state=?", "published", "edited") }
-
-  def update(publishing)
-    @publishing = publishing
-    save
-  end
+  default_scope { order(number: :desc) }
 
   def state
     aasm_state
   end
 
   def state=(value)
-    publish if value == "published" && draft?
+    edit if value == "edited" && published?
   end
 
   def edited_at
@@ -117,19 +98,9 @@ class Post < ActiveRecord::Base
       ], gfm: true # Github-flavored markdown
     end
 
-    def publish_changes
-      return unless publishing?
-
-      edit if published?
-      publish if draft?
-
-      assign_attributes markdown: markdown_preview, body: body_preview
-    end
-
     def render_markdown_to_body
-      return unless markdown_preview_changed?
-      html = pipeline.call(markdown_preview)
-      self.body_preview = html[:output].to_s
+      html = pipeline.call(markdown)
+      self.body = html[:output].to_s
     end
 
     def track_created
@@ -137,11 +108,7 @@ class Post < ActiveRecord::Base
     end
 
     def track_edited
-      analytics.track_edited_post(self)
-    end
-
-    def track_published
-      analytics.track_published_post(self)
+      analytics.track_edited_post(self) if edited?
     end
 
     def analytics

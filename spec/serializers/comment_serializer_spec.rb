@@ -2,26 +2,22 @@
 #
 # Table name: comments
 #
-#  id               :integer          not null, primary key
-#  body             :text
-#  user_id          :integer          not null
-#  post_id          :integer          not null
-#  created_at       :datetime         not null
-#  updated_at       :datetime         not null
-#  markdown         :text
-#  aasm_state       :string
-#  body_preview     :text
-#  markdown_preview :text
+#  id         :integer          not null, primary key
+#  body       :text
+#  user_id    :integer          not null
+#  post_id    :integer          not null
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#  markdown   :text
+#  aasm_state :string
 #
 
 require "rails_helper"
 
-describe CommentSerializer, :type => :serializer do
-
+describe CommentSerializer, type: :serializer do
   # We only use before all here because we know the context does not change
   before :all do
     @comment = create(:comment, body: "Comment body", post: create(:post))
-    @comment.publish
     @comment.edit
   end
 
@@ -62,16 +58,6 @@ describe CommentSerializer, :type => :serializer do
       it "has 'markdown'" do
         expect(subject["markdown"]).not_to be_nil
         expect(subject["markdown"]).to eql resource.markdown
-      end
-
-      it "has a 'body_preview'" do
-        expect(subject["body_preview"]).not_to be_nil
-        expect(subject["body_preview"]).to eql resource.body_preview
-      end
-
-      it "has 'markdown_preview'" do
-        expect(subject["markdown_preview"]).not_to be_nil
-        expect(subject["markdown_preview"]).to eql resource.markdown_preview
       end
 
       it "has a 'state'" do

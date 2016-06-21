@@ -1,20 +1,21 @@
 module CodeCorps
   module Scenario
-    class GenerateUserMentionsForPost
-      def initialize(post)
-        @post = post
+    class GeneratePreviewMentions
+      def initialize(preview)
+        @preview = preview
       end
 
-      attr_reader :post
+      attr_reader :preview
 
       def call
         ActiveRecord::Base.transaction do
-          destroy_existing_mentions
           mentions.each do |m|
-            PostUserMention.create!(
-              post: @post, user: m[0],
-              start_index: m[1], end_index: m[2],
-              username: m[0].username
+            PreviewUserMention.create!(
+              preview: @preview,
+              user: m[0],
+              username: m[0].username,
+              start_index: m[1],
+              end_index: m[2],
             )
           end
         end
@@ -22,17 +23,12 @@ module CodeCorps
 
       private
 
-        def destroy_existing_mentions
-          existing_mentions = post.post_user_mentions
-          existing_mentions.destroy_all if existing_mentions.present?
-        end
-
         def regex_matches
           regex = %r{\B@((?:(?:(?:[^-\W]-?))*)(?:[^\/\W]\/?)?(?:(?:(?:[^-\W]-?))*)\w+)}
 
           result = []
 
-          content = post.body
+          content = preview.body
 
           return if content.nil?
 

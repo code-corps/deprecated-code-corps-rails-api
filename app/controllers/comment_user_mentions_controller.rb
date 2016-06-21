@@ -11,7 +11,6 @@
 #  end_index   :integer          not null
 #  created_at  :datetime         not null
 #  updated_at  :datetime         not null
-#  status      :string           default("preview"), not null
 #
 
 class CommentUserMentionsController < ApplicationController
@@ -25,8 +24,7 @@ class CommentUserMentionsController < ApplicationController
 
     def filter_params
       {
-        comment_id: params[:comment_id],
-        status: params[:status]
+        comment_id: params[:comment_id]
       }
     end
 end

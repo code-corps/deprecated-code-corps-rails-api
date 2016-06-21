@@ -1,9 +1,8 @@
 require "rails_helper"
 
-describe PostSerializerWithoutIncludes, :type => :serializer do
-
+describe PostSerializerWithoutIncludes, type: :serializer do
   context "individual resource representation" do
-    let(:resource) {
+    let(:resource) do
       post = create(:post,
         title: "Post title",
         user: create(:user),
@@ -11,12 +10,11 @@ describe PostSerializerWithoutIncludes, :type => :serializer do
         body: "Some body",
         number: 1)
 
-      post.publish!
       post.edit!
 
       create_list(:comment, 10, post: post)
       post.reload
-    }
+    end
 
     let(:serializer) { PostSerializerWithoutIncludes.new(resource) }
     let(:serialization) { ActiveModel::Serializer::Adapter.create(serializer) }
@@ -56,16 +54,6 @@ describe PostSerializerWithoutIncludes, :type => :serializer do
       it "has 'markdown'" do
         expect(subject["markdown"]).not_to be_nil
         expect(subject["markdown"]).to eql resource.markdown
-      end
-
-      it "has a 'body_preview'" do
-        expect(subject["body_preview"]).not_to be_nil
-        expect(subject["body_preview"]).to eql resource.body_preview
-      end
-
-      it "has 'markdown_preview'" do
-        expect(subject["markdown_preview"]).not_to be_nil
-        expect(subject["markdown_preview"]).to eql resource.markdown_preview
       end
 
       it "has a 'status'" do

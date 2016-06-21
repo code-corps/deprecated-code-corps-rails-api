@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160609202045) do
+ActiveRecord::Schema.define(version: 20160621031228) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -40,27 +40,24 @@ ActiveRecord::Schema.define(version: 20160609202045) do
   end
 
   create_table "comment_user_mentions", force: :cascade do |t|
-    t.integer  "user_id",                         null: false
-    t.integer  "comment_id",                      null: false
-    t.integer  "post_id",                         null: false
-    t.string   "username",                        null: false
-    t.integer  "start_index",                     null: false
-    t.integer  "end_index",                       null: false
-    t.datetime "created_at",                      null: false
-    t.datetime "updated_at",                      null: false
-    t.string   "status",      default: "preview", null: false
+    t.integer  "user_id",     null: false
+    t.integer  "comment_id",  null: false
+    t.integer  "post_id",     null: false
+    t.string   "username",    null: false
+    t.integer  "start_index", null: false
+    t.integer  "end_index",   null: false
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
   end
 
   create_table "comments", force: :cascade do |t|
     t.text     "body"
-    t.integer  "user_id",          null: false
-    t.integer  "post_id",          null: false
-    t.datetime "created_at",       null: false
-    t.datetime "updated_at",       null: false
+    t.integer  "user_id",    null: false
+    t.integer  "post_id",    null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.text     "markdown"
     t.string   "aasm_state"
-    t.text     "body_preview"
-    t.text     "markdown_preview"
   end
 
   create_table "github_repositories", force: :cascade do |t|
@@ -169,14 +166,13 @@ ActiveRecord::Schema.define(version: 20160609202045) do
   end
 
   create_table "post_user_mentions", force: :cascade do |t|
-    t.integer  "user_id",                         null: false
-    t.integer  "post_id",                         null: false
-    t.string   "username",                        null: false
-    t.integer  "start_index",                     null: false
-    t.integer  "end_index",                       null: false
-    t.datetime "created_at",                      null: false
-    t.datetime "updated_at",                      null: false
-    t.string   "status",      default: "preview", null: false
+    t.integer  "user_id",     null: false
+    t.integer  "post_id",     null: false
+    t.string   "username",    null: false
+    t.integer  "start_index", null: false
+    t.integer  "end_index",   null: false
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
   end
 
   create_table "posts", force: :cascade do |t|
@@ -193,9 +189,30 @@ ActiveRecord::Schema.define(version: 20160609202045) do
     t.integer  "number"
     t.string   "aasm_state"
     t.integer  "comments_count",   default: 0
-    t.text     "body_preview"
-    t.text     "markdown_preview"
   end
+
+  create_table "preview_user_mentions", force: :cascade do |t|
+    t.integer  "user_id",     null: false
+    t.integer  "preview_id",  null: false
+    t.string   "username",    null: false
+    t.integer  "start_index", null: false
+    t.integer  "end_index",   null: false
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
+  end
+
+  add_index "preview_user_mentions", ["preview_id"], name: "index_preview_user_mentions_on_preview_id", using: :btree
+  add_index "preview_user_mentions", ["user_id"], name: "index_preview_user_mentions_on_user_id", using: :btree
+
+  create_table "previews", force: :cascade do |t|
+    t.text     "body",       null: false
+    t.text     "markdown",   null: false
+    t.integer  "user_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  add_index "previews", ["user_id"], name: "index_previews_on_user_id", using: :btree
 
   create_table "project_categories", force: :cascade do |t|
     t.integer  "project_id"
@@ -236,6 +253,7 @@ ActiveRecord::Schema.define(version: 20160609202045) do
     t.text     "base64_icon_data"
     t.string   "slug",              null: false
     t.integer  "organization_id",   null: false
+    t.string   "aasm_state"
   end
 
   add_index "projects", ["organization_id"], name: "index_projects_on_organization_id", using: :btree
@@ -336,6 +354,9 @@ ActiveRecord::Schema.define(version: 20160609202045) do
   add_foreign_key "comments", "users"
   add_foreign_key "posts", "projects"
   add_foreign_key "posts", "users"
+  add_foreign_key "preview_user_mentions", "previews"
+  add_foreign_key "preview_user_mentions", "users"
+  add_foreign_key "previews", "users"
   add_foreign_key "project_categories", "categories", on_delete: :cascade
   add_foreign_key "project_categories", "projects", on_delete: :cascade
   add_foreign_key "project_roles", "projects", on_delete: :cascade

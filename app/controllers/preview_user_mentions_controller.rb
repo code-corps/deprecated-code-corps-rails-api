@@ -1,10 +1,9 @@
 # == Schema Information
 #
-# Table name: comment_user_mentions
+# Table name: post_user_mentions
 #
 #  id          :integer          not null, primary key
 #  user_id     :integer          not null
-#  comment_id  :integer          not null
 #  post_id     :integer          not null
 #  username    :string           not null
 #  start_index :integer          not null
@@ -13,13 +12,16 @@
 #  updated_at  :datetime         not null
 #
 
-FactoryGirl.define do
-  factory :comment_user_mention do
-    association :user
-    association :comment
-    association :post
-
-    sequence(:start_index) { |n| n }
-    sequence(:end_index) { |n| n }
+class PreviewUserMentionsController < ApplicationController
+  def index
+    authorize PreviewUserMention
+    mentions = PreviewUserMention.includes(:user, :preview).where(filter_params)
+    render json: mentions
   end
+
+  private
+
+    def filter_params
+      { preview_id: params[:preview_id] }
+    end
 end
