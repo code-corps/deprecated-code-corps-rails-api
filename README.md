@@ -17,7 +17,7 @@ To do so, please read the guidelines in our [`CONTRIBUTING.md`](CONTRIBUTING.md)
 
 ## Developer installation guide
 
-### Install Rails, PostgreSQL, and Redis
+### Install Rails, PostgreSQL, Redis, and ElasticSearch
 
 We need to install the Ruby on Rails framework, the PostgreSQL database, and the Redis data store.
 
@@ -29,6 +29,9 @@ We need to install the Ruby on Rails framework, the PostgreSQL database, and the
    * Follow the [official quickstart guide](http://redis.io/topics/quickstart)
    * It's best to install it as a service instead of running it manually
    * To make sure everything works and the service is running, execute `redis-cli ping` in the console. It should respond with `PONG`
+4. Install ElasticSearch
+   * On Mac, run `brew install elasticsearch`
+   * Or for Linux or Windows, consult the [setup guide](https://www.elastic.co/guide/en/elasticsearch/reference/current/setup.html)
 
 ### Clone this git repository
 
