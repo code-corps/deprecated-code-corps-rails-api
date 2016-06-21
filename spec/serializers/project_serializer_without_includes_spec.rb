@@ -35,7 +35,6 @@ describe ProjectSerializerWithoutIncludes, :type => :serializer do
     end
 
     context "attributes" do
-
       subject do
         JSON.parse(serialization.to_json)["data"]["attributes"]
       end
@@ -46,6 +45,16 @@ describe ProjectSerializerWithoutIncludes, :type => :serializer do
 
       it "has a 'description'" do
         expect(subject["description"]).to eql resource.description
+      end
+
+      it "has a 'long_description_body'" do
+        expect(subject["long_description_body"]).to_not be_nil
+        expect(subject["long_description_body"]).to eql resource.long_description_body
+      end
+
+      it "has a 'long_description_markdown'" do
+        expect(subject["long_description_markdown"]).to_not be_nil
+        expect(subject["long_description_markdown"]).to eql resource.long_description_markdown
       end
     end
   end

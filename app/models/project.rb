@@ -39,6 +39,7 @@ class Project < ActiveRecord::Base
                     default_url: ASSET_HOST_FOR_DEFAULT_ICON + "/project_default_:style.png"
 
   before_validation :add_slug_if_blank
+  before_validation :render_markdown_to_body
 
   validates :title, presence: true
   validates :slug, slug: true
@@ -53,15 +54,28 @@ class Project < ActiveRecord::Base
 
   private
 
-    def slug_is_not_duplicate
-      if Project.where.not(id: self.id).where(organization: self.organization).where('lower(slug) = ?', slug.try(:downcase)).present?
-        errors.add(:slug, "has already been taken")
-      end
-    end
-
     def add_slug_if_blank
       unless self.slug.present?
         self.slug = self.title.try(:parameterize)
+      end
+    end
+
+    def pipeline
+      @pipeline ||= HTML::Pipeline.new [
+        HTML::Pipeline::MarkdownFilter,
+        HTML::Pipeline::RougeFilter
+      ], gfm: true # Github-flavored markdown
+    end
+
+    def render_markdown_to_body
+      return if long_description_markdown.blank?
+      html = pipeline.call(long_description_markdown)
+      self.long_description_body = html[:output].to_s
+    end
+
+    def slug_is_not_duplicate
+      if Project.where.not(id: self.id).where(organization: self.organization).where('lower(slug) = ?', slug.try(:downcase)).present?
+        errors.add(:slug, "has already been taken")
       end
     end
 end

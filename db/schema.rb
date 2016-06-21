@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160621031228) do
+ActiveRecord::Schema.define(version: 20160621203648) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -242,18 +242,20 @@ ActiveRecord::Schema.define(version: 20160621031228) do
   add_index "project_skills", ["project_id", "skill_id"], name: "index_project_skills_on_project_id_and_skill_id", unique: true, using: :btree
 
   create_table "projects", force: :cascade do |t|
-    t.string   "title",             null: false
+    t.string   "title",                     null: false
     t.string   "description"
-    t.datetime "created_at",        null: false
-    t.datetime "updated_at",        null: false
+    t.datetime "created_at",                null: false
+    t.datetime "updated_at",                null: false
     t.string   "icon_file_name"
     t.string   "icon_content_type"
     t.integer  "icon_file_size"
     t.datetime "icon_updated_at"
     t.text     "base64_icon_data"
-    t.string   "slug",              null: false
-    t.integer  "organization_id",   null: false
+    t.string   "slug",                      null: false
+    t.integer  "organization_id",           null: false
     t.string   "aasm_state"
+    t.text     "long_description_body"
+    t.text     "long_description_markdown"
   end
 
   add_index "projects", ["organization_id"], name: "index_projects_on_organization_id", using: :btree

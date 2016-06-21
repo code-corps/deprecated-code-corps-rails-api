@@ -23,6 +23,8 @@ describe Project, type: :model do
   describe "schema" do
     it { should have_db_column(:title).of_type(:string).with_options(null: false) }
     it { should have_db_column(:description).of_type(:string) }
+    it { should have_db_column(:long_description_body).of_type(:text) }
+    it { should have_db_column(:long_description_markdown).of_type(:text) }
     it { should have_db_column(:icon_file_name).of_type(:string) }
     it { should have_db_column(:icon_content_type).of_type(:string) }
     it { should have_db_column(:icon_file_size).of_type(:integer) }
@@ -108,6 +110,24 @@ describe Project, type: :model do
 
       it "should have the right path" do
         expect(project.icon.url(:thumb)).to include "projects/#{project.id}/thumb"
+      end
+    end
+  end
+
+  describe "#save" do
+    context "when markdown is not empty" do
+      it "renders markdown to body" do
+        post = build(:project, long_description_markdown: "# Hello World\n\nHello, world.")
+        post.save
+        expect(post.long_description_body).to eq "<h1>Hello World</h1>\n\n<p>Hello, world.</p>"
+      end
+    end
+
+    context "when markdown is empty" do
+      it "does not render markdown to body" do
+        post = build(:project, long_description_markdown: "")
+        post.save
+        expect(post.long_description_body).to be_nil
       end
     end
   end

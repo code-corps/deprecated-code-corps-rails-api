@@ -21,6 +21,7 @@ FactoryGirl.define do
   factory :project do
     sequence(:title) { |n| "Project#{n}" }
     sequence(:description) { |n| "Project description #{n}" }
+    sequence(:long_description_markdown) { |n| "Long project description #{n}" }
 
     association :organization
 
