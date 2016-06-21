@@ -31,6 +31,9 @@ Rails.application.routes.draw do
     resources :post_likes, only: [:create, :destroy]
     resources :post_user_mentions, only: [:index]
 
+    resources :previews, only: [:create]
+    resources :preview_user_mentions, only: [:index]
+
     resources :projects, only: [:index, :create, :update] do
       resources :posts, only: [:index, :show]
     end

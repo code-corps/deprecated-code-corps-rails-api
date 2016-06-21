@@ -2,16 +2,14 @@
 #
 # Table name: comments
 #
-#  id               :integer          not null, primary key
-#  body             :text
-#  user_id          :integer          not null
-#  post_id          :integer          not null
-#  created_at       :datetime         not null
-#  updated_at       :datetime         not null
-#  markdown         :text
-#  aasm_state       :string
-#  body_preview     :text
-#  markdown_preview :text
+#  id         :integer          not null, primary key
+#  body       :text
+#  user_id    :integer          not null
+#  post_id    :integer          not null
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#  markdown   :text
+#  aasm_state :string
 #
 
 require "rails_helper"
@@ -20,8 +18,6 @@ describe Comment, type: :model do
   describe "schema" do
     it { should have_db_column(:body).of_type(:text).with_options(null: true) }
     it { should have_db_column(:markdown).of_type(:text).with_options(null: true) }
-    it { should have_db_column(:body_preview).of_type(:text).with_options(null: true) }
-    it { should have_db_column(:markdown_preview).of_type(:text).with_options(null: true) }
     it { should have_db_column(:post_id).of_type(:integer) }
     it { should have_db_column(:user_id).of_type(:integer) }
     it { should have_db_column(:updated_at) }
@@ -35,26 +31,10 @@ describe Comment, type: :model do
   end
 
   describe "validations" do
-    it { should validate_presence_of(:user) }
+    it { should validate_presence_of(:body) }
+    it { should validate_presence_of(:markdown) }
     it { should validate_presence_of(:post) }
-
-    context "when comment is draft" do
-      let(:subject) { create(:comment, :draft) }
-      it { should_not validate_presence_of(:body) }
-      it { should_not validate_presence_of(:markdown) }
-    end
-
-    context "when comment is published" do
-      let(:subject) { create(:comment, :published) }
-      it { should validate_presence_of(:body) }
-      it { should validate_presence_of(:markdown) }
-    end
-
-    context "when comment is edited" do
-      let(:subject) { create(:comment, :edited) }
-      it { should validate_presence_of(:body) }
-      it { should validate_presence_of(:markdown) }
-    end
+    it { should validate_presence_of(:user) }
   end
 
   describe "state machine" do
@@ -63,11 +43,11 @@ describe Comment, type: :model do
     let(:comment) { Comment.new(post: post, user: user) }
 
     it "sets the state to draft initially" do
-      expect(comment).to have_state(:draft)
+      expect(comment).to have_state(:published)
     end
 
     it "transitions correctly" do
-      expect(comment).to transition_from(:draft).to(:published).on_event(:publish)
+      expect(comment).to transition_from(:published).to(:edited).on_event(:edit)
     end
   end
 
@@ -89,7 +69,6 @@ describe Comment, type: :model do
     context "when the comment has been edited" do
       it "returns the updated_at timestamp" do
         comment = create(:comment)
-        comment.publish
         comment.edit
 
         expect(comment.edited_at).to eq comment.updated_at
@@ -97,91 +76,49 @@ describe Comment, type: :model do
     end
   end
 
-  describe "#update" do
-    it "renders markdown_preview to body_preview" do
-      comment = build(:comment, markdown_preview: "# Hello World\n\nHello, world.")
-      comment.update(false)
-      expect(comment.body_preview).to eq "<h1>Hello World</h1>\n\n<p>Hello, world.</p>"
+  describe "#save" do
+    it "renders markdown to body" do
+      comment = build(:comment, markdown: "# Hello World\n\nHello, world.")
+      comment.save
+      expect(comment.body).to eq "<h1>Hello World</h1>\n\n<p>Hello, world.</p>"
     end
 
-    it "overwrites existing body_preview if new markdown_preview is emtpy" do
-      comment = create(:comment, body_preview: "<p>There's something happening here</p>")
-      comment.markdown_preview = "what it is aint exactly clear"
-      comment.update(false)
-      expect(comment.body_preview).to eq "<p>what it is aint exactly clear</p>".html_safe
+    it "overwrites existing body if new markdown is emtpy" do
+      comment = create(:comment, body: "<p>There's something happening here</p>")
+      comment.markdown = "what it is aint exactly clear"
+      comment.save
+      expect(comment.body).to eq "<p>what it is aint exactly clear</p>".html_safe
     end
 
-    context "when previewing" do
-      it "should just save a draft comment" do
-        comment = create(:comment, :draft)
-        expect(comment.update(false)).to be true
-
-        expect(comment.draft?).to be true
-        expect(comment.markdown_preview).not_to be_nil
-        expect(comment.body_preview).not_to be_nil
-        expect(comment.markdown).to be_nil
-        expect(comment.body).to be_nil
-      end
-
-      it "should just save a published comment" do
-        comment = create(:comment, :published)
-        expect(comment.update(false)).to be true
-
-        expect(comment.published?).to be true
-        expect(comment.markdown_preview).not_to be_nil
-        expect(comment.body_preview).not_to be_nil
-        expect(comment.markdown).not_to be_nil
-        expect(comment.body).not_to be_nil
-      end
-
-      it "should just save an edited comment" do
-        comment = create(:comment, :edited)
-        expect(comment.update(false)).to be true
-
-        expect(comment.edited?).to be true
-        expect(comment.markdown_preview).not_to be_nil
-        expect(comment.body_preview).not_to be_nil
-        expect(comment.markdown).not_to be_nil
-        expect(comment.body).not_to be_nil
-      end
-    end
-
-    context "when publishing" do
-      it "publishes a draft comment" do
-        expect_any_instance_of(Analytics).to receive(:track_published_comment)
-
-        comment = create(:comment, :draft)
-        expect(comment.update(true)).to be true
-
-        expect(comment.published?).to be true
-      end
-
+    context "when editing" do
       it "just saves a published comment, sets it to edited state" do
         expect_any_instance_of(Analytics).to receive(:track_edited_comment)
 
         comment = create(:comment, :published)
-        expect(comment.update(true)).to be true
+        comment.state = "edited"
+        comment.save
 
         expect(comment.edited?).to be true
       end
 
       it "just saves an edited comment" do
         comment = create(:comment, :edited)
-        expect(comment.update(true)).to be true
+        expect_any_instance_of(Analytics).to receive(:track_edited_comment)
+        comment.save
 
         expect(comment.edited?).to be true
       end
     end
   end
 
-  describe "publishing" do
+  describe "editing" do
     let(:comment) { create(:comment) }
 
-    it "publishes when state is set to 'published'" do
-      comment.state = "published"
+    it "edits when state is set to 'edited'" do
+      comment.state = "edited"
       comment.save
 
-      expect(comment).to be_published
+      expect(comment).to be_edited
     end
   end
 
@@ -204,9 +141,9 @@ describe Comment, type: :model do
       it "creates mentions only for existing users" do
         real_user = create(:user, username: "joshsmith")
 
-        comment = build(:comment, markdown_preview: "@joshsmith and @someone_who_doesnt_exist")
-
-        comment.update(false)
+        comment = build(:comment, markdown: "@joshsmith and @someone_who_doesnt_exist")
+        comment.save
+        comment.reload
         mentions = comment.comment_user_mentions
 
         expect(mentions.count).to eq 1
@@ -215,23 +152,16 @@ describe Comment, type: :model do
 
       context "when mentions already exist" do
         let(:comment) do
-          comment = create(:comment, markdown_preview: "Hello @joshsmith")
+          comment = create(:comment, markdown: "Hello @joshsmith")
           create(:user, username: "joshsmith")
-          create_list(:comment_user_mention, 2, comment: comment, status: :published)
-          create_list(:comment_user_mention, 3, comment: comment, status: :preview)
+          create_list(:comment_user_mention, 2, comment: comment)
           comment
         end
 
-        it "destroys preview mentions if preview was requested, leaves published mentions" do
-          comment.update(false)
-          expect(comment.comment_user_mentions.published.count).to eq 2
-          expect(comment.comment_user_mentions.preview.count).to eq 1
-        end
-
-        it "destroys published mentions if publish was requested, leaves preview mentions" do
-          comment.update(true)
-          expect(comment.comment_user_mentions.published.count).to eq 1
-          expect(comment.comment_user_mentions.preview.count).to eq 3
+        it "destroys old mentions" do
+          comment.reload
+          comment.save
+          expect(comment.comment_user_mentions.count).to eq 1
         end
       end
 
@@ -239,9 +169,9 @@ describe Comment, type: :model do
         it "creates mentions and not <em> tags" do
           underscored_user = create(:user, username: "a_real_username")
 
-          comment = build(:comment, markdown_preview: "@a_real_username and @not_a_real_username")
-
-          comment.update(false)
+          comment = build(:comment, markdown: "@a_real_username and @not_a_real_username")
+          comment.save
+          comment.reload
           mentions = comment.comment_user_mentions
 
           expect(mentions.count).to eq 1

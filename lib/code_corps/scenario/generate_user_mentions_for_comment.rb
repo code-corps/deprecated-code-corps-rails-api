@@ -4,19 +4,21 @@ module CodeCorps
       def initialize(comment)
         @comment = comment
         @post = comment.post
-        @publishing = comment.publishing
       end
 
-      attr_reader :comment, :post, :publishing
-      alias_method :publishing?, :publishing
+      attr_reader :comment, :post
 
       def call
         ActiveRecord::Base.transaction do
           destroy_existing_mentions
           mentions.each do |m|
             CommentUserMention.create!(
-              comment: comment, post: post, user: m[0], status: status,
-              start_index: m[1], end_index: m[2], username: m[0].username
+              comment: comment,
+              post: post,
+              user: m[0],
+              username: m[0].username,
+              start_index: m[1],
+              end_index: m[2],
             )
           end
         end
@@ -24,13 +26,8 @@ module CodeCorps
 
       private
 
-        def status
-          publishing ? :published : :preview
-        end
-
         def destroy_existing_mentions
-          existing_mentions = comment.comment_user_mentions.published if publishing?
-          existing_mentions = comment.comment_user_mentions.preview unless publishing?
+          existing_mentions = comment.comment_user_mentions
           existing_mentions.destroy_all if existing_mentions.present?
         end
 
@@ -39,7 +36,7 @@ module CodeCorps
 
           result = []
 
-          content = publishing ? comment.body : comment.body_preview
+          content = comment.body
 
           content.scan(regex) do |temp|
             username = temp.first

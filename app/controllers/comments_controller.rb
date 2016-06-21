@@ -2,23 +2,21 @@
 #
 # Table name: comments
 #
-#  id               :integer          not null, primary key
-#  body             :text
-#  user_id          :integer          not null
-#  post_id          :integer          not null
-#  created_at       :datetime         not null
-#  updated_at       :datetime         not null
-#  markdown         :text
-#  aasm_state       :string
-#  body_preview     :text
-#  markdown_preview :text
+#  id         :integer          not null, primary key
+#  body       :text
+#  user_id    :integer          not null
+#  post_id    :integer          not null
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#  markdown   :text
+#  aasm_state :string
 #
 
 class CommentsController < ApplicationController
   before_action :doorkeeper_authorize!, only: [:create, :update]
 
   def index
-    comments = Comment.active.where(post: params[:post_id]).includes(:user, :post)
+    comments = Comment.where(post: params[:post_id]).includes(:user, :post)
     authorize comments
 
     render json: comments
@@ -37,12 +35,8 @@ class CommentsController < ApplicationController
 
     authorize comment
 
-    if comment.update(publish?)
-      if publish?
-        GenerateCommentUserNotificationsWorker.perform_async(comment.id)
-      else
-        analytics.track_previewed_new_comment
-      end
+    if comment.save
+      GenerateCommentUserNotificationsWorker.perform_async(comment.id)
       render json: comment
     else
       render_validation_errors comment.errors
@@ -56,12 +50,8 @@ class CommentsController < ApplicationController
 
     comment.assign_attributes(update_params)
 
-    if comment.update(publish?)
-      if publish?
-        GenerateCommentUserNotificationsWorker.perform_async(comment.id)
-      else
-        analytics.track_previewed_existing_comment
-      end
+    if comment.save
+      GenerateCommentUserNotificationsWorker.perform_async(comment.id)
       render json: comment
     else
       render_validation_errors comment.errors
@@ -74,15 +64,15 @@ class CommentsController < ApplicationController
       true unless parse_params(params).fetch(:preview, false)
     end
 
+    def update_params
+      parse_params(params, only: [:markdown, :post, :state])
+    end
+
     def permitted_params
-      parse_params(params, only: [:markdown_preview, :post])
+      parse_params(params, only: [:markdown, :post])
     end
 
     def create_params
       params_for_user(permitted_params)
-    end
-
-    def update_params
-      permitted_params
     end
 end

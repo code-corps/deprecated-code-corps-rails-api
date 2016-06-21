@@ -24,7 +24,6 @@ describe "Comments API" do
       before do
         @post = create(:post, id: 2)
         create_list(:comment, 3, :published, post: @post)
-        create_list(:comment, 2, :draft, post: @post)
 
         get "#{host}/posts/#{@post.id}/comments"
       end
@@ -34,7 +33,7 @@ describe "Comments API" do
       end
 
       it "responds with active comments, serialized with CommentSerializer" do
-        collection = @post.comments.active
+        collection = @post.comments
         expect(json).to(
           serialize_collection(collection).
           with(CommentSerializer)
@@ -73,7 +72,7 @@ describe "Comments API" do
           data: {
             type: "comments",
             attributes: {
-              markdown_preview: "@#{mentioned_1.username} @#{mentioned_2.username}"
+              markdown: "@#{mentioned_1.username} @#{mentioned_2.username}"
             },
             relationships: {
               post: { data: { id: users_post.id, type: "posts" } }
@@ -86,48 +85,7 @@ describe "Comments API" do
         ActionMailer::Base.deliveries.clear
       end
 
-      context "when requesting a preview" do
-        before do
-          params[:data][:attributes][:preview] = true
-        end
-
-        it "creates a draft" do
-          # Analytics
-          expect_any_instance_of(Analytics).to receive(:track_previewed_new_comment)
-
-          make_request_with_sidekiq_inline params
-
-          comment = Comment.last
-
-          # response is correct
-          expect(last_response.status).to eq 200
-          expect(json).to serialize_object(comment).with(CommentSerializer)
-
-          # state is proper
-          expect(comment.draft?).to be true
-
-          # attributes are properly set
-          expect(comment.body).to be_nil
-          expect(comment.markdown).to be_nil
-          expect(comment.body_preview).to eq "<p>@#{mentioned_1.username} @#{mentioned_2.username}</p>"
-          expect(comment.markdown_preview).to eq "@#{mentioned_1.username} @#{mentioned_2.username}"
-
-          # relationships are properly set
-          expect(comment.user_id).to eq user.id
-          expect(comment.post_id).to eq users_post.id
-
-          # correct number of mentions was generated
-          expect(CommentUserMention.count).to eq 2
-
-          # no notifications were sent or created
-          expect(Notification.pending.count).to eq 0
-
-          # no mails were sent
-          expect(ActionMailer::Base.deliveries.count).to eq 0
-        end
-      end
-
-      context "when requesting an actual save" do
+      context "when the attributes are valid" do
         it "creates a published comment" do
           make_request_with_sidekiq_inline params
 
@@ -142,8 +100,8 @@ describe "Comments API" do
           # attributes are properly set
           expect(comment.body).to eq "<p>@#{mentioned_1.username} @#{mentioned_2.username}</p>"
           expect(comment.markdown).to eq "@#{mentioned_1.username} @#{mentioned_2.username}"
-          expect(comment.body_preview).to eq "<p>@#{mentioned_1.username} @#{mentioned_2.username}</p>"
-          expect(comment.markdown_preview).to eq "@#{mentioned_1.username} @#{mentioned_2.username}"
+          expect(comment.body).to eq "<p>@#{mentioned_1.username} @#{mentioned_2.username}</p>"
+          expect(comment.markdown).to eq "@#{mentioned_1.username} @#{mentioned_2.username}"
 
           # relationships are properly set
           expect(comment.user_id).to eq user.id
@@ -159,9 +117,9 @@ describe "Comments API" do
           expect(ActionMailer::Base.deliveries.count).to eq 2
         end
 
-        context "when markdown_preview is an empty string" do
+        context "when markdown is an empty string" do
           before do
-            params[:data][:attributes][:markdown_preview] = ""
+            params[:data][:attributes][:markdown] = ""
           end
 
           it "responds with a validation error" do
@@ -176,7 +134,7 @@ describe "Comments API" do
           {
             data: {
               attributes: {
-                title: "", markdown_preview: ""
+                title: "", markdown: ""
               },
               relationships: {
                 post: { data: { id: users_post.id, type: "posts" } }
@@ -225,7 +183,8 @@ describe "Comments API" do
             type: "comments",
             attributes: {
               title: "Edited title",
-              markdown_preview: "@#{mentioned_1.username} @#{mentioned_2.username}"
+              markdown: "@#{mentioned_1.username} @#{mentioned_2.username}",
+              state: "edited"
             }
           }
         }
@@ -240,139 +199,36 @@ describe "Comments API" do
         end
       end
 
-      context "when comment is a draft" do
-        let(:comment) { create :comment, :draft, post: post, user: user }
-
-        before do
-          ActionMailer::Base.deliveries.clear
-        end
-
-        context "when requesting a preview" do
-          before do
-            params[:data][:attributes][:preview] = true
-          end
-
-          it "updates the draft" do
-            # Analytics
-            expect_any_instance_of(Analytics).to receive(:track_previewed_existing_comment)
-
-            make_request_with_sidekiq_inline params
-
-            # response is correct
-            expect(last_response.status).to eq 200
-            expect(json).to serialize_object(comment.reload).with(CommentSerializer)
-
-            # state is proper
-            expect(comment.draft?).to be true
-
-            # attributes are properly set
-            expect(comment.body).to be_nil
-            expect(comment.markdown).to be_nil
-            expect(comment.body_preview).to eq "<p>@#{mentioned_1.username} @#{mentioned_2.username}</p>"
-            expect(comment.markdown_preview).to eq "@#{mentioned_1.username} @#{mentioned_2.username}"
-
-            # relationships are properly set
-            expect(comment.user_id).to eq user.id
-            expect(comment.post_id).to eq post.id
-
-            # correct number of mentions was generated
-            expect(CommentUserMention.count).to eq 2
-
-            # no notifications were sent or created
-            expect(Notification.pending.count).to eq 0
-
-            # no mails were sent
-            expect(ActionMailer::Base.deliveries.count).to eq 0
-          end
-        end
-
-        context "when requesting an actual save" do
-          it "updates and publishes comment" do
-            params[:data][:attributes][:publish] = true
-            make_request_with_sidekiq_inline params
-
-            # response is correct
-            expect(last_response.status).to eq 200
-            expect(json).to serialize_object(comment.reload).with(CommentSerializer)
-
-            # state is proper
-            expect(comment.published?).to be true
-
-            # attributes are properly set
-            expect(comment.body).to eq "<p>@#{mentioned_1.username} @#{mentioned_2.username}</p>"
-            expect(comment.markdown).to eq "@#{mentioned_1.username} @#{mentioned_2.username}"
-            expect(comment.body_preview).to eq "<p>@#{mentioned_1.username} @#{mentioned_2.username}</p>"
-            expect(comment.markdown_preview).to eq "@#{mentioned_1.username} @#{mentioned_2.username}"
-
-            # relationships are properly set
-            expect(comment.user_id).to eq user.id
-            expect(comment.post_id).to eq post.id
-
-            # a mention was generated for each mentioned user
-            expect(CommentUserMention.count).to eq 2
-
-            # a notification was sent for each generated mention
-            expect(Notification.sent.count).to eq 2
-
-            # an email was sent for each notification
-            expect(ActionMailer::Base.deliveries.count).to eq 2
-          end
-        end
-      end
-
       context "when comment is published" do
         let(:comment) { create :comment, :published, post: post, user: user }
 
-        context "when requesting a preview" do
-          before do
-            params[:data][:attributes][:preview] = true
-          end
+        it "updates and sets it to edited state" do
+          make_request_with_sidekiq_inline params
 
-          it "updates the published comment" do
-            make_request_with_sidekiq_inline params
+          # response is correct
+          expect(last_response.status).to eq 200
+          expect(json).to serialize_object(comment.reload).with(CommentSerializer)
 
-            # response is correct
-            expect(last_response.status).to eq 200
-            expect(json).to serialize_object(comment.reload).with(CommentSerializer)
-
-            # state is proper
-            expect(comment.published?).to be true
-          end
-        end
-
-        context "when requesting an actual save" do
-          it "updates and post and sets it to edited state" do
-            params[:data][:attributes][:publish] = true
-            make_request_with_sidekiq_inline params
-
-            # response is correct
-            expect(last_response.status).to eq 200
-            expect(json).to serialize_object(comment.reload).with(CommentSerializer)
-
-            # state is proper
-            expect(comment.edited?).to be true
-          end
+          # state is proper
+          expect(comment.edited?).to be true
         end
       end
 
-      context "when comment exists and markdown_preview param is an empty string" do
-        let(:comment) { create :comment, :draft, post: post, user: user }
+      context "when comment exists and markdown param is an empty string" do
+        let(:comment) { create :comment, post: post, user: user }
 
         before do
-          params[:data][:attributes][:preview] = true
-          params[:data][:attributes][:markdown_preview] = ""
+          params[:data][:attributes][:markdown] = ""
         end
 
-        it "overwrites the body_preview with new markdown data" do
+        it "does not overwrite the markdown or body" do
           make_request_with_sidekiq_inline params
-          expect(last_response.status).to eq 200
+          expect(last_response.status).to eq 422
+          expect(json).to be_a_valid_json_api_validation_error
 
           comment.reload
-          expect(comment.markdown_preview).to eq ""
-          expect(comment.body_preview).to eq ""
-
-          expect(json.data.attributes.markdown_preview).to eq ""
-          expect(json.data.attributes.body_preview).to eq ""
+          expect(comment.markdown).to_not eq ""
+          expect(comment.body).to_not eq ""
         end
       end
     end

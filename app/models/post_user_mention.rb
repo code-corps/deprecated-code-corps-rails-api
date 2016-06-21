@@ -10,7 +10,6 @@
 #  end_index   :integer          not null
 #  created_at  :datetime         not null
 #  updated_at  :datetime         not null
-#  status      :string           default("preview"), not null
 #
 
 class PostUserMention < ActiveRecord::Base
@@ -24,8 +23,6 @@ class PostUserMention < ActiveRecord::Base
   validates_presence_of :end_index
 
   before_validation :add_username_from_user
-
-  enum status: { preview: "preview", published: "published" }
 
   def indices
     [start_index, end_index]

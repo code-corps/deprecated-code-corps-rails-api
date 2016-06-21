@@ -10,11 +10,10 @@
 #  end_index   :integer          not null
 #  created_at  :datetime         not null
 #  updated_at  :datetime         not null
-#  status      :string           default("preview"), not null
 #
 
 class PostUserMentionSerializer < ActiveModel::Serializer
-  attributes :id, :indices, :username, :status
+  attributes :id, :indices, :username
 
   belongs_to :user
   belongs_to :post, serializer: PostSerializerWithoutIncludes

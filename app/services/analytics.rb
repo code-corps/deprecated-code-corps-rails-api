@@ -92,28 +92,6 @@ class Analytics
     track(event: "Edited Profile in Onboarding")
   end
 
-  def track_previewed_existing_comment
-    track(event: "Previewed Existing Comment")
-  end
-
-  def track_previewed_new_comment
-    track(event: "Previewed New Comment")
-  end
-
-  def track_published_comment(comment)
-    track(
-      event: "Published Comment",
-      properties: properties_for_comment(comment)
-    )
-  end
-
-  def track_published_post(post)
-    track(
-      event: "Published Post",
-      properties: properties_for_post(post)
-    )
-  end
-
   def track_rejected_organization_membership(organization_membership)
     track(
       event: "Rejected Organization Membership",
