@@ -23,6 +23,7 @@ gem "html-pipeline"
 gem "html-pipeline-rouge_filter"
 gem "kaminari"
 gem "koala"
+gem "newrelic_rpm"
 gem "obscenity"
 # paperclip master currently doesn"t work with new version of AWS SDK
 gem "paperclip", git: "https://github.com/thoughtbot/paperclip", ref: "523bd46c768226893f23889079a7aa9c73b57d68"
