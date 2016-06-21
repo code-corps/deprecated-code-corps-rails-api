@@ -14,7 +14,6 @@
 #  base64_icon_data  :text
 #  slug              :string           not null
 #  organization_id   :integer          not null
-#  aasm_state        :string
 #
 
 class Project < ActiveRecord::Base
