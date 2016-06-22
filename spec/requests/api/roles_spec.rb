@@ -23,6 +23,25 @@ describe "Roles API" do
     end
   end
 
+  describe "GET /user_roles/:id" do
+    let(:user_role) { create(:user_role) }
+
+    context "when successful" do
+      before do
+        get "#{host}/user_roles/#{user_role.id}"
+      end
+
+      it "responds with a 200" do
+        expect(last_response.status).to eq 200
+      end
+
+      it "returns a serialized user_role" do
+        expect(json).to serialize_object(user_role).
+          with(UserRoleSerializer)
+      end
+    end
+  end
+
   context "POST /roles" do
     context "when unauthenticated" do
       it "responds with a 401 not authorized" do
@@ -42,7 +61,8 @@ describe "Roles API" do
             type: "roles",
             attributes: {
               name: "Backend Developer",
-              ability: "Backend Development"
+              ability: "Backend Development",
+              kind: "technology"
             }
           }
         }
@@ -79,7 +99,8 @@ describe "Roles API" do
               data: {
                 attributes: {
                   name: nil,
-                  ability: nil
+                  ability: nil,
+                  kind: nil
                 }
               }
             }

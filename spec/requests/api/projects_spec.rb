@@ -135,19 +135,18 @@ describe "Projects API" do
         expect(json).to be_a_valid_json_api_error.with_id "RECORD_NOT_FOUND"
       end
     end
-
   end
 
   context "POST /projects" do
-    context 'when unauthenticated' do
-      it 'should return a 401 with a proper error' do
-        post "#{host}/projects", { data: { type: "projects" } }
+    context "when unauthenticated" do
+      it "should return a 401 with a proper error" do
+        post "#{host}/projects", data: { type: "projects" }
         expect(last_response.status).to eq 401
         expect(json).to be_a_valid_json_api_error.with_id "NOT_AUTHORIZED"
       end
     end
 
-    context 'when authenticated' do
+    context "when authenticated" do
       before do
         @user = create(:user, email: "test_user@mail.com", password: "password", admin: true)
         @organization = create(:organization)
@@ -155,7 +154,7 @@ describe "Projects API" do
         @token = authenticate(email: "test_user@mail.com", password: "password")
       end
 
-      it 'returns an error if title is left blank' do
+      it "returns an error if title is left blank" do
         authenticated_post "/projects", {
           data: {
             attributes: { description: "Test project description" },
@@ -179,8 +178,8 @@ describe "Projects API" do
         expect(json).to contain_an_error_of_type("VALIDATION_ERROR").with_message("can't be blank")
       end
 
-      context 'with a user uploaded image' do
-        it 'creates a project' do
+      context "with a user uploaded image" do
+        it "creates a project" do
           Sidekiq::Testing.inline! do
             file = File.open("#{Rails.root}/spec/sample_data/default-avatar.png", 'r')
             base64_image = Base64.encode64(open(file, &:read))
@@ -191,6 +190,7 @@ describe "Projects API" do
                   title: "Test Project Title",
                   slug: "test-project",
                   description: "Test project description",
+                  long_description_markdown: "New long description",
                   base64_icon_data: base64_image
                 },
                 relationships: { organization: { data: { id: @organization.id } } }
@@ -205,21 +205,23 @@ describe "Projects API" do
             expect(project.icon.path).to_not be_nil
             expect(project.title).to eq "Test Project Title"
             expect(project.description).to eq "Test project description"
+            expect(project.long_description_body).to eq "<p>New long description</p>"
             # expect icon saved from create action to be identical to our test photor
-            project_icon_file = File.open("#{Rails.root}/spec/sample_data/default-avatar.png", 'r')
+            project_icon_file = File.open("#{Rails.root}/spec/sample_data/default-avatar.png", "r")
             base64_saved_image = Base64.encode64(open(project_icon_file) { |io| io.read })
             expect(base64_saved_image).to include base64_image
           end
         end
       end
 
-      context 'without a user uploaded image' do
-        it 'creates a project' do
+      context "without a user uploaded image" do
+        it "creates a project" do
           authenticated_post "/projects", {
               data: {
                 attributes: {
                   title: "Test Project Title",
                   description: "Test project description",
+                  long_description_markdown: "New long description",
                 },
                 relationships: { organization: { data: { id: @organization.id } } }
               }
@@ -232,24 +234,24 @@ describe "Projects API" do
           expect(project.icon.path).to be_nil
           expect(project.title).to eq "Test Project Title"
           expect(project.description).to eq "Test project description"
+          expect(project.long_description_body).to eq "<p>New long description</p>"
         end
       end
     end
   end
 
-  context 'PATCH /projects/:id' do
+  context "PATCH /projects/:id" do
+    let(:project) { create(:project) }
 
-     let(:project) { create(:project) }
-
-    context 'when unauthenticated' do
-      it 'should return a 401 with a proper error' do
-        patch "#{host}/projects/#{project.id}", { data: { type: "projects" } }
+    context "when unauthenticated" do
+      it "should return a 401 with a proper error" do
+        patch "#{host}/projects/#{project.id}", data: { type: "projects" }
         expect(last_response.status).to eq 401
         expect(json).to be_a_valid_json_api_error.with_id "NOT_AUTHORIZED"
       end
     end
 
-    context 'when authenticated' do
+    context "when authenticated" do
       before do
         @user = create(:user, email: "test_user@mail.com", password: "password")
         @organization = create(:organization)
@@ -269,8 +271,8 @@ describe "Projects API" do
         expect(json).to be_a_valid_json_api_error.with_id "RECORD_NOT_FOUND"
       end
 
-      context 'when updating the title' do
-        it 'updates a project title' do
+      context "when updating the title" do
+        it "updates a project title" do
           authenticated_patch "/projects/#{@project.id}", {
             data: {
               attributes: {
@@ -284,21 +286,21 @@ describe "Projects API" do
           expect(@project.title).to eq "New title"
         end
 
-        it 'returns an error when with a nil title' do
+        it "returns an error when with a nil title" do
           authenticated_patch "/projects/#{@project.id}", {
-              data: {
-                attributes: {
-                  title: nil
-                }
+            data: {
+              attributes: {
+                title: nil
               }
-            }, @token
+            }
+          }, @token
 
           expect(last_response.status).to eq 422
           expect(json).to be_a_valid_json_api_validation_error.with_message "can't be blank"
         end
       end
 
-      it 'updates a project description' do
+      it "updates a project description" do
         authenticated_patch "/projects/#{@project.id}", {
           data: {
             attributes: {
@@ -310,6 +312,20 @@ describe "Projects API" do
         @project.reload
 
         expect(@project.description).to eq "New description"
+      end
+
+      it "updates a project long_description" do
+        authenticated_patch "/projects/#{@project.id}", {
+          data: {
+            attributes: {
+              long_description_markdown: "New long description"
+            }
+          }
+        }, @token
+
+        @project.reload
+
+        expect(@project.long_description_body).to eq "<p>New long description</p>"
       end
 
       context "when updating a project icon when none exists" do

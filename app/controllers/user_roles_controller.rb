@@ -10,7 +10,15 @@
 #
 
 class UserRolesController < ApplicationController
-  before_action :doorkeeper_authorize!
+  before_action :doorkeeper_authorize!, only: [:create, :destroy]
+
+  def show
+    user_role = UserRole.find(params[:id])
+
+    authorize user_role
+
+    render json: user_role
+  end
 
   def create
     user_role = UserRole.new(create_params)
@@ -19,6 +27,7 @@ class UserRolesController < ApplicationController
 
     if user_role.valid?
       user_role.save!
+      analytics.track_added_user_role(user_role)
       render json: user_role, include: [:user, :role]
     else
       render_validation_errors user_role.errors
@@ -31,6 +40,8 @@ class UserRolesController < ApplicationController
     authorize user_role
 
     user_role.destroy!
+
+    analytics.track_removed_user_role(user_role)
 
     render json: :nothing, status: :no_content
   end

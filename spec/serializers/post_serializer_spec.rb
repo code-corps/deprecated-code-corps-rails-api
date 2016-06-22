@@ -16,8 +16,6 @@
 #  number           :integer
 #  aasm_state       :string
 #  comments_count   :integer          default(0)
-#  body_preview     :text
-#  markdown_preview :text
 #
 
 require "rails_helper"
@@ -34,7 +32,6 @@ describe PostSerializer, type: :serializer do
       number: 1
     )
 
-    @post.publish!
     @post.edit!
 
     create_list(:comment, 2, post: @post)
@@ -85,16 +82,6 @@ describe PostSerializer, type: :serializer do
       it "has 'markdown'" do
         expect(subject["markdown"]).not_to be_nil
         expect(subject["markdown"]).to eql resource.markdown
-      end
-
-      it "has a 'body_preview'" do
-        expect(subject["body_preview"]).not_to be_nil
-        expect(subject["body_preview"]).to eql resource.body_preview
-      end
-
-      it "has 'markdown_preview'" do
-        expect(subject["markdown_preview"]).not_to be_nil
-        expect(subject["markdown_preview"]).to eql resource.markdown_preview
       end
 
       it "has a 'status'" do

@@ -22,6 +22,7 @@
 #  photo_file_size       :integer
 #  photo_updated_at      :datetime
 #  name                  :text
+#  aasm_state            :string           default("signed_up"), not null
 #
 
 require "rails_helper"
@@ -44,6 +45,7 @@ describe User, type: :model do
     it { should have_db_column(:photo_content_type).of_type(:string) }
     it { should have_db_column(:photo_file_size).of_type(:integer) }
     it { should have_db_column(:photo_updated_at).of_type(:datetime) }
+    it { should have_db_column(:aasm_state).of_type(:string).with_options(default: "signed_up", null: false) }
 
     it { should have_db_index(:email) }
     it { should have_db_index(:remember_token) }
@@ -70,6 +72,39 @@ describe User, type: :model do
   describe "validations" do
     context "paperclip", vcr: { cassette_name: "models/user/validation" } do
       it { should validate_attachment_size(:photo).less_than(10.megabytes) }
+    end
+
+    describe "password" do
+      context "on create" do
+        subject { build(:user) }
+        it do
+          should validate_length_of(:password).is_at_least(6).with_message(
+            "must be at least 6 characters"
+          )
+        end
+      end
+
+      context "on update" do
+        context "when password is present" do
+          subject { create(:user) }
+          it do
+            should validate_length_of(:password).is_at_least(6).with_message(
+              "must be at least 6 characters"
+            )
+          end
+        end
+
+        context "when password is not present" do
+          it "updates without validation errors" do
+            user = create(:user)
+            user.username = "new_username"
+            user.save
+            user.reload
+
+            expect(user.username).to eq "new_username"
+          end
+        end
+      end
     end
 
     describe "website" do
@@ -130,6 +165,42 @@ describe User, type: :model do
     end
   end
 
+  describe "strip_attributes" do
+    it { is_expected.to strip_attribute(:biography) }
+    it { is_expected.to strip_attribute(:twitter) }
+    it { is_expected.to strip_attribute(:website) }
+  end
+
+  describe ".email_taken?" do
+    context "when available" do
+      it "works" do
+        expect(User.email_taken?("josh@codecorps.org")).to eq false
+      end
+    end
+
+    context "when taken" do
+      it "works case-insensitive" do
+        create(:user, email: "JOSH@CODECORPS.ORG")
+        expect(User.email_taken?("josh@codecorps.org")).to eq true
+      end
+    end
+  end
+
+  describe ".username_taken?" do
+    context "when available" do
+      it "works" do
+        expect(User.username_taken?("joshsmith")).to eq false
+      end
+    end
+
+    context "when taken" do
+      it "works case-insensitive" do
+        create(:user, username: "JOSHSMITH")
+        expect(User.username_taken?("joshsmith")).to eq true
+      end
+    end
+  end
+
   describe "admin state" do
     let(:user) { User.create(email: "joshdotsmith@gmail.com", username: "joshsmith", password: "password") }
 
@@ -148,6 +219,38 @@ describe User, type: :model do
       user.save
 
       expect(user.username).to eq "new_name"
+    end
+  end
+
+  describe "onboarding" do
+    let(:user) { create(:user) }
+
+    it "transitions correctly when state_transition is set and saved" do
+      expect(user).to have_state(:signed_up)
+
+      expect_any_instance_of(Analytics).to receive(:track_edited_profile)
+      user.state_transition = "edit_profile"
+      user.save
+
+      expect(user).to have_state(:edited_profile)
+
+      expect_any_instance_of(Analytics).to receive(:track_selected_categories)
+      user.state_transition = "select_categories"
+      user.save
+
+      expect(user).to have_state(:selected_categories)
+
+      expect_any_instance_of(Analytics).to receive(:track_selected_roles)
+      user.state_transition = "select_roles"
+      user.save
+
+      expect(user).to have_state(:selected_roles)
+
+      expect_any_instance_of(Analytics).to receive(:track_selected_skills)
+      user.state_transition = "select_skills"
+      user.save
+
+      expect(user).to have_state(:selected_skills)
     end
   end
 

@@ -14,6 +14,7 @@
 #  base64_icon_data  :text
 #  slug              :string           not null
 #  organization_id   :integer          not null
+#  aasm_state        :string
 #
 
 class ProjectsController < ApplicationController
@@ -76,11 +77,17 @@ class ProjectsController < ApplicationController
   private
 
     def create_params
-      parse_params(params, only: [:base64_icon_data, :title, :description, :slug, :organization])
+      parse_params(
+        params, only: [:base64_icon_data, :title, :description, :slug,
+                       :organization, :long_description_markdown]
+      )
     end
 
     def update_params
-      parse_params(params, only: [:base64_icon_data, :title, :description, :slug])
+      parse_params(
+        params, only: [:base64_icon_data, :title, :description,
+                       :long_description_markdown, :slug]
+      )
     end
 
     def slugged_route_slug

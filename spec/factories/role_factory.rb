@@ -7,11 +7,13 @@
 #  updated_at :datetime         not null
 #  name       :string           not null
 #  ability    :string           not null
+#  kind       :string           not null
 #
 
 FactoryGirl.define do
   factory :role do
     sequence(:name) { |n| "Role #{n}" }
     sequence(:ability) { |n| "Ability #{n}" }
+    kind "technology"
   end
 end

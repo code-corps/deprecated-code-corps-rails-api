@@ -18,6 +18,7 @@ require "paperclip/matchers"
 require "pundit/rspec"
 require "aasm/rspec"
 require "database_cleaner"
+require "strip_attributes/matchers"
 
 # Requires supporting ruby files with custom matchers and macros, etc, in
 # spec/support/ and its subdirectories. Files matching `spec/**/*_spec.rb` are
@@ -91,10 +92,12 @@ RSpec.configure do |config|
     allow_any_instance_of(Paperclip::Attachment).to receive(:save).and_return(true)
   end
 
-  Shoulda::Matchers.configure do |config|
-    config.integrate do |with|
+  Shoulda::Matchers.configure do |shoulda|
+    shoulda.integrate do |with|
       with.test_framework :rspec
       with.library :rails
     end
   end
+
+  config.include StripAttributes::Matchers
 end

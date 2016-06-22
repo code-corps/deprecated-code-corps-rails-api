@@ -2,49 +2,33 @@
 #
 # Table name: comments
 #
-#  id               :integer          not null, primary key
-#  body             :text
-#  user_id          :integer          not null
-#  post_id          :integer          not null
-#  created_at       :datetime         not null
-#  updated_at       :datetime         not null
-#  markdown         :text
-#  aasm_state       :string
-#  body_preview     :text
-#  markdown_preview :text
+#  id         :integer          not null, primary key
+#  body       :text
+#  user_id    :integer          not null
+#  post_id    :integer          not null
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#  markdown   :text
+#  aasm_state :string
 #
 
 FactoryGirl.define do
-
   factory :comment do
     sequence(:markdown) { |n| "Comment #{n}" }
-    sequence(:markdown_preview) { |n| "Comment #{n}" }
 
     association :post
     association :user
-
-    trait :draft do
-      aasm_state :draft
-      markdown nil
-      body nil
-      markdown_preview "Comment content"
-      body_preview "Comment content"
-    end
 
     trait :published do
       aasm_state :published
       markdown "Comment content"
       body "Comment content"
-      markdown_preview "Comment content"
-      body_preview "Comment content"
     end
 
     trait :edited do
       aasm_state :edited
       markdown "Comment content"
       body "Comment content"
-      markdown_preview "Comment content"
-      body_preview "Comment content"
     end
 
     trait :with_user_mentions do
@@ -57,5 +41,4 @@ FactoryGirl.define do
       end
     end
   end
-
 end

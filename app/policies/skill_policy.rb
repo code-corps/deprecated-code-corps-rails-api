@@ -19,4 +19,8 @@ class SkillPolicy
     return unless user.present?
     user.admin?
   end
+
+  def search?
+    true
+  end
 end

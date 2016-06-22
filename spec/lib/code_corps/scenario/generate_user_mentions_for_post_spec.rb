@@ -13,21 +13,9 @@ module CodeCorps
           allow_any_instance_of(Post).to receive(:generate_mentions)
         end
 
-        it "creates user mentions for body_preview when previewing" do
-          post.markdown_preview = "Mentioning @#{user.username}"
-          post.update(false)
-
-          GenerateUserMentionsForPost.new(post).call
-
-          mention = PostUserMention.last
-          expect(mention.post).to eq post
-          expect(mention.user).to eq user
-          expect(mention.username).to eq user.username
-        end
-
-        it "creates user mentions from body when publishing" do
-          post.markdown_preview = "Mentioning @#{user.username}"
-          post.update(true)
+        it "creates user mentions for body" do
+          post.markdown = "Mentioning @#{user.username}"
+          post.save
 
           GenerateUserMentionsForPost.new(post).call
 
@@ -38,31 +26,20 @@ module CodeCorps
         end
 
         it "does not fail when content is nil" do
-          post.markdown_preview = nil
-          post.update(false)
+          post.markdown = nil
+          post.save
           expect { GenerateUserMentionsForPost.new(post).call }.not_to raise_error
         end
 
         context "when mentions already exist" do
           before do
-            create_list(:post_user_mention, 2, post: post, status: :published)
-            create_list(:post_user_mention, 3, post: post, status: :preview)
+            create_list(:post_user_mention, 2, post: post)
           end
 
-          it "destroys preview mentions if preview was requested, leaves published mentions" do
-            post.publishing = false
-            post.body_preview = "@#{user.username}"
-            GenerateUserMentionsForPost.new(post).call
-            expect(post.post_user_mentions.published.count).to eq 2
-            expect(post.post_user_mentions.preview.count).to eq 1
-          end
-
-          it "destroys published mentions if publish was requested, leaves preview mentions" do
-            post.publishing = true
+          it "destroys previous mentions" do
             post.body = "@#{user.username}"
             GenerateUserMentionsForPost.new(post).call
-            expect(post.post_user_mentions.published.count).to eq 1
-            expect(post.post_user_mentions.preview.count).to eq 3
+            expect(post.post_user_mentions.count).to eq 1
           end
         end
       end

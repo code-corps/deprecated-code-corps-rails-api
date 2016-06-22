@@ -22,6 +22,7 @@
 #  photo_file_size       :integer
 #  photo_updated_at      :datetime
 #  name                  :text
+#  aasm_state            :string           default("signed_up"), not null
 #
 
 class UsersController < ApplicationController
@@ -88,12 +89,39 @@ class UsersController < ApplicationController
     end
   end
 
+  def email_available
+    email = params[:email]
+    user = User.new(email: email)
+
+    if User.email_taken?(email)
+      render json: { available: false, valid: true }
+    elsif user.valid_attribute?(:email)
+      render json: { available: true, valid: true }
+    else
+      render json: { available: true, valid: false }
+    end
+  end
+
+  def username_available
+    username = params[:username]
+    user = User.new(username: username)
+
+    if User.username_taken?(username)
+      render json: { available: false, valid: true }
+    elsif user.valid_attribute?(:username)
+      render json: { available: true, valid: true }
+    else
+      render json: { available: true, valid: false }
+    end
+  end
+
   private
 
     def update_and_render_result(record)
       record.assign_attributes update_params
 
       if record.save
+        analytics.track_updated_profile
         UpdateProfilePictureWorker.perform_async(record.id) if photo_param?
         render json: record
       else
@@ -116,7 +144,7 @@ class UsersController < ApplicationController
 
     def update_params
       parse_params(params, only: [:name, :website, :biography, :twitter,
-                                  :base64_photo_data])
+                                  :base64_photo_data, :state_transition])
     end
 
     def render_no_such_email_error
@@ -151,6 +179,7 @@ class UsersController < ApplicationController
       user.update(create_params)
 
       if user.save
+        analytics_for(user).track_signed_up_with_facebook
         AddFacebookFriendsWorker.perform_async(user.id)
         if photo_param?
           UpdateProfilePictureWorker.perform_async(user.id)
@@ -168,6 +197,7 @@ class UsersController < ApplicationController
       user = User.new(create_params)
 
       if user.save
+        analytics_for(user).track_signed_up_with_email
         if photo_param?
           UpdateProfilePictureWorker.perform_async(user.id)
         else
@@ -183,5 +213,9 @@ class UsersController < ApplicationController
     def photo_param?
       update_params[:base64_photo_data].present? ||
         create_params[:base64_photo_data].present?
+    end
+
+    def analytics_for(user)
+      @analytics_for ||= Analytics.new(user)
     end
 end

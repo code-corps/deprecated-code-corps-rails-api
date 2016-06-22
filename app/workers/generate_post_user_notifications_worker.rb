@@ -6,9 +6,7 @@ class GeneratePostUserNotificationsWorker
 
   def perform(post_id)
     post = Post.find(post_id)
-    return if post.draft?
     CodeCorps::Scenario::GenerateNotificationsForPostUserMentions.new(post).call
     CodeCorps::Scenario::SendNotificationEmails.new(post).call
   end
-
 end

@@ -14,12 +14,14 @@
 #  base64_icon_data  :text
 #  slug              :string           not null
 #  organization_id   :integer          not null
+#  aasm_state        :string
 #
 
 FactoryGirl.define do
   factory :project do
     sequence(:title) { |n| "Project#{n}" }
     sequence(:description) { |n| "Project description #{n}" }
+    sequence(:long_description_markdown) { |n| "Long project description #{n}" }
 
     association :organization
 

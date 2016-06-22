@@ -3,6 +3,7 @@ class ApplicationController < ActionController::API
   include Pundit
 
   before_action :set_default_response_format
+  before_action :set_raven_context
 
   rescue_from Pundit::NotAuthorizedError, with: :render_error
   rescue_from ActionController::ParameterMissing, with: :render_error
@@ -28,6 +29,10 @@ class ApplicationController < ActionController::API
 
   def current_user
     current_resource_owner
+  end
+
+  def analytics
+    @analytics ||= Analytics.new(current_user)
   end
 
   def page_size
@@ -84,5 +89,11 @@ class ApplicationController < ActionController::API
 
     def set_default_response_format
       request.format = :json unless params[:format]
+    end
+
+    def set_raven_context
+      if signed_in?
+        Raven.user_context(id: current_user.id)
+      end
     end
 end

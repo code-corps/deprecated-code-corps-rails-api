@@ -16,14 +16,12 @@
 #  number           :integer
 #  aasm_state       :string
 #  comments_count   :integer          default(0)
-#  body_preview     :text
-#  markdown_preview :text
 #
 
 class PostSerializer < ActiveModel::Serializer
   attributes :id, :number, :post_type, :state, :status,
-             :title, :body, :body_preview, :markdown, :markdown_preview,
-             :likes_count, :comments_count, :created_at, :edited_at
+             :title, :body, :markdown, :likes_count, :comments_count,
+             :created_at, :edited_at
 
   has_many :comments
   has_many :post_user_mentions

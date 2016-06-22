@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160520235218) do
+ActiveRecord::Schema.define(version: 20160621203648) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -40,27 +40,24 @@ ActiveRecord::Schema.define(version: 20160520235218) do
   end
 
   create_table "comment_user_mentions", force: :cascade do |t|
-    t.integer  "user_id",                         null: false
-    t.integer  "comment_id",                      null: false
-    t.integer  "post_id",                         null: false
-    t.string   "username",                        null: false
-    t.integer  "start_index",                     null: false
-    t.integer  "end_index",                       null: false
-    t.datetime "created_at",                      null: false
-    t.datetime "updated_at",                      null: false
-    t.string   "status",      default: "preview", null: false
+    t.integer  "user_id",     null: false
+    t.integer  "comment_id",  null: false
+    t.integer  "post_id",     null: false
+    t.string   "username",    null: false
+    t.integer  "start_index", null: false
+    t.integer  "end_index",   null: false
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
   end
 
   create_table "comments", force: :cascade do |t|
     t.text     "body"
-    t.integer  "user_id",          null: false
-    t.integer  "post_id",          null: false
-    t.datetime "created_at",       null: false
-    t.datetime "updated_at",       null: false
+    t.integer  "user_id",    null: false
+    t.integer  "post_id",    null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.text     "markdown"
     t.string   "aasm_state"
-    t.text     "body_preview"
-    t.text     "markdown_preview"
   end
 
   create_table "github_repositories", force: :cascade do |t|
@@ -169,14 +166,13 @@ ActiveRecord::Schema.define(version: 20160520235218) do
   end
 
   create_table "post_user_mentions", force: :cascade do |t|
-    t.integer  "user_id",                         null: false
-    t.integer  "post_id",                         null: false
-    t.string   "username",                        null: false
-    t.integer  "start_index",                     null: false
-    t.integer  "end_index",                       null: false
-    t.datetime "created_at",                      null: false
-    t.datetime "updated_at",                      null: false
-    t.string   "status",      default: "preview", null: false
+    t.integer  "user_id",     null: false
+    t.integer  "post_id",     null: false
+    t.string   "username",    null: false
+    t.integer  "start_index", null: false
+    t.integer  "end_index",   null: false
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
   end
 
   create_table "posts", force: :cascade do |t|
@@ -193,9 +189,30 @@ ActiveRecord::Schema.define(version: 20160520235218) do
     t.integer  "number"
     t.string   "aasm_state"
     t.integer  "comments_count",   default: 0
-    t.text     "body_preview"
-    t.text     "markdown_preview"
   end
+
+  create_table "preview_user_mentions", force: :cascade do |t|
+    t.integer  "user_id",     null: false
+    t.integer  "preview_id",  null: false
+    t.string   "username",    null: false
+    t.integer  "start_index", null: false
+    t.integer  "end_index",   null: false
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
+  end
+
+  add_index "preview_user_mentions", ["preview_id"], name: "index_preview_user_mentions_on_preview_id", using: :btree
+  add_index "preview_user_mentions", ["user_id"], name: "index_preview_user_mentions_on_user_id", using: :btree
+
+  create_table "previews", force: :cascade do |t|
+    t.text     "body",       null: false
+    t.text     "markdown",   null: false
+    t.integer  "user_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  add_index "previews", ["user_id"], name: "index_previews_on_user_id", using: :btree
 
   create_table "project_categories", force: :cascade do |t|
     t.integer  "project_id"
@@ -225,17 +242,20 @@ ActiveRecord::Schema.define(version: 20160520235218) do
   add_index "project_skills", ["project_id", "skill_id"], name: "index_project_skills_on_project_id_and_skill_id", unique: true, using: :btree
 
   create_table "projects", force: :cascade do |t|
-    t.string   "title",             null: false
+    t.string   "title",                     null: false
     t.string   "description"
-    t.datetime "created_at",        null: false
-    t.datetime "updated_at",        null: false
+    t.datetime "created_at",                null: false
+    t.datetime "updated_at",                null: false
     t.string   "icon_file_name"
     t.string   "icon_content_type"
     t.integer  "icon_file_size"
     t.datetime "icon_updated_at"
     t.text     "base64_icon_data"
-    t.string   "slug",              null: false
-    t.integer  "organization_id",   null: false
+    t.string   "slug",                      null: false
+    t.integer  "organization_id",           null: false
+    t.string   "aasm_state"
+    t.text     "long_description_body"
+    t.text     "long_description_markdown"
   end
 
   add_index "projects", ["organization_id"], name: "index_projects_on_organization_id", using: :btree
@@ -252,6 +272,7 @@ ActiveRecord::Schema.define(version: 20160520235218) do
     t.datetime "updated_at", null: false
     t.string   "name",       null: false
     t.string   "ability",    null: false
+    t.string   "kind",       null: false
   end
 
   create_table "skills", force: :cascade do |t|
@@ -306,14 +327,14 @@ ActiveRecord::Schema.define(version: 20160520235218) do
   end
 
   create_table "users", force: :cascade do |t|
-    t.datetime "created_at",                                        null: false
-    t.datetime "updated_at",                                        null: false
-    t.string   "email",                                             null: false
-    t.string   "encrypted_password",    limit: 128,                 null: false
+    t.datetime "created_at",                                              null: false
+    t.datetime "updated_at",                                              null: false
+    t.string   "email",                                                   null: false
+    t.string   "encrypted_password",    limit: 128,                       null: false
     t.string   "confirmation_token",    limit: 128
-    t.string   "remember_token",        limit: 128,                 null: false
+    t.string   "remember_token",        limit: 128,                       null: false
     t.string   "username"
-    t.boolean  "admin",                             default: false, null: false
+    t.boolean  "admin",                             default: false,       null: false
     t.text     "website"
     t.string   "twitter"
     t.text     "biography"
@@ -325,6 +346,7 @@ ActiveRecord::Schema.define(version: 20160520235218) do
     t.integer  "photo_file_size"
     t.datetime "photo_updated_at"
     t.text     "name"
+    t.string   "aasm_state",                        default: "signed_up", null: false
   end
 
   add_index "users", ["email"], name: "index_users_on_email", using: :btree
@@ -334,6 +356,9 @@ ActiveRecord::Schema.define(version: 20160520235218) do
   add_foreign_key "comments", "users"
   add_foreign_key "posts", "projects"
   add_foreign_key "posts", "users"
+  add_foreign_key "preview_user_mentions", "previews"
+  add_foreign_key "preview_user_mentions", "users"
+  add_foreign_key "previews", "users"
   add_foreign_key "project_categories", "categories", on_delete: :cascade
   add_foreign_key "project_categories", "projects", on_delete: :cascade
   add_foreign_key "project_roles", "projects", on_delete: :cascade

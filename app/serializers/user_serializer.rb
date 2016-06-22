@@ -22,17 +22,20 @@
 #  photo_file_size       :integer
 #  photo_updated_at      :datetime
 #  name                  :text
+#  aasm_state            :string           default("signed_up"), not null
 #
 
 class UserSerializer < ActiveModel::Serializer
-  attributes :id, :email, :name, :username, :twitter, :biography, :website,
+  attributes :id, :created_at, :email, :name, :username, :twitter, :biography, :website,
              :facebook_id, :facebook_access_token, :photo_thumb_url,
-             :photo_large_url
+             :photo_large_url, :state
 
   has_many :categories
   has_many :user_categories
   has_many :organizations
   has_many :organization_memberships
+  has_many :roles
+  has_many :user_roles
   has_many :skills
 
   def photo_thumb_url

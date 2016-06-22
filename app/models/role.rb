@@ -7,6 +7,7 @@
 #  updated_at :datetime         not null
 #  name       :string           not null
 #  ability    :string           not null
+#  kind       :string           not null
 #
 
 class Role < ActiveRecord::Base
@@ -15,4 +16,11 @@ class Role < ActiveRecord::Base
 
   validates_presence_of :name
   validates_presence_of :ability
+  validates_presence_of :kind
+
+  enum kind: {
+    technology: "technology",
+    creative: "creative",
+    support: "support"
+  }
 end

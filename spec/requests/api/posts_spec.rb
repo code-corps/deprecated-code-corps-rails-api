@@ -18,10 +18,9 @@ describe "Posts API" do
         create_list(:post, 3, :edited, project: @project, post_type: "idea")
       end
 
-      it "returns active posts (published and edited)" do
-        create_list(:post, 5, :draft, project: @project)
+      it "returns posts" do
         get "#{host}/projects/#{@project.id}/posts"
-        collection = Post.active.page(1).per(10)
+        collection = Post.page(1).per(10)
         expect(json).to(
           serialize_collection(collection).
             with(PostSerializer).
@@ -139,10 +138,9 @@ describe "Posts API" do
       end
 
       it "returns the post, serialized with PostSerializer, with users, comments and mentions included" do
-        expect(json).to serialize_object(Post.last)
-          .with(PostSerializer)
-          .with_includes(["users", "comments", "post_user_mentions", "comment_user_mentions",
-                          "comments_count"])
+        expect(json).to serialize_object(Post.last).
+          with(PostSerializer).
+          with_includes(%w(users comments post_user_mentions comment_user_mentions comments_count"))
       end
     end
   end
@@ -171,7 +169,7 @@ describe "Posts API" do
             type: "posts",
             attributes: {
               title: "Post title",
-              markdown_preview: "@#{mentioned_1.username} @#{mentioned_2.username}",
+              markdown: "@#{mentioned_1.username} @#{mentioned_2.username}",
               post_type: "issue"
             },
             relationships: {
@@ -197,44 +195,7 @@ describe "Posts API" do
         Sidekiq::Testing.inline! { make_request params }
       end
 
-      context "when requesting a preview" do
-        it "creates a draft" do
-          params[:data][:attributes][:preview] = true
-          make_request_with_sidekiq_inline params
-
-          post = Post.last
-
-          # response is correct
-          expect(last_response.status).to eq 200
-          expect(json).to serialize_object(post).with(PostSerializer)
-
-          # state is proper
-          expect(post.draft?).to be true
-
-          # attributes are properly set
-          expect(post.title).to eq "Post title"
-          expect(post.issue?).to be true
-          expect(post.body).to be_nil
-          expect(post.markdown).to be_nil
-          expect(post.body_preview).to eq "<p>@#{mentioned_1.username} @#{mentioned_2.username}</p>"
-          expect(post.markdown_preview).to eq "@#{mentioned_1.username} @#{mentioned_2.username}"
-
-          # relationships are properly set
-          expect(post.user_id).to eq user.id
-          expect(post.project_id).to eq project.id
-
-          # correct number of mentions was generated
-          expect(PostUserMention.count).to eq 2
-
-          # no notifications were sent or created
-          expect(Notification.pending.count).to eq 0
-
-          # no mails were sent
-          expect(ActionMailer::Base.deliveries.count).to eq 0
-        end
-      end
-
-      context "when requesting an actual save" do
+      context "when the attributes are valid" do
         it "creates a published post" do
           make_request_with_sidekiq_inline params
 
@@ -251,8 +212,6 @@ describe "Posts API" do
           expect(post.issue?).to be true
           expect(post.body).to eq "<p>@#{mentioned_1.username} @#{mentioned_2.username}</p>"
           expect(post.markdown).to eq "@#{mentioned_1.username} @#{mentioned_2.username}"
-          expect(post.body_preview).to eq "<p>@#{mentioned_1.username} @#{mentioned_2.username}</p>"
-          expect(post.markdown_preview).to eq "@#{mentioned_1.username} @#{mentioned_2.username}"
 
           # relationships are properly set
           expect(post.user_id).to eq user.id
@@ -274,7 +233,7 @@ describe "Posts API" do
           {
             data: {
               attributes: {
-                title: nil, markdown_preview: nil
+                title: nil, markdown: nil
               },
               relationships: {
                 project: { data: { id: project.id, type: "projects" } }
@@ -324,7 +283,9 @@ describe "Posts API" do
             type: "posts",
             attributes: {
               title: "Edited title",
-              markdown_preview: "@#{mentioned_1.username} @#{mentioned_2.username}"
+              markdown: "@#{mentioned_1.username} @#{mentioned_2.username}",
+              post_type: "task",
+              state: "edited"
             },
             relationships: {
               project: { data: { id: project.id, type: "projects" } }
@@ -348,69 +309,29 @@ describe "Posts API" do
         end
       end
 
-      context "when post is a draft" do
-        let(:post) { create :post, :draft, project: project, user: user, post_type: "issue" }
-
-        before do
-          ActionMailer::Base.deliveries.clear
-        end
-
-        context "when requesting a preview" do
-          before do
-            params[:data][:attributes][:preview] = true
-          end
-
-          it "updates the draft" do
-            make_request_with_sidekiq_inline params
-
-            # response is correct
-            expect(last_response.status).to eq 200
-            expect(json).to serialize_object(post.reload).with(PostSerializer)
-
-            # state is proper
-            expect(post.draft?).to be true
-
-            # attributes are properly set
-            expect(post.title).to eq "Edited title"
-            expect(post.issue?).to be true
-            expect(post.body).to be_nil
-            expect(post.markdown).to be_nil
-            expect(post.body_preview).to eq "<p>@#{mentioned_1.username} @#{mentioned_2.username}</p>"
-            expect(post.markdown_preview).to eq "@#{mentioned_1.username} @#{mentioned_2.username}"
-
-            # relationships are properly set
-            expect(post.user_id).to eq user.id
-            expect(post.project_id).to eq project.id
-
-            # correct number of mentions was generated
-            expect(PostUserMention.count).to eq 2
-
-            # no notifications were sent or created
-            expect(Notification.pending.count).to eq 0
-
-            # no mails were sent
-            expect(ActionMailer::Base.deliveries.count).to eq 0
-          end
-        end
+      context "when post is published" do
+        let(:post) { create :post, project: project, user: user, post_type: :issue }
 
         context "when requesting an actual save" do
-          it "updates and publishes post" do
+          it "updates and post and sets it to edited state" do
             make_request_with_sidekiq_inline params
+
+            post.reload
 
             # response is correct
             expect(last_response.status).to eq 200
             expect(json).to serialize_object(post.reload).with(PostSerializer)
 
             # state is proper
-            expect(post.published?).to be true
+            expect(post.edited?).to be true
 
             # attributes are properly set
             expect(post.title).to eq "Edited title"
-            expect(post.issue?).to be true
             expect(post.body).to eq "<p>@#{mentioned_1.username} @#{mentioned_2.username}</p>"
             expect(post.markdown).to eq "@#{mentioned_1.username} @#{mentioned_2.username}"
-            expect(post.body_preview).to eq "<p>@#{mentioned_1.username} @#{mentioned_2.username}</p>"
-            expect(post.markdown_preview).to eq "@#{mentioned_1.username} @#{mentioned_2.username}"
+
+            # post_type parameter was accepted
+            expect(post.task?).to be true
 
             # relationships are properly set
             expect(post.user_id).to eq user.id
@@ -428,59 +349,21 @@ describe "Posts API" do
         end
       end
 
-      context "when post is published" do
-        let(:post) { create :post, :published, project: project, user: user, post_type: :issue }
-
-        context "when requesting a preview" do
-          before do
-            params[:data][:attributes][:preview] = true
-          end
-
-          it "updates the published post" do
-            make_request_with_sidekiq_inline params
-
-            # response is correct
-            expect(last_response.status).to eq 200
-            expect(json).to serialize_object(post.reload).with(PostSerializer)
-
-            # state is proper
-            expect(post.published?).to be true
-          end
-        end
-
-        context "when requesting an actual save" do
-          it "updates and post and sets it to edited state" do
-            params[:data][:attributes][:publish] = true
-            make_request_with_sidekiq_inline params
-
-            # response is correct
-            expect(last_response.status).to eq 200
-            expect(json).to serialize_object(post.reload).with(PostSerializer)
-
-            # state is proper
-            expect(post.edited?).to be true
-          end
-        end
-      end
-
-      context "when post exists and markdown_preview param is an empty string" do
-        let(:post) { create :post, :draft, project: project, user: user, post_type: "issue" }
+      context "when post exists and markdown param is an empty string" do
+        let(:post) { create :post, project: project, user: user, post_type: "issue" }
 
         before do
-          params[:data][:attributes][:preview] = true
-          params[:data][:attributes][:markdown_preview] = ""
+          params[:data][:attributes][:markdown] = ""
         end
 
-        it "overwrites the body_preview with new markdown data" do
+        it "does not overwrite the markdown or body" do
           make_request_with_sidekiq_inline params
-          expect(last_response.status).to eq 200
+          expect(last_response.status).to eq 422
+          expect(json).to be_a_valid_json_api_validation_error
 
           post.reload
-          expect(post.markdown_preview).to eq ""
-          expect(post.body_preview).to eq ""
-
-          expect(json.data.attributes.markdown_preview).to eq ""
-          expect(json.data.attributes.body_preview).to eq ""
+          expect(post.markdown).to_not eq ""
+          expect(post.body).to_not eq ""
         end
       end
     end

@@ -14,6 +14,7 @@
 #  base64_icon_data  :text
 #  slug              :string           not null
 #  organization_id   :integer          not null
+#  aasm_state        :string
 #
 
 require "rails_helper"
@@ -82,6 +83,16 @@ describe ProjectSerializer, type: :serializer do
       it "has a 'icon_large_url'" do
         expect(subject["icon_large_url"]).to_not be_nil
         expect(subject["icon_large_url"]).to eql resource.icon.url(:large)
+      end
+
+      it "has a 'long_description_body'" do
+        expect(subject["long_description_body"]).to_not be_nil
+        expect(subject["long_description_body"]).to eql resource.long_description_body
+      end
+
+      it "has a 'long_description_markdown'" do
+        expect(subject["long_description_markdown"]).to_not be_nil
+        expect(subject["long_description_markdown"]).to eql resource.long_description_markdown
       end
     end
 

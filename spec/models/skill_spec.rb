@@ -9,7 +9,7 @@
 #  updated_at  :datetime         not null
 #
 
-require 'rails_helper'
+require "rails_helper"
 
 describe Skill, type: :model do
   describe "schema" do
@@ -24,5 +24,24 @@ describe Skill, type: :model do
 
   describe "validations" do
     it { should validate_presence_of(:title) }
+  end
+
+  describe ".autocomplete" do
+    it "autocompletes" do
+      ruby = create(:skill, title: "Ruby")
+      create(:skill, title: "Ruby on Rails")
+      create(:skill, title: "RabbitMQ")
+      create(:skill, title: "Rackspace Cloud Servers")
+      create(:skill, title: "Redux.js")
+      create(:skill, title: "Mustache")
+
+      query = "ru"
+
+      allow(Skill).to receive(:search).with(query) { Skill.all }
+
+      results = Skill.autocomplete(query)
+      expect(results.length).to eq 5
+      expect(results.first).to eq ruby
+    end
   end
 end

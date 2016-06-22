@@ -16,8 +16,6 @@
 #  number           :integer
 #  aasm_state       :string
 #  comments_count   :integer          default(0)
-#  body_preview     :text
-#  markdown_preview :text
 #
 
 class PostsController < ApplicationController
@@ -41,8 +39,9 @@ class PostsController < ApplicationController
 
     authorize post
 
-    if post.update(publish?)
-      GeneratePostUserNotificationsWorker.perform_async(post.id) if publish?
+    if post.save
+      post.reload
+      GeneratePostUserNotificationsWorker.perform_async(post.id)
       render json: post
     else
       render_validation_errors post.errors
@@ -56,8 +55,9 @@ class PostsController < ApplicationController
 
     post.assign_attributes(update_params)
 
-    if post.update publish?
-      GeneratePostUserNotificationsWorker.perform_async(post.id) if publish?
+    if post.save
+      post.reload
+      GeneratePostUserNotificationsWorker.perform_async(post.id)
       render json: post
     else
       render_validation_errors post.errors
@@ -71,12 +71,12 @@ class PostsController < ApplicationController
     end
 
     def update_params
-      parse_params(params, only: [:markdown_preview, :title])
+      parse_params(params, only: [:markdown, :title, :post_type, :state])
     end
 
     def create_params
       params_for_user(
-        parse_params(params, only: [:markdown_preview, :title, :post_type, :project])
+        parse_params(params, only: [:markdown, :title, :post_type, :project])
       )
     end
 
@@ -108,7 +108,7 @@ class PostsController < ApplicationController
     def find_posts!
       project = find_project!
 
-      Post.active.
+      Post.
         includes(:user).
         includes(:project).
         includes(comments: :user).
@@ -120,6 +120,6 @@ class PostsController < ApplicationController
     end
 
     def post_count
-      Post.active.where(filter_params.merge(project_id: project_id)).count
+      Post.where(filter_params.merge(project_id: project_id)).count
     end
 end

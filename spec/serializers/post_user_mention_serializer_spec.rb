@@ -10,7 +10,6 @@
 #  end_index   :integer          not null
 #  created_at  :datetime         not null
 #  updated_at  :datetime         not null
-#  status      :string           default("preview"), not null
 #
 
 require "rails_helper"
@@ -51,11 +50,6 @@ describe PostUserMentionSerializer, type: :serializer do
 
       it "has 'indices'" do
         expect(subject["indices"]).to eql resource.indices
-      end
-
-      it "has 'status'" do
-        expect(subject["status"]).not_to be_nil
-        expect(subject["status"]).to eql resource.status
       end
     end
 

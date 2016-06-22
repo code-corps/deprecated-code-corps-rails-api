@@ -59,6 +59,7 @@ GEM
       thread_safe (~> 0.3, >= 0.3.4)
       tzinfo (~> 1.1)
     addressable (2.4.0)
+    analytics-ruby (2.0.13)
     annotate (2.7.0)
       activerecord (>= 3.2, < 6.0)
       rake (~> 10.4)
@@ -110,6 +111,14 @@ GEM
     dotenv-rails (2.1.0)
       dotenv (= 2.1.0)
       railties (>= 4.0, < 5.1)
+    elasticsearch (1.0.17)
+      elasticsearch-api (= 1.0.17)
+      elasticsearch-transport (= 1.0.17)
+    elasticsearch-api (1.0.17)
+      multi_json
+    elasticsearch-transport (1.0.17)
+      faraday
+      multi_json
     em-http-request (1.1.3)
       addressable (>= 2.3.4)
       cookiejar (<= 0.3.0)
@@ -173,6 +182,7 @@ GEM
     multi_json (1.11.2)
     multi_xml (0.5.5)
     multipart-post (2.0.0)
+    newrelic_rpm (3.15.1.316)
     nokogiri (1.6.7.2)
       mini_portile2 (~> 2.0.0.rc2)
     oauth2 (1.1.0)
@@ -271,9 +281,15 @@ GEM
       sidekiq (>= 2.4.0)
     rspec-support (3.4.1)
     safe_yaml (1.0.4)
+    searchkick (1.3.0)
+      activemodel
+      elasticsearch (>= 1)
+      hashie
     seed-fu (2.3.5)
       activerecord (>= 3.1, < 4.3)
       activesupport (>= 3.1, < 4.3)
+    sentry-raven (1.1.0)
+      faraday (>= 0.7.6)
     sequenced (3.1.1)
       activerecord (>= 3.0)
       activesupport (>= 3.0)
@@ -301,6 +317,8 @@ GEM
       actionpack (>= 4.0)
       activesupport (>= 4.0)
       sprockets (>= 3.0.0)
+    strip_attributes (1.8.0)
+      activemodel (>= 3.0, < 6.0)
     thin (1.6.4)
       daemons (~> 1.0, >= 1.0.9)
       eventmachine (~> 1.0, >= 1.0.4)
@@ -325,6 +343,7 @@ PLATFORMS
 DEPENDENCIES
   aasm
   active_model_serializers!
+  analytics-ruby
   annotate
   aws-sdk
   bullet
@@ -344,6 +363,7 @@ DEPENDENCIES
   html-pipeline-rouge_filter
   kaminari
   koala
+  newrelic_rpm
   oauth2
   obscenity
   paperclip!
@@ -362,12 +382,15 @@ DEPENDENCIES
   rails-api
   rspec-rails (~> 3.0)
   rspec-sidekiq
+  searchkick
   seed-fu
+  sentry-raven
   sequenced
   shoulda-matchers (= 3.0.1)
   sidekiq
   sinatra
   spring
+  strip_attributes
   vcr
   webmock
 

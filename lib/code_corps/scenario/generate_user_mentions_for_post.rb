@@ -3,11 +3,9 @@ module CodeCorps
     class GenerateUserMentionsForPost
       def initialize(post)
         @post = post
-        @publishing = post.publishing
       end
 
-      attr_reader :post, :publishing
-      alias_method :publishing?, :publishing
+      attr_reader :post
 
       def call
         ActiveRecord::Base.transaction do
@@ -16,7 +14,7 @@ module CodeCorps
             PostUserMention.create!(
               post: @post, user: m[0],
               start_index: m[1], end_index: m[2],
-              username: m[0].username, status: status
+              username: m[0].username
             )
           end
         end
@@ -24,13 +22,8 @@ module CodeCorps
 
       private
 
-        def status
-          publishing? ? :published : :preview
-        end
-
         def destroy_existing_mentions
-          existing_mentions = post.post_user_mentions.published if publishing?
-          existing_mentions = post.post_user_mentions.preview unless publishing?
+          existing_mentions = post.post_user_mentions
           existing_mentions.destroy_all if existing_mentions.present?
         end
 
@@ -39,7 +32,7 @@ module CodeCorps
 
           result = []
 
-          content = publishing? ? post.body : post.body_preview
+          content = post.body
 
           return if content.nil?
 

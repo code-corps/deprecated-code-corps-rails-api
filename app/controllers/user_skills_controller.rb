@@ -12,6 +12,14 @@
 class UserSkillsController < ApplicationController
   before_action :doorkeeper_authorize!
 
+  def index
+    user_skills = UserSkill.where(user_id: current_user.id)
+
+    authorize user_skills
+
+    render json: user_skills
+  end
+
   def create
     user_skill = UserSkill.new(create_params)
 
@@ -19,6 +27,7 @@ class UserSkillsController < ApplicationController
 
     if user_skill.valid?
       user_skill.save!
+      analytics.track_added_user_skill(user_skill)
       render json: user_skill, include: [:user, :skill]
     else
       render_validation_errors user_skill.errors
@@ -32,6 +41,8 @@ class UserSkillsController < ApplicationController
 
     user_skill.destroy!
 
+    analytics.track_removed_user_skill(user_skill)
+
     render json: :nothing, status: :no_content
   end
 
@@ -41,5 +52,9 @@ class UserSkillsController < ApplicationController
       params_for_user(
         parse_params(params, only: [:skill])
       )
+    end
+
+    def filter_user_id
+      params[:filter][:user_id]
     end
 end

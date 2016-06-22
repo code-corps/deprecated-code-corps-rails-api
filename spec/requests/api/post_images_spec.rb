@@ -35,6 +35,8 @@ describe "Post Images API" do
 
         context "with valid data" do
           before do
+            expect_any_instance_of(Analytics).to receive(:track_created_post_image)
+
             params = { data: { type: "post_images",
               attributes: {
                 filename: "jake.gif",

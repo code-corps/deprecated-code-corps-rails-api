@@ -33,6 +33,88 @@ describe "Users API" do
     end
   end
 
+  context "GET /users/email_available" do
+    context "when unauthenticated" do
+      context "when email is taken and valid" do
+        let(:email) { "taken@example.com" }
+        let!(:user) { create(:user, email: email) }
+
+        it "returns the availability, case-insensitive" do
+          get "#{host}/users/email_available", email: email.upcase
+
+          expect(last_response.status).to eq 200
+          expect(json.available).to eq false
+          expect(json.valid).to eq true
+        end
+      end
+
+      context "when email is available and invalid" do
+        let(:email) { "available@" }
+
+        it "returns the availability, case-insensitive" do
+          get "#{host}/users/email_available", email: email.upcase
+
+          expect(last_response.status).to eq 200
+          expect(json.available).to eq true
+          expect(json.valid).to eq false
+        end
+      end
+
+      context "when email is available and valid" do
+        let(:email) { "available@example.com" }
+
+        it "returns the availability, case-insensitive" do
+          get "#{host}/users/email_available", email: email.upcase
+
+          expect(last_response.status).to eq 200
+          expect(json.available).to eq true
+          expect(json.valid).to eq true
+        end
+      end
+    end
+  end
+
+  context "GET /users/username_available" do
+    context "when unauthenticated" do
+      context "when username is taken and valid" do
+        let(:username) { "taken" }
+        let!(:user) { create(:user, username: username) }
+
+        it "returns the availability, case-insensitive" do
+          get "#{host}/users/username_available", username: username.upcase
+
+          expect(last_response.status).to eq 200
+          expect(json.available).to eq false
+          expect(json.valid).to eq true
+        end
+      end
+
+      context "when username is available and invalid" do
+        let(:username) { "available!" }
+
+        it "returns the availability, case-insensitive" do
+          get "#{host}/users/username_available", username: username.upcase
+
+          expect(last_response.status).to eq 200
+          expect(json.available).to eq true
+          expect(json.valid).to eq false
+        end
+      end
+
+      context "when username is available and valid" do
+        let(:username) { "available" }
+
+        it "returns the availability, case-insensitive" do
+          get "#{host}/users/username_available", username: username.upcase
+
+          expect(last_response.status).to eq 200
+          expect(json.available).to eq true
+          expect(json.valid).to eq true
+        end
+      end
+    end
+  end
+
   context "GET /users/:id" do
     before do
       @user = create(:user, username: "joshsmith")
@@ -82,6 +164,9 @@ describe "Users API" do
             facebook_access_token: @facebook_access_token
           }
           json_api_params = json_api_params_for("users", params)
+
+          expect_any_instance_of(Analytics).to receive(:track_signed_up_with_facebook)
+
           post "#{host}/users", json_api_params
         end
 
@@ -112,6 +197,8 @@ describe "Users API" do
       it "creates a valid user" do
         params = { email: "josh@example.com", username: "joshsmith", password: "password" }
         json_api_params = json_api_params_for("users", params)
+
+        expect_any_instance_of(Analytics).to receive(:track_signed_up_with_email)
 
         post "#{host}/users", json_api_params
 
@@ -264,7 +351,7 @@ describe "Users API" do
 
   context "POST /users/forgot_password" do
     before do
-      @user = create(:user, id: 10, email: "existing-user@mail.com", password: "test_password")
+      @user = create(:user, email: "existing-user@mail.com", password: "test_password")
     end
 
     it "returns the user when the email is found" do
@@ -288,7 +375,7 @@ describe "Users API" do
 
   context "POST /users/reset_password" do
     before do
-      @user = create(:user, id: 10, email: "existing-user@mail.com", password: "test_password")
+      @user = create(:user, email: "existing-user@mail.com", password: "test_password")
     end
 
     it "resets the password when the authentication token is valid" do
@@ -327,7 +414,6 @@ describe "Users API" do
   context "PATCH /users/:id" do
     before do
       @edited_user = create(:user,
-                            id: 1,
                             website: "initial.com",
                             biography: "Initial",
                             twitter: "@user")
@@ -341,7 +427,7 @@ describe "Users API" do
 
     context "when unauthenticated" do
       it "returns a 401 with a proper error message" do
-        patch "#{host}/users/1", @edit_params
+        patch "#{host}/users/#{@edited_user.id}", @edit_params
 
         expect(last_response.status).to eq 401
         expect(json).to be_a_valid_json_api_error.with_id("NOT_AUTHORIZED")
@@ -363,7 +449,7 @@ describe "Users API" do
             }
           }
 
-          authenticated_patch "/users/1", params, @token
+          authenticated_patch "/users/#{@edited_user.id}", params, @token
 
           expect(last_response.status).to eq 200
 
@@ -381,12 +467,12 @@ describe "Users API" do
         it "allows updating of only specific parameters" do
           expect_any_instance_of(User).to receive(:assign_attributes).
             with(website: "edit.com", biography: "Edited", twitter: "@edit")
-          authenticated_patch "/users/1", @edit_params, @token
+          authenticated_patch "/users/#{@edited_user.id}", @edit_params, @token
         end
 
         it "renders validation errors if parameter values are invalid" do
           invalid_params = json_api_params_for("users", website: "multi word")
-          authenticated_patch "/users/1", invalid_params, @token
+          authenticated_patch "/users/#{@edited_user.id}", invalid_params, @token
           expect(last_response.status).to eq 422
           expect(json).to be_a_valid_json_api_validation_error
         end
@@ -402,7 +488,7 @@ describe "Users API" do
         end
 
         it "returns a 401 with a proper error message" do
-          authenticated_patch "/users/1", @edit_params, @token
+          authenticated_patch "/users/#{@edited_user.id}", @edit_params, @token
 
           expect(last_response.status).to eq 401
           expect(json).to be_a_valid_json_api_error.with_id("ACCESS_DENIED")
@@ -475,9 +561,23 @@ describe "Users API" do
         authenticated_patch "/users/me", @edit_params, @token
       end
 
+      it "transitions the user's state" do
+        params = json_api_params_for("users", state_transition: "edit_profile")
+        authenticated_patch "/users/me", params, @token
+        expect(last_response.status).to eq 200
+        expect(User.last.state).to eq "edited_profile"
+      end
+
       it "renders validation errors if parameter values are invalid" do
         invalid_params = json_api_params_for("users", website: "multi word")
         authenticated_patch "/users/me", invalid_params, @token
+        expect(last_response.status).to eq 422
+        expect(json).to be_a_valid_json_api_validation_error
+      end
+
+      it "renders validation errors if the transition is invalid" do
+        params = json_api_params_for("users", state_transition: "select_skills")
+        authenticated_patch "/users/me", params, @token
         expect(last_response.status).to eq 422
         expect(json).to be_a_valid_json_api_validation_error
       end

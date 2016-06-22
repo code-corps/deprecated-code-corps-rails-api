@@ -1,3 +1,14 @@
+# == Schema Information
+#
+# Table name: user_categories
+#
+#  id          :integer          not null, primary key
+#  user_id     :integer
+#  category_id :integer
+#  created_at  :datetime         not null
+#  updated_at  :datetime         not null
+#
+
 class UserCategoriesController < ApplicationController
   before_action :doorkeeper_authorize!, only: [:create, :destroy]
 
@@ -16,6 +27,7 @@ class UserCategoriesController < ApplicationController
 
     if user_category.valid?
       user_category.save!
+      analytics.track_added_user_category(user_category)
       render json: user_category, include: [:user, :category]
     else
       render_validation_errors user_category.errors
@@ -28,6 +40,8 @@ class UserCategoriesController < ApplicationController
     authorize user_category
 
     user_category.destroy!
+
+    analytics.track_removed_user_category(user_category)
 
     render json: :nothing, status: :no_content
   end

@@ -24,6 +24,7 @@ class PostImagesController < ApplicationController
     authorize post_image
 
     if post_image.save
+      analytics.track_created_post_image(post_image)
       NotifyPusherOfPostImageWorker.perform_async(post_image.id)
       render json: post_image
     else
