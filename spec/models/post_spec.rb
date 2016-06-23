@@ -141,6 +141,69 @@ describe Post, type: :model do
     end
   end
 
+  describe "counter caches" do
+    context "on #project" do
+      let(:post) { create(:post) }
+      let(:project) { post.project }
+
+      context "with an 'open' status" do
+        before do
+          post.open!
+          project.reload
+        end
+
+        context "when creating" do
+          it "increments the open posts counter" do
+            expect(project.open_posts_count).to eq(1)
+          end
+        end
+
+        context "when destroying" do
+          it "decrements the open posts counter" do
+            expect { post.destroy! && project.reload }.
+              to change(project, :open_posts_count).from(1).to(0)
+          end
+        end
+
+        context "when changing" do
+          it "decrements the open posts counter" do
+            post.status = "closed"
+            expect { post.save! && project.reload }.
+              to change(project, :open_posts_count).from(1).to(0)
+          end
+        end
+      end
+
+      context "with a 'closed' status" do
+        before do
+          post.closed!
+          project.reload
+        end
+
+        describe "when creating" do
+          it "increments the closed posts counter" do
+            expect(project.closed_posts_count).to eq(1)
+          end
+        end
+
+        describe "when destroying" do
+          it "decrements the closed posts counter" do
+            expect { post.destroy! && project.reload }.
+              to change(project, :closed_posts_count).from(1).to(0)
+          end
+        end
+
+        describe "when changing" do
+          it "decrements the closed posts counter" do
+            post.status = "open"
+            expect { post.save! && project.reload }.
+              to change(project, :closed_posts_count).from(1).to(0)
+          end
+        end
+      end
+    end
+  end
+
   describe "#save" do
     it "renders markdown to body" do
       post = build(:post, markdown: "# Hello World\n\nHello, world.")

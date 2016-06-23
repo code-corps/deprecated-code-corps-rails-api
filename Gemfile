@@ -16,6 +16,7 @@ gem "aasm"
 gem "analytics-ruby", require: "segment"
 gem "aws-sdk"
 gem "clearance"
+gem "counter_culture"
 gem "doorkeeper"
 gem "faraday"
 gem "github-markdown"
@@ -65,6 +66,7 @@ group :test do
   gem "pusher-fake"
   gem "rspec-sidekiq"
   gem "shoulda-matchers", "3.0.1" # locked due to https://github.com/thoughtbot/shoulda-matchers/issues/880
+  gem "test_after_commit"
   gem "vcr"
   gem "webmock"
 end
