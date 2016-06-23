@@ -85,11 +85,6 @@ describe UserSerializer, type: :serializer do
         expect(subject["created_at"]).to_not be_nil
       end
 
-      it "has an 'email'" do
-        expect(subject["email"]).to eq resource.email
-        expect(subject["email"]).to_not be_nil
-      end
-
       it "has a 'username'" do
         expect(subject["username"]).to eq resource.username
         expect(subject["username"]).to_not be_nil
@@ -115,16 +110,6 @@ describe UserSerializer, type: :serializer do
         expect(subject["biography"]).to_not be_nil
       end
 
-      it "has a 'facebook_id'" do
-        expect(subject["facebook_id"]).to eq resource.facebook_id
-        expect(subject["facebook_id"]).to_not be_nil
-      end
-
-      it "has a 'facebook_access_token'" do
-        expect(subject["facebook_access_token"]).to eq resource.facebook_access_token
-        expect(subject["facebook_access_token"]).to_not be_nil
-      end
-
       it "has a 'photo_thumb_url'" do
         expect(subject["photo_thumb_url"]).to eq resource.photo.url(:thumb)
         expect(subject["photo_thumb_url"]).to_not be_nil
@@ -138,6 +123,38 @@ describe UserSerializer, type: :serializer do
       it "has a 'state'" do
         expect(subject["state"]).to eq resource.state
         expect(subject["state"]).to_not be_nil
+      end
+
+      context "when not the current user" do
+        it "does not expose 'email'" do
+          expect(subject["email"]).to be_nil
+        end
+
+        it "does not expose 'facebook_id'" do
+          expect(subject["facebook_id"]).to be_nil
+        end
+
+        it "does not expose 'facebook_access_token'" do
+          expect(subject["facebook_access_token"]).to be_nil
+        end
+      end
+
+      context "when is the current user" do
+        before do
+          serializer.scope = resource
+        end
+
+        it "has an 'email'" do
+          expect(subject["email"]).to eq resource.email
+        end
+
+        it "has a 'facebook_id'" do
+          expect(subject["facebook_id"]).to eq resource.facebook_id
+        end
+
+        it "has a 'facebook_access_token'" do
+          expect(subject["facebook_access_token"]).to eq resource.facebook_access_token
+        end
       end
     end
 

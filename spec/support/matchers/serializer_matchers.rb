@@ -1,16 +1,19 @@
 RSpec::Matchers.define :serialize_object do |object|
   match do |json|
-    serializer =  @serializer_klass.new(object)
-    serialization = ActiveModel::Serializer::Adapter.create(serializer, include: includes)
+    serialization = ActiveModel::Serializer::Adapter.create(@serializer, include: includes)
     JSON.parse(serialization.to_json) == json
   end
 
   chain :with do |serializer_klass|
-    @serializer_klass = serializer_klass
+    @serializer = serializer_klass.new(object)
   end
 
   chain :with_includes do |includes|
     @includes = Array.wrap(includes)
+  end
+
+  chain :with_scope do |scope|
+    @serializer.scope = scope
   end
 
   def includes
