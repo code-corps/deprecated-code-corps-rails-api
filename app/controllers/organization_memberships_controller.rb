@@ -67,15 +67,18 @@ class OrganizationMembershipsController < ApplicationController
 
     def filter_params
       filter_params = {}
-      filter_params[:organization] = organization
       filter_params[:role] = params[:role] if params[:role]
+      filter_params[:id] = id_params if params.fetch(:filter, {})[:id]
       filter_params
     end
 
+    def id_params
+      params[:filter][:id].split(",")
+    end
+
     def organization_memberships
-      OrganizationMembership.
+      organization.organization_memberships.
         includes(:member).
-        includes(:organization).
         where(filter_params).
         page(page_number).
         per(page_size)
