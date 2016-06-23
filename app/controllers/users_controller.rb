@@ -71,7 +71,7 @@ class UsersController < ApplicationController
     user = User.find_by(email: forgot_password_params[:email])
 
     if user && user.forgot_password!
-      render json: user
+      render json: user, include_email: true
     else
       render_no_such_email_error
     end

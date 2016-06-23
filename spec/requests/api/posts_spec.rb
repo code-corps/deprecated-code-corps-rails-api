@@ -14,7 +14,8 @@ describe "Posts API" do
       before do
         @project = create(:project, organization: create(:organization))
         create_list(:post, 3, :published, project: @project, post_type: "issue")
-        create_list(:post, 7, :published, project: @project, post_type: "task")
+        create_list(:post, 3, :published, project: @project, post_type: "task", status: "open")
+        create_list(:post, 4, :published, project: @project, post_type: "task", status: "closed")
         create_list(:post, 3, :edited, project: @project, post_type: "idea")
       end
 
@@ -50,21 +51,21 @@ describe "Posts API" do
 
       describe "specifying page parameters" do
         it "accepts different page numbers" do
-          get "#{host}/projects/#{@project.id}/posts/", { page: { number: 1, size: 5 }}
+          get "#{host}/projects/#{@project.id}/posts/", page: { number: 1, size: 5 }
           expect(json.data.length).to eq 5
-          get "#{host}/projects/#{@project.id}/posts/", { page: { number: 3, size: 3 }}
+          get "#{host}/projects/#{@project.id}/posts/", page: { number: 3, size: 3 }
           expect(json.data.length).to eq 3
         end
 
         it "accepts different page sizes" do
-          get "#{host}/projects/#{@project.id}/posts/", { page: { number: 1, size: 3 }}
+          get "#{host}/projects/#{@project.id}/posts/", page: { number: 1, size: 3 }
           expect(json.data.length).to eq 3
-          get "#{host}/projects/#{@project.id}/posts/", { page: { number: 1, size: 4 }}
+          get "#{host}/projects/#{@project.id}/posts/", page: { number: 1, size: 4 }
           expect(json.data.length).to eq 4
         end
 
         it "renders links in the response" do
-          get "#{host}/projects/#{@project.id}/posts/", { page: { number: 2, size: 5 } }
+          get "#{host}/projects/#{@project.id}/posts/", page: { number: 2, size: 5 }
           expect(json.links).not_to be_nil
           expect(json.links.self).not_to be_nil
           expect(json.links.first).not_to be_nil
@@ -74,7 +75,7 @@ describe "Posts API" do
         end
 
         it "renders a meta in the response" do
-          get "#{host}/projects/#{@project.id}/posts/", { page: { number: 2, size: 5 } }
+          get "#{host}/projects/#{@project.id}/posts/", page: { number: 2, size: 5 }
           expect(json.meta).not_to be_nil
           expect(json.meta.total_records).to eq 13
           expect(json.meta.total_pages).to eq 3
@@ -86,10 +87,25 @@ describe "Posts API" do
       context "when 'post_type' parameter is specified" do
         it "only returns posts of those types, with proper meta" do
           get "#{host}/projects/#{@project.id}/posts", post_type: "issue,task"
-          collection = Post.where(project: @project, post_type: ["issue", "task"])
+          collection = Post.where(project: @project, post_type: %w(issue task))
           expect(json).to serialize_collection(collection).
             with(PostSerializer).
             with_meta(total_records: 10, total_pages: 1, page_size: 10, current_page: 1)
+        end
+      end
+
+      context "when 'status' parameter is specified" do
+        it "only returns posts of that status, with proper meta" do
+          get "#{host}/projects/#{@project.id}/posts", status: "open"
+          collection = Post.where(project: @project, status: :open)
+          expect(json).to serialize_collection(collection).
+            with(PostSerializer).
+            with_meta(total_records: 9, total_pages: 1, page_size: 10, current_page: 1)
+          get "#{host}/projects/#{@project.id}/posts", status: "closed"
+          collection = Post.where(project: @project, status: :closed)
+          expect(json).to serialize_collection(collection).
+            with(PostSerializer).
+            with_meta(total_records: 4, total_pages: 1, page_size: 10, current_page: 1)
         end
       end
 
@@ -137,10 +153,10 @@ describe "Posts API" do
         expect(last_response.status).to eq 200
       end
 
-      it "returns the post, serialized with PostSerializer, with users, comments and mentions included" do
+      it "returns the post, properly serialized, with users, comments and mentions included" do
         expect(json).to serialize_object(Post.last).
           with(PostSerializer).
-          with_includes(%w(users comments post_user_mentions comment_user_mentions comments_count"))
+          with_includes %w(users comments post_user_mentions comment_user_mentions comments_count)
       end
     end
   end
