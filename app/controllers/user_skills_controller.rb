@@ -10,7 +10,7 @@
 #
 
 class UserSkillsController < ApplicationController
-  before_action :doorkeeper_authorize!
+  before_action :doorkeeper_authorize!, only: [:create, :destroy]
 
   def index
     user_skills = UserSkill.where(user_id: current_user.id)
@@ -18,6 +18,14 @@ class UserSkillsController < ApplicationController
     authorize user_skills
 
     render json: user_skills
+  end
+
+  def show
+    user_skill = UserSkill.find(params[:id])
+
+    authorize user_skill
+
+    render json: user_skill
   end
 
   def create

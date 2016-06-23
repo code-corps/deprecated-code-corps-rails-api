@@ -1,6 +1,22 @@
 require "rails_helper"
 
 describe "UserSkills API" do
+  context "GET /user_skills/:id" do
+    before do
+      @user_skill = create(:user_skill)
+      get "#{host}/user_skills/#{@user_skill.id}"
+    end
+
+    it "responds with a 200" do
+      expect(last_response.status).to eq 200
+    end
+
+    it "responds with a properly serialized user" do
+      expect(json).to serialize_object(@user_skill).
+        with(UserSkillSerializer)
+    end
+  end
+
   describe "POST /user_skills" do
     context "when unauthenticated" do
       it "responds with a 401" do
