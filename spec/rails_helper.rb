@@ -41,7 +41,7 @@ ActiveRecord::Migration.maintain_test_schema!
 
 VCR.configure do |config|
   # Allow results to reported to codeclimate, bypassing VCR
-  config.ignore_hosts "codeclimate.com"
+  config.ignore_hosts "codeclimate.com", "localhost"
 end
 
 RSpec.configure do |config|
