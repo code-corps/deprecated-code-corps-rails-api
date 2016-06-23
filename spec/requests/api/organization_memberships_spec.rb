@@ -88,6 +88,28 @@ describe "OrganizationMemberships API" do
           with_meta(total_records: 12, total_pages: 2, page_size: 10, current_page: 2)
       end
     end
+
+    describe "coalesce find requests" do
+      let(:organization) { create(:organization) }
+
+      before do
+        create(:organization_membership, organization: organization, id: 1)
+        create(:organization_membership, organization: organization, id: 2)
+        create(:organization_membership, organization: organization, id: 3)
+      end
+
+      it "works" do
+        get "#{host}/organizations/#{organization.id}/memberships", filter: { id: "1,2" }
+        expect(json).
+          to serialize_collection(OrganizationMembership.find([1, 2])).
+          with(OrganizationMembershipSerializer)
+
+        get "#{host}/organizations/#{organization.id}/memberships", filter: { id: "2,3" }
+        expect(json).
+          to serialize_collection(OrganizationMembership.find([2, 3])).
+          with(OrganizationMembershipSerializer)
+      end
+    end
   end
 
   context "POST /organization_memberships" do
