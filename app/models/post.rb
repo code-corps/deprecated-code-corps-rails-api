@@ -35,6 +35,13 @@ class Post < ActiveRecord::Base
 
   acts_as_sequenced scope: :project_id, column: :number
 
+  counter_culture :project,
+                  column_name: proc { |model| "#{model.status}_posts_count" },
+                  column_names: {
+                    ["posts.status = ?", "open"] => "open_posts_count",
+                    ["posts.status = ?", "closed"] => "closed_posts_count"
+                  }
+
   validates :body, presence: true
   validates :markdown, presence: true
   validates :post_type, presence: true

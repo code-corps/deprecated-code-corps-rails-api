@@ -59,6 +59,9 @@ GEM
       thread_safe (~> 0.3, >= 0.3.4)
       tzinfo (~> 1.1)
     addressable (2.4.0)
+    after_commit_action (1.0.1)
+      activerecord (>= 3.0.0)
+      activesupport (>= 3.0.0)
     analytics-ruby (2.0.13)
     annotate (2.7.0)
       activerecord (>= 3.2, < 6.0)
@@ -98,6 +101,10 @@ GEM
     concurrent-ruby (1.0.0)
     connection_pool (2.2.0)
     cookiejar (0.3.0)
+    counter_culture (0.2.1)
+      activerecord (>= 3.0.0)
+      activesupport (>= 3.0.0)
+      after_commit_action (~> 1.0.0)
     crack (0.4.3)
       safe_yaml (~> 1.0.0)
     daemons (1.2.3)
@@ -319,6 +326,8 @@ GEM
       sprockets (>= 3.0.0)
     strip_attributes (1.8.0)
       activemodel (>= 3.0, < 6.0)
+    test_after_commit (1.1.0)
+      activerecord (>= 3.2)
     thin (1.6.4)
       daemons (~> 1.0, >= 1.0.9)
       eventmachine (~> 1.0, >= 1.0.4)
@@ -350,6 +359,7 @@ DEPENDENCIES
   capybara
   clearance
   codeclimate-test-reporter
+  counter_culture
   database_cleaner
   doorkeeper
   dotenv-rails
@@ -391,6 +401,7 @@ DEPENDENCIES
   sinatra
   spring
   strip_attributes
+  test_after_commit
   vcr
   webmock
 
