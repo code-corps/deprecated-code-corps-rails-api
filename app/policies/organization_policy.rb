@@ -6,6 +6,10 @@ class OrganizationPolicy
     @organization = organization
   end
 
+  def index?
+    true
+  end
+
   def show?
     true
   end

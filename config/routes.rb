@@ -17,7 +17,7 @@ Rails.application.routes.draw do
 
     resources :github_repositories, only: [:create]
 
-    resources :organizations, only: [:show, :create, :update] do
+    resources :organizations, only: [:index, :show, :create, :update] do
       get "memberships", to: "organization_memberships#index"
     end
     resources :organization_memberships, only: [:show, :create, :update, :destroy]

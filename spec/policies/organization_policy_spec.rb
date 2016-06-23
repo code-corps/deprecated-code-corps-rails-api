@@ -41,6 +41,12 @@ describe OrganizationPolicy do
     @site_admin = create(:user, admin: true)
   end
 
+  permissions :index? do
+    it "can be viewed by anyone" do
+      expect(subject).to permit(nil, Organization)
+    end
+  end
+
   permissions :show? do
     context "as a logged out user" do
       it "can view all organizations" do
