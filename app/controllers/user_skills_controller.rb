@@ -13,9 +13,15 @@ class UserSkillsController < ApplicationController
   before_action :doorkeeper_authorize!, only: [:create, :destroy]
 
   def index
-    user_skills = UserSkill.where(user_id: current_user.id)
+    authorize UserSkill
 
-    authorize user_skills
+    if id_params.present?
+      user_skills = UserSkill.includes(:skill, :user).where(id: id_params)
+    elsif current_user.present?
+      user_skills = UserSkill.includes(:skill, :user).where(user_id: current_user.id)
+    else
+      user_skills = []
+    end
 
     render json: user_skills
   end
@@ -60,6 +66,10 @@ class UserSkillsController < ApplicationController
       params_for_user(
         parse_params(params, only: [:skill])
       )
+    end
+
+    def id_params
+      params.try(:fetch, :filter, nil).try(:fetch, :id, nil).try(:split, ",")
     end
 
     def filter_user_id
