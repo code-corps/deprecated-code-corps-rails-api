@@ -9,7 +9,7 @@ describe UserSerializerWithoutIncludes, type: :serializer do
                     name: "Josh Smith",
                     username: "joshsmith",
                     website: "example.com",
-                    twitter: "@user",
+                    twitter: "user",
                     biography: "Lorem ipsum",
                     facebook_id: "some_id",
                     facebook_access_token: "some_token")
