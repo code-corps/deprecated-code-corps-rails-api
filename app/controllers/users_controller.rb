@@ -34,6 +34,16 @@ class UsersController < ApplicationController
     load_and_authorize_resource param_method: :reset_password_params, only: [:reset_password]
   end
 
+  def index
+    authorize User
+
+    users = User.includes(
+      :categories, :organizations, :roles, skills: :roles
+    ).find(id_params)
+
+    render json: users
+  end
+
   def create
     if creating_with_facebook?
       create_user_from_facebook_and_render_json
@@ -140,6 +150,10 @@ class UsersController < ApplicationController
     def create_params
       parse_params(params, only: [:email, :username, :password, :facebook_id,
                                   :facebook_access_token, :base64_photo_data])
+    end
+
+    def id_params
+      params[:filter][:id].split(",")
     end
 
     def update_params

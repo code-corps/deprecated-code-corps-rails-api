@@ -100,11 +100,13 @@ describe "OrganizationMemberships API" do
 
       it "works" do
         get "#{host}/organizations/#{organization.id}/memberships", filter: { id: "1,2" }
+        expect(last_response.status).to eq 200
         expect(json).
           to serialize_collection(OrganizationMembership.find([1, 2])).
           with(OrganizationMembershipSerializer)
 
         get "#{host}/organizations/#{organization.id}/memberships", filter: { id: "2,3" }
+        expect(last_response.status).to eq 200
         expect(json).
           to serialize_collection(OrganizationMembership.find([2, 3])).
           with(OrganizationMembershipSerializer)
