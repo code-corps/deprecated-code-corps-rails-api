@@ -17,4 +17,6 @@ class CommentSerializer < ActiveModel::Serializer
 
   belongs_to :post
   belongs_to :user
+
+  has_many :comment_user_mentions
 end

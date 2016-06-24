@@ -6,6 +6,10 @@ class PostPolicy
     @post = post
   end
 
+  def project_index?
+    true
+  end
+
   def index?
     true
   end

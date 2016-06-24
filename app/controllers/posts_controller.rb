@@ -23,6 +23,13 @@ class PostsController < ApplicationController
 
   def index
     authorize Post
+    includes = [:comments, :post_user_mentions, :comment_user_mentions, :user, :project]
+    posts = Post.includes(includes).where(id: id_params)
+    render json: posts
+  end
+
+  def project_index
+    authorize Post
     posts = find_posts!
     render json: posts, meta: meta_for(post_count), each_serializer: PostSerializer
   end
@@ -31,7 +38,7 @@ class PostsController < ApplicationController
     post = find_post!
     authorize post
 
-    render json: post, include: [:comments, :post_user_mentions, :comment_user_mentions]
+    render json: post, include: [:comments, :comment_user_mentions, :post_user_mentions]
   end
 
   def create
@@ -84,6 +91,7 @@ class PostsController < ApplicationController
       filter_params = {}
       filter_params[:post_type] = params[:post_type].split(",") if params[:post_type]
       filter_params[:status] = params[:status] if params[:status]
+      filter_params[:id] = id_params if coalesce?
       filter_params
     end
 
@@ -101,26 +109,35 @@ class PostsController < ApplicationController
 
     def find_post!
       project = find_project!
-      Post.includes(comments: :user).
+      project.posts.
+        includes(comments: [:comment_user_mentions, :user]).
         includes(:post_user_mentions, :comment_user_mentions).
-        find_by!(project: project, number: post_id)
+        find_by!(number: post_id)
     end
 
     def find_posts!
       project = find_project!
 
-      Post.
+      project.posts.
         includes(:user).
-        includes(:project).
         includes(comments: :user).
         includes(:post_user_mentions).
         includes(:comment_user_mentions).
-        where(filter_params.merge(project: project)).
+        where(filter_params).
         page(page_number).
         per(page_size)
     end
 
+    def coalesce?
+      params.fetch(:filter, {})[:id].present?
+    end
+
+    def id_params
+      params.require(:filter).require(:id).split(",")
+    end
+
     def post_count
-      Post.where(filter_params.merge(project_id: project_id)).count
+      project = find_project!
+      project.posts.where(filter_params).count
     end
 end
