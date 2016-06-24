@@ -11,22 +11,23 @@ Rails.application.routes.draw do
   constraints subdomain: "api" do
     resources :categories, only: [:index, :show, :create]
 
-    resources :comments, only: [:show, :create, :update]
+    resources :comments, only: [:index, :show, :create, :update]
     resources :comment_images, only: [:create]
     resources :comment_user_mentions, only: [:index]
 
     resources :github_repositories, only: [:create]
 
     resources :organizations, only: [:index, :show, :create, :update] do
-      get "memberships", to: "organization_memberships#index"
+      get "memberships", to: "organization_memberships#organization_index"
     end
-    resources :organization_memberships, only: [:show, :create, :update, :destroy]
+    resources :organization_memberships, only: [:index, :show, :create, :update, :destroy]
 
     get "ping", to: "ping#index"
 
-    resources :posts, only: [:create, :update] do
-      resources :comments, only: [:index]
+    resources :posts, only: [:index, :create, :update] do
+      get "comments", to: "comments#post_index"
     end
+
     resources :post_images, only: [:create]
     resources :post_likes, only: [:create, :destroy]
     resources :post_user_mentions, only: [:index]
@@ -35,8 +36,10 @@ Rails.application.routes.draw do
     resources :preview_user_mentions, only: [:index]
 
     resources :projects, only: [:index, :create, :update] do
-      resources :posts, only: [:index, :show]
+      get "posts", to: "posts#project_index"
+      resources :posts, only: [:show]
     end
+
     resources :project_categories, only: [:create, :destroy]
     resources :project_roles, only: [:create, :destroy]
     resources :project_skills, only: [:create, :destroy]
@@ -59,7 +62,7 @@ Rails.application.routes.draw do
       post :forgot_password
     end
 
-    resources :user_categories, only: [:show, :create, :destroy]
+    resources :user_categories, only: [:index, :show, :create, :destroy]
     resources :user_roles, only: [:show, :create, :destroy]
     resources :user_skills, only: [:index, :show, :create, :destroy]
 
