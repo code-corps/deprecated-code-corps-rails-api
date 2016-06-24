@@ -44,7 +44,7 @@ Rails.application.routes.draw do
     resources :roles, only: [:index, :create]
     resources :role_skills, only: [:create]
 
-    resources :skills, only: [:index, :create]
+    resources :skills, only: [:index, :show, :create]
     get "skills/search", to: "skills#search"
 
     get "user", to: "users#show_authenticated_user"
@@ -61,7 +61,7 @@ Rails.application.routes.draw do
 
     resources :user_categories, only: [:show, :create, :destroy]
     resources :user_roles, only: [:show, :create, :destroy]
-    resources :user_skills, only: [:index, :create, :destroy]
+    resources :user_skills, only: [:index, :show, :create, :destroy]
 
     resources :slugged_routes, path: "", only: [:show] do
       get "projects", to: "projects#index"

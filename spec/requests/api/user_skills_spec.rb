@@ -1,6 +1,78 @@
 require "rails_helper"
 
 describe "UserSkills API" do
+  context "GET /user_skills" do
+    context "with filter ids" do
+      before do
+        create(:user_skill, id: 1)
+        create(:user_skill, id: 2)
+        create(:user_skill, id: 3)
+        get "#{host}/user_skills", filter: { id: "1,2" }
+      end
+
+      it "responds with a 200" do
+        expect(last_response.status).to eq 200
+      end
+
+      it "responds with a properly serialized collection" do
+        expect(json).to serialize_collection(UserSkill.find([1, 2])).
+          with(UserSkillSerializer)
+      end
+    end
+
+    context "without filter ids" do
+      context "when unauthenticated" do
+        before do
+          get "#{host}/user_skills"
+        end
+
+        it "responds with a 200" do
+          expect(last_response.status).to eq 200
+        end
+
+        it "responds with a properly serialized collection" do
+          expect(json).to serialize_collection([]).
+            with(UserSkillSerializer)
+        end
+      end
+
+      context "when authenticated" do
+        let(:token) { authenticate(email: "josh@coderly.com", password: "password") }
+
+        before do
+          @user = create(:user, email: "josh@coderly.com", password: "password")
+          @user_skills = create_list(:user_skill, 3, user: @user)
+          authenticated_get "/user_skills", nil, token
+        end
+
+        it "responds with a 200" do
+          expect(last_response.status).to eq 200
+        end
+
+        it "responds with a properly serialized collection" do
+          expect(json).to serialize_collection(@user_skills).
+            with(UserSkillSerializer)
+        end
+      end
+    end
+  end
+
+  context "GET /user_skills/:id" do
+    before do
+      @user_skill = create(:user_skill)
+      get "#{host}/user_skills/#{@user_skill.id}"
+    end
+
+    it "responds with a 200" do
+      expect(last_response.status).to eq 200
+    end
+
+    it "responds with a properly serialized user skill" do
+      expect(json).to serialize_object(@user_skill).
+        with(UserSkillSerializer)
+    end
+  end
+
   describe "POST /user_skills" do
     context "when unauthenticated" do
       it "responds with a 401" do

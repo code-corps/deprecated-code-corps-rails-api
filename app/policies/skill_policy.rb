@@ -10,6 +10,10 @@ class SkillPolicy
     true
   end
 
+  def show?
+    true
+  end
+
   def create?
     return unless user.present?
     user.admin?

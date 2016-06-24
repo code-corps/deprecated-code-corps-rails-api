@@ -187,6 +187,11 @@ describe UserSerializer, type: :serializer do
         expect(subject["user_categories"]).not_to be_nil
         expect(subject["user_categories"]["data"].count).to eq 2
       end
+
+      it "has a 'user_skills' relationship" do
+        expect(subject["user_skills"]).not_to be_nil
+        expect(subject["user_skills"]["data"].count).to eq 2
+      end
     end
 
     context "included" do
@@ -287,6 +292,21 @@ describe UserSerializer, type: :serializer do
         it "should contain the user's user_roles" do
           expect(subject).not_to be_nil
           expect(subject.select { |i| i["type"] == "user_roles" }.length).to eq 2
+        end
+      end
+
+      context "when including user_skills" do
+        let(:serialization) do
+          ActiveModel::Serializer::Adapter.create(serializer, include: ["user_skills"])
+        end
+
+        subject do
+          JSON.parse(serialization.to_json)["included"]
+        end
+
+        it "should contain the user's user_skills" do
+          expect(subject).not_to be_nil
+          expect(subject.select { |i| i["type"] == "user_skills" }.length).to eq 2
         end
       end
     end

@@ -23,6 +23,14 @@ class SkillsController < ApplicationController
     render json: skills
   end
 
+  def show
+    skill = Skill.find(params[:id])
+
+    authorize skill
+
+    render json: skill
+  end
+
   def create
     skill = Skill.new(permitted_params)
 

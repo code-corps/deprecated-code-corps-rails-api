@@ -45,6 +45,22 @@ describe "Skills API" do
     end
   end
 
+  context "GET /skills/:id" do
+    before do
+      @skill = create(:skill)
+      get "#{host}/skills/#{@skill.id}"
+    end
+
+    it "responds with a 200" do
+      expect(last_response.status).to eq 200
+    end
+
+    it "responds with a properly serialized user" do
+      expect(json).to serialize_object(@skill).
+        with(SkillSerializer)
+    end
+  end
+
   context "POST /skills" do
     context "when unauthenticated" do
       it "responds with a 401 not authorized" do
