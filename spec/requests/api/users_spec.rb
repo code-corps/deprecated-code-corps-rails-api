@@ -5,6 +5,22 @@ describe "Users API" do
     ActionMailer::Base.deliveries = []
   end
 
+  context "GET /users" do
+    before do
+      create(:user, id: 1)
+      create(:user, id: 2)
+    end
+
+    it "works" do
+      get "#{host}/users", filter: { id: "1,2" }
+
+      expect(last_response.status).to eq 200
+      expect(json).to serialize_collection(User.find([1, 2])).
+        with(UserSerializer).
+        with_includes([:categories, :skills])
+    end
+  end
+
   context "GET /user" do
     context "when unauthenticated" do
       it "returns a 401 NOT_AUTHORIZED" do

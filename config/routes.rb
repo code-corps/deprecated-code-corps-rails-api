@@ -51,7 +51,7 @@ Rails.application.routes.draw do
     get "users/email_available", to: "users#email_available"
     get "users/username_available", to: "users#username_available"
     patch "users/me", to: "users#update_authenticated_user"
-    resources :users, only: [:show, :create, :update]
+    resources :users, only: [:index, :show, :create, :update]
     resource :users, only: [:reset_password] do
       post :reset_password
     end
