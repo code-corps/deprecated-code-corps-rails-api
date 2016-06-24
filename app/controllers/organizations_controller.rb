@@ -18,6 +18,12 @@
 class OrganizationsController < ApplicationController
   before_action :doorkeeper_authorize!, only: [:create, :update]
 
+  def index
+    authorize Organization
+    organizations = Organization.includes([:projects, :members]).find(id_params)
+    render json: organizations
+  end
+
   def show
     organization = Organization.find(params[:id])
 
@@ -57,6 +63,10 @@ class OrganizationsController < ApplicationController
   end
 
   private
+
+    def id_params
+      params.require(:filter).require(:id).split(",")
+    end
 
     def create_params
       parse_params(params, only: [:name, :slug, :description, :base64_icon_data])

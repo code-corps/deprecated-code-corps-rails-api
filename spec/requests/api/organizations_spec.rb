@@ -1,11 +1,31 @@
-require 'rails_helper'
+require "rails_helper"
 
 describe "Organizations API" do
-
-  context 'GET /organizations/:id' do
+  context "GET /organizations" do
     before do
-      @organization = create(:organization, name: "Code Corps")
-      get "#{host}/organizations/#{@organization.id}"
+      create(:organization, id: 1)
+      create(:organization, id: 2)
+      create(:organization, id: 3)
+    end
+
+    it "requires the id filter" do
+      get "#{host}/organizations"
+      expect(last_response.status).to eq 400 # bad request
+    end
+
+    it "returns a collection of organizations based on specified ids" do
+      get "#{host}/organizations", filter: { id: "1,2" }
+      expect(last_response.status).to eq 200
+      expect(json).
+        to serialize_collection(Organization.find([1, 2])).
+        with(OrganizationSerializer)
+    end
+  end
+
+  context "GET /organizations/:id" do
+    let(:organization) { create(:organization, name: "Code Corps") }
+    before do
+      get "#{host}/organizations/#{organization.id}"
     end
 
     it "responds with a 200" do
@@ -13,11 +33,13 @@ describe "Organizations API" do
     end
 
     it "retrieves the specified organization by id using OrganizationSerializer" do
-      expect(json).to serialize_object(Organization.find(@organization.id)).with(OrganizationSerializer)
+      expect(json).
+        to serialize_object(organization).
+        with(OrganizationSerializer)
     end
   end
 
-  context 'POST /organizations' do
+  context "POST /organizations" do
     context "when unauthenticated" do
       it "responds with a 401 NOT_AUTHORIZED" do
         post "#{host}/organizations"
@@ -29,13 +51,11 @@ describe "Organizations API" do
 
     context "when authenticated" do
       context "as a regular user" do
-        before do
-          @user = create(:user, password: "password")
-          @token = authenticate(email: @user.email, password: "password")
-        end
+        let(:user) { create(:user, password: "password") }
+        let(:token) { authenticate(email: user.email, password: "password") }
 
         it "responds with a 401 ACCESS_DENIED" do
-          authenticated_post "/organizations", {}, @token
+          authenticated_post "/organizations", {}, token
 
           expect(last_response.status).to eq 401
           expect(json).to be_a_valid_json_api_error.with_id "ACCESS_DENIED"
@@ -51,8 +71,8 @@ describe "Organizations API" do
         context "with a user uploaded image" do
           it "creates an organization" do
             Sidekiq::Testing.inline! do
-              file = File.open("#{Rails.root}/spec/sample_data/default-avatar.png", 'r')
-              base64_image = Base64.encode64(open(file) { |io| io.read })
+              file = File.open("#{Rails.root}/spec/sample_data/default-avatar.png", "r")
+              base64_image = Base64.encode64(open(file, &:read))
 
               authenticated_post "/organizations", {
                 data: {
