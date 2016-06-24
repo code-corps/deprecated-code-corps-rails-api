@@ -94,6 +94,16 @@ describe ProjectSerializer, type: :serializer do
         expect(subject["long_description_markdown"]).to_not be_nil
         expect(subject["long_description_markdown"]).to eql resource.long_description_markdown
       end
+
+      it "has an 'closed_posts_count'" do
+        expect(subject["closed_posts_count"]).to_not be_nil
+        expect(subject["closed_posts_count"]).to eql resource.closed_posts_count
+      end
+
+      it "has an 'open_posts_count'" do
+        expect(subject["open_posts_count"]).to_not be_nil
+        expect(subject["open_posts_count"]).to eql resource.open_posts_count
+      end
     end
 
     context "relationships" do
