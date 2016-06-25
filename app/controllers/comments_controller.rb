@@ -1,19 +1,41 @@
+# == Schema Information
+#
+# Table name: comments
+#
+#  id         :integer          not null, primary key
+#  body       :text
+#  user_id    :integer          not null
+#  post_id    :integer          not null
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#  markdown   :text
+#  aasm_state :string
+#
+
 class CommentsController < ApplicationController
   before_action :doorkeeper_authorize!, only: [:create, :update]
 
-  def index
-    authorize Comments
+  # GET /posts/:number/comments
+  def post_index
+    comments = post.comments.includes(:user, :comment_user_mentions)
+    authorize comments
 
-    comments = Comment.where(post: params[:post_id])
-    render json: comments
+    render json: comments, include: [:comment_user_mentions]
+  end
+
+  # GET /comments
+  def index
+    comments = Comment.where(id: id_params).includes(:post, :user, :comment_user_mentions)
+    authorize comments
+
+    render json: comments, include: [:comment_user_mentions]
   end
 
   def show
     comment = Comment.find(params[:id])
-
     authorize comment
 
-    render json: comment
+    render json: comment, include: [:comment_user_mentions]
   end
 
   def create
@@ -22,7 +44,7 @@ class CommentsController < ApplicationController
 
     if comment.save
       GenerateCommentUserNotificationsWorker.perform_async(comment.id)
-      render json: comment
+      render json: comment.reload # due to generating mentions
     else
       render_validation_errors comment.errors
     end
@@ -35,31 +57,37 @@ class CommentsController < ApplicationController
 
     comment.assign_attributes(update_params)
 
-    if comment.update!
-      render json: comment
+    if comment.save
+      GenerateCommentUserNotificationsWorker.perform_async(comment.id)
+      render json: comment.reload # due to generating mentions
     else
       render_validation_errors comment.errors
     end
   end
 
   private
-    def create_params
-      record_attributes.permit(:markdown, :state).merge(relationships)
+
+    def post
+      Post.find(params[:post_id])
+    end
+
+    def id_params
+      params.require(:filter).require(:id).split(",")
+    end
+
+    def publish?
+      true unless parse_params(params).fetch(:preview, false)
     end
 
     def update_params
-      record_attributes.permit(:markdown, :state).merge(relationships)
+      parse_params(params, only: [:markdown, :post, :state])
     end
 
-    def post_id
-      record_relationships.fetch(:post, {}).fetch(:data, {})[:id]
+    def permitted_params
+      parse_params(params, only: [:markdown, :post])
     end
 
-    def user_id
-      current_user.id
-    end
-
-    def relationships
-      { post_id: post_id, user_id: user_id }
+    def create_params
+      params_for_user(permitted_params)
     end
 end

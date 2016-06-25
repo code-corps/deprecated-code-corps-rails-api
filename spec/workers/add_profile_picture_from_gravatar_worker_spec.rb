@@ -12,17 +12,18 @@ describe AddProfilePictureFromGravatarWorker do
 
       @user.reload
 
-      expect(@user.photo.to_s).to eq "/photos/original/missing.png"
+      expect(@user.photo.to_s).to include "user_default"
     end
   end
 
   context "when the user has a gravatar image", vcr: { cassette_name: "workers/add gravatar image worker/adds the gravatar" } do
     it "adds the gravatar" do
+      expect_any_instance_of(Analytics).to receive(:track_added_profile_picture_from_gravatar)
       AddProfilePictureFromGravatarWorker.new.perform(@user_gravatar.id)
 
       @user_gravatar.reload
 
-      expect(@user_gravatar.photo.to_s).to_not eq "/photos/original/missing.png"
+      expect(@user_gravatar.photo.to_s).to_not include "user_default"
     end
   end
 end

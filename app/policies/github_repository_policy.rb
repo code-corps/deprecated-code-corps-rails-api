@@ -8,22 +8,22 @@ class GithubRepositoryPolicy
 
   def create?
     return false unless @user.present?
-    return true if user_is_at_least_admin_on_project?
+    return true if current_user_is_at_least_admin_in_organization?
   end
 
-  def user_allowed_to_add_repos_to_project? user, project
-    user_is_at_least_admin_on_project?
-  end
+  private
 
-  def contributor_for_user
-    @contributor_for_user ||= Contributor.find_by(user: user, project: project)
-  end
+    def project
+      @project ||= github_repository.project
+    end
 
-  def project
-    @project ||= @github_repository.project
-  end
+    def organization_member_for_user
+      @organization_member_for_user ||= OrganizationMembership.find_by(
+        member_id: user.id, organization_id: project.organization_id)
+    end
 
-  def user_is_at_least_admin_on_project?
-    contributor_for_user.present? and (contributor_for_user.admin? or contributor_for_user.owner?)
-  end
+    def current_user_is_at_least_admin_in_organization?
+      return false unless organization_member_for_user
+      return true if organization_member_for_user.admin? or organization_member_for_user.owner?
+    end
 end

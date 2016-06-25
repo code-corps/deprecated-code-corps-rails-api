@@ -4,7 +4,7 @@ describe ProjectSerializerWithoutIncludes, :type => :serializer do
 
   context "individual resource representation" do
     let(:resource) {
-      project = create(:project, :with_contributors, contributors_count: 5)
+      project = create(:project)
       create_list(:github_repository, 10, project: project)
       project
     }
@@ -35,7 +35,6 @@ describe ProjectSerializerWithoutIncludes, :type => :serializer do
     end
 
     context "attributes" do
-
       subject do
         JSON.parse(serialization.to_json)["data"]["attributes"]
       end
@@ -48,8 +47,24 @@ describe ProjectSerializerWithoutIncludes, :type => :serializer do
         expect(subject["description"]).to eql resource.description
       end
 
-      it "has a 'contributors_count'" do
-        expect(subject["contributors_count"]).to eql resource.contributors_count
+      it "has a 'long_description_body'" do
+        expect(subject["long_description_body"]).to_not be_nil
+        expect(subject["long_description_body"]).to eql resource.long_description_body
+      end
+
+      it "has a 'long_description_markdown'" do
+        expect(subject["long_description_markdown"]).to_not be_nil
+        expect(subject["long_description_markdown"]).to eql resource.long_description_markdown
+      end
+
+      it "has an 'closed_posts_count'" do
+        expect(subject["closed_posts_count"]).to_not be_nil
+        expect(subject["closed_posts_count"]).to eql resource.closed_posts_count
+      end
+
+      it "has an 'open_posts_count'" do
+        expect(subject["open_posts_count"]).to_not be_nil
+        expect(subject["open_posts_count"]).to eql resource.open_posts_count
       end
     end
   end

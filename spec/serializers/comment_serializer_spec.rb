@@ -1,12 +1,26 @@
+# == Schema Information
+#
+# Table name: comments
+#
+#  id         :integer          not null, primary key
+#  body       :text
+#  user_id    :integer          not null
+#  post_id    :integer          not null
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#  markdown   :text
+#  aasm_state :string
+#
+
 require "rails_helper"
 
-describe CommentSerializer, :type => :serializer do
-
+describe CommentSerializer, type: :serializer do
   # We only use before all here because we know the context does not change
   before :all do
     @comment = create(:comment, body: "Comment body", post: create(:post))
-    @comment.publish
-    @comment.edit
+    create_list(:comment_user_mention, 2, comment: @comment)
+    @comment.edit! # for serializing edited_at
+    @comment.reload # for ensuring relationships load
   end
 
   context "individual resource representation" do
@@ -28,27 +42,32 @@ describe CommentSerializer, :type => :serializer do
         expect(subject["id"]).not_to be nil
       end
 
-      it "has a type set to 'projects'" do
+      it "has a type set to 'comments'" do
         expect(subject["type"]).to eq "comments"
       end
     end
 
     context "attributes" do
-
       subject do
         JSON.parse(serialization.to_json)["data"]["attributes"]
       end
 
       it "has a 'body'" do
+        expect(subject["body"]).not_to be_nil
         expect(subject["body"]).to eql resource.body
       end
 
       it "has 'markdown'" do
+        expect(subject["markdown"]).not_to be_nil
         expect(subject["markdown"]).to eql resource.markdown
       end
 
       it "has a 'state'" do
         expect(subject["state"]).to eql resource.state
+      end
+
+      it "has a 'created_at'" do
+        expect(subject["created_at"]).to be_the_same_time_as resource.created_at
       end
 
       it "has an 'edited_at'" do
@@ -78,6 +97,19 @@ describe CommentSerializer, :type => :serializer do
 
         it "should be empty" do
           expect(subject).to be_nil
+        end
+      end
+
+      context "when including 'comment_user_mentions'" do
+        let(:serialization) { ActiveModel::Serializer::Adapter.create(serializer, include: ["comment_user_mentions"]) }
+
+        subject do
+          JSON.parse(serialization.to_json)["included"]
+        end
+
+        it "should not be empty" do
+          expect(subject).not_to be_nil
+          expect(subject.select{ |i| i["type"] == "comment_user_mentions"}.length).to eq 2
         end
       end
     end

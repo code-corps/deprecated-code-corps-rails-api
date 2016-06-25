@@ -1,10 +1,36 @@
+# == Schema Information
+#
+# Table name: organizations
+#
+#  id                :integer          not null, primary key
+#  name              :string           not null
+#  created_at        :datetime         not null
+#  updated_at        :datetime         not null
+#  slug              :string           not null
+#  icon_file_name    :string
+#  icon_content_type :string
+#  icon_file_size    :integer
+#  icon_updated_at   :datetime
+#  base64_icon_data  :text
+#  description       :text
+#
+
 class Organization < ActiveRecord::Base
+  ASSET_HOST_FOR_DEFAULT_ICON = "https://d3pgew4wbk2vb1.cloudfront.net/icons".freeze
+
   has_many :organization_memberships
   has_many :members, through: :organization_memberships
-  has_many :teams
-  has_many :projects, as: :owner
+  has_many :projects
 
-  has_one :member, as: :model
+  has_one :slugged_route, as: :owner
+
+  has_attached_file :icon,
+                    styles: {
+                      large: "500x500#",
+                      thumb: "100x100#"
+                    },
+                    path: "orgnizations/:id/:style.:extension",
+                    default_url: ASSET_HOST_FOR_DEFAULT_ICON + "/organization_default_:style.png"
 
   before_validation :add_slug_if_blank
 
@@ -19,7 +45,12 @@ class Organization < ActiveRecord::Base
 
   validate :slug_is_not_duplicate
 
-  after_save :create_or_update_member
+  validates_attachment_content_type :icon,
+                                    content_type: %r{^image\/(png|gif|jpeg)}
+
+  validates_attachment_size :icon, less_than: 10.megabytes
+
+  after_save :create_or_update_slugged_route
 
   def admins
     admin_memberships.map(&:member)
@@ -29,22 +60,26 @@ class Organization < ActiveRecord::Base
     organization_memberships.admin
   end
 
+  def self.for_project(project)
+    self.find_by(project: project)
+  end
+
   private
 
     def slug_is_not_duplicate
-      if Member.where.not(model: self).where('lower(slug) = ?', slug.try(:downcase)).present?
+      if SluggedRoute.where.not(owner: self).where('lower(slug) = ?', slug.try(:downcase)).present?
         errors.add(:slug, "has already been taken by a user")
       end
     end
 
-    def create_or_update_member
+    def create_or_update_slugged_route
       if slug_was
         route_slug = slug_was
       else
         route_slug = slug
       end
 
-      Member.lock.find_or_create_by!(model: self, slug: route_slug).tap do |r|
+      SluggedRoute.lock.find_or_create_by!(owner: self, slug: route_slug).tap do |r|
         r.slug = slug
         r.save!
       end

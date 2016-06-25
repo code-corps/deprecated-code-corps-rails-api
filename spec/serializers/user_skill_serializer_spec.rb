@@ -1,11 +1,19 @@
+# == Schema Information
+#
+# Table name: user_skills
+#
+#  id         :integer          not null, primary key
+#  user_id    :integer
+#  skill_id   :integer
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#
+
 require "rails_helper"
 
-describe UserSkillSerializer, :type => :serializer do
-
+describe UserSkillSerializer, type: :serializer do
   context "individual resource representation" do
-    let(:resource) {
-      create(:user_skill)
-    }
+    let(:resource) { create(:user_skill) }
 
     let(:serializer) { UserSkillSerializer.new(resource) }
     let(:serialization) { ActiveModel::Serializer::Adapter.create(serializer) }
@@ -62,7 +70,9 @@ describe UserSkillSerializer, :type => :serializer do
       end
 
       context "when including 'user'" do
-        let(:serialization) { ActiveModel::Serializer::Adapter.create(serializer, include: ["user"]) }
+        let(:serialization) do
+          ActiveModel::Serializer::Adapter.create(serializer, include: ["user"])
+        end
 
         subject do
           JSON.parse(serialization.to_json)["included"]
@@ -70,12 +80,14 @@ describe UserSkillSerializer, :type => :serializer do
 
         it "should not be empty" do
           expect(subject).not_to be_nil
-          expect(subject.select{ |i| i["type"] == "users"}.length).to eq 1
+          expect(subject.select { |i| i["type"] == "users" }.length).to eq 1
         end
       end
 
       context "when including 'skill'" do
-        let(:serialization) { ActiveModel::Serializer::Adapter.create(serializer, include: ["skill"]) }
+        let(:serialization) do
+          ActiveModel::Serializer::Adapter.create(serializer, include: ["skill"])
+        end
 
         subject do
           JSON.parse(serialization.to_json)["included"]
@@ -83,7 +95,7 @@ describe UserSkillSerializer, :type => :serializer do
 
         it "should not be empty" do
           expect(subject).not_to be_nil
-          expect(subject.select{ |i| i["type"] == "skills"}.length).to eq 1
+          expect(subject.select { |i| i["type"] == "skills" }.length).to eq 1
         end
       end
     end

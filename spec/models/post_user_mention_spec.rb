@@ -1,4 +1,18 @@
-require 'rails_helper'
+# == Schema Information
+#
+# Table name: post_user_mentions
+#
+#  id          :integer          not null, primary key
+#  user_id     :integer          not null
+#  post_id     :integer          not null
+#  username    :string           not null
+#  start_index :integer          not null
+#  end_index   :integer          not null
+#  created_at  :datetime         not null
+#  updated_at  :datetime         not null
+#
+
+require "rails_helper"
 
 RSpec.describe PostUserMention, type: :model do
   describe "schema" do
@@ -35,7 +49,7 @@ RSpec.describe PostUserMention, type: :model do
   describe "indices" do
     it "wraps the indices inside of an array" do
       mention = create(:post_user_mention, start_index: 0, end_index: 140)
-      expect(mention.indices).to eq [0,140]
+      expect(mention.indices).to eq [0, 140]
     end
   end
 end

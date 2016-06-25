@@ -1,3 +1,14 @@
+# == Schema Information
+#
+# Table name: post_likes
+#
+#  id         :integer          not null, primary key
+#  post_id    :integer
+#  user_id    :integer
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#
+
 class PostLikesController < ApplicationController
   before_action :doorkeeper_authorize!
 
@@ -25,19 +36,10 @@ class PostLikesController < ApplicationController
   end
 
   private
+
     def create_params
-      relationships
-    end
-
-    def relationships
-      { user_id: user_id, post_id: post_id }
-    end
-
-    def user_id
-      current_user.id
-    end
-
-    def post_id
-      record_relationships.fetch(:post, {}).fetch(:data, {})[:id]
+      params_for_user(
+        parse_params(params, only: [:post])
+      )
     end
 end

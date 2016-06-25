@@ -1,18 +1,44 @@
-class PostsController < ApplicationController
+# == Schema Information
+#
+# Table name: posts
+#
+#  id               :integer          not null, primary key
+#  status           :string           default("open")
+#  post_type        :string           default("task")
+#  title            :string
+#  body             :text
+#  user_id          :integer          not null
+#  project_id       :integer          not null
+#  created_at       :datetime         not null
+#  updated_at       :datetime         not null
+#  post_likes_count :integer          default(0)
+#  markdown         :text
+#  number           :integer
+#  aasm_state       :string
+#  comments_count   :integer          default(0)
+#
 
+class PostsController < ApplicationController
   before_action :doorkeeper_authorize!, only: [:create, :update]
 
   def index
     authorize Post
+    includes = [:comments, :post_user_mentions, :comment_user_mentions, :user, :project]
+    posts = Post.includes(includes).where(id: id_params)
+    render json: posts
+  end
+
+  def project_index
+    authorize Post
     posts = find_posts!
-    render json: posts, meta: meta_for(Post)
+    render json: posts, meta: meta_for(post_count), each_serializer: PostSerializer
   end
 
   def show
     post = find_post!
     authorize post
 
-    render json: post, include: [:comments, :post_user_mentions, :comment_user_mentions]
+    render json: post, include: [:comments, :comment_user_mentions, :post_user_mentions]
   end
 
   def create
@@ -20,8 +46,9 @@ class PostsController < ApplicationController
 
     authorize post
 
-    if post.update!
-      GeneratePostUserNotificationsWorker.perform_async(post.id) if post.published?
+    if post.save
+      post.reload
+      GeneratePostUserNotificationsWorker.perform_async(post.id)
       render json: post
     else
       render_validation_errors post.errors
@@ -30,12 +57,14 @@ class PostsController < ApplicationController
 
   def update
     post = Post.find(params[:id])
+
     authorize post
 
     post.assign_attributes(update_params)
 
-    if post.update!
-      GeneratePostUserNotificationsWorker.perform_async(post.id) if post.edited?
+    if post.save
+      post.reload
+      GeneratePostUserNotificationsWorker.perform_async(post.id)
       render json: post
     else
       render_validation_errors post.errors
@@ -44,24 +73,26 @@ class PostsController < ApplicationController
 
   private
 
+    def publish?
+      true unless parse_params(params).fetch(:preview, false)
+    end
+
     def update_params
-      record_attributes.permit(:markdown, :title, :state)
+      parse_params(params, only: [:markdown, :title, :post_type, :state])
     end
 
     def create_params
-      record_attributes.permit(:markdown, :title, :state, :post_type).merge(relationships)
+      params_for_user(
+        parse_params(params, only: [:markdown, :title, :post_type, :project])
+      )
     end
 
-    def project_relationship_id
-      record_relationships.fetch(:project, {}).fetch(:data, {})[:id]
-    end
-
-    def user_id
-      current_user.id
-    end
-
-    def relationships
-      { project_id: project_relationship_id, user_id: user_id }
+    def filter_params
+      filter_params = {}
+      filter_params[:post_type] = params[:post_type].split(",") if params[:post_type]
+      filter_params[:status] = params[:status] if params[:status]
+      filter_params[:id] = id_params if coalesce?
+      filter_params
     end
 
     def project_id
@@ -78,15 +109,35 @@ class PostsController < ApplicationController
 
     def find_post!
       project = find_project!
-      Post.includes(comments: :user)
-          .includes(:post_user_mentions, :comment_user_mentions)
-          .find_by!(project: project, number: post_id)
+      project.posts.
+        includes(comments: [:comment_user_mentions, :user]).
+        includes(:post_user_mentions, :comment_user_mentions).
+        find_by!(number: post_id)
     end
 
     def find_posts!
       project = find_project!
-      Post.where(project: project)
-        .page(page_number).per(page_size)
-        .includes [:users, :comments, :user, :project, :post_user_mentions, :comment_user_mentions]
+
+      project.posts.
+        includes(:user).
+        includes(comments: :user).
+        includes(:post_user_mentions).
+        includes(:comment_user_mentions).
+        where(filter_params).
+        page(page_number).
+        per(page_size)
+    end
+
+    def coalesce?
+      params.fetch(:filter, {})[:id].present?
+    end
+
+    def id_params
+      params.require(:filter).require(:id).split(",")
+    end
+
+    def post_count
+      project = find_project!
+      project.posts.where(filter_params).count
     end
 end

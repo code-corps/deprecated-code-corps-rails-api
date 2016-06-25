@@ -1,0 +1,16 @@
+machine:
+  services:
+    - elasticsearch
+deployment:
+  staging:
+    branch: develop
+    commands:
+      - git push git@heroku.com:code-corps-development.git $CIRCLE_SHA1:master
+      - heroku run rake db:migrate --app code-corps-development
+      - git push git@heroku.com:code-corps-staging.git $CIRCLE_SHA1:master
+      - heroku run rake db:migrate --app code-corps-staging
+  production:
+    branch: master
+    commands:
+      - git push git@heroku.com:code-corps.git $CIRCLE_SHA1:master
+      - heroku run rake db:migrate --app code-corps

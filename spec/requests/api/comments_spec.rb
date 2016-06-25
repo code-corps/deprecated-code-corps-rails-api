@@ -1,143 +1,177 @@
 require "rails_helper"
 
 describe "Comments API" do
-  context "POST /comments" do
+  feature "cors" do
+    it "should be supported for POST" do
+      post "#{host}/comments", nil, "HTTP_ORIGIN" => "*"
+      expect(last_response).to have_proper_cors_headers
 
+      cors_options("comments", :post)
+      expect(last_response).to have_proper_preflight_options_response_headers
+    end
+
+    it "should be supported for PATCH" do
+      post "#{host}/comments", nil, "HTTP_ORIGIN" => "*"
+      expect(last_response).to have_proper_cors_headers
+
+      cors_options("comments", :patch)
+      expect(last_response).to have_proper_preflight_options_response_headers
+    end
+  end
+
+  context "GET /comments" do
+    before do
+      create(:comment, id: 1)
+      create(:comment, id: 2)
+      create(:comment, id: 3)
+    end
+
+    def make_request(params = {})
+      get "#{host}/comments", params
+    end
+
+    it "requires the id filter" do
+      make_request
+      expect(last_response.status).to eq 400 # bad request
+    end
+
+    it "returns a collection of comments based on specified ids" do
+      make_request(filter: { id: "1,2" })
+      expect(last_response.status).to eq 200
+      expect(json).
+        to serialize_collection(Comment.where(id: [1, 2])).
+        with(CommentSerializer)
+    end
+  end
+
+  context "GET /posts/:id/comments" do
     context "when unauthenticated" do
-      it "should return a 401 with a proper error" do
-        post "#{host}/comments", { data: { type: "comments" } }
+      before do
+        @post = create(:post, id: 2)
+        create_list(:comment, 3, :published, post: @post)
+
+        get "#{host}/posts/#{@post.id}/comments"
+      end
+
+      it "responds with a 200" do
+        expect(last_response.status).to eq 200
+      end
+
+      it "responds with active comments, serialized with CommentSerializer" do
+        collection = @post.comments
+        expect(json).to(
+          serialize_collection(collection).
+          with(CommentSerializer)
+        )
+      end
+    end
+  end
+
+  context "POST /comments" do
+    context "when unauthenticated" do
+      it "responds with a proper 401" do
+        post "#{host}/comments", data: { type: "comments" }
         expect(last_response.status).to eq 401
         expect(json).to be_a_valid_json_api_error.with_id "NOT_AUTHORIZED"
       end
     end
 
     context "when authenticated" do
+      let(:user) { create :user, password: "password" }
+      let(:users_post) { create :post, user: user }
+      let(:token) { authenticate email: user.email, password: "password" }
+
+      let(:mentioned_1) { create(:user) }
+      let(:mentioned_2) { create(:user) }
+
+      def make_request(params)
+        authenticated_post "/comments", params, token
+      end
+
+      def make_request_with_sidekiq_inline(params)
+        Sidekiq::Testing.inline! { make_request params }
+      end
+
+      let(:params) do
+        {
+          data: {
+            type: "comments",
+            attributes: {
+              markdown: "@#{mentioned_1.username} @#{mentioned_2.username}"
+            },
+            relationships: {
+              post: { data: { id: users_post.id, type: "posts" } }
+            }
+          }
+        }
+      end
+
       before do
-        @user = create(:user, email: "test_user@mail.com", password: "password")
-        @token = authenticate(email: "test_user@mail.com", password: "password")
-        @post = create(:post)
+        ActionMailer::Base.deliveries.clear
       end
 
-      def make_request
-        authenticated_post "/comments", @params, @token
-      end
+      context "when the attributes are valid" do
+        it "creates a published comment" do
+          make_request_with_sidekiq_inline params
 
-      def make_request_with_sidekiq_inline
-        Sidekiq::Testing::inline! { make_request }
-      end
+          comment = Comment.last
 
-      it "requires a 'post' to be specified" do
-        @params = { data: { type: "comments", attributes: { markdown: "Comment body" } } }
-        make_request
+          # response is correct
+          expect(json).to serialize_object(comment).with(CommentSerializer)
 
-        expect(last_response.status).to eq 422
-        expect(json).to be_a_valid_json_api_validation_error
-      end
+          # state is proper
+          expect(comment.published?).to be true
 
-      it "requires a 'body' to be specified" do
-        @params = { data: { type: "comments",
-          attributes: {},
-          relationships: { post: { data: { id: @post.id, type: "posts" } } }
-        } }
-        make_request
+          # attributes are properly set
+          expect(comment.body).to eq "<p>@#{mentioned_1.username} @#{mentioned_2.username}</p>"
+          expect(comment.markdown).to eq "@#{mentioned_1.username} @#{mentioned_2.username}"
+          expect(comment.body).to eq "<p>@#{mentioned_1.username} @#{mentioned_2.username}</p>"
+          expect(comment.markdown).to eq "@#{mentioned_1.username} @#{mentioned_2.username}"
 
-        expect(last_response.status).to eq 422
-        expect(json).to be_a_valid_json_api_validation_error
-      end
+          # relationships are properly set
+          expect(comment.user_id).to eq user.id
+          expect(comment.post_id).to eq users_post.id
 
-      context "when it succeeds" do
-        context "as a draft" do
-          before do
-            @mention_1 = create(:user)
-            @mention_2 = create(:user)
+          # a mention was generated for each mentioned user
+          expect(CommentUserMention.count).to eq 2
 
-            @params = { data: {
-              type: "comments",
-              attributes: { markdown: "@#{@mention_1.username} @#{@mention_2.username}" },
-              relationships: {
-                post: { data: { id: @post.id, type: "posts" } }
-              }
-            }}
-          end
+          # a notification was sent for each generated mention
+          expect(Notification.sent.count).to eq 2
 
-          it "creates a comment" do
-            make_request
-            comment = Comment.last
-
-            expect(comment.markdown).to eq "@#{@mention_1.username} @#{@mention_2.username}"
-            expect(comment.body).to eq "<p>@#{@mention_1.username} @#{@mention_2.username}</p>"
-
-            expect(comment.user_id).to eq @user.id
-            expect(comment.post_id).to eq @post.id
-          end
-
-          it "returns the created comment, serialized with CommentSerializer" do
-            make_request
-
-            expect(json).to serialize_object(Comment.last).with(CommentSerializer)
-          end
-
-          it "sets user to current user" do
-            make_request
-            comment_relationships = json.data.relationships
-            expect(comment_relationships.user).not_to be_nil
-            expect(comment_relationships.user.data.id).to eq @user.id.to_s
-          end
-
-          it "creates mentions" do
-            expect{ make_request_with_sidekiq_inline }.to change { CommentUserMention.count }.by 2
-          end
-
-          it "does not create notifications for each mentioned user" do
-            expect{ make_request_with_sidekiq_inline }.to_not change{ Notification.sent.count }
-          end
-
-          it "does not send mails for each mentioned user" do
-            expect{ make_request_with_sidekiq_inline }.to_not change{ ActionMailer::Base.deliveries.count }
-          end
+          # an email was sent for each notification
+          expect(ActionMailer::Base.deliveries.count).to eq 2
         end
 
-        context "when publishing" do
+        context "when markdown is an empty string" do
           before do
-            @mention_1 = create(:user)
-            @mention_2 = create(:user)
+            params[:data][:attributes][:markdown] = ""
+          end
 
-            @params = { data: {
-              type: "comments",
-              attributes: { markdown: "@#{@mention_1.username} @#{@mention_2.username}", state: "published" },
+          it "responds with a validation error" do
+            make_request_with_sidekiq_inline params
+            expect(last_response.status).to eq 422
+          end
+        end
+      end
+
+      context "when the attributes are invalid" do
+        let(:invalid_attributes) do
+          {
+            data: {
+              attributes: {
+                title: "", markdown: ""
+              },
               relationships: {
-                post: { data: { id: @post.id, type: "posts" } }
+                post: { data: { id: users_post.id, type: "posts" } }
               }
-            }}
-          end
+            }
+          }
+        end
 
-          it "creates a comment" do
-            expect{ make_request }.to change{ Comment.count }.by 1
-            comment = Comment.last
-            expect(comment.markdown).to eq "@#{@mention_1.username} @#{@mention_2.username}"
-            expect(comment.body).to eq "<p>@#{@mention_1.username} @#{@mention_2.username}</p>"
-
-            expect(comment.post).to eq @post
-            expect(comment.user).to eq @user
-          end
-
-          it "returns the created comment, serialized with CommentSerializer" do
-            make_request
-
-            expect(json).to serialize_object(Comment.last).with(CommentSerializer)
-          end
-
-          it "creates mentions" do
-            expect{ make_request_with_sidekiq_inline }.to change { CommentUserMention.count }.by 2
-          end
-
-          it "creates notifications for each mentioned user" do
-            expect{ make_request_with_sidekiq_inline }.to change{ Notification.sent.count }.by 2
-          end
-
-          it "sends mails for each mentioned user" do
-            expect{ make_request_with_sidekiq_inline }.to change{ ActionMailer::Base.deliveries.count }.by 2
-          end
+        it "responds with a 422 validation error" do
+          make_request invalid_attributes
+          expect(last_response.status).to eq 422
+          expect(json).to be_a_valid_json_api_validation_error
         end
       end
     end
@@ -145,145 +179,81 @@ describe "Comments API" do
 
   context "PATCH /comments/:id" do
     context "when unauthenticated" do
-      it "should return a 401 with a proper error" do
-        patch "#{host}/comments/1", { data: { type: "comments" } }
+      it "responds with a proper 401" do
+        patch "#{host}/comments/1"
         expect(last_response.status).to eq 401
         expect(json).to be_a_valid_json_api_error.with_id "NOT_AUTHORIZED"
       end
     end
 
     context "when authenticated" do
-      before do
-        @user = create(:user, id: 1, email: "test_user@mail.com", password: "password")
-        @post = create(:post, id: 2)
-        @token = authenticate(email: "test_user@mail.com", password: "password")
+      let(:user) { create :user, password: "password" }
+      let(:token) { authenticate email: user.email, password: "password" }
+      let(:post) { create :post, user: user }
+      let(:mentioned_1) { create(:user) }
+      let(:mentioned_2) { create(:user) }
+
+      def make_request(params)
+        authenticated_patch "/comments/#{comment.id}", params, token
       end
 
-      context "when the comment doesn't exist" do
+      def make_request_with_sidekiq_inline(params)
+        Sidekiq::Testing.inline! { make_request params }
+      end
+
+      let(:params) do
+        {
+          data: {
+            id: comment.id,
+            type: "comments",
+            attributes: {
+              title: "Edited title",
+              markdown: "@#{mentioned_1.username} @#{mentioned_2.username}",
+              state: "edited"
+            }
+          }
+        }
+      end
+
+      context "when comment does not exist" do
         it "responds with a 404" do
-          authenticated_patch "/comments/1", { data: { type: "comments" } }, @token
+          authenticated_patch "/comments/bad_id", { data: { type: "comments" } }, token
 
           expect(last_response.status).to eq 404
           expect(json).to be_a_valid_json_api_error.with_id "RECORD_NOT_FOUND"
         end
       end
 
-      context "when the comment does exist" do
-        before do
-          @comment = create(:comment, post: @post, user: @user)
-        end
+      context "when comment is published" do
+        let(:comment) { create :comment, :published, post: post, user: user }
 
-        context "when the attributes are valid" do
-          context "when updating a draft" do
-            before do
-              valid_attributes = {
-                data: {
-                  attributes: {
-                    markdown: "Edited body"
-                  },
-                  relationships: {
-                    post: { data: { id: @post.id, type: "posts" } }
-                  }
-                }
-              }
-              authenticated_patch "/comments/#{@comment.id}", valid_attributes, @token
-            end
+        it "updates and sets it to edited state" do
+          make_request_with_sidekiq_inline params
 
-            it "responds with a 200" do
-              expect(last_response.status).to eq 200
-            end
+          # response is correct
+          expect(last_response.status).to eq 200
+          expect(json).to serialize_object(comment.reload).with(CommentSerializer)
 
-            it "responds with the comment, serialized with CommentSerializer" do
-              expect(json).to serialize_object(@comment.reload).with(CommentSerializer)
-            end
-
-            it "updates the comment" do
-              @comment.reload
-
-              expect(@comment.markdown).to eq "Edited body"
-              expect(@comment.body).to eq "<p>Edited body</p>"
-            end
-          end
-
-          context "when publishing a comment" do
-            before do
-              valid_attributes = {
-                data: {
-                  attributes: {
-                    markdown: "Edited body", state: "published"
-                  },
-                  relationships: {
-                    post: { data: { id: @post.id, type: "posts" } }
-                  }
-                }
-              }
-              authenticated_patch "/comments/#{@comment.id}", valid_attributes, @token
-            end
-
-            it "updates the comment" do
-              @comment.reload
-
-              expect(@comment).to be_published
-            end
-          end
-
-          context "when editing a published comment" do
-            before do
-              @comment.publish!
-
-              valid_attributes = {
-                data: {
-                  attributes: {
-                    markdown: "Edited body"
-                  },
-                  relationships: {
-                    post: { data: { id: @post.id, type: "posts" } }
-                  }
-                }
-              }
-              authenticated_patch "/comments/#{@comment.id}", valid_attributes, @token
-            end
-
-            it "updates the comment" do
-              @comment.reload
-
-              expect(@comment).to be_edited
-            end
-          end
-        end
-
-        context "when the attributes are invalid" do
-          before do
-            invalid_attributes = {
-              data: {
-                attributes: {
-                  markdown: ""
-                },
-                relationships: {
-                  post: { data: { id: @post.id, type: "posts" } }
-                }
-              }
-            }
-            authenticated_patch "/comments/#{@comment.id}", invalid_attributes, @token
-          end
-
-          it "responds with a 422 validation error" do
-            expect(last_response.status).to eq 422
-            expect(json).to be_a_valid_json_api_validation_error
-          end
+          # state is proper
+          expect(comment.edited?).to be true
         end
       end
 
-      context "when updating another user's comment" do
+      context "when comment exists and markdown param is an empty string" do
+        let(:comment) { create :comment, post: post, user: user }
+
         before do
-          @comment = create(:comment, post: @post)
+          params[:data][:attributes][:markdown] = ""
         end
 
-        it "responds with a 401 ACCESS_DENIED" do
-          authenticated_patch "/comments/#{@comment.id}", { data: { type: "comments" } }, @token
+        it "does not overwrite the markdown or body" do
+          make_request_with_sidekiq_inline params
+          expect(last_response.status).to eq 422
+          expect(json).to be_a_valid_json_api_validation_error
 
-          expect(last_response.status).to eq 401
-          expect(json).to be_a_valid_json_api_error.with_id "ACCESS_DENIED"
+          comment.reload
+          expect(comment.markdown).to_not eq ""
+          expect(comment.body).to_not eq ""
         end
       end
     end

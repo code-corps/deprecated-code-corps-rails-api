@@ -11,10 +11,20 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151227182138) do
+ActiveRecord::Schema.define(version: 20160623044025) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "categories", force: :cascade do |t|
+    t.string   "name",        null: false
+    t.string   "slug",        null: false
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
+    t.text     "description"
+  end
+
+  add_index "categories", ["slug"], name: "index_categories_on_slug", unique: true, using: :btree
 
   create_table "comment_images", force: :cascade do |t|
     t.integer  "user_id",            null: false
@@ -41,21 +51,13 @@ ActiveRecord::Schema.define(version: 20151227182138) do
   end
 
   create_table "comments", force: :cascade do |t|
-    t.text     "body",       null: false
+    t.text     "body"
     t.integer  "user_id",    null: false
     t.integer  "post_id",    null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.text     "markdown",   null: false
+    t.text     "markdown"
     t.string   "aasm_state"
-  end
-
-  create_table "contributors", force: :cascade do |t|
-    t.integer  "user_id"
-    t.integer  "project_id"
-    t.string   "status",     default: "pending", null: false
-    t.datetime "created_at",                     null: false
-    t.datetime "updated_at",                     null: false
   end
 
   create_table "github_repositories", force: :cascade do |t|
@@ -65,17 +67,6 @@ ActiveRecord::Schema.define(version: 20151227182138) do
     t.datetime "created_at",      null: false
     t.datetime "updated_at",      null: false
   end
-
-  create_table "members", force: :cascade do |t|
-    t.string   "slug",       null: false
-    t.integer  "model_id"
-    t.string   "model_type"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
-  add_index "members", ["model_id", "model_type"], name: "index_members_on_model_id_and_model_type", unique: true, using: :btree
-  add_index "members", ["slug"], name: "index_members_on_slug", unique: true, using: :btree
 
   create_table "notifications", force: :cascade do |t|
     t.integer  "notifiable_id",   null: false
@@ -130,7 +121,7 @@ ActiveRecord::Schema.define(version: 20151227182138) do
   add_index "oauth_applications", ["uid"], name: "index_oauth_applications_on_uid", unique: true, using: :btree
 
   create_table "organization_memberships", force: :cascade do |t|
-    t.string   "role",            default: "regular", null: false
+    t.string   "role",            default: "pending", null: false
     t.datetime "created_at",                          null: false
     t.datetime "updated_at",                          null: false
     t.integer  "member_id"
@@ -140,10 +131,16 @@ ActiveRecord::Schema.define(version: 20151227182138) do
   add_index "organization_memberships", ["member_id", "organization_id"], name: "index_organization_memberships_on_member_id_and_organization_id", unique: true, using: :btree
 
   create_table "organizations", force: :cascade do |t|
-    t.string   "name",       null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.string   "slug",       null: false
+    t.string   "name",              null: false
+    t.datetime "created_at",        null: false
+    t.datetime "updated_at",        null: false
+    t.string   "slug",              null: false
+    t.string   "icon_file_name"
+    t.string   "icon_content_type"
+    t.integer  "icon_file_size"
+    t.datetime "icon_updated_at"
+    t.text     "base64_icon_data"
+    t.text     "description"
   end
 
   add_index "organizations", ["slug"], name: "index_organizations_on_slug", unique: true, using: :btree
@@ -181,76 +178,131 @@ ActiveRecord::Schema.define(version: 20151227182138) do
   create_table "posts", force: :cascade do |t|
     t.string   "status",           default: "open"
     t.string   "post_type",        default: "task"
-    t.string   "title",                             null: false
-    t.text     "body",                              null: false
+    t.string   "title"
+    t.text     "body"
     t.integer  "user_id",                           null: false
     t.integer  "project_id",                        null: false
     t.datetime "created_at",                        null: false
     t.datetime "updated_at",                        null: false
     t.integer  "post_likes_count", default: 0
-    t.text     "markdown",                          null: false
+    t.text     "markdown"
     t.integer  "number"
     t.string   "aasm_state"
+    t.integer  "comments_count",   default: 0
   end
 
+  create_table "preview_user_mentions", force: :cascade do |t|
+    t.integer  "user_id",     null: false
+    t.integer  "preview_id",  null: false
+    t.string   "username",    null: false
+    t.integer  "start_index", null: false
+    t.integer  "end_index",   null: false
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
+  end
+
+  add_index "preview_user_mentions", ["preview_id"], name: "index_preview_user_mentions_on_preview_id", using: :btree
+  add_index "preview_user_mentions", ["user_id"], name: "index_preview_user_mentions_on_user_id", using: :btree
+
+  create_table "previews", force: :cascade do |t|
+    t.text     "body",       null: false
+    t.text     "markdown",   null: false
+    t.integer  "user_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  add_index "previews", ["user_id"], name: "index_previews_on_user_id", using: :btree
+
+  create_table "project_categories", force: :cascade do |t|
+    t.integer  "project_id"
+    t.integer  "category_id"
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
+  end
+
+  add_index "project_categories", ["project_id", "category_id"], name: "index_project_categories_on_project_id_and_category_id", unique: true, using: :btree
+
+  create_table "project_roles", force: :cascade do |t|
+    t.integer  "project_id"
+    t.integer  "role_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  add_index "project_roles", ["project_id", "role_id"], name: "index_project_roles_on_project_id_and_role_id", unique: true, using: :btree
+
+  create_table "project_skills", force: :cascade do |t|
+    t.integer  "project_id"
+    t.integer  "skill_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  add_index "project_skills", ["project_id", "skill_id"], name: "index_project_skills_on_project_id_and_skill_id", unique: true, using: :btree
+
   create_table "projects", force: :cascade do |t|
-    t.string   "title",              null: false
+    t.string   "title",                     null: false
     t.string   "description"
-    t.integer  "owner_id"
-    t.string   "owner_type"
-    t.datetime "created_at",         null: false
-    t.datetime "updated_at",         null: false
+    t.datetime "created_at",                null: false
+    t.datetime "updated_at",                null: false
     t.string   "icon_file_name"
     t.string   "icon_content_type"
     t.integer  "icon_file_size"
     t.datetime "icon_updated_at"
     t.text     "base64_icon_data"
-    t.integer  "contributors_count"
-    t.string   "slug",               null: false
+    t.string   "slug",                      null: false
+    t.integer  "organization_id",           null: false
+    t.string   "aasm_state"
+    t.text     "long_description_body"
+    t.text     "long_description_markdown"
+    t.integer  "open_posts_count",          default: 0, null: false
+    t.integer  "closed_posts_count",        default: 0, null: false
   end
 
-  add_index "projects", ["owner_type", "owner_id"], name: "index_projects_on_owner_type_and_owner_id", using: :btree
-  add_index "projects", ["slug", "owner_id"], name: "index_projects_on_slug_and_owner_id", unique: true, using: :btree
+  add_index "projects", ["organization_id"], name: "index_projects_on_organization_id", using: :btree
 
-  create_table "skill_categories", force: :cascade do |t|
-    t.string   "title",      null: false
+  create_table "role_skills", force: :cascade do |t|
+    t.integer  "role_id"
+    t.integer  "skill_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "roles", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string   "name",       null: false
+    t.string   "ability",    null: false
+    t.string   "kind",       null: false
   end
 
   create_table "skills", force: :cascade do |t|
-    t.string   "title",             null: false
+    t.string   "title",       null: false
     t.string   "description"
-    t.integer  "skill_category_id"
-    t.datetime "created_at",        null: false
-    t.datetime "updated_at",        null: false
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
   end
 
-  create_table "team_memberships", force: :cascade do |t|
+  create_table "slugged_routes", force: :cascade do |t|
+    t.string   "slug",       null: false
+    t.integer  "owner_id"
+    t.string   "owner_type"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer  "member_id"
-    t.integer  "team_id"
   end
 
-  add_index "team_memberships", ["member_id", "team_id"], name: "index_team_memberships_on_member_id_and_team_id", unique: true, using: :btree
+  add_index "slugged_routes", ["owner_id", "owner_type"], name: "index_slugged_routes_on_owner_id_and_owner_type", unique: true, using: :btree
+  add_index "slugged_routes", ["slug"], name: "index_slugged_routes_on_slug", unique: true, using: :btree
 
-  create_table "team_projects", force: :cascade do |t|
-    t.integer  "team_id",                        null: false
-    t.integer  "project_id",                     null: false
-    t.string   "role",       default: "regular", null: false
-    t.datetime "created_at",                     null: false
-    t.datetime "updated_at",                     null: false
+  create_table "user_categories", force: :cascade do |t|
+    t.integer  "user_id"
+    t.integer  "category_id"
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
   end
 
-  add_index "team_projects", ["team_id", "project_id"], name: "index_team_projects_on_team_id_and_project_id", unique: true, using: :btree
-
-  create_table "teams", force: :cascade do |t|
-    t.string   "name",            null: false
-    t.datetime "created_at",      null: false
-    t.datetime "updated_at",      null: false
-    t.integer  "organization_id"
-  end
+  add_index "user_categories", ["user_id", "category_id"], name: "index_user_categories_on_user_id_and_category_id", unique: true, using: :btree
 
   create_table "user_relationships", force: :cascade do |t|
     t.integer  "follower_id"
@@ -262,6 +314,13 @@ ActiveRecord::Schema.define(version: 20151227182138) do
   add_index "user_relationships", ["follower_id"], name: "index_user_relationships_on_follower_id", using: :btree
   add_index "user_relationships", ["following_id"], name: "index_user_relationships_on_following_id", using: :btree
 
+  create_table "user_roles", force: :cascade do |t|
+    t.integer  "user_id"
+    t.integer  "role_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "user_skills", force: :cascade do |t|
     t.integer  "user_id"
     t.integer  "skill_id"
@@ -270,14 +329,14 @@ ActiveRecord::Schema.define(version: 20151227182138) do
   end
 
   create_table "users", force: :cascade do |t|
-    t.datetime "created_at",                                        null: false
-    t.datetime "updated_at",                                        null: false
-    t.string   "email",                                             null: false
-    t.string   "encrypted_password",    limit: 128,                 null: false
+    t.datetime "created_at",                                              null: false
+    t.datetime "updated_at",                                              null: false
+    t.string   "email",                                                   null: false
+    t.string   "encrypted_password",    limit: 128,                       null: false
     t.string   "confirmation_token",    limit: 128
-    t.string   "remember_token",        limit: 128,                 null: false
+    t.string   "remember_token",        limit: 128,                       null: false
     t.string   "username"
-    t.boolean  "admin",                             default: false, null: false
+    t.boolean  "admin",                             default: false,       null: false
     t.text     "website"
     t.string   "twitter"
     t.text     "biography"
@@ -288,6 +347,8 @@ ActiveRecord::Schema.define(version: 20151227182138) do
     t.string   "photo_content_type"
     t.integer  "photo_file_size"
     t.datetime "photo_updated_at"
+    t.text     "name"
+    t.string   "aasm_state",                        default: "signed_up", null: false
   end
 
   add_index "users", ["email"], name: "index_users_on_email", using: :btree
@@ -297,4 +358,16 @@ ActiveRecord::Schema.define(version: 20151227182138) do
   add_foreign_key "comments", "users"
   add_foreign_key "posts", "projects"
   add_foreign_key "posts", "users"
+  add_foreign_key "preview_user_mentions", "previews"
+  add_foreign_key "preview_user_mentions", "users"
+  add_foreign_key "previews", "users"
+  add_foreign_key "project_categories", "categories", on_delete: :cascade
+  add_foreign_key "project_categories", "projects", on_delete: :cascade
+  add_foreign_key "project_roles", "projects", on_delete: :cascade
+  add_foreign_key "project_roles", "roles", on_delete: :cascade
+  add_foreign_key "project_skills", "projects", on_delete: :cascade
+  add_foreign_key "project_skills", "skills", on_delete: :cascade
+  add_foreign_key "projects", "organizations"
+  add_foreign_key "user_categories", "categories", on_delete: :cascade
+  add_foreign_key "user_categories", "users", on_delete: :cascade
 end

@@ -5,7 +5,6 @@ module CodeCorps
   module Scenario
     describe GenerateNotificationsForPostUserMentions do
       describe "#call" do
-
         let(:user) { create(:user) }
         let(:post) { create(:post) }
 
@@ -53,6 +52,6 @@ module CodeCorps
           end
         end
       end
-    end 
+    end
   end
 end

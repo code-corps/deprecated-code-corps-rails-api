@@ -1,20 +1,45 @@
+# == Schema Information
+#
+# Table name: projects
+#
+#  id                :integer          not null, primary key
+#  title             :string           not null
+#  description       :string
+#  created_at        :datetime         not null
+#  updated_at        :datetime         not null
+#  icon_file_name    :string
+#  icon_content_type :string
+#  icon_file_size    :integer
+#  icon_updated_at   :datetime
+#  base64_icon_data  :text
+#  slug              :string           not null
+#  organization_id   :integer          not null
+#  aasm_state        :string
+#
+
 class ProjectsController < ApplicationController
   before_action :doorkeeper_authorize!, only: [:create, :update]
 
   def index
     authorize Project
 
-    if for_member?
-      projects = find_projects_with_member!
+    if for_slugged_route?
+      projects = find_projects_with_slugged_route!
     else
-      projects = Project.all.includes(:contributors, :github_repositories)
+      projects = Project.all.includes(
+        :categories, :github_repositories, :organization, :roles, :skills
+      )
     end
 
     render json: projects
   end
 
   def show
-    project = find_project_with_member!
+    if project_show?
+      project = Project.find(params[:id])
+    elsif for_slugged_route?
+      project = find_project_with_slugged_route!
+    end
 
     authorize project
 
@@ -52,57 +77,51 @@ class ProjectsController < ApplicationController
   private
 
     def create_params
-      permitted_params.merge(relationships)
+      parse_params(
+        params, only: [:base64_icon_data, :title, :description, :slug,
+                       :organization, :long_description_markdown]
+      )
     end
 
     def update_params
-      permitted_params
+      parse_params(
+        params, only: [:base64_icon_data, :title, :description,
+                       :long_description_markdown, :slug]
+      )
     end
 
-    def relationships
-      #{ owner_id: owner_id, owner_type: owner_type }
-      { owner: owner }
-    end
-
-    def owner
-      owner_type.constantize.find(owner_id) if owner_type.present?
-    end
-
-    def owner_id
-      record_relationships.fetch(:owner, {}).fetch(:data, {})[:id]
-    end
-
-    def owner_type
-      record_relationships.fetch(:owner, {}).fetch(:data, {})[:type]
-    end
-
-    def permitted_params
-      record_attributes.permit(:base64_icon_data, :title, :description, :slug)
-    end
-
-    def member_slug
-      params[:member_id]
+    def slugged_route_slug
+      params[:slugged_route_id]
     end
 
     def project_slug
       params[:id]
     end
 
-    def for_member?
-      member_slug.present?
+    def for_slugged_route?
+      slugged_route_slug.present?
     end
 
-    def find_project_with_member!
-      member = find_member!
-      Project.includes(:contributors, :github_repositories).find_by!(slug: project_slug, owner: member.model)
+    def project_show?
+      slugged_route_slug == "projects"
     end
 
-    def find_projects_with_member!
-      member = find_member!
-      Project.includes(:contributors, :github_repositories).where(owner: member.model)
+    def find_project_with_slugged_route!
+      slugged_route = find_slugged_route!
+      Project.
+        includes(:categories, :github_repositories, :organization, :roles, :skills).
+        where("lower(slug) = ?", project_slug.downcase).
+        find_by!(organization: slugged_route.owner)
     end
 
-    def find_member!
-      Member.find_by_slug!(member_slug)
+    def find_projects_with_slugged_route!
+      slugged_route = find_slugged_route!
+      Project.
+        includes(:categories, :github_repositories, :organization, :roles, :skills).
+        where(organization: slugged_route.owner)
+    end
+
+    def find_slugged_route!
+      SluggedRoute.where("lower(slug) = ?", slugged_route_slug.downcase).first!
     end
 end

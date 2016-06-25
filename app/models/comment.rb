@@ -1,51 +1,58 @@
-require 'html/pipeline'
-require 'code_corps/scenario/generate_user_mentions_for_comment'
+# == Schema Information
+#
+# Table name: comments
+#
+#  id         :integer          not null, primary key
+#  body       :text
+#  user_id    :integer          not null
+#  post_id    :integer          not null
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#  markdown   :text
+#  aasm_state :string
+#
+
+require "html/pipeline"
+require "html/pipeline/rouge_filter"
+require "code_corps/scenario/generate_user_mentions_for_comment"
 
 class Comment < ActiveRecord::Base
   include AASM
 
   belongs_to :user
-  belongs_to :post
+  belongs_to :post, counter_cache: true
 
   has_many :comment_user_mentions
 
-  validates_presence_of :body
-  validates_presence_of :markdown
-  validates_presence_of :user
-  validates_presence_of :post
+  validates :body, presence: true
+  validates :markdown, presence: true
+  validates :post, presence: true
+  validates :user, presence: true
 
   before_validation :render_markdown_to_body
 
-  after_save :generate_mentions # Still safe because it runs inside transaction
+  after_create :track_created
+
+  after_save :generate_mentions
+  after_save :track_edited
 
   aasm do
-    state :draft, initial: true
-    state :published
+    state :published, initial: true
     state :edited
-
-    event :publish do
-      transitions from: :draft, to: :published
-    end
 
     event :edit do
       transitions from: :published, to: :edited
     end
   end
 
-  def update!
-    if aasm_state_was == "published" && self.changed?
-      self.edit!
-    else
-      self.save
-    end
-  end
+  default_scope { order(id: :asc) }
 
   def state
     aasm_state
   end
 
   def state=(value)
-    self.publish if value == "published" && self.draft?
+    edit if value == "edited" && published?
   end
 
   def edited_at
@@ -58,18 +65,27 @@ class Comment < ActiveRecord::Base
       CodeCorps::Scenario::GenerateUserMentionsForComment.new(self).call
     end
 
-    def render_markdown_to_body
-      if markdown.present?
-        html = pipeline.call(markdown)
-        self.body = html[:output].to_s
-      end
-    end
-
     def pipeline
       @pipeline ||= HTML::Pipeline.new [
-        HTML::Pipeline::MarkdownFilter
-      ], {
-        gfm: true # Github-flavored markdown
-      }
+        HTML::Pipeline::MarkdownFilter,
+        HTML::Pipeline::RougeFilter
+      ], gfm: true # Github-flavored markdown
+    end
+
+    def render_markdown_to_body
+      html = pipeline.call(markdown)
+      self.body = html[:output].to_s
+    end
+
+    def track_created
+      analytics.track_created_comment(self)
+    end
+
+    def track_edited
+      analytics.track_edited_comment(self) if edited?
+    end
+
+    def analytics
+      @analytics ||= Analytics.new(user)
     end
 end

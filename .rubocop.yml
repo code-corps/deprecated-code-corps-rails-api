@@ -1,0 +1,16 @@
+inherit_from: .hound_defaults.yml
+
+Documentation:
+  Enabled: false
+Style/StringLiterals:
+  EnforcedStyle: double_quotes
+Style/IndentationConsistency:
+  EnforcedStyle: rails
+Metrics/LineLength:
+  Max: 100
+Metrics/CyclomaticComplexity:
+  Max: 12
+Metrics/PerceivedComplexity:
+  Max: 12
+Metrics/AbcSize:
+  Max: 20

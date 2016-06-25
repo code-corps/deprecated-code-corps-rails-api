@@ -1,7 +1,20 @@
+# == Schema Information
+#
+# Table name: post_user_mentions
+#
+#  id          :integer          not null, primary key
+#  user_id     :integer          not null
+#  post_id     :integer          not null
+#  username    :string           not null
+#  start_index :integer          not null
+#  end_index   :integer          not null
+#  created_at  :datetime         not null
+#  updated_at  :datetime         not null
+#
+
 require "rails_helper"
 
-describe PostUserMentionSerializer, :type => :serializer do
-
+describe PostUserMentionSerializer, type: :serializer do
   context "individual resource representation" do
     let(:resource) { create(:post_user_mention) }
 
@@ -27,7 +40,6 @@ describe PostUserMentionSerializer, :type => :serializer do
     end
 
     context "attributes" do
-
       subject do
         JSON.parse(serialization.to_json)["data"]["attributes"]
       end
@@ -71,7 +83,9 @@ describe PostUserMentionSerializer, :type => :serializer do
       end
 
       context "when including 'user'" do
-        let(:serialization) { ActiveModel::Serializer::Adapter.create(serializer, include: ["user"]) }
+        let(:serialization) do
+          ActiveModel::Serializer::Adapter.create(serializer, include: ["user"])
+        end
 
         subject do
           JSON.parse(serialization.to_json)["included"]
@@ -79,12 +93,14 @@ describe PostUserMentionSerializer, :type => :serializer do
 
         it "should not be empty" do
           expect(subject).not_to be_nil
-          expect(subject.select{ |i| i["type"] == "users"}.length).to eq 1
+          expect(subject.count { |i| i["type"] == "users" }).to eq 1
         end
       end
 
       context "when including 'post'" do
-        let(:serialization) { ActiveModel::Serializer::Adapter.create(serializer, include: ["post"]) }
+        let(:serialization) do
+          ActiveModel::Serializer::Adapter.create(serializer, include: ["post"])
+        end
 
         subject do
           JSON.parse(serialization.to_json)["included"]
@@ -92,7 +108,7 @@ describe PostUserMentionSerializer, :type => :serializer do
 
         it "should not be empty" do
           expect(subject).not_to be_nil
-          expect(subject.select{ |i| i["type"] == "posts"}.length).to eq 1
+          expect(subject.count { |i| i["type"] == "posts" }).to eq 1
         end
       end
     end

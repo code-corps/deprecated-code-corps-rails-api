@@ -1,16 +1,19 @@
 RSpec::Matchers.define :serialize_object do |object|
   match do |json|
-    serializer =  @serializer_klass.new(object)
-    serialization = ActiveModel::Serializer::Adapter.create(serializer, include: includes)
+    serialization = ActiveModel::Serializer::Adapter.create(@serializer, include: includes)
     JSON.parse(serialization.to_json) == json
   end
 
   chain :with do |serializer_klass|
-    @serializer_klass = serializer_klass
+    @serializer = serializer_klass.new(object)
   end
 
   chain :with_includes do |includes|
     @includes = Array.wrap(includes)
+  end
+
+  chain :with_scope do |scope|
+    @serializer.scope = scope
   end
 
   def includes
@@ -21,17 +24,19 @@ end
 RSpec::Matchers.define :serialize_collection do |collection|
   match do |actual_json|
     options = {}
-    options = options.merge pagination_options_for collection if is_paginated? collection
+    options = options.merge pagination_options if paginated?(collection)
 
-    actual_json = cleanup actual_json
+    actual_json = cleanup(actual_json)
 
-    serializer =  ActiveModel::Serializer::CollectionSerializer.new collection, each_serializer: @serializer_klass
-    serialization = ActiveModel::Serializer::Adapter.create(serializer, include: includes, meta: meta)
+    serializer =
+      ActiveModel::Serializer::CollectionSerializer.new(collection, serializer: @serializer_klass)
+    serialization =
+      ActiveModel::Serializer::Adapter.create(serializer, include: includes, meta: meta)
 
-    expected_json = cleanup JSON.parse(serialization.to_json options)
+    expected_json = cleanup(JSON.parse(serialization.to_json(options)))
 
     content_is_ok = arrays_have_same_elements(expected_json["data"], actual_json["data"])
-    content_is_ok and remainder_is_ok(expected_json, actual_json)
+    content_is_ok && remainder_is_ok(expected_json, actual_json)
   end
 
   chain :with do |serializer_klass|
@@ -54,9 +59,7 @@ RSpec::Matchers.define :serialize_collection do |collection|
     @includes ||= []
   end
 
-  def meta
-    @meta
-  end
+  attr_reader :meta
 
   def host
     @host || ""
@@ -70,35 +73,32 @@ RSpec::Matchers.define :serialize_collection do |collection|
     @host.present?
   end
 
-  def cleanup json
+  def cleanup(json)
     json = json.with_indifferent_access
     json = json.except(:meta) unless validate_meta?
     json = json.except(:links) unless validate_links?
     json
   end
 
-  def is_paginated? collection
+  def paginated?(collection)
     collection.respond_to?(:current_page) &&
-    collection.respond_to?(:total_pages) &&
-    collection.respond_to?(:size)
+      collection.respond_to?(:total_pages) &&
+      collection.respond_to?(:size)
   end
 
-  def pagination_options_for collection
+  def pagination_options
     request = double(original_url: host, query_parameters: {})
-
     serialization_context = ActiveModelSerializers::SerializationContext.new(request)
-
     { serialization_context: serialization_context }
   end
 
-  def arrays_have_same_elements a, b
+  def arrays_have_same_elements(a, b)
     a.to_set == b.to_set
   end
 
-  def remainder_is_ok expected_json, actual_json
+  def remainder_is_ok(expected_json, actual_json)
     expected_json.delete(:data)
     actual_json.delete(:data)
     expected_json == actual_json
   end
-
 end

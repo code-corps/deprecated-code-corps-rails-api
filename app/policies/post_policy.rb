@@ -6,6 +6,10 @@ class PostPolicy
     @post = post
   end
 
+  def project_index?
+    true
+  end
+
   def index?
     true
   end
@@ -15,52 +19,51 @@ class PostPolicy
   end
 
   def create?
-    # Cannot create if there's no user
-    return unless user.present?
+    # unauthenticated user cannot create
+    return false unless user.present?
 
-    # Cannot create if not the user who's posting
+    # user cannot create posts for other users
     return false unless post.user == user
 
-    # Can create issue posts for any user
+    # non-contributors can create issues or ideas
     return true if post.issue?
+    return true if post.idea?
 
-    # Cannot create if not a contributor
-    return false unless contributor_for_user
-
-    # Can create if a contributor with permissions
-    return true if current_user_is_at_least_collaborator_on_project?
+    # contributors can create all types of posts
+    return true if current_user_is_at_least_contributor_to_organization?
   end
 
   def update?
-    # Cannot update if there's no user
-    return unless user.present?
+    # unauthenticated user cannot update
+    return false unless user.present?
 
-    # Can update if the user is a project admin
-    return true if current_user_is_at_least_admin_on_project?
+    # admin can update any post, even that belonging to other users
+    return true if current_user_is_at_least_admin_in_organization?
 
-    # Cannot update if not the user who posted
-    return false unless post.user == user
-
-    # Can create issue posts for any user
-    return true if post.issue?
-
-    # Can create if a contributor with permissions
-    return true if current_user_is_at_least_collaborator_on_project?
+    # user can update their own post
+    return true if post.user == user
   end
 
   private
 
-    def contributor_for_user
-      @contributor_for_user ||= Contributor.find_by(user: user, project: post.project)
+    def user_is_member_of_organization
+      organization_member_for_user.present?
     end
 
-    def current_user_is_at_least_collaborator_on_project?
-      return false unless contributor_for_user
-      return true if contributor_for_user.collaborator? or contributor_for_user.admin? or contributor_for_user.owner?
+    def organization_member_for_user
+      @organization_member_for_user ||= OrganizationMembership.find_by(
+        member_id: user.id, organization_id: post.project.organization_id)
     end
 
-    def current_user_is_at_least_admin_on_project?
-      return false unless contributor_for_user
-      return true if contributor_for_user.admin? or contributor_for_user.owner?
+    def current_user_is_at_least_contributor_to_organization?
+      return false unless organization_member_for_user
+      return true if organization_member_for_user.contributor? ||
+                     organization_member_for_user.admin? ||
+                     organization_member_for_user.owner?
+    end
+
+    def current_user_is_at_least_admin_in_organization?
+      return false unless organization_member_for_user
+      return true if organization_member_for_user.admin? || organization_member_for_user.owner?
     end
 end

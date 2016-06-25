@@ -1,14 +1,29 @@
-FactoryGirl.define do
+# == Schema Information
+#
+# Table name: projects
+#
+#  id                :integer          not null, primary key
+#  title             :string           not null
+#  description       :string
+#  created_at        :datetime         not null
+#  updated_at        :datetime         not null
+#  icon_file_name    :string
+#  icon_content_type :string
+#  icon_file_size    :integer
+#  icon_updated_at   :datetime
+#  base64_icon_data  :text
+#  slug              :string           not null
+#  organization_id   :integer          not null
+#  aasm_state        :string
+#
 
+FactoryGirl.define do
   factory :project do
     sequence(:title) { |n| "Project#{n}" }
+    sequence(:description) { |n| "Project description #{n}" }
+    sequence(:long_description_markdown) { |n| "Long project description #{n}" }
 
-    association :owner, factory: :organization
-
-    transient do
-      contributors_count 5
-      contributors_status "collaborator"
-    end
+    association :organization
 
     trait :with_s3_icon do
       after(:build) do |project, evaluator|
@@ -18,16 +33,5 @@ FactoryGirl.define do
         project.icon_updated_at = Time.now
       end
     end
-
-
-    trait :with_contributors do
-
-      after(:create) do |project, evaluator|
-        evaluator.contributors_count.times do
-          create(:contributor, status: evaluator.contributors_status, project: project)
-        end
-      end
-    end
   end
-
 end

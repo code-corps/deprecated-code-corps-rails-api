@@ -1,7 +1,21 @@
+# == Schema Information
+#
+# Table name: comment_user_mentions
+#
+#  id          :integer          not null, primary key
+#  user_id     :integer          not null
+#  comment_id  :integer          not null
+#  post_id     :integer          not null
+#  username    :string           not null
+#  start_index :integer          not null
+#  end_index   :integer          not null
+#  created_at  :datetime         not null
+#  updated_at  :datetime         not null
+#
+
 require "rails_helper"
 
-describe CommentUserMentionSerializer, :type => :serializer do
-
+describe CommentUserMentionSerializer, type: :serializer do
   context "individual resource representation" do
     let(:resource) { create(:comment_user_mention) }
 
@@ -27,7 +41,6 @@ describe CommentUserMentionSerializer, :type => :serializer do
     end
 
     context "attributes" do
-
       subject do
         JSON.parse(serialization.to_json)["data"]["attributes"]
       end
@@ -71,7 +84,9 @@ describe CommentUserMentionSerializer, :type => :serializer do
       end
 
       context "when including 'user'" do
-        let(:serialization) { ActiveModel::Serializer::Adapter.create(serializer, include: ["user"]) }
+        let(:serialization) do
+          ActiveModel::Serializer::Adapter.create(serializer, include: ["user"])
+        end
 
         subject do
           JSON.parse(serialization.to_json)["included"]
@@ -79,12 +94,14 @@ describe CommentUserMentionSerializer, :type => :serializer do
 
         it "should not be empty" do
           expect(subject).not_to be_nil
-          expect(subject.select{ |i| i["type"] == "users"}.length).to eq 1
+          expect(subject.count { |i| i["type"] == "users" }).to eq 1
         end
       end
 
       context "when including 'comment'" do
-        let(:serialization) { ActiveModel::Serializer::Adapter.create(serializer, include: ["comment"]) }
+        let(:serialization) do
+          ActiveModel::Serializer::Adapter.create(serializer, include: ["comment"])
+        end
 
         subject do
           JSON.parse(serialization.to_json)["included"]
@@ -92,7 +109,7 @@ describe CommentUserMentionSerializer, :type => :serializer do
 
         it "should not be empty" do
           expect(subject).not_to be_nil
-          expect(subject.select{ |i| i["type"] == "comments"}.length).to eq 1
+          expect(subject.count { |i| i["type"] == "comments" }).to eq 1
         end
       end
     end

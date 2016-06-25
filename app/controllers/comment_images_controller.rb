@@ -1,5 +1,21 @@
-class CommentImagesController < ApplicationController
+# == Schema Information
+#
+# Table name: comment_images
+#
+#  id                 :integer          not null, primary key
+#  user_id            :integer          not null
+#  comment_id         :integer          not null
+#  filename           :text             not null
+#  base64_photo_data  :text             not null
+#  created_at         :datetime         not null
+#  updated_at         :datetime         not null
+#  image_file_name    :string
+#  image_content_type :string
+#  image_file_size    :integer
+#  image_updated_at   :datetime
+#
 
+class CommentImagesController < ApplicationController
   before_action :doorkeeper_authorize!, only: [:create]
 
   def create
@@ -8,6 +24,7 @@ class CommentImagesController < ApplicationController
     authorize comment_image
 
     if comment_image.save
+      analytics.track_created_comment_image(comment_image)
       NotifyPusherOfCommentImageWorker.perform_async(comment_image.id)
       render json: comment_image
     else
@@ -18,18 +35,8 @@ class CommentImagesController < ApplicationController
   private
 
     def create_params
-      record_attributes.permit(:filename, :base64_photo_data).merge(relationships)
-    end
-
-    def user_id
-      current_user.id
-    end
-
-    def relationships
-      { comment_id: comment_id, user_id: user_id }
-    end
-
-    def comment_id
-      record_relationships.fetch(:comment, {}).fetch(:data, {})[:id]
+      params_for_user(
+        parse_params(params)
+      )
     end
 end
