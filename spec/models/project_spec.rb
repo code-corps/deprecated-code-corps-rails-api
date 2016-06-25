@@ -19,7 +19,7 @@
 
 require "rails_helper"
 
-describe Project, type: :model do
+describe Project, type: :model, local_skip: true do
   describe "schema" do
     it { should have_db_column(:title).of_type(:string).with_options(null: false) }
     it { should have_db_column(:description).of_type(:string) }
