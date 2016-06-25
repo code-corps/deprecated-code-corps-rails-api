@@ -1,7 +1,7 @@
 class PasswordsMailer < ActionMailer::Base
   def change_password(user)
     @user = user
-    mail from: "help@example.com", to: @user.email,
-      subject: "CookAcademy Reset Password"
+    mail from: "team@codecorps.org", to: @user.email,
+      subject: "Code Corps Reset Password"
   end
 end
