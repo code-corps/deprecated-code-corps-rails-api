@@ -26,7 +26,7 @@ describe OrganizationMembershipPolicy do
     create_membership_for(member: owner, role: "owner")
   end
 
-  permissions :index?, :show? do
+  permissions :index?, :organization_index?, :show? do
     it "is allowed for everyone" do
       [nil, non_member, pending_user, contributor, admin, owner].each do |user|
         expect(subject).to permit(user, OrganizationMembership)
