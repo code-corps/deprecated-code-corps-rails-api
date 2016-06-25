@@ -17,7 +17,7 @@
 
 require "rails_helper"
 
-describe Organization, :type => :model do
+describe Organization, type: :model, local_skip: true do
   describe "schema" do
     it { should have_db_column(:name).of_type(:string) }
     it { should have_db_column(:slug).of_type(:string).with_options(null: false) }

@@ -263,7 +263,7 @@ describe User, type: :model do
       }
     end
 
-    context "with cloudfront" do
+    context "with cloudfront", local_skip: true do
       let(:user) { create(:user, :with_s3_photo) }
 
       it "should have our cloudfront domain in the URL" do
