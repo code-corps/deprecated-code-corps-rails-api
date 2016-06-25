@@ -3,7 +3,7 @@ require "code_corps/scenario/notify_pusher_of_comment_image"
 
 module CodeCorps
   module Scenario
-    describe NotifyPusherOfCommentImage do
+    describe NotifyPusherOfCommentImage, :local_skip do
 
       let(:gif_string) {
         file = File.open("#{Rails.root}/spec/sample_data/base64_images/gif.txt", 'r')

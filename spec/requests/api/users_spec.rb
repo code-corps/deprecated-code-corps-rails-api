@@ -150,7 +150,7 @@ describe "Users API" do
   end
 
   context "POST /users" do
-    context "when registering through Facebook" do
+    context "when registering through Facebook", :local_skip do
       before do
         oauth = Koala::Facebook::OAuth.new(
           ENV["FACEBOOK_APP_ID"],

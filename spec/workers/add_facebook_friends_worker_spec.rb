@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe AddFacebookFriendsWorker do
+describe AddFacebookFriendsWorker, local_skip: true do
 
   before do
     oauth = Koala::Facebook::OAuth.new(ENV["FACEBOOK_APP_ID"], ENV["FACEBOOK_APP_SECRET"], ENV["FACEBOOK_REDIRECT_URL"])
