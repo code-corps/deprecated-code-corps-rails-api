@@ -78,7 +78,7 @@ class PostsController < ApplicationController
     end
 
     def update_params
-      parse_params(params, only: [:markdown, :title, :post_type, :state])
+      parse_params(params, only: [:markdown, :title, :post_type, :state, :status])
     end
 
     def create_params

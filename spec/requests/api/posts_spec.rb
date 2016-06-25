@@ -345,7 +345,8 @@ describe "Posts API" do
               title: "Edited title",
               markdown: "@#{mentioned_1.username} @#{mentioned_2.username}",
               post_type: "task",
-              state: "edited"
+              state: "edited",
+              status: "closed"
             },
             relationships: {
               project: { data: { id: project.id, type: "projects" } }
@@ -389,6 +390,7 @@ describe "Posts API" do
             expect(post.title).to eq "Edited title"
             expect(post.body).to eq "<p>@#{mentioned_1.username} @#{mentioned_2.username}</p>"
             expect(post.markdown).to eq "@#{mentioned_1.username} @#{mentioned_2.username}"
+            expect(post.status).to eq "closed"
 
             # post_type parameter was accepted
             expect(post.task?).to be true
