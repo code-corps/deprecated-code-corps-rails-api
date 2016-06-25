@@ -38,6 +38,10 @@ gem "sequenced"
 gem "sidekiq"
 gem "strip_attributes"
 
+group :production do
+  gem "rails_12factor"
+end
+
 group :development, :test do
   gem "annotate"
   gem "bullet"
