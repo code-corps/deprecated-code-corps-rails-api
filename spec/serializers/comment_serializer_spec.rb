@@ -18,7 +18,9 @@ describe CommentSerializer, type: :serializer do
   # We only use before all here because we know the context does not change
   before :all do
     @comment = create(:comment, body: "Comment body", post: create(:post))
-    @comment.edit
+    create_list(:comment_user_mention, 2, comment: @comment)
+    @comment.edit! # for serializing edited_at
+    @comment.reload # for ensuring relationships load
   end
 
   context "individual resource representation" do
@@ -95,6 +97,19 @@ describe CommentSerializer, type: :serializer do
 
         it "should be empty" do
           expect(subject).to be_nil
+        end
+      end
+
+      context "when including 'comment_user_mentions'" do
+        let(:serialization) { ActiveModel::Serializer::Adapter.create(serializer, include: ["comment_user_mentions"]) }
+
+        subject do
+          JSON.parse(serialization.to_json)["included"]
+        end
+
+        it "should not be empty" do
+          expect(subject).not_to be_nil
+          expect(subject.select{ |i| i["type"] == "comment_user_mentions"}.length).to eq 2
         end
       end
     end
