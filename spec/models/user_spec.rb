@@ -162,6 +162,16 @@ describe User, type: :model do
             ) }
         end
       end
+
+      describe "twitter username validation" do
+        context "when username has an '@' symbol" do
+          it "returns an error" do
+            should_not allow_value("@codecorps").for(:twitter).with_message(
+              "contains an invalid character"
+            )
+          end
+        end
+      end
     end
   end
 
@@ -263,7 +273,7 @@ describe User, type: :model do
       }
     end
 
-    context "with cloudfront" do
+    context "with cloudfront", local_skip: true do
       let(:user) { create(:user, :with_s3_photo) }
 
       it "should have our cloudfront domain in the URL" do

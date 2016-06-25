@@ -96,6 +96,9 @@ class User < ActiveRecord::Base
 
   validate :slug_is_not_duplicate
   validate :can_transition
+  validates_format_of :twitter, with: /\A[a-zA-Z0-9_]{1,15}\z/,
+                                allow_blank: true,
+                                message: "contains an invalid character"
 
   before_save :attempt_transition
   after_save :create_or_update_slugged_route
