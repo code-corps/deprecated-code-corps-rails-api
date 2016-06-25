@@ -45,6 +45,11 @@ VCR.configure do |config|
 end
 
 RSpec.configure do |config|
+  unless ENV["CI_BUILD_WITH_ENV"]
+    RSpec.configure do |c|
+      c.filter_run_excluding local_skip: true
+    end
+  end
   # Remove this line if you're not using ActiveRecord or ActiveRecord fixtures
   config.fixture_path = "#{::Rails.root}/spec/fixtures"
 

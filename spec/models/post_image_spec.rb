@@ -17,7 +17,7 @@
 
 require "rails_helper"
 
-RSpec.describe PostImage, type: :model do
+RSpec.describe PostImage, type: :model, local_skip: true do
   let(:gif_string) {
     file = File.open("#{Rails.root}/spec/sample_data/base64_images/gif.txt", "r")
     open(file) { |io| io.read }
