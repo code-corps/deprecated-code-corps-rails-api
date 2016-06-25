@@ -162,6 +162,16 @@ describe User, type: :model do
             ) }
         end
       end
+
+      describe "twitter username validation" do
+        context "when username has an '@' symbol" do
+          it "returns an error" do
+            should_not allow_value("@codecorps").for(:twitter).with_message(
+              "contains an invalid character"
+            )
+          end
+        end
+      end
     end
   end
 
