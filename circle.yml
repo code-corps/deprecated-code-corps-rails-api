@@ -12,5 +12,6 @@ deployment:
   production:
     branch: master
     commands:
+      - "[[ ! -s \"$(git rev-parse --git-dir)/shallow\" ]] || git fetch --unshallow"
       - git push git@heroku.com:code-corps.git $CIRCLE_SHA1:master
       - heroku run rake db:migrate --app code-corps
