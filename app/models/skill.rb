@@ -18,7 +18,7 @@ class Skill < ActiveRecord::Base
 
   validates_presence_of :title
 
-  before_validation :add_slug_if_blank
+  before_validation :update_slug
 
   validates :slug, presence: true
   validates :slug, obscenity: { message: "may not be obscene" }
@@ -33,9 +33,7 @@ class Skill < ActiveRecord::Base
 
   private
 
-    def add_slug_if_blank
-      unless slug.present?
-        self.slug = title.try(:parameterize)
-      end
+    def update_slug
+      self.slug = title.try(:parameterize) if title_changed?
     end
 end

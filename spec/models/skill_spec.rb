@@ -67,9 +67,15 @@ describe Skill, type: :model do
   end
 
   describe "slug" do
-    it "gets auto-set from title" do
-      create(:skill, title: "Sluggable Skill")
-      expect(Skill.last.slug).to eq "sluggable-skill"
+    it "gets auto-set from title on create" do
+      skill = create(:skill, title: "Sluggable Skill")
+      expect(skill.slug).to eq "sluggable-skill"
+    end
+
+    it "gets auto-set from title on update" do
+      skill = create(:skill, title: "Sluggable Skill")
+      skill.update(title: "New Sluggable Skill")
+      expect(skill.slug).to eq "new-sluggable-skill"
     end
   end
 end
