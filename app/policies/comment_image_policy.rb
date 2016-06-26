@@ -14,10 +14,11 @@ class CommentImagePolicy
     return false unless comment.user_id == user.id
 
     # Can create comments for any user
-    return true
+    true
   end
 
   private
+
     def comment
       @comment ||= comment_image.comment
     end
