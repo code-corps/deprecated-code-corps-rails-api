@@ -23,6 +23,7 @@
 #  photo_updated_at      :datetime
 #  name                  :text
 #  aasm_state            :string           default("signed_up"), not null
+#  theme                 :string           default("light")
 #
 
 class User < ActiveRecord::Base
@@ -105,6 +106,11 @@ class User < ActiveRecord::Base
 
   alias_attribute :state, :aasm_state
   attr_accessor :state_transition
+
+  enum theme: {
+    light: "light",
+    dark: "dark"
+  }
 
   # User onboarding
   aasm do
