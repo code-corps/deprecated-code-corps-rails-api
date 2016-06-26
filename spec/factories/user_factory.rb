@@ -33,6 +33,10 @@ FactoryGirl.define do
     password "password"
   end
 
+  trait :admin do
+    admin true
+  end
+
   trait :with_s3_photo do
     after(:build) do |user, evaluator|
       user.photo_file_name = 'user.jpg'
