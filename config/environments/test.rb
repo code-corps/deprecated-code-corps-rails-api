@@ -42,8 +42,8 @@ Rails.application.configure do
 
   config.paperclip_defaults = {
     storage: :filesystem,
-    path: ':rails_root/tmp/:attachment/:id/:style/:basename.:extension',
-    url: ':rails_root/tmp/:attachment/:id/:style/:basename.:extension'
+    path: ":rails_root/tmp/:attachment/:id/:style/:basename.:extension",
+    url: ":rails_root/tmp/:attachment/:id/:style/:basename.:extension"
   }
 
   config.after_initialize do

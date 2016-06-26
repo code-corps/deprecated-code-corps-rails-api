@@ -28,7 +28,8 @@ describe "Imports API" do
 
         context "with valid data" do
           before do
-            authenticated_post "/imports", { import: { file: fixture_file_upload(Rails.root.join('spec', 'sample_data', 'import.csv'), 'text/plain') } }, token
+            params = { import: { file: fixture_file_upload(Rails.root.join("spec", "sample_data", "import.csv"), "text/plain") } }
+            authenticated_post "/imports", params, token
           end
 
           it "creates a valid import" do
@@ -43,9 +44,10 @@ describe "Imports API" do
 
       context "when user is not admin" do
         let(:user) { create(:user) }
-        
+
         before do
-          authenticated_post "/imports", { import: { file: fixture_file_upload(Rails.root.join('spec', 'sample_data', 'import.csv'), 'text/plain') } }, token
+          params = { import: { file: fixture_file_upload(Rails.root.join("spec", "sample_data", "import.csv"), "text/plain") } }
+          authenticated_post "/imports", params, token
         end
 
         it "responds with a 401 ACCESS_DENIED" do
