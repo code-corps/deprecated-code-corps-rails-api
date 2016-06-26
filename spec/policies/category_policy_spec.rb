@@ -4,9 +4,9 @@ describe CategoryPolicy do
   subject { described_class }
 
   before do
-    @category = create(:category)
-    @regular_user = create(:user)
-    @site_admin = create(:user, admin: true)
+    @category = build_stubbed(:category)
+    @regular_user = build_stubbed(:user)
+    @site_admin = build_stubbed(:user, admin: true)
   end
 
   permissions :index?, :show? do
