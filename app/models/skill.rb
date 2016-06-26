@@ -18,8 +18,24 @@ class Skill < ActiveRecord::Base
 
   validates_presence_of :title
 
+  before_validation :add_slug_if_blank
+
+  validates :slug, presence: true
+  validates :slug, obscenity: { message: "may not be obscene" }
+  validates :slug, exclusion: { in: Rails.configuration.x.reserved_routes }
+  validates :slug, slug: true
+  validates :slug, uniqueness: { case_sensitive: false }
+
   def self.autocomplete(query)
     results = search query
     results.take(5)
   end
+
+  private
+
+    def add_slug_if_blank
+      unless slug.present?
+        self.slug = title.try(:parameterize)
+      end
+    end
 end

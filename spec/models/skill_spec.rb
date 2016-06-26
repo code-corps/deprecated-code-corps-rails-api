@@ -14,6 +14,7 @@ require "rails_helper"
 describe Skill, type: :model do
   describe "schema" do
     it { should have_db_column(:title).of_type(:string).with_options(null: false) }
+    it { should have_db_column(:slug).of_type(:string).with_options(null: false) }
     it { should have_db_column(:description).of_type(:string) }
   end
 
@@ -24,6 +25,26 @@ describe Skill, type: :model do
 
   describe "validations" do
     it { should validate_presence_of(:title) }
+    it { should validate_presence_of(:slug) }
+
+    describe "title" do
+      describe "base validations" do
+        # visit the following to understand why this is tested in a separate context
+        # https://github.com/thoughtbot/shoulda-matchers/blob/master/lib/shoulda/matchers/active_record/validate_uniqueness_of_matcher.rb#L50
+        subject { create(:skill) }
+        it { should validate_uniqueness_of(:slug).case_insensitive }
+      end
+
+      it "should have profanity filter enabled" do
+        skill = Skill.create(title: "Test")
+        expect(skill.slug).to_not be_profane
+      end
+
+      it_behaves_like "a slug validating model", :slug
+
+      # Checks reserved routes
+      it { should_not allow_value("help").for(:slug) }
+    end
   end
 
   describe ".autocomplete" do
@@ -42,6 +63,13 @@ describe Skill, type: :model do
       results = Skill.autocomplete(query)
       expect(results.length).to eq 5
       expect(results.first).to eq ruby
+    end
+  end
+
+  describe "slug" do
+    it "gets auto-set from title" do
+      create(:skill, title: "Sluggable Skill")
+      expect(Skill.last.slug).to eq "sluggable-skill"
     end
   end
 end
