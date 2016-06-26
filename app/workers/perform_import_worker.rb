@@ -5,7 +5,7 @@ class PerformImportWorker
     import = Import.find(import_id)
 
     CSV.parse(Paperclip.io_adapters.for(import.file).read, headers: true).each do |line|
-      next if line["Status"].blank?
+      next unless ["Categorize", "Import - QA", "Import"].include?(line["Status"])
 
       # Add skill if needed and update title.
       skill = Skill.find_or_create_by(original_row: line["Original Row"])
