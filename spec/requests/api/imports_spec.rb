@@ -29,9 +29,12 @@ describe "Imports API" do
         context "with valid data" do
           before do
             params = {
-              import: { 
-                file: fixture_file_upload(Rails.root.join("spec", "sample_data", "import.csv"), "text/plain")
-              } 
+              import: {
+                file: fixture_file_upload(
+                  Rails.root.join("spec", "sample_data", "import.csv"),
+                  "text/plain"
+                )
+              }
             }
             authenticated_post "/imports", params, token
           end
@@ -51,9 +54,12 @@ describe "Imports API" do
 
         before do
           params = {
-            import: { 
-              file: fixture_file_upload(Rails.root.join("spec", "sample_data", "import.csv"), "text/plain")
-            } 
+            import: {
+              file: fixture_file_upload(
+                Rails.root.join("spec", "sample_data", "import.csv"),
+                "text/plain"
+              )
+            }
           }
           authenticated_post "/imports", params, token
         end
