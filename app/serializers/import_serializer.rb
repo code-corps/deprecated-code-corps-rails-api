@@ -12,24 +12,10 @@
 #  updated_at        :datetime         not null
 #
 
-class ImportsController < ApplicationController
-  before_action :doorkeeper_authorize!
+class ImportSerializer < ActiveModel::Serializer
+  attributes :id, :file_name, :status
 
-  def create
-    import = Import.new(import_params)
-
-    authorize import
-
-    if import.save
-      render json: import
-    else
-      render_validation_errors import.errors
-    end
+  def file_name
+    @object.file_file_name
   end
-
-  private
-
-    def import_params
-      params.require(:import).permit(:file)
-    end
 end

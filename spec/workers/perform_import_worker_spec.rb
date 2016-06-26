@@ -11,7 +11,7 @@ describe PerformImportWorker do
     expect { subject }.to change { import.reload.processed? }.from(false).to(true)
   end
 
-  context "skill does not exist" do
+  context "when skill does not exist" do
     it "creates skill" do
       expect { subject }.to change { Skill.count }.by(1)
     end
@@ -28,7 +28,7 @@ describe PerformImportWorker do
     end
   end
 
-  context "skill exists" do
+  context "when skill exists" do
     let!(:skill) { create(:skill, title: "Gruby", original_row: 1) }
     let!(:role_skill) { create(:role_skill, role: architect_role, skill: skill, cat: :cat1) }
 
@@ -41,7 +41,23 @@ describe PerformImportWorker do
     end
 
     it "links skill to new role in correct slot" do
-      expect { subject }.to change { skill.role_skills.reload.where(role: backend_role, cat: "cat1").count }.from(0).to(1)
+      expect { subject }.
+        to change { skill.role_skills.reload.where(role: backend_role, cat: "cat1").count }.
+        from(0).to(1)
+    end
+
+    context "when another skill with the same slug already exists" do
+      before do
+        create(:skill, title: "Ruby")
+      end
+
+      it "marks import as failed" do
+        expect { subject }.to change { import.reload.failed? }.from(false).to(true)
+      end
+
+      it "creates an ImportSkillFailure record" do
+        expect { subject }.to change { ImportSkillFailure.count }.from(0).to(1)
+      end
     end
   end
 end

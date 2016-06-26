@@ -23,7 +23,7 @@
 #  photo_updated_at      :datetime
 #  name                  :text
 #  aasm_state            :string           default("signed_up"), not null
-#  theme                 :string           default("light")
+#  theme                 :string           default("light"), not null
 #
 
 require "rails_helper"

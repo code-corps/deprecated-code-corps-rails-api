@@ -5,9 +5,10 @@
 #  id           :integer          not null, primary key
 #  title        :string           not null
 #  description  :string
-#  original_row :integer
 #  created_at   :datetime         not null
 #  updated_at   :datetime         not null
+#  original_row :integer
+#  slug         :string           not null
 #
 
 class Skill < ActiveRecord::Base

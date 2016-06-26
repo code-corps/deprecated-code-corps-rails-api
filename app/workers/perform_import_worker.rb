@@ -9,17 +9,36 @@ class PerformImportWorker
 
       # Add skill if needed and update title.
       skill = Skill.find_or_create_by(original_row: line["Original Row"])
-      skill.update(title: line["Skill"])
 
-      # Add or update roles.
+      if skill.update(title: line["Skill"])
+        process_roles(skill, line)
+        import.processed!
+      else
+        process_failure(import, skill, line)
+        import.failed!
+      end
+    end
+  end
+
+  private
+
+    def process_roles(skill, csv_row)
       (1..6).each do |col|
-        next if line[col].blank?
-        role = Role.find_by(name: line["Cat #{col}"])
+        next if csv_row[col].blank?
+        role = Role.find_by(name: csv_row["Cat #{col}"])
         role_skill = skill.role_skills.find_or_create_by(role: role)
         role_skill.update(cat: "cat#{col}".intern)
       end
     end
 
-    import.processed!
-  end
+    def process_failure(import, skill, csv_row)
+      failure = ImportSkillFailure.new(
+        import: import,
+        data: csv_row.to_hash.with_indifferent_access,
+        issues: skill.errors.full_messages)
+
+      # could be we can't even create a skill due to slug being taken
+      failure.skill = skill if skill.persisted?
+      failure.save!
+    end
 end
