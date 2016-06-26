@@ -33,3 +33,7 @@ vendor/bundle/*
 dump.rdb
 
 coverage
+
+/organizations
+/projects
+/users

@@ -17,6 +17,9 @@ Rails.application.routes.draw do
 
     resources :github_repositories, only: [:create]
 
+    resources :imports, only: [:create]
+    resources :import_skill_failures, only: [:index]
+
     resources :organizations, only: [:index, :show, :create, :update] do
       get "memberships", to: "organization_memberships#organization_index"
     end

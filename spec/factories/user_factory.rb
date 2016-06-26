@@ -23,6 +23,7 @@
 #  photo_updated_at      :datetime
 #  name                  :text
 #  aasm_state            :string           default("signed_up"), not null
+#  theme                 :string           default("light"), not null
 #
 
 FactoryGirl.define do
@@ -31,6 +32,10 @@ FactoryGirl.define do
     sequence(:email) { |n| "test#{n}@tester.com" }
     sequence(:username) { |n| "tester#{n}" }
     password "password"
+  end
+
+  trait :admin do
+    admin true
   end
 
   trait :with_s3_photo do

@@ -7,6 +7,7 @@
 #  skill_id   :integer
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
+#  cat        :integer
 #
 
 require "rails_helper"

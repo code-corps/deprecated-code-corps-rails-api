@@ -2,7 +2,7 @@
 http_interactions:
 - request:
     method: head
-    uri: https://s3.amazonaws.com/test_bucket/orgnizations//original.
+    uri: https://s3.amazonaws.com/test_bucket/organizations//original.
     body:
       encoding: ASCII-8BIT
       string: ''
@@ -50,7 +50,7 @@ http_interactions:
   recorded_at: Fri, 05 Feb 2016 00:23:18 GMT
 - request:
     method: head
-    uri: https://s3.amazonaws.com/test_bucket/orgnizations//large.
+    uri: https://s3.amazonaws.com/test_bucket/organizations//large.
     body:
       encoding: ASCII-8BIT
       string: ''
@@ -98,7 +98,7 @@ http_interactions:
   recorded_at: Fri, 05 Feb 2016 00:23:18 GMT
 - request:
     method: head
-    uri: https://s3.amazonaws.com/test_bucket/orgnizations//thumb.
+    uri: https://s3.amazonaws.com/test_bucket/organizations//thumb.
     body:
       encoding: ASCII-8BIT
       string: ''

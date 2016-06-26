@@ -1,7 +1,9 @@
 test:
   adapter: postgresql
   database: code_corps_test
+  host: localhost
 development:
   adapter: postgresql
   database: code_corps_dev
   role: postgress
+  host: localhost
