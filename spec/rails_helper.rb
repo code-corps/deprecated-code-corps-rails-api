@@ -94,10 +94,6 @@ RSpec.configure do |config|
     DatabaseCleaner.clean
   end
 
-  config.before(:each) do
-    allow_any_instance_of(Paperclip::Attachment).to receive(:save).and_return(true)
-  end
-
   Shoulda::Matchers.configure do |shoulda|
     shoulda.integrate do |with|
       with.test_framework :rspec

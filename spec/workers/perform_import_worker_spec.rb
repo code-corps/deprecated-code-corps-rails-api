@@ -5,10 +5,6 @@ describe PerformImportWorker do
   let(:backend_role) { create(:role, name: 'Backend Developer') }
   let(:architect_role) { create(:role, name: 'Architect') }
 
-  before do
-    stub_request(:get, /\/imports\/*\/original\.csv/).to_return(body: File.read(Rails.root.join('spec', 'sample_data', 'import.csv')))
-  end
-
   subject { PerformImportWorker.new.perform(import.id) }
 
   it 'creates skill' do
