@@ -41,9 +41,7 @@ describe PerformImportWorker do
     end
 
     it "links skill to new role in correct slot" do
-      expect { subject }.
-        to change { skill.role_skills.reload.where(role: backend_role, cat: "cat1").count }.
-        from(0).to(1)
+      expect { subject }.to change { skill.role_skills.reload.where(role: backend_role, cat: "cat1").count }.from(0).to(1)
     end
   end
 end
