@@ -25,6 +25,10 @@ describe PerformImportWorker do
         expect(backend_role.reload.skills).to include(skill)
         expect(architect_role.reload.skills).to include(skill)
       end
+
+      it "does not create rejected skill" do
+        expect(Skill.exists?(title: 'Pottery')).to eq(false)
+      end
     end
   end
 
