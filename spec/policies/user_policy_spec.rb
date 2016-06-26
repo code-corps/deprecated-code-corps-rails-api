@@ -2,6 +2,7 @@ require "rails_helper"
 
 describe UserPolicy do
   subject { described_class }
+
   let(:admin_user) { build_stubbed(:user, admin: true) }
   let(:user) { build_stubbed(:user) }
 

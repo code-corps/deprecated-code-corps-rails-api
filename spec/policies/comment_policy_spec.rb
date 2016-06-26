@@ -2,10 +2,10 @@ require "rails_helper"
 
 describe CommentPolicy do
   subject { described_class }
-  let(:project) { create(:project) }
-  let(:author) { create(:user) }
-  let(:other_user) { create(:user) }
-  let(:comment) { create(:comment, user: author) }
+  let(:author) { build_stubbed(:user) }
+  let(:comment) { build_stubbed(:comment, user: author) }
+  let(:other_user) { build_stubbed(:user) }
+  let(:project) { build_stubbed(:project) }
 
   permissions :post_index? do
     it "is permited for anyone" do
