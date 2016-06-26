@@ -5,11 +5,11 @@ class PerformImportWorker
     import = Import.find(import_id)
 
     CSV.parse(Paperclip.io_adapters.for(import.file).read, headers: true).each do |line|
-      next if line['Status'].blank?
+      next if line["Status"].blank?
 
       # Add skill if needed and update title.
-      skill = Skill.find_or_create_by(original_row: line['Original Row'])
-      skill.update(title: line['Skill'])
+      skill = Skill.find_or_create_by(original_row: line["Original Row"])
+      skill.update(title: line["Skill"])
 
       # Add or update roles.
       (1..6).each do |col|
@@ -22,5 +22,4 @@ class PerformImportWorker
 
     import.processed!
   end
-  
 end

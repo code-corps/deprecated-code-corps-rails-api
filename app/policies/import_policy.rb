@@ -14,6 +14,6 @@ class ImportPolicy
     return false unless user.admin?
 
     # Can create import.
-    return true
+    true
   end
 end

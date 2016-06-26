@@ -8,7 +8,7 @@ class Import < ActiveRecord::Base
 
   private
 
-  def perform!
-    PerformImportWorker.perform_async(self.id)
-  end
+    def perform!
+      PerformImportWorker.perform_async(id)
+    end
 end
