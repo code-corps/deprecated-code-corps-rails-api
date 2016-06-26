@@ -15,8 +15,10 @@ class SkillsController < ApplicationController
   def index
     if search_params.present?
       skills = Skill.includes(:roles).autocomplete(search_params)
+    elsif coalesce?
+      skills = Skill.includes(:roles).where(id: id_params)
     else
-      skills = Skill.all.includes(:roles)
+      skills = Skill.includes(:roles).all
     end
 
     authorize Skill
@@ -44,6 +46,14 @@ class SkillsController < ApplicationController
   end
 
   private
+
+    def coalesce?
+      params.fetch(:filter, {})[:id].present?
+    end
+
+    def id_params
+      params.require(:filter).require(:id).split(",")
+    end
 
     def permitted_params
       parse_params(params, only: [:title])

@@ -360,6 +360,7 @@ ActiveRecord::Schema.define(version: 20160626043812) do
     t.datetime "photo_updated_at"
     t.text     "name"
     t.string   "aasm_state",                        default: "signed_up", null: false
+    t.string   "theme",                             default: "light",     null: false
   end
 
   add_index "users", ["email"], name: "index_users_on_email", using: :btree

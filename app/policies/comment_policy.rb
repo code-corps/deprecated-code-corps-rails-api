@@ -10,6 +10,10 @@ class CommentPolicy
     true
   end
 
+  def post_index?
+    true
+  end
+
   def show?
     true
   end

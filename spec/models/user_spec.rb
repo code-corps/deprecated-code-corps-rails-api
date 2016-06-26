@@ -23,6 +23,7 @@
 #  photo_updated_at      :datetime
 #  name                  :text
 #  aasm_state            :string           default("signed_up"), not null
+#  theme                 :string           default("light")
 #
 
 require "rails_helper"
@@ -46,6 +47,7 @@ describe User, type: :model do
     it { should have_db_column(:photo_file_size).of_type(:integer) }
     it { should have_db_column(:photo_updated_at).of_type(:datetime) }
     it { should have_db_column(:aasm_state).of_type(:string).with_options(default: "signed_up", null: false) }
+    it { should have_db_column(:theme).of_type(:string).with_options(default: "light", null: false) }
 
     it { should have_db_index(:email) }
     it { should have_db_index(:remember_token) }
@@ -162,7 +164,21 @@ describe User, type: :model do
             ) }
         end
       end
+
+      describe "twitter username validation" do
+        context "when username has an '@' symbol" do
+          it "returns an error" do
+            should_not allow_value("@codecorps").for(:twitter).with_message(
+              "contains an invalid character"
+            )
+          end
+        end
+      end
     end
+  end
+
+  describe "behavior" do
+    it { should define_enum_for(:theme).with(light: "light", dark: "dark") }
   end
 
   describe "strip_attributes" do
@@ -263,7 +279,7 @@ describe User, type: :model do
       }
     end
 
-    context "with cloudfront" do
+    context "with cloudfront", local_skip: true do
       let(:user) { create(:user, :with_s3_photo) }
 
       it "should have our cloudfront domain in the URL" do

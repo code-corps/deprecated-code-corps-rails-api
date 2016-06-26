@@ -1,6 +1,31 @@
 require "rails_helper"
 
 describe "Posts API" do
+  describe "GET /posts" do
+    before do
+      create(:post, id: 1)
+      create(:post, id: 2)
+      create(:post, id: 3)
+    end
+
+    def make_request(params = {})
+      get "#{host}/posts", params
+    end
+
+    it "requires the id filter" do
+      make_request
+      expect(last_response.status).to eq 400 # bad request
+    end
+
+    it "returns a collection of posts based on specified ids" do
+      make_request(filter: { id: "1,2" })
+      expect(last_response.status).to eq 200
+      expect(json).
+        to serialize_collection(Post.where(id: [1, 2])).
+        with(PostSerializer)
+    end
+  end
+
   context "GET /projects/:id/posts" do
     context "when the project doesn't exist" do
       it "responds with a 404" do
@@ -11,17 +36,18 @@ describe "Posts API" do
     end
 
     context "when successful" do
+      let(:project) { create(:project) }
+
       before do
-        @project = create(:project, organization: create(:organization))
-        create_list(:post, 3, :published, project: @project, post_type: "issue")
-        create_list(:post, 3, :published, project: @project, post_type: "task", status: "open")
-        create_list(:post, 4, :published, project: @project, post_type: "task", status: "closed")
-        create_list(:post, 3, :edited, project: @project, post_type: "idea")
+        create_list(:post, 3, :published, project: project, post_type: "issue")
+        create_list(:post, 3, :published, project: project, post_type: "task", status: "open")
+        create_list(:post, 4, :published, project: project, post_type: "task", status: "closed")
+        create_list(:post, 3, :edited, project: project, post_type: "idea")
       end
 
       it "returns posts" do
-        get "#{host}/projects/#{@project.id}/posts"
-        collection = Post.page(1).per(10)
+        get "#{host}/projects/#{project.id}/posts"
+        collection = project.posts.page(1).per(10)
         expect(json).to(
           serialize_collection(collection).
             with(PostSerializer).
@@ -31,7 +57,7 @@ describe "Posts API" do
 
       context "when no page is specified" do
         before do
-          get "#{host}/projects/#{@project.id}/posts"
+          get "#{host}/projects/#{project.id}/posts"
         end
 
         it "responds with a 200" do
@@ -39,11 +65,11 @@ describe "Posts API" do
         end
 
         it "returns the first page of 10 Post records, serialized with PostSerializer" do
-          collection = Post.page(1).per(10)
+          collection = project.posts.page(1).per(10)
           expect(json).to(
             serialize_collection(collection).
               with(PostSerializer).
-              with_links_to("#{host}/projects/#{@project.id}/posts").
+              with_links_to("#{host}/projects/#{project.id}/posts").
               with_meta(total_records: 13, total_pages: 2, page_size: 10, current_page: 1)
           )
         end
@@ -51,21 +77,21 @@ describe "Posts API" do
 
       describe "specifying page parameters" do
         it "accepts different page numbers" do
-          get "#{host}/projects/#{@project.id}/posts/", page: { number: 1, size: 5 }
+          get "#{host}/projects/#{project.id}/posts/", page: { number: 1, size: 5 }
           expect(json.data.length).to eq 5
-          get "#{host}/projects/#{@project.id}/posts/", page: { number: 3, size: 3 }
+          get "#{host}/projects/#{project.id}/posts/", page: { number: 3, size: 3 }
           expect(json.data.length).to eq 3
         end
 
         it "accepts different page sizes" do
-          get "#{host}/projects/#{@project.id}/posts/", page: { number: 1, size: 3 }
+          get "#{host}/projects/#{project.id}/posts/", page: { number: 1, size: 3 }
           expect(json.data.length).to eq 3
-          get "#{host}/projects/#{@project.id}/posts/", page: { number: 1, size: 4 }
+          get "#{host}/projects/#{project.id}/posts/", page: { number: 1, size: 4 }
           expect(json.data.length).to eq 4
         end
 
         it "renders links in the response" do
-          get "#{host}/projects/#{@project.id}/posts/", page: { number: 2, size: 5 }
+          get "#{host}/projects/#{project.id}/posts/", page: { number: 2, size: 5 }
           expect(json.links).not_to be_nil
           expect(json.links.self).not_to be_nil
           expect(json.links.first).not_to be_nil
@@ -75,7 +101,7 @@ describe "Posts API" do
         end
 
         it "renders a meta in the response" do
-          get "#{host}/projects/#{@project.id}/posts/", page: { number: 2, size: 5 }
+          get "#{host}/projects/#{project.id}/posts/", page: { number: 2, size: 5 }
           expect(json.meta).not_to be_nil
           expect(json.meta.total_records).to eq 13
           expect(json.meta.total_pages).to eq 3
@@ -86,8 +112,8 @@ describe "Posts API" do
 
       context "when 'post_type' parameter is specified" do
         it "only returns posts of those types, with proper meta" do
-          get "#{host}/projects/#{@project.id}/posts", post_type: "issue,task"
-          collection = Post.where(project: @project, post_type: %w(issue task))
+          get "#{host}/projects/#{project.id}/posts", post_type: "issue,task"
+          collection = project.posts.where(post_type: %w(issue task))
           expect(json).to serialize_collection(collection).
             with(PostSerializer).
             with_meta(total_records: 10, total_pages: 1, page_size: 10, current_page: 1)
@@ -96,13 +122,13 @@ describe "Posts API" do
 
       context "when 'status' parameter is specified" do
         it "only returns posts of that status, with proper meta" do
-          get "#{host}/projects/#{@project.id}/posts", status: "open"
-          collection = Post.where(project: @project, status: :open)
+          get "#{host}/projects/#{project.id}/posts", status: "open"
+          collection = project.posts.where(status: :open)
           expect(json).to serialize_collection(collection).
             with(PostSerializer).
             with_meta(total_records: 9, total_pages: 1, page_size: 10, current_page: 1)
-          get "#{host}/projects/#{@project.id}/posts", status: "closed"
-          collection = Post.where(project: @project, status: :closed)
+          get "#{host}/projects/#{project.id}/posts", status: "closed"
+          collection = project.posts.where(status: :closed)
           expect(json).to serialize_collection(collection).
             with(PostSerializer).
             with_meta(total_records: 4, total_pages: 1, page_size: 10, current_page: 1)
@@ -110,11 +136,29 @@ describe "Posts API" do
       end
 
       it "returns posts in order by number" do
-        get "#{host}/projects/#{@project.id}/posts"
+        get "#{host}/projects/#{project.id}/posts"
 
         numbers_array = json.data.map(&:attributes).map(&:number)
 
         expect(numbers_array).to eq [13, 12, 11, 10, 9, 8, 7, 6, 5, 4]
+      end
+    end
+
+    describe "coalesce find requests" do
+      let(:project) { create(:project) }
+
+      before do
+        create(:post, id: 1, project: project)
+        create(:post, id: 2, project: project)
+        create(:post, id: 3, project: project)
+      end
+
+      it "works" do
+        get "#{host}/projects/#{project.id}/posts", filter: { id: "2,3" }
+
+        expect(json).
+          to serialize_collection(project.posts.where(id: [2, 3])).
+          with(PostSerializer)
       end
     end
   end
@@ -153,10 +197,10 @@ describe "Posts API" do
         expect(last_response.status).to eq 200
       end
 
-      it "returns the post, properly serialized, with users, comments and mentions included" do
+      it "returns the post, properly serialized, with includes" do
         expect(json).to serialize_object(Post.last).
           with(PostSerializer).
-          with_includes %w(users comments post_user_mentions comment_user_mentions comments_count)
+          with_includes %w(comments post_user_mentions comment_user_mentions)
       end
     end
   end
@@ -301,7 +345,8 @@ describe "Posts API" do
               title: "Edited title",
               markdown: "@#{mentioned_1.username} @#{mentioned_2.username}",
               post_type: "task",
-              state: "edited"
+              state: "edited",
+              status: "closed"
             },
             relationships: {
               project: { data: { id: project.id, type: "projects" } }
@@ -345,6 +390,7 @@ describe "Posts API" do
             expect(post.title).to eq "Edited title"
             expect(post.body).to eq "<p>@#{mentioned_1.username} @#{mentioned_2.username}</p>"
             expect(post.markdown).to eq "@#{mentioned_1.username} @#{mentioned_2.username}"
+            expect(post.status).to eq "closed"
 
             # post_type parameter was accepted
             expect(post.task?).to be true

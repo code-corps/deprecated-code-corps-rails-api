@@ -23,6 +23,7 @@
 #  photo_updated_at      :datetime
 #  name                  :text
 #  aasm_state            :string           default("signed_up"), not null
+#  theme                 :string           default("light")
 #
 
 require "rails_helper"
@@ -35,7 +36,7 @@ describe UserSerializer, type: :serializer do
                     name: "Josh Smith",
                     username: "joshsmith",
                     website: "example.com",
-                    twitter: "@user",
+                    twitter: "user",
                     biography: "Lorem ipsum",
                     facebook_id: "some_id",
                     facebook_access_token: "some_token")
@@ -123,6 +124,11 @@ describe UserSerializer, type: :serializer do
       it "has a 'state'" do
         expect(subject["state"]).to eq resource.state
         expect(subject["state"]).to_not be_nil
+      end
+
+      it "has a 'theme'" do
+        expect(subject["theme"]).to eq resource.theme
+        expect(subject["theme"]).to_not be_nil
       end
 
       context "when not the current user" do

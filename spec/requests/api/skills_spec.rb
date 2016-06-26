@@ -2,6 +2,25 @@ require "rails_helper"
 
 describe "Skills API" do
   context "GET /skills" do
+    def make_request(params = {})
+      get "#{host}/skills", params
+    end
+
+    describe "coalesce find requests" do
+      before do
+        create(:skill, id: 1)
+        create(:skill, id: 2)
+        create(:skill, id: 3)
+      end
+
+      it "returns a collection of skills based on specified ids" do
+        make_request(filter: { id: "1,2" })
+        expect(last_response.status).to eq 200
+        expect(json).
+          to serialize_collection(Skill.where(id: [1, 2])).
+          with(SkillSerializer)
+      end
+    end
     context "when getting all" do
       before do
         @skills = create_list(:skill, 10)

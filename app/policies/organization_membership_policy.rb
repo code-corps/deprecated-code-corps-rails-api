@@ -10,6 +10,10 @@ class OrganizationMembershipPolicy
     true
   end
 
+  def organization_index?
+    true
+  end
+
   def show?
     true
   end

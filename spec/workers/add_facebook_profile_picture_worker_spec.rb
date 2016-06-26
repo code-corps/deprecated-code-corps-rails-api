@@ -1,6 +1,6 @@
 require "rails_helper"
 
-describe AddFacebookProfilePictureWorker do
+describe AddFacebookProfilePictureWorker, local_skip: true do
   before do
     test_users = Koala::Facebook::TestUsers.new(app_id: ENV["FACEBOOK_APP_ID"], secret: ENV["FACEBOOK_APP_SECRET"])
     facebook_user = test_users.create(true, "email,user_friends")

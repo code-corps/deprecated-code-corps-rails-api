@@ -15,29 +15,36 @@
 class CommentsController < ApplicationController
   before_action :doorkeeper_authorize!, only: [:create, :update]
 
-  def index
-    comments = Comment.where(post: params[:post_id]).includes(:user, :post)
+  # GET /posts/:number/comments
+  def post_index
+    comments = post.comments.includes(:user, :comment_user_mentions)
     authorize comments
 
-    render json: comments
+    render json: comments, include: [:comment_user_mentions]
+  end
+
+  # GET /comments
+  def index
+    comments = Comment.where(id: id_params).includes(:post, :user, :comment_user_mentions)
+    authorize comments
+
+    render json: comments, include: [:comment_user_mentions]
   end
 
   def show
     comment = Comment.find(params[:id])
-
     authorize comment
 
-    render json: comment
+    render json: comment, include: [:comment_user_mentions]
   end
 
   def create
     comment = Comment.new(create_params)
-
     authorize comment
 
     if comment.save
       GenerateCommentUserNotificationsWorker.perform_async(comment.id)
-      render json: comment
+      render json: comment.reload # due to generating mentions
     else
       render_validation_errors comment.errors
     end
@@ -52,13 +59,21 @@ class CommentsController < ApplicationController
 
     if comment.save
       GenerateCommentUserNotificationsWorker.perform_async(comment.id)
-      render json: comment
+      render json: comment.reload # due to generating mentions
     else
       render_validation_errors comment.errors
     end
   end
 
   private
+
+    def post
+      Post.find(params[:post_id])
+    end
+
+    def id_params
+      params.require(:filter).require(:id).split(",")
+    end
 
     def publish?
       true unless parse_params(params).fetch(:preview, false)

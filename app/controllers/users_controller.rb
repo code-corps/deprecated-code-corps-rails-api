@@ -158,7 +158,7 @@ class UsersController < ApplicationController
 
     def update_params
       parse_params(params, only: [:name, :website, :biography, :twitter,
-                                  :base64_photo_data, :state_transition])
+                                  :base64_photo_data, :state_transition, :theme])
     end
 
     def render_no_such_email_error

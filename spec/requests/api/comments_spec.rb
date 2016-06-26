@@ -19,6 +19,31 @@ describe "Comments API" do
     end
   end
 
+  context "GET /comments" do
+    before do
+      create(:comment, id: 1)
+      create(:comment, id: 2)
+      create(:comment, id: 3)
+    end
+
+    def make_request(params = {})
+      get "#{host}/comments", params
+    end
+
+    it "requires the id filter" do
+      make_request
+      expect(last_response.status).to eq 400 # bad request
+    end
+
+    it "returns a collection of comments based on specified ids" do
+      make_request(filter: { id: "1,2" })
+      expect(last_response.status).to eq 200
+      expect(json).
+        to serialize_collection(Comment.where(id: [1, 2])).
+        with(CommentSerializer)
+    end
+  end
+
   context "GET /posts/:id/comments" do
     context "when unauthenticated" do
       before do
@@ -92,7 +117,7 @@ describe "Comments API" do
           comment = Comment.last
 
           # response is correct
-          expect(json).to serialize_object(Comment.last).with(CommentSerializer)
+          expect(json).to serialize_object(comment).with(CommentSerializer)
 
           # state is proper
           expect(comment.published?).to be true
