@@ -13,7 +13,8 @@
 #
 
 class Import < ActiveRecord::Base
-  has_attached_file :file
+  has_attached_file :file,
+                    path: "imports/:id/:style.:extension"
 
   validates_attachment_file_name :file, matches: [/\.csv\Z/]
   validates_attachment_content_type :file, content_type: %r{^text\/(csv|plain)}
