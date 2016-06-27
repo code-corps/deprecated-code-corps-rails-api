@@ -3,38 +3,32 @@ require "rails_helper"
 describe PostPolicy do
   subject { described_class }
 
-  let(:organization) { create(:organization) }
-  let(:project) { create(:project, organization: organization) }
-
-  let(:pending_user) { create(:user) }
-  let(:contributor_user) { create(:user) }
-  let(:admin_user) { create(:user) }
-  let(:owner_user) { create(:user) }
-
-  let(:idea_post) { create(:post, post_type: "idea", project: project) }
-  let(:task_post) { create(:post, post_type: "task", project: project) }
-  let(:issue_post) { create(:post, post_type: "issue", project: project) }
+  let(:admin_user) { build_stubbed(:user) }
+  let(:contributor_user) { build_stubbed(:user) }
+  let(:idea_post) { build_stubbed(:post, post_type: "idea", project: project) }
+  let(:issue_post) { build_stubbed(:post, post_type: "issue", project: project) }
+  let(:organization) { build(:organization) }
+  let(:owner_user) { build_stubbed(:user) }
+  let(:pending_user) { build_stubbed(:user) }
+  let(:project) { build(:project, organization: organization) }
+  let(:task_post) { build_stubbed(:post, post_type: "task", project: project) }
 
   before do
-    # Pending organization member
     create(:organization_membership,
            organization: organization,
            member: pending_user,
            role: "pending")
 
-    # Contributor organization member
     create(:organization_membership,
            organization: organization,
            member: contributor_user,
            role: "contributor")
 
-    # Admin organization member
     create(:organization_membership,
            organization: organization,
            member: admin_user,
            role: "admin")
 
-    # Owner organization member
     create(:organization_membership,
            organization: organization,
            member: owner_user,
@@ -100,26 +94,26 @@ describe PostPolicy do
       end
 
       it "is permitted to add an issue" do
-        post = create(:post,
-                      user: pending_user,
-                      post_type: "issue",
-                      project: project)
+        post = build_stubbed(:post,
+                             user: pending_user,
+                             post_type: "issue",
+                             project: project)
         expect(subject).to permit(pending_user, post)
       end
 
       it "is permitted to add an idea" do
-        post = create(:post,
-                      user: pending_user,
-                      post_type: "idea",
-                      project: project)
+        post = build_stubbed(:post,
+                             user: pending_user,
+                             post_type: "idea",
+                             project: project)
         expect(subject).to permit(pending_user, post)
       end
 
       it "is not permitted to add a task" do
-        post = create(:post,
-                      user: pending_user,
-                      post_type: "task",
-                      project: project)
+        post = build_stubbed(:post,
+                             user: pending_user,
+                             post_type: "task",
+                             project: project)
         expect(subject).not_to permit(pending_user, post)
       end
     end
@@ -132,26 +126,26 @@ describe PostPolicy do
       end
 
       it "is permitted to add an issue" do
-        post = create(:post,
-                      user: contributor_user,
-                      post_type: "issue",
-                      project: project)
+        post = build_stubbed(:post,
+                             user: contributor_user,
+                             post_type: "issue",
+                             project: project)
         expect(subject).to permit(contributor_user, post)
       end
 
       it "is permitted to add an idea" do
-        post = create(:post,
-                      user: contributor_user,
-                      post_type: "idea",
-                      project: project)
+        post = build_stubbed(:post,
+                             user: contributor_user,
+                             post_type: "idea",
+                             project: project)
         expect(subject).to permit(contributor_user, post)
       end
 
       it "is permitted to add a task" do
-        post = create(:post,
-                      user: contributor_user,
-                      post_type: "task",
-                      project: project)
+        post = build_stubbed(:post,
+                             user: contributor_user,
+                             post_type: "task",
+                             project: project)
         expect(subject).to permit(contributor_user, post)
       end
     end
@@ -164,26 +158,26 @@ describe PostPolicy do
       end
 
       it "is permitted to add an issue" do
-        post = create(:post,
-                      user: admin_user,
-                      post_type: "issue",
-                      project: project)
+        post = build_stubbed(:post,
+                             user: admin_user,
+                             post_type: "issue",
+                             project: project)
         expect(subject).to permit(admin_user, post)
       end
 
       it "is permitted to add an idea" do
-        post = create(:post,
-                      user: admin_user,
-                      post_type: "idea",
-                      project: project)
+        post = build_stubbed(:post,
+                             user: admin_user,
+                             post_type: "idea",
+                             project: project)
         expect(subject).to permit(admin_user, post)
       end
 
       it "is permitted to add a task" do
-        post = create(:post,
-                      user: admin_user,
-                      post_type: "task",
-                      project: project)
+        post = build_stubbed(:post,
+                             user: admin_user,
+                             post_type: "task",
+                             project: project)
         expect(subject).to permit(admin_user, post)
       end
     end
@@ -196,26 +190,26 @@ describe PostPolicy do
       end
 
       it "is permitted to add an issue" do
-        post = create(:post,
-                      user: owner_user,
-                      post_type: "issue",
-                      project: project)
+        post = build_stubbed(:post,
+                             user: owner_user,
+                             post_type: "issue",
+                             project: project)
         expect(subject).to permit(owner_user, post)
       end
 
       it "is permitted to add an idea" do
-        post = create(:post,
-                      user: owner_user,
-                      post_type: "idea",
-                      project: project)
+        post = build_stubbed(:post,
+                             user: owner_user,
+                             post_type: "idea",
+                             project: project)
         expect(subject).to permit(owner_user, post)
       end
 
       it "is permitted to add a task" do
-        post = create(:post,
-                      user: owner_user,
-                      post_type: "task",
-                      project: project)
+        post = build_stubbed(:post,
+                             user: owner_user,
+                             post_type: "task",
+                             project: project)
         expect(subject).to permit(owner_user, post)
       end
     end
@@ -238,10 +232,10 @@ describe PostPolicy do
       end
 
       it "is permitted to update their own issues" do
-        post = create(:post,
-                      user: pending_user,
-                      post_type: "issue",
-                      project: project)
+        post = build_stubbed(:post,
+                             user: pending_user,
+                             post_type: "issue",
+                             project: project)
         expect(subject).to permit(pending_user, post)
       end
     end
@@ -254,26 +248,26 @@ describe PostPolicy do
       end
 
       it "is permitted to update their own issue" do
-        post = create(:post,
-                      user: contributor_user,
-                      post_type: "issue",
-                      project: project)
+        post = build_stubbed(:post,
+                             user: contributor_user,
+                             post_type: "issue",
+                             project: project)
         expect(subject).to permit(contributor_user, post)
       end
 
       it "is permitted to update their own idea" do
-        post = create(:post,
-                      user: contributor_user,
-                      post_type: "idea",
-                      project: project)
+        post = build_stubbed(:post,
+                             user: contributor_user,
+                             post_type: "idea",
+                             project: project)
         expect(subject).to permit(contributor_user, post)
       end
 
       it "is permitted to update their own task" do
-        post = create(:post,
-                      user: contributor_user,
-                      post_type: "task",
-                      project: project)
+        post = build_stubbed(:post,
+                             user: contributor_user,
+                             post_type: "task",
+                             project: project)
         expect(subject).to permit(contributor_user, post)
       end
     end

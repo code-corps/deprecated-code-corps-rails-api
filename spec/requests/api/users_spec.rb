@@ -461,7 +461,11 @@ describe "Users API" do
           params = {
             data: {
               type: "users",
-              attributes: { website: "edit.com", biography: "Edited", twitter: "edit" }
+              attributes: { website: "edit.com",
+                            biography: "Edited",
+                            twitter: "edit",
+                            theme: "dark"
+                          }
             }
           }
 
@@ -473,11 +477,13 @@ describe "Users API" do
           expect(user_json.website).to eq "edit.com"
           expect(user_json.biography).to eq "Edited"
           expect(user_json.twitter).to eq "edit"
+          expect(user_json.theme).to eq "dark"
 
           user = @edited_user.reload
           expect(user.website).to eq "edit.com"
           expect(user.biography).to eq "Edited"
           expect(user.twitter).to eq "edit"
+          expect(user.theme).to eq "dark"
         end
 
         it "allows updating of only specific parameters" do

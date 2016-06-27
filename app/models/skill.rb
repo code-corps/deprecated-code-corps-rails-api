@@ -2,11 +2,13 @@
 #
 # Table name: skills
 #
-#  id          :integer          not null, primary key
-#  title       :string           not null
-#  description :string
-#  created_at  :datetime         not null
-#  updated_at  :datetime         not null
+#  id           :integer          not null, primary key
+#  title        :string           not null
+#  description  :string
+#  created_at   :datetime         not null
+#  updated_at   :datetime         not null
+#  original_row :integer
+#  slug         :string           not null
 #
 
 class Skill < ActiveRecord::Base
@@ -17,8 +19,22 @@ class Skill < ActiveRecord::Base
 
   validates_presence_of :title
 
+  before_validation :update_slug
+
+  validates :slug, presence: true
+  validates :slug, obscenity: { message: "may not be obscene" }
+  validates :slug, exclusion: { in: Rails.configuration.x.reserved_routes }
+  validates :slug, slug: true
+  validates :slug, uniqueness: { case_sensitive: false }
+
   def self.autocomplete(query)
     results = search query
     results.take(5)
   end
+
+  private
+
+    def update_slug
+      self.slug = title.try(:parameterize) if title_changed?
+    end
 end
