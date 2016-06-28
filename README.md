@@ -17,6 +17,8 @@ We'd love to have you contribute to Code Corps directly!
 
 To do so, please read the guidelines in our [`CONTRIBUTING.md`](CONTRIBUTING.md).
 
+Then head over to [Code Corps](https://codecorps.org), where we manage contributions.
+
 ## Developer installation guide
 
 ### Install Rails, PostgreSQL, Redis, and ElasticSearch
