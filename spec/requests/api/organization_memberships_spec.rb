@@ -173,7 +173,7 @@ describe "OrganizationMemberships API" do
       let(:token) { authenticate email: applicant.email, password: "password" }
 
       context "when unauthorized" do
-        it "respond with 401 ACCESS_DENIED" do
+        it "respond with 403 FORBIDDEN" do
           authenticated_post "/organization_memberships", {
             data: {
               type: "organization_memberships",
@@ -185,8 +185,8 @@ describe "OrganizationMemberships API" do
             }
           }, token
 
-          expect(last_response.status).to eq 401
-          expect(json).to be_a_valid_json_api_error.with_id "ACCESS_DENIED"
+          expect(last_response.status).to eq 403
+          expect(json).to be_a_valid_json_api_error.with_id "FORBIDDEN"
         end
       end
 
@@ -232,7 +232,7 @@ describe "OrganizationMemberships API" do
 
     context "when authenticated" do
       context "when unauthorized" do
-        it "respond with 401 ACCESS_DENIED" do
+        it "respond with 403 FORBIDDEN" do
           token = authenticate(email: applicant.email, password: "password")
 
           authenticated_patch "/organization_memberships/#{membership.id}", {
@@ -242,8 +242,8 @@ describe "OrganizationMemberships API" do
             }
           }, token
 
-          expect(last_response.status).to eq 401
-          expect(json).to be_a_valid_json_api_error.with_id "ACCESS_DENIED"
+          expect(last_response.status).to eq 403
+          expect(json).to be_a_valid_json_api_error.with_id "FORBIDDEN"
         end
       end
 
@@ -295,13 +295,13 @@ describe "OrganizationMemberships API" do
       end
 
       context "when unauthorized" do
-        it "responds with 401 ACCESS_DENIED" do
+        it "responds with 403 FORBIDDEN" do
           token = authenticate(email: user.email, password: "password")
 
           authenticated_delete "/organization_memberships/#{membership.id}", {}, token
 
-          expect(last_response.status).to eq 401
-          expect(json).to be_a_valid_json_api_error.with_id "ACCESS_DENIED"
+          expect(last_response.status).to eq 403
+          expect(json).to be_a_valid_json_api_error.with_id "FORBIDDEN"
         end
       end
 

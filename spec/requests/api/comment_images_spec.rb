@@ -110,9 +110,9 @@ describe "Comment Images API" do
           authenticated_post "/comment_images", params, @token
         end
 
-        it "responds with a 401 ACCESS_DENIED" do
-          expect(last_response.status).to eq 401
-          expect(json).to be_a_valid_json_api_error.with_id "ACCESS_DENIED"
+        it "responds with a 403 FORBIDDEN" do
+          expect(last_response.status).to eq 403
+          expect(json).to be_a_valid_json_api_error.with_id "FORBIDDEN"
         end
       end
     end

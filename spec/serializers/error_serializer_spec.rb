@@ -39,10 +39,10 @@ describe ErrorSerializer do
       expect(result[:errors].length).to eq 1
 
       error = result[:errors].first
-      expect(error[:id]).to eq "ACCESS_DENIED"
-      expect(error[:title]).to eq "Access denied"
+      expect(error[:id]).to eq "FORBIDDEN"
+      expect(error[:title]).to eq "Forbidden"
       expect(error[:detail]).to eq "You are not authorized to perform this action on users."
-      expect(error[:status]).to eq 401
+      expect(error[:status]).to eq 403
     end
 
     it "can serialize ActionController::ParameterMissing" do
