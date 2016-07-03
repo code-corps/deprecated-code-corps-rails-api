@@ -272,6 +272,7 @@ ActiveRecord::Schema.define(version: 20160626090623) do
     t.text     "base64_icon_data"
     t.string   "slug",                                  null: false
     t.integer  "organization_id",                       null: false
+    t.string   "aasm_state"
     t.text     "long_description_body"
     t.text     "long_description_markdown"
     t.integer  "open_posts_count",          default: 0, null: false

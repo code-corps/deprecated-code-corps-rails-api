@@ -509,11 +509,11 @@ describe "Users API" do
           @token = authenticate(email: "regular@mail.com", password: "password")
         end
 
-        it "returns a 401 with a proper error message" do
+        it "returns a 403 FORBIDDEN" do
           authenticated_patch "/users/#{@edited_user.id}", @edit_params, @token
 
-          expect(last_response.status).to eq 401
-          expect(json).to be_a_valid_json_api_error.with_id("ACCESS_DENIED")
+          expect(last_response.status).to eq 403
+          expect(json).to be_a_valid_json_api_error.with_id("FORBIDDEN")
         end
       end
     end

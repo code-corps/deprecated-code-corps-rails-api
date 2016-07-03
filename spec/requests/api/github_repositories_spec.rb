@@ -22,14 +22,14 @@ describe "GithubRepositories API" do
       end
 
       context "when user has insufficient access rights" do
-        it "responds with a 401" do
+        it "responds with a 403" do
           authenticated_post "/github_repositories", { data: {
             attributes: { url: "https://github.com/code-corps/code-corps-api" },
             relationships: { project: { data: { type: "projects", id: @project.id } } }
           } }, token
 
-          expect(last_response.status).to eq 401
-          expect(json).to be_a_valid_json_api_error.with_id "ACCESS_DENIED"
+          expect(last_response.status).to eq 403
+          expect(json).to be_a_valid_json_api_error.with_id "FORBIDDEN"
         end
       end
 
