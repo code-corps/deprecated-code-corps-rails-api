@@ -73,10 +73,10 @@ describe "Roles API" do
       end
 
       context "as a regular user" do
-        it "responds with a 401 access denied" do
+        it "responds with a 403 FORBIDDEN" do
           make_request(params)
-          expect(last_response.status).to eq 401
-          expect(json).to be_a_valid_json_api_error.with_id "ACCESS_DENIED"
+          expect(last_response.status).to eq 403
+          expect(json).to be_a_valid_json_api_error.with_id "FORBIDDEN"
         end
       end
 

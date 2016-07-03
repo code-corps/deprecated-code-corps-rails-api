@@ -111,8 +111,8 @@ describe "UserRoles API" do
 
         authenticated_delete "/user_roles/1", {}, token
 
-        expect(last_response.status).to eq 401
-        expect(json).to be_a_valid_json_api_error.with_id "ACCESS_DENIED"
+        expect(last_response.status).to eq 403
+        expect(json).to be_a_valid_json_api_error.with_id "FORBIDDEN"
         expect(UserRole.count).to eq 1
       end
 

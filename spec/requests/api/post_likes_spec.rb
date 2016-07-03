@@ -101,7 +101,6 @@ describe "PostLikes API" do
     end
 
     context "when authenticated" do
-
       let(:token) { authenticate(email: "josh@coderly.com", password: "password") }
 
       before do
@@ -113,8 +112,8 @@ describe "PostLikes API" do
 
         authenticated_delete "/post_likes/1", {}, token
 
-        expect(last_response.status).to eq 401
-        expect(json).to be_a_valid_json_api_error.with_id "ACCESS_DENIED"
+        expect(last_response.status).to eq 403
+        expect(json).to be_a_valid_json_api_error.with_id "FORBIDDEN"
         expect(PostLike.count).to eq 1
       end
 

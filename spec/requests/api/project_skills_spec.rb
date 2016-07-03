@@ -153,13 +153,13 @@ describe "ProjectSkills API" do
 
         let(:token) { authenticate(email: "random@user.com", password: "password") }
 
-        it "returns a 401 access denied" do
+        it "returns a 403 FORBIDDEN" do
           create(:project_skill, id: 1, skill: @skill, project: @project)
 
           authenticated_delete "/project_skills/1", {}, token
 
-          expect(last_response.status).to eq 401
-          expect(json).to be_a_valid_json_api_error.with_id "ACCESS_DENIED"
+          expect(last_response.status).to eq 403
+          expect(json).to be_a_valid_json_api_error.with_id "FORBIDDEN"
           expect(ProjectSkill.count).to eq 1
         end
       end

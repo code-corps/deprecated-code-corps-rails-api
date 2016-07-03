@@ -1,13 +1,21 @@
 class ErrorSerializer
   def self.serialize(error)
-    error_hash = serialize_doorkeeper_oauth_invalid_token_response(error) if error.class == Doorkeeper::OAuth::InvalidTokenResponse
-    error_hash = serialize_doorkeeper_oauth_error_response(error) if error.class == Doorkeeper::OAuth::ErrorResponse
-    error_hash = serialize_validation_errors(error) if error.class == ActiveModel::Errors
-    error_hash = serialize_pundit_not_authorized_error(error) if error.class == Pundit::NotAuthorizedError
-    error_hash = serialize_parameter_missing(error) if error.class == ActionController::ParameterMissing
-    error_hash = serialize_action_controller_routing_error(error) if error.class == ActionController::RoutingError
-    error_hash = serialize_facebook_authentication_error(error) if error.class == Koala::Facebook::AuthenticationError
-    error_hash = serialize_record_not_found_error(error) if error.class == ActiveRecord::RecordNotFound
+    error_hash = serialize_doorkeeper_oauth_invalid_token_response(error) if
+      error.class == Doorkeeper::OAuth::InvalidTokenResponse
+    error_hash = serialize_doorkeeper_oauth_error_response(error) if
+      error.class == Doorkeeper::OAuth::ErrorResponse
+    error_hash = serialize_validation_errors(error) if
+      error.class == ActiveModel::Errors
+    error_hash = serialize_pundit_not_authorized_error(error) if
+      error.class == Pundit::NotAuthorizedError
+    error_hash = serialize_parameter_missing(error) if
+      error.class == ActionController::ParameterMissing
+    error_hash = serialize_action_controller_routing_error(error) if
+      error.class == ActionController::RoutingError
+    error_hash = serialize_facebook_authentication_error(error) if
+      error.class == Koala::Facebook::AuthenticationError
+    error_hash = serialize_record_not_found_error(error) if
+      error.class == ActiveRecord::RecordNotFound
 
     { errors: Array.wrap(error_hash) }
   end
@@ -35,10 +43,10 @@ class ErrorSerializer
     def self.serialize_pundit_not_authorized_error(error)
       subject_name = error.record.class.to_s.pluralize.underscore.humanize.downcase
       return {
-        id: "ACCESS_DENIED",
-        title: "Access denied",
+        id: "FORBIDDEN",
+        title: "Forbidden",
         detail: "You are not authorized to perform this action on #{subject_name}.",
-        status: 401
+        status: 403
       }
     end
 
