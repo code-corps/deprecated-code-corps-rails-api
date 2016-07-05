@@ -21,9 +21,10 @@
 #  photo_content_type    :string
 #  photo_file_size       :integer
 #  photo_updated_at      :datetime
-#  name                  :text
 #  aasm_state            :string           default("signed_up"), not null
 #  theme                 :string           default("light"), not null
+#  first_name            :string
+#  last_name             :string
 #
 
 class UsersController < ApplicationController
@@ -158,8 +159,9 @@ class UsersController < ApplicationController
     end
 
     def update_params
-      parse_params(params, only: [:name, :website, :biography, :twitter,
-                                  :base64_photo_data, :state_transition, :theme])
+      parse_params(params, only: [:first_name, :last_name, :website,
+                                  :biography, :twitter, :base64_photo_data,
+                                  :state_transition, :theme])
     end
 
     def render_no_such_email_error
