@@ -20,7 +20,7 @@ describe CommentUserMentionSerializer, type: :serializer do
     let(:resource) { create(:comment_user_mention) }
 
     let(:serializer) { CommentUserMentionSerializer.new(resource) }
-    let(:serialization) { ActiveModel::Serializer::Adapter.create(serializer) }
+    let(:serialization) { ActiveModelSerializers::Adapter.create(serializer) }
 
     context "root" do
       subject do
@@ -85,7 +85,7 @@ describe CommentUserMentionSerializer, type: :serializer do
 
       context "when including 'user'" do
         let(:serialization) do
-          ActiveModel::Serializer::Adapter.create(serializer, include: ["user"])
+          ActiveModelSerializers::Adapter.create(serializer, include: ["user"])
         end
 
         subject do
@@ -100,7 +100,7 @@ describe CommentUserMentionSerializer, type: :serializer do
 
       context "when including 'comment'" do
         let(:serialization) do
-          ActiveModel::Serializer::Adapter.create(serializer, include: ["comment"])
+          ActiveModelSerializers::Adapter.create(serializer, include: ["comment"])
         end
 
         subject do

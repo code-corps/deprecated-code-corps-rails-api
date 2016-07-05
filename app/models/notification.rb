@@ -11,7 +11,7 @@
 #  updated_at      :datetime         not null
 #
 
-class Notification < ActiveRecord::Base
+class Notification < ApplicationRecord
   include AASM
 
   belongs_to :notifiable, polymorphic: true

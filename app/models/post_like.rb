@@ -9,7 +9,7 @@
 #  updated_at :datetime         not null
 #
 
-class PostLike < ActiveRecord::Base
+class PostLike < ApplicationRecord
   belongs_to :user
   belongs_to :post, counter_cache: true
 

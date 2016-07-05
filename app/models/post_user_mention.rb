@@ -12,7 +12,7 @@
 #  updated_at  :datetime         not null
 #
 
-class PostUserMention < ActiveRecord::Base
+class PostUserMention < ApplicationRecord
   belongs_to :user
   belongs_to :post
 

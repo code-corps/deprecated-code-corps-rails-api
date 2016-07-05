@@ -14,7 +14,7 @@ require "html/pipeline"
 require "html/pipeline/rouge_filter"
 require "code_corps/scenario/generate_preview_mentions"
 
-class Preview < ActiveRecord::Base
+class Preview < ApplicationRecord
   belongs_to :user
 
   has_many :preview_user_mentions

@@ -10,7 +10,7 @@
 #  kind       :string           not null
 #
 
-class Role < ActiveRecord::Base
+class Role < ApplicationRecord
   has_many :role_skills
   has_many :skills, through: :role_skills
 

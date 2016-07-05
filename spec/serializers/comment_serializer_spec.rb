@@ -27,7 +27,7 @@ describe CommentSerializer, type: :serializer do
     let(:resource) { @comment }
 
     let(:serializer) { CommentSerializer.new(resource) }
-    let(:serialization) { ActiveModel::Serializer::Adapter.create(serializer) }
+    let(:serialization) { ActiveModelSerializers::Adapter.create(serializer) }
 
     context "root" do
       subject do
@@ -101,7 +101,9 @@ describe CommentSerializer, type: :serializer do
       end
 
       context "when including 'comment_user_mentions'" do
-        let(:serialization) { ActiveModel::Serializer::Adapter.create(serializer, include: ["comment_user_mentions"]) }
+        let(:serialization) do
+          ActiveModelSerializers::Adapter.create(serializer, include: ["comment_user_mentions"])
+        end
 
         subject do
           JSON.parse(serialization.to_json)["included"]

@@ -12,7 +12,7 @@
 #  updated_at        :datetime         not null
 #
 
-class Import < ActiveRecord::Base
+class Import < ApplicationRecord
   has_attached_file :file,
                     path: "imports/:id/:style.:extension"
 

@@ -17,7 +17,7 @@ describe RoleSkillSerializer, type: :serializer do
     let(:resource) { create(:role_skill) }
 
     let(:serializer) { RoleSkillSerializer.new(resource) }
-    let(:serialization) { ActiveModel::Serializer::Adapter.create(serializer) }
+    let(:serialization) { ActiveModelSerializers::Adapter.create(serializer) }
 
     context "root" do
       subject do
@@ -72,7 +72,7 @@ describe RoleSkillSerializer, type: :serializer do
 
       context "when including 'role'" do
         let(:serialization) do
-          ActiveModel::Serializer::Adapter.create(serializer, include: ["role"])
+          ActiveModelSerializers::Adapter.create(serializer, include: ["role"])
         end
 
         subject do
@@ -87,7 +87,7 @@ describe RoleSkillSerializer, type: :serializer do
 
       context "when including 'skill'" do
         let(:serialization) do
-          ActiveModel::Serializer::Adapter.create(serializer, include: ["skill"])
+          ActiveModelSerializers::Adapter.create(serializer, include: ["skill"])
         end
 
         subject do

@@ -15,7 +15,7 @@
 #  image_updated_at   :datetime
 #
 
-class CommentImage < ActiveRecord::Base
+class CommentImage < ApplicationRecord
   belongs_to :user
   belongs_to :comment
 

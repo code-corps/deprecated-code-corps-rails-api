@@ -23,7 +23,7 @@ class PostsController < ApplicationController
 
   def index
     authorize Post
-    includes = [:comments, :post_user_mentions, :comment_user_mentions, :user, :project]
+    includes = [:user, :project]
     posts = Post.includes(includes).where(id: id_params)
     render json: posts
   end
@@ -110,8 +110,7 @@ class PostsController < ApplicationController
     def find_post!
       project = find_project!
       project.posts.
-        includes(comments: [:comment_user_mentions, :user]).
-        includes(:post_user_mentions, :comment_user_mentions).
+        includes(comments: [:user]).
         find_by!(number: post_id)
     end
 
@@ -121,8 +120,6 @@ class PostsController < ApplicationController
       project.posts.
         includes(:user).
         includes(comments: :user).
-        includes(:post_user_mentions).
-        includes(:comment_user_mentions).
         where(filter_params).
         page(page_number).
         per(page_size)

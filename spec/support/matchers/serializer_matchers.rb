@@ -1,6 +1,6 @@
 RSpec::Matchers.define :serialize_object do |object|
   match do |json|
-    serialization = ActiveModel::Serializer::Adapter.create(@serializer, include: includes)
+    serialization = ActiveModelSerializers::Adapter.create(@serializer, include: includes)
     JSON.parse(serialization.to_json) == json
   end
 
@@ -23,17 +23,19 @@ end
 
 RSpec::Matchers.define :serialize_collection do |collection|
   match do |actual_json|
-    options = {}
-    options = options.merge pagination_options if paginated?(collection)
-
     actual_json = cleanup(actual_json)
 
     serializer =
       ActiveModel::Serializer::CollectionSerializer.new(collection, serializer: @serializer_klass)
     serialization =
-      ActiveModel::Serializer::Adapter.create(serializer, include: includes, meta: meta)
+      ActiveModelSerializers::Adapter.create(
+                                                serializer,
+                                                include: includes,
+                                                meta: meta,
+                                                serialization_context: pagination_options
+                                              )
 
-    expected_json = cleanup(JSON.parse(serialization.to_json(options)))
+    expected_json = cleanup(JSON.parse(serialization.to_json))
 
     content_is_ok = arrays_have_same_elements(expected_json["data"], actual_json["data"])
     content_is_ok && remainder_is_ok(expected_json, actual_json)
@@ -88,8 +90,7 @@ RSpec::Matchers.define :serialize_collection do |collection|
 
   def pagination_options
     request = double(original_url: host, query_parameters: {})
-    serialization_context = ActiveModelSerializers::SerializationContext.new(request)
-    { serialization_context: serialization_context }
+    ActiveModelSerializers::SerializationContext.new(request)
   end
 
   def arrays_have_same_elements(a, b)

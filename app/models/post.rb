@@ -22,7 +22,7 @@ require "html/pipeline"
 require "html/pipeline/rouge_filter"
 require "code_corps/scenario/generate_user_mentions_for_post"
 
-class Post < ActiveRecord::Base
+class Post < ApplicationRecord
   include AASM
 
   belongs_to :user

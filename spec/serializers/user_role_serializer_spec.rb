@@ -16,7 +16,7 @@ describe UserRoleSerializer, type: :serializer do
     let(:resource) { create(:user_role) }
 
     let(:serializer) { UserRoleSerializer.new(resource) }
-    let(:serialization) { ActiveModel::Serializer::Adapter.create(serializer) }
+    let(:serialization) { ActiveModelSerializers::Adapter.create(serializer) }
 
     context "root" do
       subject do
@@ -71,7 +71,7 @@ describe UserRoleSerializer, type: :serializer do
 
       context "when including 'user'" do
         let(:serialization) do
-          ActiveModel::Serializer::Adapter.create(serializer, include: ["user"])
+          ActiveModelSerializers::Adapter.create(serializer, include: ["user"])
         end
 
         subject do
@@ -86,7 +86,7 @@ describe UserRoleSerializer, type: :serializer do
 
       context "when including 'role'" do
         let(:serialization) do
-          ActiveModel::Serializer::Adapter.create(serializer, include: ["role"])
+          ActiveModelSerializers::Adapter.create(serializer, include: ["role"])
         end
 
         subject do

@@ -27,7 +27,7 @@
 #  last_name             :string
 #
 
-class User < ActiveRecord::Base
+class User < ApplicationRecord
   ASSET_HOST_FOR_DEFAULT_PHOTO = "https://d3pgew4wbk2vb1.cloudfront.net/icons".freeze
 
   include AASM

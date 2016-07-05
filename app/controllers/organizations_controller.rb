@@ -20,7 +20,7 @@ class OrganizationsController < ApplicationController
 
   def index
     authorize Organization
-    organizations = Organization.includes([:projects, :members]).find(id_params)
+    organizations = Organization.find(id_params)
     render json: organizations
   end
 

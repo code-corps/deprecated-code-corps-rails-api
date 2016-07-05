@@ -27,7 +27,7 @@ describe CommentImageSerializer, :type => :serializer do
     let(:resource) { create(:comment_image, :with_s3_image, filename: "default-avatar.gif", base64_photo_data: gif_string) }
 
     let(:serializer) { CommentImageSerializer.new(resource) }
-    let(:serialization) { ActiveModel::Serializer::Adapter.create(serializer) }
+    let(:serialization) { ActiveModelSerializers::Adapter.create(serializer) }
 
     context "root" do
       subject do
@@ -92,7 +92,9 @@ describe CommentImageSerializer, :type => :serializer do
       end
 
       context "when including 'user'" do
-        let(:serialization) { ActiveModel::Serializer::Adapter.create(serializer, include: ["user"]) }
+        let(:serialization) do
+          ActiveModelSerializers::Adapter.create(serializer, include: ["user"])
+        end
 
         subject do
           JSON.parse(serialization.to_json)["included"]
@@ -105,7 +107,9 @@ describe CommentImageSerializer, :type => :serializer do
       end
 
       context "when including 'comment'" do
-        let(:serialization) { ActiveModel::Serializer::Adapter.create(serializer, include: ["comment"]) }
+        let(:serialization) do
+          ActiveModelSerializers::Adapter.create(serializer, include: ["comment"])
+        end
 
         subject do
           JSON.parse(serialization.to_json)["included"]

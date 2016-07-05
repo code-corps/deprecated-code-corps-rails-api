@@ -13,7 +13,7 @@
 #  updated_at  :datetime         not null
 #
 
-class CommentUserMention < ActiveRecord::Base
+class CommentUserMention < ApplicationRecord
   belongs_to :user
   belongs_to :comment
   belongs_to :post
