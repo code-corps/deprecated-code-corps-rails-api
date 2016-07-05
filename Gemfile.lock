@@ -163,6 +163,9 @@ GEM
       thor (~> 0.19.1)
     formatador (0.2.5)
     full-name-splitter (0.1.2)
+    gibbon (2.2.4)
+      faraday (>= 0.9.1)
+      multi_json (>= 1.11.0)
     github-markdown (0.6.9)
     globalid (0.3.6)
       activesupport (>= 4.1.0)
@@ -419,6 +422,7 @@ DEPENDENCIES
   faraday
   foreman
   full-name-splitter
+  gibbon
   github-markdown
   guard-rspec
   hashie

@@ -196,6 +196,7 @@ class UsersController < ApplicationController
       if user.save
         analytics_for(user).track_signed_up_with_facebook
         AddFacebookFriendsWorker.perform_async(user.id)
+        SubscribeToMailingListWorker.perform_async(user.id)
         if photo_param?
           UpdateProfilePictureWorker.perform_async(user.id)
         else
@@ -213,6 +214,7 @@ class UsersController < ApplicationController
 
       if user.save
         analytics_for(user).track_signed_up_with_email
+        SubscribeToMailingListWorker.perform_async(user.id)
         if photo_param?
           UpdateProfilePictureWorker.perform_async(user.id)
         else
