@@ -35,7 +35,7 @@ describe ProjectSerializer, type: :serializer do
     end
 
     let(:serializer) { ProjectSerializer.new(resource) }
-    let(:serialization) { ActiveModel::Serializer::Adapter.create(serializer) }
+    let(:serialization) { ActiveModelSerializers::Adapter.create(serializer) }
 
     context "root" do
       subject do
@@ -154,7 +154,7 @@ describe ProjectSerializer, type: :serializer do
 
     context "when including categories" do
       let(:serialization) do
-        ActiveModel::Serializer::Adapter.create(serializer, include: ["categories"])
+        ActiveModelSerializers::Adapter.create(serializer, include: ["categories"])
       end
 
       subject do
@@ -169,7 +169,7 @@ describe ProjectSerializer, type: :serializer do
 
     context "when including roles" do
       let(:serialization) do
-        ActiveModel::Serializer::Adapter.create(serializer, include: ["roles"])
+        ActiveModelSerializers::Adapter.create(serializer, include: ["roles"])
       end
 
       subject do
@@ -184,7 +184,7 @@ describe ProjectSerializer, type: :serializer do
 
     context "when including github_repositories" do
       let(:serialization) do
-        ActiveModel::Serializer::Adapter.create(serializer, include: ["github_repositories"])
+        ActiveModelSerializers::Adapter.create(serializer, include: ["github_repositories"])
       end
 
       subject do
@@ -199,7 +199,7 @@ describe ProjectSerializer, type: :serializer do
 
     context "when including skills" do
       let(:serialization) do
-        ActiveModel::Serializer::Adapter.create(serializer, include: ["skills"])
+        ActiveModelSerializers::Adapter.create(serializer, include: ["skills"])
       end
 
       subject do

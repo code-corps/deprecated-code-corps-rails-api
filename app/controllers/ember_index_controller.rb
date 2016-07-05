@@ -5,7 +5,7 @@ class EmberIndexController < ApplicationController
 
   def index
     index = Sidekiq.redis { |r| r.get(fetch_index_key) }
-    render text: process_index(index).html_safe, layout: false
+    render html: process_index(index).html_safe, layout: false
   end
 
   private

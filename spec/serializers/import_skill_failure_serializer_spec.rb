@@ -18,7 +18,7 @@ describe ImportSkillFailureSerializer, type: :serializer do
     let(:resource) { create(:import_skill_failure) }
 
     let(:serializer) { described_class.new(resource) }
-    let(:serialization) { ActiveModel::Serializer::Adapter.create(serializer) }
+    let(:serialization) { ActiveModelSerializers::Adapter.create(serializer) }
 
     context "root" do
       subject do

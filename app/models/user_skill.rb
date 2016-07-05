@@ -9,7 +9,7 @@
 #  updated_at :datetime         not null
 #
 
-class UserSkill < ActiveRecord::Base
+class UserSkill < ApplicationRecord
   belongs_to :user
   belongs_to :skill
 

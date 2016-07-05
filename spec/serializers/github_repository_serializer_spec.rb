@@ -20,7 +20,7 @@ describe GithubRepositorySerializer, :type => :serializer do
     }
 
     let(:serializer) { GithubRepositorySerializer.new(resource) }
-    let(:serialization) { ActiveModel::Serializer::Adapter.create(serializer) }
+    let(:serialization) { ActiveModelSerializers::Adapter.create(serializer) }
 
     context "root" do
       subject do

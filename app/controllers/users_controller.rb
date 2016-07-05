@@ -39,9 +39,7 @@ class UsersController < ApplicationController
   def index
     authorize User
 
-    users = User.includes(
-      :categories, :organizations, :roles, skills: :roles
-    ).find(id_params)
+    users = User.find(id_params)
 
     render json: users
   end
@@ -55,7 +53,7 @@ class UsersController < ApplicationController
   end
 
   def show
-    user = User.includes(skills: :roles).find(params[:id])
+    user = User.find(params[:id])
 
     authorize user
     render json: user, include: ["skills"]

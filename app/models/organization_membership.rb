@@ -10,7 +10,7 @@
 #  organization_id :integer
 #
 
-class OrganizationMembership < ActiveRecord::Base
+class OrganizationMembership < ApplicationRecord
   belongs_to :organization
   belongs_to :member, class_name: "User"
 

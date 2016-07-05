@@ -45,7 +45,7 @@ describe PostSerializer, type: :serializer do
     let(:resource) { @post }
 
     let(:serializer) { PostSerializer.new(resource) }
-    let(:serialization) { ActiveModel::Serializer::Adapter.create(serializer) }
+    let(:serialization) { ActiveModelSerializers::Adapter.create(serializer) }
 
     context "root" do
       subject do
@@ -152,7 +152,9 @@ describe PostSerializer, type: :serializer do
       end
 
       context "when including 'comments'" do
-        let(:serialization) { ActiveModel::Serializer::Adapter.create(serializer, include: ["comments"]) }
+        let(:serialization) do
+          ActiveModelSerializers::Adapter.create(serializer, include: ["comments"])
+        end
 
         subject do
           JSON.parse(serialization.to_json)["included"]
@@ -160,12 +162,14 @@ describe PostSerializer, type: :serializer do
 
         it "should not be empty" do
           expect(subject).not_to be_nil
-          expect(subject.select{ |i| i["type"] == "comments"}.length).to eq 2
+          expect(subject.select { |i| i["type"] == "comments" }.length).to eq 2
         end
       end
 
       context "when including 'post_user_mentions'" do
-        let(:serialization) { ActiveModel::Serializer::Adapter.create(serializer, include: ["post_user_mentions"]) }
+        let(:serialization) do
+          ActiveModelSerializers::Adapter.create(serializer, include: ["post_user_mentions"])
+        end
 
         subject do
           JSON.parse(serialization.to_json)["included"]
@@ -173,12 +177,14 @@ describe PostSerializer, type: :serializer do
 
         it "should not be empty" do
           expect(subject).not_to be_nil
-          expect(subject.select{ |i| i["type"] == "post_user_mentions"}.length).to eq 2
+          expect(subject.select { |i| i["type"] == "post_user_mentions" }.length).to eq 2
         end
       end
 
       context "when including 'comment_user_mentions'" do
-        let(:serialization) { ActiveModel::Serializer::Adapter.create(serializer, include: ["comment_user_mentions"]) }
+        let(:serialization) do
+          ActiveModelSerializers::Adapter.create(serializer, include: ["comment_user_mentions"])
+        end
 
         subject do
           JSON.parse(serialization.to_json)["included"]
@@ -186,7 +192,7 @@ describe PostSerializer, type: :serializer do
 
         it "should not be empty" do
           expect(subject).not_to be_nil
-          expect(subject.select{ |i| i["type"] == "comment_user_mentions"}.length).to eq 2
+          expect(subject.select { |i| i["type"] == "comment_user_mentions" }.length).to eq 2
         end
       end
     end

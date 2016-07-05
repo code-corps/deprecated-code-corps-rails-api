@@ -9,9 +9,11 @@
 #  updated_at :datetime         not null
 #
 
-class ProjectSkill < ActiveRecord::Base
-  belongs_to :project, required: true
-  belongs_to :skill, required: true
+class ProjectSkill < ApplicationRecord
+  belongs_to :project
+  belongs_to :skill
 
   validates :project_id, uniqueness: { scope: :skill_id }
+  validates :project, presence: true
+  validates :skill, presence: true
 end

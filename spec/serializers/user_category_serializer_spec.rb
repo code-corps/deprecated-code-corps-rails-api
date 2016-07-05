@@ -16,7 +16,7 @@ describe UserCategorySerializer, type: :serializer do
     let(:resource) { create(:user_category) }
 
     let(:serializer) { UserCategorySerializer.new(resource) }
-    let(:serialization) { ActiveModel::Serializer::Adapter.create(serializer) }
+    let(:serialization) { ActiveModelSerializers::Adapter.create(serializer) }
 
     context "root" do
       subject do
@@ -71,7 +71,7 @@ describe UserCategorySerializer, type: :serializer do
 
       context "when including 'user'" do
         let(:serialization) do
-          ActiveModel::Serializer::Adapter.create(serializer, include: ["user"])
+          ActiveModelSerializers::Adapter.create(serializer, include: ["user"])
         end
 
         subject do
@@ -86,7 +86,7 @@ describe UserCategorySerializer, type: :serializer do
 
       context "when including 'category'" do
         let(:serialization) do
-          ActiveModel::Serializer::Adapter.create(serializer, include: ["category"])
+          ActiveModelSerializers::Adapter.create(serializer, include: ["category"])
         end
 
         subject do

@@ -10,7 +10,7 @@
 #  updated_at :datetime         not null
 #
 
-class SluggedRoute < ActiveRecord::Base
+class SluggedRoute < ApplicationRecord
   belongs_to :owner, polymorphic: true
 
   validates_presence_of :slug

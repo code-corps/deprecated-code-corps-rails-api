@@ -9,7 +9,7 @@ describe RoleSerializerWithoutIncludes, type: :serializer do
     end
 
     let(:serializer) { RoleSerializerWithoutIncludes.new(resource) }
-    let(:serialization) { ActiveModel::Serializer::Adapter.create(serializer) }
+    let(:serialization) { ActiveModelSerializers::Adapter.create(serializer) }
 
     context "root" do
       subject do

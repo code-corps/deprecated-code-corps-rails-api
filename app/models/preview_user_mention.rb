@@ -12,7 +12,7 @@
 #  updated_at  :datetime         not null
 #
 
-class PreviewUserMention < ActiveRecord::Base
+class PreviewUserMention < ApplicationRecord
   belongs_to :preview
   belongs_to :user
 

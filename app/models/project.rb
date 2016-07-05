@@ -21,7 +21,7 @@
 #  closed_posts_count        :integer          default(0), not null
 #
 
-class Project < ActiveRecord::Base
+class Project < ApplicationRecord
   ASSET_HOST_FOR_DEFAULT_ICON = "https://d3pgew4wbk2vb1.cloudfront.net/icons".freeze
 
   belongs_to :organization

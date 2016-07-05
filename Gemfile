@@ -1,9 +1,8 @@
 source "https://rubygems.org"
 ruby "2.2.3"
 
-gem "rails", "4.2.5.1"
+gem "rails", "5.0.0"
 
-gem "rails-api"
 gem "active_model_serializers", github: "rails-api/active_model_serializers"
 
 gem "puma"
@@ -58,7 +57,7 @@ end
 
 group :development do
   gem "foreman"
-  gem "sinatra", require: nil # for Sidekiq UI to work in development
+  gem "sinatra", github: "sinatra", require: nil # for Sidekiq UI to work in development
 end
 
 group :test do
@@ -71,7 +70,6 @@ group :test do
   gem "pusher-fake"
   gem "rspec-sidekiq"
   gem "shoulda-matchers", "3.0.1" # locked due to https://github.com/thoughtbot/shoulda-matchers/issues/880
-  gem "test_after_commit"
   gem "vcr"
   gem "webmock"
 end
