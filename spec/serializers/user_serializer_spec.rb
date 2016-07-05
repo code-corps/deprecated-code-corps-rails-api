@@ -21,9 +21,10 @@
 #  photo_content_type    :string
 #  photo_file_size       :integer
 #  photo_updated_at      :datetime
-#  name                  :text
 #  aasm_state            :string           default("signed_up"), not null
 #  theme                 :string           default("light"), not null
+#  first_name            :string
+#  last_name             :string
 #
 
 require "rails_helper"
@@ -33,7 +34,8 @@ describe UserSerializer, type: :serializer do
     let(:resource) do
       user = create(:user,
                     email: "user@mail.com",
-                    name: "Josh Smith",
+                    first_name: "Josh",
+                    last_name: "Smith",
                     username: "joshsmith",
                     website: "example.com",
                     twitter: "user",
@@ -89,6 +91,16 @@ describe UserSerializer, type: :serializer do
       it "has a 'username'" do
         expect(subject["username"]).to eq resource.username
         expect(subject["username"]).to_not be_nil
+      end
+
+      it "has a 'first_name'" do
+        expect(subject["first_name"]).to eq resource.first_name
+        expect(subject["first_name"]).to_not be_nil
+      end
+
+      it "has a 'last_name'" do
+        expect(subject["last_name"]).to eq resource.last_name
+        expect(subject["last_name"]).to_not be_nil
       end
 
       it "has a 'name'" do

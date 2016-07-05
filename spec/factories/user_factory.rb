@@ -21,14 +21,14 @@
 #  photo_content_type    :string
 #  photo_file_size       :integer
 #  photo_updated_at      :datetime
-#  name                  :text
 #  aasm_state            :string           default("signed_up"), not null
 #  theme                 :string           default("light"), not null
+#  first_name            :string
+#  last_name             :string
 #
 
 FactoryGirl.define do
-
-  factory :user do |user|
+  factory :user do
     sequence(:email) { |n| "test#{n}@tester.com" }
     sequence(:username) { |n| "tester#{n}" }
     password "password"
@@ -39,9 +39,9 @@ FactoryGirl.define do
   end
 
   trait :with_s3_photo do
-    after(:build) do |user, evaluator|
-      user.photo_file_name = 'user.jpg'
-      user.photo_content_type = 'image/jpeg'
+    after(:build) do
+      user.photo_file_name = "user.jpg"
+      user.photo_content_type = "image/jpeg"
       user.photo_file_size = 1024
       user.photo_updated_at = Time.now
     end

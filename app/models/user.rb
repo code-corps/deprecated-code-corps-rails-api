@@ -21,9 +21,10 @@
 #  photo_content_type    :string
 #  photo_file_size       :integer
 #  photo_updated_at      :datetime
-#  name                  :text
 #  aasm_state            :string           default("signed_up"), not null
 #  theme                 :string           default("light"), not null
+#  first_name            :string
+#  last_name             :string
 #
 
 class User < ActiveRecord::Base
@@ -143,6 +144,10 @@ class User < ActiveRecord::Base
 
   def self.username_taken?(username)
     where("lower(username) = ?", username.try(:downcase)).exists?
+  end
+
+  def name
+    "#{first_name} #{last_name}"
   end
 
   # Follows a user.

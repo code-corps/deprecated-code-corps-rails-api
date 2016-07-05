@@ -21,13 +21,15 @@
 #  photo_content_type    :string
 #  photo_file_size       :integer
 #  photo_updated_at      :datetime
-#  name                  :text
 #  aasm_state            :string           default("signed_up"), not null
 #  theme                 :string           default("light"), not null
+#  first_name            :string
+#  last_name             :string
 #
 
 class UserSerializer < ActiveModel::Serializer
-  attributes :id, :created_at, :email, :name, :username, :twitter, :biography, :website,
+  attributes :id, :created_at, :email, :first_name, :last_name, :name,
+             :username, :twitter, :biography, :website,
              :facebook_id, :facebook_access_token, :photo_thumb_url,
              :photo_large_url, :state, :theme
 

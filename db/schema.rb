@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160626090623) do
+ActiveRecord::Schema.define(version: 20160705042501) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -371,9 +371,10 @@ ActiveRecord::Schema.define(version: 20160626090623) do
     t.string   "photo_content_type"
     t.integer  "photo_file_size"
     t.datetime "photo_updated_at"
-    t.text     "name"
     t.string   "aasm_state",                        default: "signed_up", null: false
     t.string   "theme",                             default: "light",     null: false
+    t.text     "first_name"
+    t.text     "last_name"
   end
 
   add_index "users", ["email"], name: "index_users_on_email", using: :btree

@@ -530,9 +530,16 @@ describe "Users API" do
       file = File.open("#{Rails.root}/spec/sample_data/default-avatar.png", "r")
       @base64_image = Base64.encode64(open(file, &:read))
       params = {
-        name: "Josh Smith", website: "edit.com", biography: "Edited",
-        twitter: "edit", email: "new@mail.com", encrypted_password: "bla",
-        confirmation_token: "bla", remember_token: "bla", username: "bla",
+        first_name: "Josh",
+        last_name: "Smith",
+        website: "edit.com",
+        biography: "Edited",
+        twitter: "edit",
+        email: "new@mail.com",
+        encrypted_password: "bla",
+        confirmation_token: "bla",
+        remember_token: "bla",
+        username: "bla",
         base64_photo_data: @base64_image,
         admin: true
       }
@@ -559,6 +566,8 @@ describe "Users API" do
         expect(last_response.status).to eq 200
 
         user_json = json.data.attributes
+        expect(user_json.first_name).to eq "Josh"
+        expect(user_json.last_name).to eq "Smith"
         expect(user_json.name).to eq "Josh Smith"
         expect(user_json.website).to eq "edit.com"
         expect(user_json.biography).to eq "Edited"
@@ -574,7 +583,8 @@ describe "Users API" do
       it "allows updating of only specific parameters" do
         expect_any_instance_of(User).to receive(:assign_attributes).
           with(
-            name: "Josh Smith",
+            first_name: "Josh",
+            last_name: "Smith",
             website: "edit.com",
             biography: "Edited",
             twitter: "edit",

@@ -14,6 +14,7 @@
 #  base64_icon_data          :text
 #  slug                      :string           not null
 #  organization_id           :integer          not null
+#  aasm_state                :string
 #  long_description_body     :text
 #  long_description_markdown :text
 #  open_posts_count          :integer          default(0), not null
