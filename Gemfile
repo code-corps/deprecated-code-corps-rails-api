@@ -3,7 +3,7 @@ ruby "2.2.3"
 
 gem "rails", "5.0.0"
 
-gem "active_model_serializers", github: "rails-api/active_model_serializers"
+gem "active_model_serializers", "0.10.1"
 
 gem "puma"
 

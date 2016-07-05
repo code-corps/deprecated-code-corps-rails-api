@@ -1,6 +1,6 @@
 require "rails_helper"
 
-describe "CommentUserMentions API" do
+describe "CommentUserMentions API", :json_api do
   context "GET /comment_user_mentions/" do
     let(:comment_a) do
       comment = create(:comment)

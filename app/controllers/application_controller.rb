@@ -1,12 +1,4 @@
 class ApplicationController < ActionController::API
-  # The follow methods allow clearance to work with Rails 5.0.0 until the gem is updated
-  # https://github.com/thoughtbot/clearance/issues/619
-  def self.helper_method(*args)
-  end
-  def self.hide_action(*args)
-  end
-
-  include Clearance::Controller
   include Pundit
 
   before_action :set_default_response_format

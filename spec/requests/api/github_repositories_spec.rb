@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe "GithubRepositories API" do
+describe "GithubRepositories API", :json_api do
 
   describe "POST /github_repositories" do
 

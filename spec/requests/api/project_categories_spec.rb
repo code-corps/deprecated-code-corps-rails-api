@@ -1,6 +1,6 @@
 require "rails_helper"
 
-describe "ProjectCategories API" do
+describe "ProjectCategories API", :json_api do
   describe "POST /project_categories" do
     context "when unauthenticated" do
       it "responds with a 401" do

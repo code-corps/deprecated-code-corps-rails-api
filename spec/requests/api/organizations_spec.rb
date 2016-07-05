@@ -1,6 +1,6 @@
 require "rails_helper"
 
-describe "Organizations API" do
+describe "Organizations API", :json_api do
   context "GET /organizations" do
     before do
       create(:organization, id: 1)

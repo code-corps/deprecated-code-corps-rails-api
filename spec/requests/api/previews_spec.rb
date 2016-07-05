@@ -1,6 +1,6 @@
 require "rails_helper"
 
-describe "Previews API" do
+describe "Previews API", :json_api do
   feature "cors" do
     it "should be supported for POST" do
       post "#{host}/previews", nil, "HTTP_ORIGIN" => "*"

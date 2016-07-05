@@ -1,6 +1,6 @@
 require "rails_helper"
 
-describe "PreviewUserMentions API" do
+describe "PreviewUserMentions API", :json_api do
   context "GET /preview_user_mentions/" do
     def make_request_for_preview(preview)
       get "#{host}/preview_user_mentions/", preview_id: preview.id

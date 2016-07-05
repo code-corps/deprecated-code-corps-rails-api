@@ -1,6 +1,6 @@
 require "rails_helper"
 
-describe "Comment Images API" do
+describe "Comment Images API", :json_api do
   before do
     ActionMailer::Base.deliveries = []
   end

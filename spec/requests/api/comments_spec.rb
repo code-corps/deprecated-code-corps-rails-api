@@ -1,6 +1,6 @@
 require "rails_helper"
 
-describe "Comments API" do
+describe "Comments API", :json_api do
   feature "cors" do
     it "should be supported for POST" do
       post "#{host}/comments", nil, "HTTP_ORIGIN" => "*"

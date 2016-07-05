@@ -1,6 +1,6 @@
 require "rails_helper"
 
-describe "Users API" do
+describe "Users API", :json_api do
   before(:each) do
     ActionMailer::Base.deliveries = []
   end

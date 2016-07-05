@@ -1,0 +1,2 @@
+---
+- include: ../../sidekiq/handlers/main.yml

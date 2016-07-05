@@ -1,6 +1,6 @@
 require "rails_helper"
 
-describe "ImportSkillFailures API" do
+describe "ImportSkillFailures API", :json_api do
   context "GET /import_skill_failures/" do
     context "when not authenticated" do
       it "responds with a proper message" do

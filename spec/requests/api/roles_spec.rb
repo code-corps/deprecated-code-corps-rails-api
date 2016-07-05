@@ -1,6 +1,6 @@
 require "rails_helper"
 
-describe "Roles API" do
+describe "Roles API", :json_api do
   context "GET /roles" do
     before do
       @roles = create_list(:role, 10)

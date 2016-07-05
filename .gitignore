@@ -38,3 +38,6 @@ coverage
 /organizations
 /projects
 /users
+
+# Ignore vagrant VMs
+.vagrant/*

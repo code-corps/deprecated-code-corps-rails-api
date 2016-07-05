@@ -1,6 +1,6 @@
 require "rails_helper"
 
-describe "Projects API" do
+describe "Projects API", :json_api do
 
   context "GET /projects" do
     before do

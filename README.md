@@ -21,67 +21,30 @@ Then head over to [Code Corps](https://codecorps.org), where we manage contribut
 
 ## Developer installation guide
 
-### Install Rails, PostgreSQL, Redis, and ElasticSearch
+### Recommended install
 
-We need to install the Ruby on Rails framework, the PostgreSQL database, and the Redis data store.
+To make your life easier, you can just clone this repository and use our Vagrant development box. [Follow this guide to get started.](docs/DEFAULT_INSTALL.md)
 
-1. [Install Rails](http://installrails.com/).
-2. Install and configure PostgreSQL 9.3+.
-  1. Run `postgres -V` to see if you already have it.
-  2. Make sure that the server's messages language is English; this is [required](https://github.com/rails/rails/blob/3006c59bc7a50c925f6b744447f1d94533a64241/activerecord/lib/active_record/connection_adapters/postgresql_adapter.rb#L1140) by the ActiveRecord Postgres adapter.
-3. Install and make sure you can run redis:
-   * Follow the [official quickstart guide](http://redis.io/topics/quickstart)
-   * It's best to install it as a service instead of running it manually
-   * To make sure everything works and the service is running, execute `redis-cli ping` in the console. It should respond with `PONG`
-4. Install ElasticSearch
-   * On Mac, run `brew install elasticsearch`
-   * Or for Linux or Windows, consult the [setup guide](https://www.elastic.co/guide/en/elasticsearch/reference/current/setup.html)
-5. Install ImageMagik
-   * On Mac, run `brew install imagemagick`
-   * Or for Linux or Windows, consult the [guide](http://www.imagemagick.org/script/binary-releases.php)
+#### Custom install
 
-### Clone this git repository
-
-You'll want to [clone this repository](https://help.github.com/articles/cloning-a-repository/) with `git clone https://github.com/code-corps/code-corps-api.git`.
-
-### Set up the Rails app
-
-1. Run `bin/setup` to set up and seed the database.
-2. Try running the specs: `bundle exec rake spec`
-
-From here, we need to start the web server, Redis, and Sidekiq processes. You can either:
-
-#### Use [foreman](https://github.com/ddollar/foreman) to run your application's processes
-3. Stop your existing `redis-server` process
-4. Run the api with `foreman start -f Procfile.dev`. This will start any service listed in that Procfile.
-
-#### Alternatively, run your application's processes individually
-3. You already have `redis-server` running. In the future, you'll need to run it, as well.
-4. Start Sidekiq with `bundle exec sidekiq`
-5. Start the Rails server with `rails s`
-
-
-### To make sure the API is running properly
-
-Point your browser (or make a direct request) to http://api.lvh.me:3000/ping. There should be a `{"ping":"pong"}` response from it.
-
+We wholeheartedly recommend against doing a custom install. You'll be spending more time configuring and less time being productive. But if you'd like to work that way, you can read our [custom install guide](docs/CUSTOM_INSTALL.md).
 
 ### Working with Ember
 
-The CodeCorps API is intended to work alongside a client written in Ember. For that purpose, the rails application exposes all of it's API endpoints behind an `api.` subdomain.
+The Code Corps API is intended to work alongside a client written in Ember. For that purpose, the Rails application exposes all of its API endpoints behind an `api.` subdomain.
 
 On the Ember client side of things, we use [`ember-cli-deploy`](https://github.com/ember-cli/ember-cli-deploy) with a `redis` plugin to deploy the client application to redis. Multiple revisions are maintained this way.
 
-Any server request pointing to the main domain and not the `api.` subdomain is redirected to `ember_index_controller#index`. There, depending on the remainder of the request path and the current environment, a specific revision of the ember app is retrieved from redis and rendered. This can be
+Any server request pointing to the main domain and not the `api.` subdomain is redirected to the API's `ember_index_controller#index`. There, depending on the remainder of the request path and the current environment, a specific revision of the Ember app's `index.html` is retrieved from redis and rendered. This `index.html` can be:
 * the development revision, if the current environment is development
 * a specific deployed revision in production if the request contains a revision parameter in SHORT_UUID format
 * the latest deployed revision in production if the request does not contain a revision parameter
-* A plain text string containing "INDEX NOT FOUND" if a revision was specified, but the key for the specified revision was not found by redis
+* a plain text string containing "INDEX NOT FOUND" if a revision was specified, but the key for the specified revision was not found by redis
 
 
 ### Debugging the API
 
-Because the app is running foreman, debugging use `pry` won't work the same way. If you want to use `pry`, you'll need to [debug remotely](https://github.com/nixme/pry-debugger#remote-debugging).
+Because the app is running `foreman`, debugging using `pry` won't work the same way. If you want to use `pry`, you'll need to [debug remotely](https://github.com/nixme/pry-debugger#remote-debugging).
 
 Add `binding.remote_pry` where you want to pause:
 
@@ -94,12 +57,11 @@ class UsersController < ApplicationController
 end
 ```
 
-Load a page that triggers the code. Connect to the session:
+Load a page or make a request that triggers the code. Connect to the session:
 
-```
+```shell
 $ bundle exec pry-remote
 ```
-
 
 ## Built with
 
