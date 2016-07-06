@@ -50,6 +50,8 @@ describe User, type: :model do
     it { should have_db_column(:photo_updated_at).of_type(:datetime) }
     it { should have_db_column(:aasm_state).of_type(:string).with_options(default: "signed_up", null: false) }
     it { should have_db_column(:theme).of_type(:string).with_options(default: "light", null: false) }
+    it { should have_db_column(:first_name).of_type(:string) }
+    it { should have_db_column(:last_name).of_type(:string) }
 
     it { should have_db_index(:email) }
     it { should have_db_index(:remember_token) }
@@ -292,6 +294,16 @@ describe User, type: :model do
       user.save
 
       expect(user).to have_state(:selected_skills)
+    end
+  end
+
+  describe "name" do
+    it "returns the full name" do
+      user = create(:user, first_name: "Frank", last_name: "Reynolds")
+
+      full_name = "Frank Reynolds"
+
+      expect(user.name).to eq full_name
     end
   end
 
