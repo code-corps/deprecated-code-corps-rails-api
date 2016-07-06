@@ -112,6 +112,13 @@ describe User, type: :model do
     end
 
     describe "website" do
+      user = User.new(
+        email: "joshdotsmith@gmail.com",
+        username: "joshsmith",
+        password: "password",
+        website: "www.codecorps.com"
+      )
+
       it { should allow_value("www.example.com").for(:website) }
       it { should allow_value("http://www.example.com").for(:website) }
       it { should allow_value("example.com").for(:website) }
@@ -123,6 +130,12 @@ describe User, type: :model do
       it { should allow_value("www.example.com?par1=value&par2=value").for(:website) }
       it { should_not allow_value("spaces in url").for(:website) }
       it { should_not allow_value("singleword").for(:website) }
+      it do
+        expect { user.save }.
+          to change { user.website }.
+          from("www.codecorps.com").
+          to("http://www.codecorps.com")
+      end
     end
 
     describe "name" do
@@ -134,7 +147,9 @@ describe User, type: :model do
     end
 
     describe "username" do
-      let(:user) { User.create(email: "joshdotsmith@gmail.com", username: "joshsmith", password: "password") }
+      let(:user) do
+        User.create(email: "joshdotsmith@gmail.com", username: "joshsmith", password: "password")
+      end
 
       describe "base validations" do
         # visit the following to understand why this is tested in a separate context
