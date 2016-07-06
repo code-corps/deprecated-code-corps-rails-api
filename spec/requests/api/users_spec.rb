@@ -434,6 +434,7 @@ describe "Users API", :json_api do
                             biography: "Initial",
                             twitter: "user")
       params = {
+        first_name: "Josh", last_name: "Smith",
         website: "edit.com", biography: "Edited", twitter: "edit",
         email: "new@mail.com", encrypted_password: "bla", confirmation_token: "bla",
         remember_token: "bla", username: "bla", admin: true
@@ -461,11 +462,14 @@ describe "Users API", :json_api do
           params = {
             data: {
               type: "users",
-              attributes: { website: "edit.com",
-                            biography: "Edited",
-                            twitter: "edit",
-                            theme: "dark"
-                          }
+              attributes: {
+                first_name: "Josh",
+                last_name: "Smith",
+                website: "edit.com",
+                biography: "Edited",
+                twitter: "edit",
+                theme: "dark"
+              }
             }
           }
 
@@ -475,20 +479,29 @@ describe "Users API", :json_api do
 
           user_json = json.data.attributes
           expect(user_json.website).to eq "http://edit.com"
+          expect(user_json.first_name).to eq "Josh"
+          expect(user_json.last_name).to eq "Smith"
           expect(user_json.biography).to eq "Edited"
           expect(user_json.twitter).to eq "edit"
           expect(user_json.theme).to eq "dark"
 
           user = @edited_user.reload
           expect(user.website).to eq "http://edit.com"
+          expect(user.first_name).to eq "Josh"
+          expect(user.last_name).to eq "Smith"
           expect(user.biography).to eq "Edited"
           expect(user.twitter).to eq "edit"
           expect(user.theme).to eq "dark"
         end
 
         it "allows updating of only specific parameters" do
-          expect_any_instance_of(User).to receive(:assign_attributes).
-            with(website: "edit.com", biography: "Edited", twitter: "edit")
+          expect_any_instance_of(User).to receive(:assign_attributes).with(
+            first_name: "Josh",
+            last_name: "Smith",
+            website: "edit.com",
+            biography: "Edited",
+            twitter: "edit"
+          )
           authenticated_patch "/users/#{@edited_user.id}", @edit_params, @token
         end
 
@@ -575,6 +588,8 @@ describe "Users API", :json_api do
 
         current_user = @current_user.reload
         expect(current_user.website).to eq "http://edit.com"
+        expect(current_user.first_name).to eq "Josh"
+        expect(current_user.last_name).to eq "Smith"
         expect(current_user.biography).to eq "Edited"
         expect(current_user.twitter).to eq "edit"
         expect(UpdateProfilePictureWorker.jobs.size).to eq 1
