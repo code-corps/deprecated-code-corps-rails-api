@@ -1,6 +1,6 @@
 require "rails_helper"
 
-describe "Skills API" do
+describe "Skills API", :json_api do
   context "GET /skills" do
     def make_request(params = {})
       get "#{host}/skills", params

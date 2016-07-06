@@ -1,6 +1,6 @@
 require "rails_helper"
 
-describe "UserRoles API" do
+describe "UserRoles API", :json_api do
   describe "POST /user_roles" do
     context "when unauthenticated" do
       it "responds with a 401" do

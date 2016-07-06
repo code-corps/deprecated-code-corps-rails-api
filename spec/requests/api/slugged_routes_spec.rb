@@ -1,6 +1,6 @@
 require "rails_helper"
 
-describe "Slugged Routes API" do
+describe "Slugged Routes API", :json_api do
   context "GET /:slug" do
     context "when successful" do
       before do

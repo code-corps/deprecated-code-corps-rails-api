@@ -3,7 +3,7 @@ require 'rails_helper'
 describe "PostLikes API" do
 
 
-  describe "POST /post_likes" do
+  describe "POST /post_likes", :json_api do
 
     context "when unauthenticated" do
       it "responds with a 401" do

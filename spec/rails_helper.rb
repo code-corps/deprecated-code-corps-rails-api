@@ -77,6 +77,7 @@ RSpec.configure do |config|
   # Include Rack test, Request and API helper methods to make testing the API easier
   config.include Rack::Test::Methods
   config.include RequestHelpers
+  config.include JsonApiHelpers, :json_api
   config.include ApiHelpers
 
   # Mix in FactoryGirl methods

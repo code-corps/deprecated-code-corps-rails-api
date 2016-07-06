@@ -2,8 +2,10 @@ test:
   adapter: postgresql
   database: code_corps_test
   host: localhost
+  password: password
 development:
   adapter: postgresql
   database: code_corps_dev
-  role: postgress
+  role: postgres
+  password: password
   host: localhost

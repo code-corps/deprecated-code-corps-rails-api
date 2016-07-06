@@ -1,6 +1,6 @@
 require "rails_helper"
 
-describe "PostUserMentions API" do
+describe "PostUserMentions API", :json_api do
   context "GET /post_user_mentions/" do
     let(:post_a) do
       post = create(:post)
