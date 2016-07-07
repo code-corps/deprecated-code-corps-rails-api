@@ -17,19 +17,20 @@ We'd love to have you contribute to Code Corps directly!
 
 To do so, please read the guidelines in our [`CONTRIBUTING.md`](CONTRIBUTING.md).
 
-Then head over to [Code Corps](https://codecorps.org), where we manage contributions.
+Then check out some GitHub issues to see where you can help out.
 
 ## Developer installation guide
 
 ### Recommended install
 
-To make your life easier, you can just clone this repository and use our Vagrant development box. [Follow this guide to get started.](docs/DEFAULT_INSTALL.md)
+To make your life easier, you can just clone this repository and use our Docker container. [Follow this guide to get started.](docs/DEFAULT_INSTALL.md)
 
 #### Custom install
 
 We wholeheartedly recommend against doing a custom install. You'll be spending more time configuring and less time being productive. But if you'd like to work that way, you can read our [custom install guide](docs/CUSTOM_INSTALL.md).
 
-### Working with Ember
+
+### Serving Ember
 
 The Code Corps API is intended to work alongside a client written in Ember. For that purpose, the Rails application exposes all of its API endpoints behind an `api.` subdomain.
 
@@ -42,7 +43,7 @@ Any server request pointing to the main domain and not the `api.` subdomain is r
 * a plain text string containing "INDEX NOT FOUND" if a revision was specified, but the key for the specified revision was not found by redis
 
 
-### Debugging the API
+### Debugging
 
 Because the app is running `foreman`, debugging using `pry` won't work the same way. If you want to use `pry`, you'll need to [debug remotely](https://github.com/nixme/pry-debugger#remote-debugging).
 
@@ -60,11 +61,15 @@ end
 Load a page or make a request that triggers the code. Connect to the session:
 
 ```shell
-$ bundle exec pry-remote
+$ docker-compose run web pry-remote
 ```
 
 ## Built with
 
-- [Rails::API](https://github.com/rails-api/rails-api) — Our backend API is a Rails::API app which uses JSON API to respond RESTfully to requests.
-- [Ember.js](https://github.com/emberjs/ember.js) — Our frontend is an Ember.js app that communicates with the Rails API.
-- [PostgreSQL](http://www.postgresql.org/) — Our primary data store uses Postgres.
+- [Rails](http://edgeguides.rubyonrails.org/api_app.html) — Our backend API uses Rails 5 in its API-only configuration.
+- [ActiveModelSerializers](https://github.com/rails-api/active_model_serializers) - We use AMS to serialize the JSON responses from our API.
+- [Ember.js](https://github.com/emberjs/ember.js) — Our frontend is an Ember.js app that communicates with the Rails JSON API.
+- [PostgreSQL](http://www.postgresql.org/) — Our primary data store.
+- [Redis](http://redis.io/) — Redis for a variety of NoSQL uses.
+- [Elasticsearch](https://www.elastic.co/products/elasticsearch) — Elasticsearch for searching documents.
+- [Docker](https://www.docker.com) — Docker for containerized development environments.

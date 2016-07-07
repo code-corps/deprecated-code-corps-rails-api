@@ -2,16 +2,11 @@
 
 ### Requirements
 
-You will need [VirtualBox](https://www.virtualbox.org/wiki/Downloads), [Vagrant](https://www.vagrantup.com/downloads.html) and [Ansible](http://docs.ansible.com/intro_installation.html) to be installed. Ansible also requires Python and some Python modules to be installed.
+You will need to install [Docker](https://docs.docker.com/engine/installation/).
 
-The fastest way to install VirtualBox and Vagrant is to use [`brew cask`](https://github.com/caskroom/homebrew-cask). Ansible can be installed with Homebrew as well:
+Here are some direct links if you're on [Mac OS X](https://docs.docker.com/docker-for-mac/) or [Windows](https://docs.docker.com/docker-for-windows/).
 
-```shell
-brew install caskroom/cask/brew-cask
-brew cask install virtualbox
-brew cask install vagrant
-brew install ansible
-```
+Follow those download instructions. Once you can run the `docker` command, you can safely move on.
 
 ### Clone this repository
 
@@ -20,46 +15,89 @@ You'll want to [clone this repository](https://help.github.com/articles/cloning-
 The directory structure will look like the following:
 
 ```shell
-code-corps-api/   # → Root folder for this project
-├── ansible/      # → Ansible root, containing playbooks for provisioning
+code-corps-api/          # → Root folder for this project
 ├── app/
 ├── bin/
-├── ...           # → More standard Rails files
-├── ansible.cfg   # → Ansible configuration file; should not need to touch this
-└── Vagrantfile   # → Configuration file for your virtual machine
+├── ...                  # → More standard Rails files
+├── docker-compose.yml   # → Compose file for configuring Docker containers
+└── Dockerfile           # → Creates base Ruby Docker container
 ```
 
-### Start the VM
+### Setup your Docker containers and run the server
+
+> Note: We bind to ports 6380 for `redis` and 5001 for `foreman`. Make sure you're not running anything on those ports. We do not expose port 5432 for `postgres` or 9200 for `elasticsearch`.
 
 Go to the `code-corps-api` directory and type:
 
 ```shell
-vagrant up
+docker-compose up
 ```
 
-Vagrant will download a `trusty64` Linux box and provision it using the Ansible configuration provided in `code-corps-api/ansible`.
+Docker will set up your base Ruby container, as well as containers for:
 
-Vagrant will likely for a `sudo` password. This is normal. It's required when doing NFS folder synchronization.
+- `postgres`
+- `elasticsearch`
+- `redis`
+- `web` runs `foreman s` with the `Procfile.dev`
+- `test` runs `guard start`
 
-When Vagrant has fully provisioned, you can log into the machine by running:
+You can view more detailed information about these services in the `docker-compose.yml` file, but you shouldn't need to edit it unless you're intentionally contributing changes to our Docker workflow.
+
+### Setup your database
+
+You can now create and seed your database in the `web` container with our helpful bash script:
 
 ```shell
-vagrant ssh
+bin/setup
 ```
 
-We'll automatically `cd` you into the `/code-corps-api` project directory, which is file synced to your cloned repository on your own machine. Changes made in `vagrant` will reflect on your machine, and vice versa.
-
-
-### Start the server
-
-Now you can simply run:
+At its heart, this script is running:
 
 ```shell
-foreman s -f Procfile.dev
+docker-compose run web rake db:create db:migrate db:test:prepare db:seed_fu
 ```
 
-Point your browser (or make a direct request) to http://api.codecorps.dev:5000/ping. There should be a `{"ping":"pong"}` response from it.
+Point your browser (or make a direct request) to `http://api.lvh.me/ping`. There should be a `{"ping":"pong"}` response from it. If you hit the index route instead, you'll probably get `INDEX NOT FOUND` since it's not serving up our Ember app yet.
+
+`lvh.me` resolves to `localhost` so you can use subdomains, like our `api` subdomain.
+
+### Interacting with the app
+
+You'll notice we wrapped `docker-compose` earlier, but you'll generally want to use this to interact with the app.
+
+- `bundle exec rails console` → `docker-compose run web rails console`
+- `bundle exec rake db:migrate` → `docker-compose run web rake db:migrate`
+- `bundle exec rake db:test:prepare` → `docker-compose run web rake db:test:prepare`
+- and so on...
+
+We do have a couple other helper scripts:
+
+- `bin/setup` → sets up the app
+- `bin/migrate` → migrates your database
+- `bin/reseed` → re-runs `rake db:seed_fu` to re-seed your database
+
+### Guard and tests
+
+You'll also notice that the `test` container we mentioned above is running `guard`. This means that file changes will be observed and tests re-run on those files.
+
+You can certainly run `docker-console run test rspec spec`, but `guard` can help you by constantly watching for failing specs.
+
+### Stopping, starting, and rebuilding
+
+Need to stop the containers? Either `Ctrl+C` or in a seperate prompt run `docker-compose stop`.
+
+To start the services again you can run `docker-compose up`, or `docker-compose start` to start the containers in a detached state.
+
+If you ever need to rebuild you can run `docker-compose up --build`. Unless you've destroyed your Docker container images, this should be faster than the first run.
 
 ### Pushing changes
 
-You can use `git` as you normally would, either on the guest `vagrant` machine or on your own host machine.
+You can use `git` as you normally would, either on your own host machine or in Docker's `web` container.
+
+### Issues
+
+Having trouble?
+
+Create an issue in this repo and we'll look into it.
+
+Docker's a bit new for us, so there may be some hiccups at first. But hopefully this makes for a less painful developer environment for you in the long run.
