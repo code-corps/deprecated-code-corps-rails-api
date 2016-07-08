@@ -278,6 +278,8 @@ class Analytics
         created_at: user.created_at,
         email: user.email,
         facebook_id: user.facebook_id,
+        first_name: user.first_name,
+        last_name: user.last_name,
         name: user.name,
         state: user.state,
         twitter: user.twitter,

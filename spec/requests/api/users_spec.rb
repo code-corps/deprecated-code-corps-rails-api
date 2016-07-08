@@ -194,6 +194,10 @@ describe "Users API", :json_api do
         end
 
         it "uses their Facebook photo", vcr: { cassette_name: "requests/api/users/valid_facebook_request" } do
+          expect(SubscribeToMailingListWorker.jobs.size).to eq 1
+        end
+
+        it "subscribes them to Mailchimp", vcr: { cassette_name: "requests/api/users/valid_facebook_request" } do
           expect(AddFacebookProfilePictureWorker.jobs.size).to eq 1
         end
 
@@ -341,6 +345,7 @@ describe "Users API", :json_api do
 
         expect(UpdateProfilePictureWorker.jobs.size).to eq 1
         expect(AddProfilePictureFromGravatarWorker.jobs.size).to eq 0
+        expect(SubscribeToMailingListWorker.jobs.size).to eq 1
       end
 
       it "creates a user without a user uploaded image" do
@@ -361,6 +366,7 @@ describe "Users API", :json_api do
 
         expect(UpdateProfilePictureWorker.jobs.size).to eq 0
         expect(AddProfilePictureFromGravatarWorker.jobs.size).to eq 1
+        expect(SubscribeToMailingListWorker.jobs.size).to eq 1
       end
     end
   end

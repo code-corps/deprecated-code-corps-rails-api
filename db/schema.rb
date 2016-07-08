@@ -86,8 +86,8 @@ ActiveRecord::Schema.define(version: 20160705185815) do
   end
 
   create_table "notifications", force: :cascade do |t|
-    t.string   "notifiable_type", null: false
     t.integer  "notifiable_id",   null: false
+    t.string   "notifiable_type", null: false
     t.integer  "user_id",         null: false
     t.string   "aasm_state"
     t.datetime "created_at",      null: false
@@ -259,6 +259,7 @@ ActiveRecord::Schema.define(version: 20160705185815) do
     t.text     "base64_icon_data"
     t.string   "slug",                                  null: false
     t.integer  "organization_id",                       null: false
+    t.string   "aasm_state"
     t.text     "long_description_body"
     t.text     "long_description_markdown"
     t.integer  "open_posts_count",          default: 0, null: false
@@ -294,8 +295,8 @@ ActiveRecord::Schema.define(version: 20160705185815) do
 
   create_table "slugged_routes", force: :cascade do |t|
     t.string   "slug",       null: false
-    t.string   "owner_type"
     t.integer  "owner_id"
+    t.string   "owner_type"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["owner_id", "owner_type"], name: "index_slugged_routes_on_owner_id_and_owner_type", unique: true, using: :btree
