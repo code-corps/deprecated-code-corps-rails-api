@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+export red=$'\e[1;31m'
+export green=$'\e[0;32m'
+export yellow=$'\e[1;33m'
+export blue=$'\e[1;34m'

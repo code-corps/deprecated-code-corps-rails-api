@@ -1,5 +1,5 @@
 source "https://rubygems.org"
-ruby "2.2.3"
+ruby "2.2.5"
 
 gem "rails", "5.0.0"
 
@@ -57,7 +57,9 @@ end
 
 group :development do
   gem "foreman"
+  gem "guard-rspec", require: false
   gem "sinatra", github: "sinatra", require: nil # for Sidekiq UI to work in development
+  gem "spring-commands-rspec"
 end
 
 group :test do

@@ -10,5 +10,7 @@ VCR.configure do |c|
 
   c.default_cassette_options = { :serialize_with => :psych }
 
+  c.ignore_hosts "elasticsearch"
+
   ignore_localhost = true
 end

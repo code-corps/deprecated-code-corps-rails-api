@@ -8,8 +8,8 @@ end
 
 User.seed do |user|
   user.id       = 2
-  user.username = "codecorpsguy"
-  user.email    = "guy@codecorps.com"
-  user.password = "codecorps"
+  user.username = "testuser"
+  user.email    = "test@example.com"
+  user.password = "test"
   user.admin    = false
 end
