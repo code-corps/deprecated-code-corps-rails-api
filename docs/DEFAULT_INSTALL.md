@@ -61,40 +61,11 @@ Point your browser (or make a direct request) to `http://api.lvh.me/ping`. There
 
 `lvh.me` resolves to `localhost` so you can use subdomains, like our `api` subdomain.
 
-### Interacting with the app
+### Next steps
 
-You'll notice we wrapped `docker-compose` earlier, but you'll generally want to use this to interact with the app.
+Now that you're set up, you should [read more about how to develop with the API](docs/USAGE.md).
 
-- `bundle exec rails console` → `docker-compose run web rails console`
-- `bundle exec rake db:migrate` → `docker-compose run web rake db:migrate`
-- `bundle exec rake db:test:prepare` → `docker-compose run web rake db:test:prepare`
-- and so on...
-
-We do have a couple other helper scripts:
-
-- `bin/setup` → sets up the app
-- `bin/migrate` → migrates your database
-- `bin/reseed` → re-runs `rake db:seed_fu` to re-seed your database
-
-### Guard and tests
-
-You'll also notice that the `test` container we mentioned above is running `guard`. This means that file changes will be observed and tests re-run on those files.
-
-You can certainly run `docker-console run test rspec spec`, but `guard` can help you by constantly watching for failing specs.
-
-### Stopping, starting, and rebuilding
-
-Need to stop the containers? Either `Ctrl+C` or in a seperate prompt run `docker-compose stop`.
-
-To start the services again you can run `docker-compose up`, or `docker-compose start` to start the containers in a detached state.
-
-If you ever need to rebuild you can run `docker-compose up --build`. Unless you've destroyed your Docker container images, this should be faster than the first run.
-
-### Pushing changes
-
-You can use `git` as you normally would, either on your own host machine or in Docker's `web` container.
-
-### Issues
+### Issues installing?
 
 Having trouble?
 
