@@ -29,7 +29,8 @@ Rails.application.configure do
   # yet still be able to expire them through the digest params.
   config.assets.digest = true
 
-  # `config.assets.precompile` and `config.assets.version` have moved to config/initializers/assets.rb
+  # `config.assets.precompile` and `config.assets.version` have moved to
+  # config/initializers/assets.rb
 
   # Enable serving of images, stylesheets, and JavaScripts from an asset server.
   # config.action_controller.asset_host = 'http://assets.example.com'
@@ -44,7 +45,7 @@ Rails.application.configure do
   # config.action_cable.allowed_request_origins = [ 'http://example.com', /http:\/\/example.*/ ]
 
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
-  config.force_ssl = (ENV['FORCE_SSL'] == 'true')
+  config.force_ssl = (ENV["FORCE_SSL"] == "true")
 
   # Use the lowest log level to ensure availability of diagnostic information
   # when problems arise.
@@ -99,5 +100,13 @@ Rails.application.configure do
     },
     s3_host_alias: ENV["CLOUDFRONT_DOMAIN"],
     url: ":s3_alias_url"
+  }
+
+  config.action_mailer.delivery_method = :smtp
+  config.action_mailer.smtp_settings = {
+    address: "smtp.mailgun.org",
+    port: 587,
+    user_name: ENV["SMTP_LOGIN"],
+    password: ENV["SMTP_PASSWORD"]
   }
 end
