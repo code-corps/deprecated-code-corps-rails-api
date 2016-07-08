@@ -21,12 +21,13 @@
 #  photo_content_type    :string
 #  photo_file_size       :integer
 #  photo_updated_at      :datetime
-#  name                  :text
 #  aasm_state            :string           default("signed_up"), not null
 #  theme                 :string           default("light"), not null
+#  first_name            :string
+#  last_name             :string
 #
 
-class User < ActiveRecord::Base
+class User < ApplicationRecord
   ASSET_HOST_FOR_DEFAULT_PHOTO = "https://d3pgew4wbk2vb1.cloudfront.net/icons".freeze
 
   include AASM
@@ -101,6 +102,7 @@ class User < ActiveRecord::Base
                                 allow_blank: true,
                                 message: "contains an invalid character"
 
+  before_save :add_url_protocol, if: :website?
   before_save :attempt_transition
   after_save :create_or_update_slugged_route
 
@@ -145,6 +147,10 @@ class User < ActiveRecord::Base
     where("lower(username) = ?", username.try(:downcase)).exists?
   end
 
+  def name
+    "#{first_name} #{last_name}"
+  end
+
   # Follows a user.
   def follow(other_user)
     active_relationships.create(following_id: other_user.id)
@@ -166,6 +172,12 @@ class User < ActiveRecord::Base
   end
 
   private
+
+    def add_url_protocol
+      unless website[%r{^http?://}] || website[%r{^https?://}]
+        self.website = "http://#{website}"
+      end
+    end
 
     def can_transition
       return if state_transition.blank?

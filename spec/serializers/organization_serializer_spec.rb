@@ -27,7 +27,7 @@ describe OrganizationSerializer, type: :serializer do
     end
 
     let(:serializer) { OrganizationSerializer.new(resource) }
-    let(:serialization) { ActiveModel::Serializer::Adapter.create(serializer) }
+    let(:serialization) { ActiveModelSerializers::Adapter.create(serializer) }
 
     context "root" do
       subject do

@@ -1,6 +1,6 @@
 require "rails_helper"
 
-describe "Users API" do
+describe "Users API", :json_api do
   before(:each) do
     ActionMailer::Base.deliveries = []
   end
@@ -194,6 +194,10 @@ describe "Users API" do
         end
 
         it "uses their Facebook photo", vcr: { cassette_name: "requests/api/users/valid_facebook_request" } do
+          expect(SubscribeToMailingListWorker.jobs.size).to eq 1
+        end
+
+        it "subscribes them to Mailchimp", vcr: { cassette_name: "requests/api/users/valid_facebook_request" } do
           expect(AddFacebookProfilePictureWorker.jobs.size).to eq 1
         end
 
@@ -341,6 +345,7 @@ describe "Users API" do
 
         expect(UpdateProfilePictureWorker.jobs.size).to eq 1
         expect(AddProfilePictureFromGravatarWorker.jobs.size).to eq 0
+        expect(SubscribeToMailingListWorker.jobs.size).to eq 1
       end
 
       it "creates a user without a user uploaded image" do
@@ -361,6 +366,7 @@ describe "Users API" do
 
         expect(UpdateProfilePictureWorker.jobs.size).to eq 0
         expect(AddProfilePictureFromGravatarWorker.jobs.size).to eq 1
+        expect(SubscribeToMailingListWorker.jobs.size).to eq 1
       end
     end
   end
@@ -474,13 +480,13 @@ describe "Users API" do
           expect(last_response.status).to eq 200
 
           user_json = json.data.attributes
-          expect(user_json.website).to eq "edit.com"
+          expect(user_json.website).to eq "http://edit.com"
           expect(user_json.biography).to eq "Edited"
           expect(user_json.twitter).to eq "edit"
           expect(user_json.theme).to eq "dark"
 
           user = @edited_user.reload
-          expect(user.website).to eq "edit.com"
+          expect(user.website).to eq "http://edit.com"
           expect(user.biography).to eq "Edited"
           expect(user.twitter).to eq "edit"
           expect(user.theme).to eq "dark"
@@ -530,9 +536,16 @@ describe "Users API" do
       file = File.open("#{Rails.root}/spec/sample_data/default-avatar.png", "r")
       @base64_image = Base64.encode64(open(file, &:read))
       params = {
-        name: "Josh Smith", website: "edit.com", biography: "Edited",
-        twitter: "edit", email: "new@mail.com", encrypted_password: "bla",
-        confirmation_token: "bla", remember_token: "bla", username: "bla",
+        first_name: "Josh",
+        last_name: "Smith",
+        website: "edit.com",
+        biography: "Edited",
+        twitter: "edit",
+        email: "new@mail.com",
+        encrypted_password: "bla",
+        confirmation_token: "bla",
+        remember_token: "bla",
+        username: "bla",
         base64_photo_data: @base64_image,
         admin: true
       }
@@ -559,13 +572,15 @@ describe "Users API" do
         expect(last_response.status).to eq 200
 
         user_json = json.data.attributes
+        expect(user_json.first_name).to eq "Josh"
+        expect(user_json.last_name).to eq "Smith"
         expect(user_json.name).to eq "Josh Smith"
-        expect(user_json.website).to eq "edit.com"
+        expect(user_json.website).to eq "http://edit.com"
         expect(user_json.biography).to eq "Edited"
         expect(user_json.twitter).to eq "edit"
 
         current_user = @current_user.reload
-        expect(current_user.website).to eq "edit.com"
+        expect(current_user.website).to eq "http://edit.com"
         expect(current_user.biography).to eq "Edited"
         expect(current_user.twitter).to eq "edit"
         expect(UpdateProfilePictureWorker.jobs.size).to eq 1
@@ -574,7 +589,8 @@ describe "Users API" do
       it "allows updating of only specific parameters" do
         expect_any_instance_of(User).to receive(:assign_attributes).
           with(
-            name: "Josh Smith",
+            first_name: "Josh",
+            last_name: "Smith",
             website: "edit.com",
             biography: "Edited",
             twitter: "edit",

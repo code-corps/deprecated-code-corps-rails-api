@@ -11,7 +11,7 @@
 #  slug         :string           not null
 #
 
-class Skill < ActiveRecord::Base
+class Skill < ApplicationRecord
   searchkick match: :word_start, searchable: [:title]
 
   has_many :role_skills

@@ -9,9 +9,11 @@
 #  updated_at  :datetime         not null
 #
 
-class UserCategory < ActiveRecord::Base
-  belongs_to :user, required: true
-  belongs_to :category, required: true
+class UserCategory < ApplicationRecord
+  belongs_to :user
+  belongs_to :category
 
   validates :user_id, uniqueness: { scope: :category_id }
+  validates :user, presence: true
+  validates :category, presence: true
 end

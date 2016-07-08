@@ -15,7 +15,7 @@ class RolesController < ApplicationController
 
   def index
     authorize Role
-    render json: Role.all.includes(:skills)
+    render json: Role.all
   end
 
   def create

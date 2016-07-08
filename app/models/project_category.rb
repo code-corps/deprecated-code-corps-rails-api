@@ -9,9 +9,11 @@
 #  updated_at  :datetime         not null
 #
 
-class ProjectCategory < ActiveRecord::Base
-  belongs_to :project, required: true
-  belongs_to :category, required: true
+class ProjectCategory < ApplicationRecord
+  belongs_to :project
+  belongs_to :category
 
   validates :project_id, uniqueness: { scope: :category_id }
+  validates :project, presence: true
+  validates :category, presence: true
 end

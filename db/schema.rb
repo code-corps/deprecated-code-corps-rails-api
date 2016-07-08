@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # This file is auto-generated from the current state of the database. Instead
 # of editing this file, please use the migrations feature of Active Record to
 # incrementally modify your database, and then regenerate this schema definition.
@@ -11,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160626090623) do
+ActiveRecord::Schema.define(version: 20160705185815) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -22,9 +21,8 @@ ActiveRecord::Schema.define(version: 20160626090623) do
     t.datetime "created_at",  null: false
     t.datetime "updated_at",  null: false
     t.text     "description"
+    t.index ["slug"], name: "index_categories_on_slug", unique: true, using: :btree
   end
-
-  add_index "categories", ["slug"], name: "index_categories_on_slug", unique: true, using: :btree
 
   create_table "comment_images", force: :cascade do |t|
     t.integer  "user_id",            null: false
@@ -94,10 +92,9 @@ ActiveRecord::Schema.define(version: 20160626090623) do
     t.string   "aasm_state"
     t.datetime "created_at",      null: false
     t.datetime "updated_at",      null: false
+    t.index ["user_id", "notifiable_id", "notifiable_type"], name: "index_notifications_on_user_id_and_notifiable", unique: true, using: :btree
+    t.index ["user_id"], name: "index_notifications_on_user_id", using: :btree
   end
-
-  add_index "notifications", ["user_id", "notifiable_id", "notifiable_type"], name: "index_notifications_on_user_id_and_notifiable", unique: true, using: :btree
-  add_index "notifications", ["user_id"], name: "index_notifications_on_user_id", using: :btree
 
   create_table "oauth_access_grants", force: :cascade do |t|
     t.integer  "resource_owner_id", null: false
@@ -108,9 +105,8 @@ ActiveRecord::Schema.define(version: 20160626090623) do
     t.datetime "created_at",        null: false
     t.datetime "revoked_at"
     t.string   "scopes"
+    t.index ["token"], name: "index_oauth_access_grants_on_token", unique: true, using: :btree
   end
-
-  add_index "oauth_access_grants", ["token"], name: "index_oauth_access_grants_on_token", unique: true, using: :btree
 
   create_table "oauth_access_tokens", force: :cascade do |t|
     t.integer  "resource_owner_id"
@@ -121,11 +117,10 @@ ActiveRecord::Schema.define(version: 20160626090623) do
     t.datetime "revoked_at"
     t.datetime "created_at",        null: false
     t.string   "scopes"
+    t.index ["refresh_token"], name: "index_oauth_access_tokens_on_refresh_token", unique: true, using: :btree
+    t.index ["resource_owner_id"], name: "index_oauth_access_tokens_on_resource_owner_id", using: :btree
+    t.index ["token"], name: "index_oauth_access_tokens_on_token", unique: true, using: :btree
   end
-
-  add_index "oauth_access_tokens", ["refresh_token"], name: "index_oauth_access_tokens_on_refresh_token", unique: true, using: :btree
-  add_index "oauth_access_tokens", ["resource_owner_id"], name: "index_oauth_access_tokens_on_resource_owner_id", using: :btree
-  add_index "oauth_access_tokens", ["token"], name: "index_oauth_access_tokens_on_token", unique: true, using: :btree
 
   create_table "oauth_applications", force: :cascade do |t|
     t.string   "name",                      null: false
@@ -135,9 +130,8 @@ ActiveRecord::Schema.define(version: 20160626090623) do
     t.string   "scopes",       default: "", null: false
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.index ["uid"], name: "index_oauth_applications_on_uid", unique: true, using: :btree
   end
-
-  add_index "oauth_applications", ["uid"], name: "index_oauth_applications_on_uid", unique: true, using: :btree
 
   create_table "organization_memberships", force: :cascade do |t|
     t.string   "role",            default: "pending", null: false
@@ -145,9 +139,8 @@ ActiveRecord::Schema.define(version: 20160626090623) do
     t.datetime "updated_at",                          null: false
     t.integer  "member_id"
     t.integer  "organization_id"
+    t.index ["member_id", "organization_id"], name: "index_organization_memberships_on_member_id_and_organization_id", unique: true, using: :btree
   end
-
-  add_index "organization_memberships", ["member_id", "organization_id"], name: "index_organization_memberships_on_member_id_and_organization_id", unique: true, using: :btree
 
   create_table "organizations", force: :cascade do |t|
     t.string   "name",              null: false
@@ -160,9 +153,8 @@ ActiveRecord::Schema.define(version: 20160626090623) do
     t.datetime "icon_updated_at"
     t.text     "base64_icon_data"
     t.text     "description"
+    t.index ["slug"], name: "index_organizations_on_slug", unique: true, using: :btree
   end
-
-  add_index "organizations", ["slug"], name: "index_organizations_on_slug", unique: true, using: :btree
 
   create_table "post_images", force: :cascade do |t|
     t.integer  "user_id",            null: false
@@ -218,10 +210,9 @@ ActiveRecord::Schema.define(version: 20160626090623) do
     t.integer  "end_index",   null: false
     t.datetime "created_at",  null: false
     t.datetime "updated_at",  null: false
+    t.index ["preview_id"], name: "index_preview_user_mentions_on_preview_id", using: :btree
+    t.index ["user_id"], name: "index_preview_user_mentions_on_user_id", using: :btree
   end
-
-  add_index "preview_user_mentions", ["preview_id"], name: "index_preview_user_mentions_on_preview_id", using: :btree
-  add_index "preview_user_mentions", ["user_id"], name: "index_preview_user_mentions_on_user_id", using: :btree
 
   create_table "previews", force: :cascade do |t|
     t.text     "body",       null: false
@@ -229,36 +220,32 @@ ActiveRecord::Schema.define(version: 20160626090623) do
     t.integer  "user_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_previews_on_user_id", using: :btree
   end
-
-  add_index "previews", ["user_id"], name: "index_previews_on_user_id", using: :btree
 
   create_table "project_categories", force: :cascade do |t|
     t.integer  "project_id"
     t.integer  "category_id"
     t.datetime "created_at",  null: false
     t.datetime "updated_at",  null: false
+    t.index ["project_id", "category_id"], name: "index_project_categories_on_project_id_and_category_id", unique: true, using: :btree
   end
-
-  add_index "project_categories", ["project_id", "category_id"], name: "index_project_categories_on_project_id_and_category_id", unique: true, using: :btree
 
   create_table "project_roles", force: :cascade do |t|
     t.integer  "project_id"
     t.integer  "role_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["project_id", "role_id"], name: "index_project_roles_on_project_id_and_role_id", unique: true, using: :btree
   end
-
-  add_index "project_roles", ["project_id", "role_id"], name: "index_project_roles_on_project_id_and_role_id", unique: true, using: :btree
 
   create_table "project_skills", force: :cascade do |t|
     t.integer  "project_id"
     t.integer  "skill_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["project_id", "skill_id"], name: "index_project_skills_on_project_id_and_skill_id", unique: true, using: :btree
   end
-
-  add_index "project_skills", ["project_id", "skill_id"], name: "index_project_skills_on_project_id_and_skill_id", unique: true, using: :btree
 
   create_table "projects", force: :cascade do |t|
     t.string   "title",                                 null: false
@@ -277,9 +264,8 @@ ActiveRecord::Schema.define(version: 20160626090623) do
     t.text     "long_description_markdown"
     t.integer  "open_posts_count",          default: 0, null: false
     t.integer  "closed_posts_count",        default: 0, null: false
+    t.index ["organization_id"], name: "index_projects_on_organization_id", using: :btree
   end
-
-  add_index "projects", ["organization_id"], name: "index_projects_on_organization_id", using: :btree
 
   create_table "role_skills", force: :cascade do |t|
     t.integer  "role_id"
@@ -304,9 +290,8 @@ ActiveRecord::Schema.define(version: 20160626090623) do
     t.datetime "updated_at",   null: false
     t.integer  "original_row"
     t.string   "slug",         null: false
+    t.index ["slug"], name: "index_skills_on_slug", unique: true, using: :btree
   end
-
-  add_index "skills", ["slug"], name: "index_skills_on_slug", unique: true, using: :btree
 
   create_table "slugged_routes", force: :cascade do |t|
     t.string   "slug",       null: false
@@ -314,29 +299,26 @@ ActiveRecord::Schema.define(version: 20160626090623) do
     t.string   "owner_type"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["owner_id", "owner_type"], name: "index_slugged_routes_on_owner_id_and_owner_type", unique: true, using: :btree
+    t.index ["slug"], name: "index_slugged_routes_on_slug", unique: true, using: :btree
   end
-
-  add_index "slugged_routes", ["owner_id", "owner_type"], name: "index_slugged_routes_on_owner_id_and_owner_type", unique: true, using: :btree
-  add_index "slugged_routes", ["slug"], name: "index_slugged_routes_on_slug", unique: true, using: :btree
 
   create_table "user_categories", force: :cascade do |t|
     t.integer  "user_id"
     t.integer  "category_id"
     t.datetime "created_at",  null: false
     t.datetime "updated_at",  null: false
+    t.index ["user_id", "category_id"], name: "index_user_categories_on_user_id_and_category_id", unique: true, using: :btree
   end
-
-  add_index "user_categories", ["user_id", "category_id"], name: "index_user_categories_on_user_id_and_category_id", unique: true, using: :btree
 
   create_table "user_relationships", force: :cascade do |t|
     t.integer  "follower_id"
     t.integer  "following_id"
     t.datetime "created_at",   null: false
     t.datetime "updated_at",   null: false
+    t.index ["follower_id"], name: "index_user_relationships_on_follower_id", using: :btree
+    t.index ["following_id"], name: "index_user_relationships_on_following_id", using: :btree
   end
-
-  add_index "user_relationships", ["follower_id"], name: "index_user_relationships_on_follower_id", using: :btree
-  add_index "user_relationships", ["following_id"], name: "index_user_relationships_on_following_id", using: :btree
 
   create_table "user_roles", force: :cascade do |t|
     t.integer  "user_id"
@@ -371,13 +353,13 @@ ActiveRecord::Schema.define(version: 20160626090623) do
     t.string   "photo_content_type"
     t.integer  "photo_file_size"
     t.datetime "photo_updated_at"
-    t.text     "name"
     t.string   "aasm_state",                        default: "signed_up", null: false
     t.string   "theme",                             default: "light",     null: false
+    t.text     "first_name"
+    t.text     "last_name"
+    t.index ["email"], name: "index_users_on_email", using: :btree
+    t.index ["remember_token"], name: "index_users_on_remember_token", using: :btree
   end
-
-  add_index "users", ["email"], name: "index_users_on_email", using: :btree
-  add_index "users", ["remember_token"], name: "index_users_on_remember_token", using: :btree
 
   add_foreign_key "comments", "posts"
   add_foreign_key "comments", "users"

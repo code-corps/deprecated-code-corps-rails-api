@@ -16,7 +16,7 @@ describe UserSkillSerializer, type: :serializer do
     let(:resource) { create(:user_skill) }
 
     let(:serializer) { UserSkillSerializer.new(resource) }
-    let(:serialization) { ActiveModel::Serializer::Adapter.create(serializer) }
+    let(:serialization) { ActiveModelSerializers::Adapter.create(serializer) }
 
     context "root" do
       subject do
@@ -71,7 +71,7 @@ describe UserSkillSerializer, type: :serializer do
 
       context "when including 'user'" do
         let(:serialization) do
-          ActiveModel::Serializer::Adapter.create(serializer, include: ["user"])
+          ActiveModelSerializers::Adapter.create(serializer, include: ["user"])
         end
 
         subject do
@@ -86,7 +86,7 @@ describe UserSkillSerializer, type: :serializer do
 
       context "when including 'skill'" do
         let(:serialization) do
-          ActiveModel::Serializer::Adapter.create(serializer, include: ["skill"])
+          ActiveModelSerializers::Adapter.create(serializer, include: ["skill"])
         end
 
         subject do

@@ -47,7 +47,9 @@ module RequestHelpers
   private
 
     def authorization_header(token)
-      { "HTTP_AUTHORIZATION" => "Bearer #{token}" }
+      {
+        "HTTP_AUTHORIZATION" => "Bearer #{token}",
+      }
     end
 
     def full_path(path)

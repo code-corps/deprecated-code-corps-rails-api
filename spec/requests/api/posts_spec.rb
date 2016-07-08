@@ -1,6 +1,6 @@
 require "rails_helper"
 
-describe "Posts API" do
+describe "Posts API", :json_api do
   describe "GET /posts" do
     before do
       create(:post, id: 1)

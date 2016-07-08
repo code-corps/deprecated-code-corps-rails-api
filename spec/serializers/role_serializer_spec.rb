@@ -21,7 +21,7 @@ describe RoleSerializer, type: :serializer do
     end
 
     let(:serializer) { RoleSerializer.new(resource) }
-    let(:serialization) { ActiveModel::Serializer::Adapter.create(serializer) }
+    let(:serialization) { ActiveModelSerializers::Adapter.create(serializer) }
 
     context "root" do
       subject do
@@ -89,7 +89,9 @@ describe RoleSerializer, type: :serializer do
       end
 
       context "when including skills" do
-        let(:serialization) { ActiveModel::Serializer::Adapter.create(serializer, include: ["skills"]) }
+        let(:serialization) do
+          ActiveModelSerializers::Adapter.create(serializer, include: ["skills"])
+        end
 
         subject do
           JSON.parse(serialization.to_json)["included"]
@@ -97,7 +99,7 @@ describe RoleSerializer, type: :serializer do
 
         it "should contain the role's skills" do
           expect(subject).not_to be_nil
-          expect(subject.select{ |i| i["type"] == "skills"}.length).to eq 10
+          expect(subject.select { |i| i["type"] == "skills" }.length).to eq 10
         end
       end
     end

@@ -21,9 +21,10 @@
 #  photo_content_type    :string
 #  photo_file_size       :integer
 #  photo_updated_at      :datetime
-#  name                  :text
 #  aasm_state            :string           default("signed_up"), not null
 #  theme                 :string           default("light"), not null
+#  first_name            :string
+#  last_name             :string
 #
 
 require "rails_helper"
@@ -33,7 +34,8 @@ describe UserSerializer, type: :serializer do
     let(:resource) do
       user = create(:user,
                     email: "user@mail.com",
-                    name: "Josh Smith",
+                    first_name: "Josh",
+                    last_name: "Smith",
                     username: "joshsmith",
                     website: "example.com",
                     twitter: "user",
@@ -52,7 +54,7 @@ describe UserSerializer, type: :serializer do
     end
 
     let(:serializer) { UserSerializer.new(resource) }
-    let(:serialization) { ActiveModel::Serializer::Adapter.create(serializer) }
+    let(:serialization) { ActiveModelSerializers::Adapter.create(serializer) }
 
     context "root" do
       subject do
@@ -89,6 +91,16 @@ describe UserSerializer, type: :serializer do
       it "has a 'username'" do
         expect(subject["username"]).to eq resource.username
         expect(subject["username"]).to_not be_nil
+      end
+
+      it "has a 'first_name'" do
+        expect(subject["first_name"]).to eq resource.first_name
+        expect(subject["first_name"]).to_not be_nil
+      end
+
+      it "has a 'last_name'" do
+        expect(subject["last_name"]).to eq resource.last_name
+        expect(subject["last_name"]).to_not be_nil
       end
 
       it "has a 'name'" do
@@ -213,7 +225,7 @@ describe UserSerializer, type: :serializer do
 
       context "when including categories" do
         let(:serialization) do
-          ActiveModel::Serializer::Adapter.create(serializer, include: ["categories"])
+          ActiveModelSerializers::Adapter.create(serializer, include: ["categories"])
         end
 
         subject do
@@ -228,7 +240,7 @@ describe UserSerializer, type: :serializer do
 
       context "when including skills" do
         let(:serialization) do
-          ActiveModel::Serializer::Adapter.create(serializer, include: ["skills"])
+          ActiveModelSerializers::Adapter.create(serializer, include: ["skills"])
         end
 
         subject do
@@ -243,7 +255,7 @@ describe UserSerializer, type: :serializer do
 
       context "when including organizations" do
         let(:serialization) do
-          ActiveModel::Serializer::Adapter.create(serializer, include: ["organizations"])
+          ActiveModelSerializers::Adapter.create(serializer, include: ["organizations"])
         end
 
         subject do
@@ -258,7 +270,7 @@ describe UserSerializer, type: :serializer do
 
       context "when including roles" do
         let(:serialization) do
-          ActiveModel::Serializer::Adapter.create(serializer, include: ["roles"])
+          ActiveModelSerializers::Adapter.create(serializer, include: ["roles"])
         end
 
         subject do
@@ -273,7 +285,7 @@ describe UserSerializer, type: :serializer do
 
       context "when including user_categories" do
         let(:serialization) do
-          ActiveModel::Serializer::Adapter.create(serializer, include: ["user_categories"])
+          ActiveModelSerializers::Adapter.create(serializer, include: ["user_categories"])
         end
 
         subject do
@@ -288,7 +300,7 @@ describe UserSerializer, type: :serializer do
 
       context "when including user_roles" do
         let(:serialization) do
-          ActiveModel::Serializer::Adapter.create(serializer, include: ["user_roles"])
+          ActiveModelSerializers::Adapter.create(serializer, include: ["user_roles"])
         end
 
         subject do
@@ -303,7 +315,7 @@ describe UserSerializer, type: :serializer do
 
       context "when including user_skills" do
         let(:serialization) do
-          ActiveModel::Serializer::Adapter.create(serializer, include: ["user_skills"])
+          ActiveModelSerializers::Adapter.create(serializer, include: ["user_skills"])
         end
 
         subject do

@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe "Post Images API" do
+describe "Post Images API", :json_api do
 
   before(:each) do
     ActionMailer::Base.deliveries = []

@@ -1,6 +1,6 @@
 require "rails_helper"
 
-describe "ProjectSkills API" do
+describe "ProjectSkills API", :json_api do
   describe "POST /project_skills" do
     context "when unauthenticated" do
       it "responds with a 401" do

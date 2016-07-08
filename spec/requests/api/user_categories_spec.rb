@@ -1,6 +1,6 @@
 require "rails_helper"
 
-describe "UserCategories API" do
+describe "UserCategories API", :json_api do
   describe "GET /user_categories/:id" do
     let(:user_category) { create(:user_category) }
 

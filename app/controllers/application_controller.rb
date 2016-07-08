@@ -1,5 +1,4 @@
 class ApplicationController < ActionController::API
-  include Clearance::Controller
   include Pundit
 
   before_action :set_default_response_format

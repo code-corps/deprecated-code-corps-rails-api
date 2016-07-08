@@ -1,6 +1,6 @@
 require "rails_helper"
 
-describe "UserSkills API" do
+describe "UserSkills API", :json_api do
   context "GET /user_skills" do
     context "with filter ids" do
       before do

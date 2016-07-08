@@ -15,7 +15,7 @@
 #  description       :text
 #
 
-class Organization < ActiveRecord::Base
+class Organization < ApplicationRecord
   ASSET_HOST_FOR_DEFAULT_ICON = "https://d3pgew4wbk2vb1.cloudfront.net/icons".freeze
 
   has_many :organization_memberships

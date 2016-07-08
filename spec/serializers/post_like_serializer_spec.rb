@@ -17,7 +17,7 @@ describe PostLikeSerializer, :type => :serializer do
     let(:resource) { create(:post_like) }
 
     let(:serializer) { PostLikeSerializer.new(resource) }
-    let(:serialization) { ActiveModel::Serializer::Adapter.create(serializer) }
+    let(:serialization) { ActiveModelSerializers::Adapter.create(serializer) }
 
     context "root" do
       subject do
@@ -71,7 +71,9 @@ describe PostLikeSerializer, :type => :serializer do
       end
 
       context "when including 'user'" do
-        let(:serialization) { ActiveModel::Serializer::Adapter.create(serializer, include: ["user"]) }
+        let(:serialization) do
+          ActiveModelSerializers::Adapter.create(serializer, include: ["user"])
+        end
 
         subject do
           JSON.parse(serialization.to_json)["included"]
@@ -84,7 +86,9 @@ describe PostLikeSerializer, :type => :serializer do
       end
 
       context "when including 'post'" do
-        let(:serialization) { ActiveModel::Serializer::Adapter.create(serializer, include: ["post"]) }
+        let(:serialization) do
+          ActiveModelSerializers::Adapter.create(serializer, include: ["post"])
+        end
 
         subject do
           JSON.parse(serialization.to_json)["included"]

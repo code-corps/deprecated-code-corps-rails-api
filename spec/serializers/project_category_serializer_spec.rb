@@ -16,7 +16,7 @@ describe ProjectCategorySerializer, type: :serializer do
     let(:resource) { create(:project_category) }
 
     let(:serializer) { ProjectCategorySerializer.new(resource) }
-    let(:serialization) { ActiveModel::Serializer::Adapter.create(serializer) }
+    let(:serialization) { ActiveModelSerializers::Adapter.create(serializer) }
 
     context "root" do
       subject do
@@ -71,7 +71,7 @@ describe ProjectCategorySerializer, type: :serializer do
 
       context "when including 'project'" do
         let(:serialization) do
-          ActiveModel::Serializer::Adapter.create(serializer, include: ["project"])
+          ActiveModelSerializers::Adapter.create(serializer, include: ["project"])
         end
 
         subject do
@@ -86,7 +86,7 @@ describe ProjectCategorySerializer, type: :serializer do
 
       context "when including 'category'" do
         let(:serialization) do
-          ActiveModel::Serializer::Adapter.create(serializer, include: ["category"])
+          ActiveModelSerializers::Adapter.create(serializer, include: ["category"])
         end
 
         subject do

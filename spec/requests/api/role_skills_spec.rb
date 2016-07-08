@@ -1,6 +1,6 @@
 require "rails_helper"
 
-describe "RoleSkills API" do
+describe "RoleSkills API", :json_api do
   describe "POST /role_skills" do
     context "when unauthenticated" do
       it "responds with a 401" do

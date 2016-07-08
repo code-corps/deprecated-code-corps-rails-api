@@ -17,7 +17,7 @@
 
 require "code_corps/scenario/notify_pusher_of_post_image"
 
-class PostImage < ActiveRecord::Base
+class PostImage < ApplicationRecord
   belongs_to :user
   belongs_to :post
 

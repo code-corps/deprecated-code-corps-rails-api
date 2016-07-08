@@ -1,9 +1,13 @@
+default: &default
+  adapter: postgresql
+  username: postgres
+  host: db
+  port: 5432
+  role: postgres
+
 test:
-  adapter: postgresql
+  <<: *default
   database: code_corps_test
-  host: localhost
 development:
-  adapter: postgresql
+  <<: *default
   database: code_corps_dev
-  role: postgress
-  host: localhost

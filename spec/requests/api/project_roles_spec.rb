@@ -1,6 +1,6 @@
 require "rails_helper"
 
-describe "ProjectRoles API" do
+describe "ProjectRoles API", :json_api do
   describe "POST /project_roles" do
     context "when unauthenticated" do
       it "responds with a 401" do

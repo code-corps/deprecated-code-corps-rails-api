@@ -3,41 +3,37 @@
 # Exit if any subcommand fails
 set -e
 
+# Import colors
+. bin/colors
 
-# Set up configurable environment variables
-# if [ ! -f './config/.env' ]; then
-#   echo '==| creating .env'
-#   cp config/.env.sample config/.env
-# fi
-
-
-  # Check for tools that need to be installed
-dependencies='redis-server postgres foreman heroku'
+# Check for tools that need to be installed
+dependencies='docker-compose'
 for name in $dependencies
 do
   if ! which "$name" > /dev/null; then
-    echo "== $name not installed! Exiting."
+    echo -e "${red}\xE2\x9D\x8C  $name not installed! Exiting.${end}"
     exit 1
   fi
 done
 
-echo "== Installing dependencies =="
-gem install bundler --conservative
-bundle check || bundle install
+if docker-compose run web rake db:exists > /dev/null; then
+  echo -e "${red}\xE2\x9D\x8C  Database already exists! Exiting.${end}"
+  exit 1
+fi
 
+printf "\nPreparing database...\n"
+# Creates the database.
+docker-compose run web rake db:create db:migrate db:test:prepare
 
-echo "== Preparing database =="
-# Drops & recreates the database if it already exists.
-bundle exec rake db:drop db:create db:migrate db:test:prepare db:seed
-bundle exec rake db:seed_fu
+printf "\nSeeding database...\n"
+docker-compose run web rake db:seed_fu
 
-echo "== Removing old logs and tempfiles =="
+printf "\nReindexing elasticsearch...\n"
+docker-compose run web rake searchkick:reindex CLASS=Skill
+
+printf "\nRemoving old logs and tempfiles...\n"
 rm -f log/*
 rm -rf tmp/cache
 
-echo "== Restarting application server =="
-touch tmp/restart.txt
-
-
-echo "== Setup complete."
+printf "\n🌤  ${green}Setup complete.${end}"
 exit 0

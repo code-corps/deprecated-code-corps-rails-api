@@ -21,9 +21,10 @@
 #  photo_content_type    :string
 #  photo_file_size       :integer
 #  photo_updated_at      :datetime
-#  name                  :text
 #  aasm_state            :string           default("signed_up"), not null
 #  theme                 :string           default("light"), not null
+#  first_name            :string
+#  last_name             :string
 #
 
 class UsersController < ApplicationController
@@ -38,9 +39,7 @@ class UsersController < ApplicationController
   def index
     authorize User
 
-    users = User.includes(
-      :categories, :organizations, :roles, skills: :roles
-    ).find(id_params)
+    users = User.find(id_params)
 
     render json: users
   end
@@ -54,7 +53,7 @@ class UsersController < ApplicationController
   end
 
   def show
-    user = User.includes(skills: :roles).find(params[:id])
+    user = User.find(params[:id])
 
     authorize user
     render json: user, include: ["skills"]
@@ -158,8 +157,9 @@ class UsersController < ApplicationController
     end
 
     def update_params
-      parse_params(params, only: [:name, :website, :biography, :twitter,
-                                  :base64_photo_data, :state_transition, :theme])
+      parse_params(params, only: [:first_name, :last_name, :website,
+                                  :biography, :twitter, :base64_photo_data,
+                                  :state_transition, :theme])
     end
 
     def render_no_such_email_error
@@ -196,6 +196,7 @@ class UsersController < ApplicationController
       if user.save
         analytics_for(user).track_signed_up_with_facebook
         AddFacebookFriendsWorker.perform_async(user.id)
+        SubscribeToMailingListWorker.perform_async(user.id)
         if photo_param?
           UpdateProfilePictureWorker.perform_async(user.id)
         else
@@ -213,6 +214,7 @@ class UsersController < ApplicationController
 
       if user.save
         analytics_for(user).track_signed_up_with_email
+        SubscribeToMailingListWorker.perform_async(user.id)
         if photo_param?
           UpdateProfilePictureWorker.perform_async(user.id)
         else

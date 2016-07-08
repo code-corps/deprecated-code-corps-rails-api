@@ -2,6 +2,7 @@ AllCops:
   Exclude:
     - "vendor/**/*"
     - "db/schema.rb"
+  TargetRubyVersion: 2.2
   UseCache: false
 Style/CollectionMethods:
   Description: Preferred collection methods.

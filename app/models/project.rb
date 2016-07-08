@@ -14,13 +14,14 @@
 #  base64_icon_data          :text
 #  slug                      :string           not null
 #  organization_id           :integer          not null
+#  aasm_state                :string
 #  long_description_body     :text
 #  long_description_markdown :text
 #  open_posts_count          :integer          default(0), not null
 #  closed_posts_count        :integer          default(0), not null
 #
 
-class Project < ActiveRecord::Base
+class Project < ApplicationRecord
   ASSET_HOST_FOR_DEFAULT_ICON = "https://d3pgew4wbk2vb1.cloudfront.net/icons".freeze
 
   belongs_to :organization

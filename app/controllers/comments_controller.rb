@@ -17,7 +17,7 @@ class CommentsController < ApplicationController
 
   # GET /posts/:number/comments
   def post_index
-    comments = post.comments.includes(:user, :comment_user_mentions)
+    comments = post.comments.includes(:user)
     authorize comments
 
     render json: comments, include: [:comment_user_mentions]
@@ -25,7 +25,7 @@ class CommentsController < ApplicationController
 
   # GET /comments
   def index
-    comments = Comment.where(id: id_params).includes(:post, :user, :comment_user_mentions)
+    comments = Comment.where(id: id_params).includes(:post, :user)
     authorize comments
 
     render json: comments, include: [:comment_user_mentions]

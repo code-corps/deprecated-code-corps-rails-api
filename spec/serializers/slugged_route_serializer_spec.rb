@@ -13,18 +13,17 @@
 require "rails_helper"
 
 describe SluggedRouteSerializer, type: :serializer do
-
   context "individual resource representation" do
     # Due to the fact slugged_route records are automatically created upon saving
     # a user or an organization, this is the "correct" way to get a working
     # slugged_route instance.
     # If we try to define a factory which has an association, then we will be gettin unique
-    # constraint violations, due to a slugged_route record with the same owner_type and owner_id being
-    # created automatically.
+    # constraint violations, due to a slugged_route record with the same owner_type and
+    # owner_id being created automatically.
     let(:resource) { create(:organization).slugged_route }
 
     let(:serializer) { SluggedRouteSerializer.new(resource) }
-    let(:serialization) { ActiveModel::Serializer::Adapter.create(serializer) }
+    let(:serialization) { ActiveModelSerializers::Adapter.create(serializer) }
 
     context "root" do
       subject do
@@ -82,7 +81,9 @@ describe SluggedRouteSerializer, type: :serializer do
       end
 
       context "when including owner" do
-        let(:serialization) { ActiveModel::Serializer::Adapter.create(serializer, include: ["owner"]) }
+        let(:serialization) do
+          ActiveModelSerializers::Adapter.create(serializer, include: ["owner"])
+        end
 
         subject do
           JSON.parse(serialization.to_json)["included"]
@@ -90,7 +91,7 @@ describe SluggedRouteSerializer, type: :serializer do
 
         it "should contain the slugged_routes's owner" do
           expect(subject).not_to be_nil
-          expect(subject.select{ |i| i["type"] == "organizations"}.length).to eq 1
+          expect(subject.select { |i| i["type"] == "organizations" }.length).to eq 1
         end
       end
     end

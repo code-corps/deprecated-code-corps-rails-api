@@ -10,7 +10,7 @@
 #  updated_at :datetime         not null
 #
 
-class RoleSkill < ActiveRecord::Base
+class RoleSkill < ApplicationRecord
   belongs_to :role
   belongs_to :skill
 

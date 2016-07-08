@@ -11,7 +11,7 @@
 #  updated_at :datetime         not null
 #
 
-class ImportSkillFailure < ActiveRecord::Base
+class ImportSkillFailure < ApplicationRecord
   belongs_to :import
   belongs_to :skill
 

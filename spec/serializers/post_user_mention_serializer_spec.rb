@@ -19,7 +19,7 @@ describe PostUserMentionSerializer, type: :serializer do
     let(:resource) { create(:post_user_mention) }
 
     let(:serializer) { PostUserMentionSerializer.new(resource) }
-    let(:serialization) { ActiveModel::Serializer::Adapter.create(serializer) }
+    let(:serialization) { ActiveModelSerializers::Adapter.create(serializer) }
 
     context "root" do
       subject do
@@ -84,7 +84,7 @@ describe PostUserMentionSerializer, type: :serializer do
 
       context "when including 'user'" do
         let(:serialization) do
-          ActiveModel::Serializer::Adapter.create(serializer, include: ["user"])
+          ActiveModelSerializers::Adapter.create(serializer, include: ["user"])
         end
 
         subject do
@@ -99,7 +99,7 @@ describe PostUserMentionSerializer, type: :serializer do
 
       context "when including 'post'" do
         let(:serialization) do
-          ActiveModel::Serializer::Adapter.create(serializer, include: ["post"])
+          ActiveModelSerializers::Adapter.create(serializer, include: ["post"])
         end
 
         subject do

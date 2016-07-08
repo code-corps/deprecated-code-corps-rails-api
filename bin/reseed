@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+
+# Exit if any subcommand fails
+set -e
+
+# Import colors
+. bin/colors
+
+# Check for tools that need to be installed
+dependencies='docker-compose'
+for name in $dependencies
+do
+  if ! which "$name" > /dev/null; then
+    echo -e "${red}\xE2\x9D\x8C  $name not installed! Exiting.${end}"
+    echo "${yellow}You'll need to reinstall $name to continue.${end}"
+    exit 1
+  fi
+done
+
+printf "\nMigrating database...\n"
+docker-compose run web rake db:migrate db:test:prepare
+
+printf "\nSeeding database...\n"
+docker-compose run web rake db:seed_fu
+
+printf "\nReindexing elasticsearch...\n"
+docker-compose run web rake searchkick:reindex CLASS=Skill
+
+echo ""
+echo "🌱  ${green}Reseed complete.${end}"
+exit 0

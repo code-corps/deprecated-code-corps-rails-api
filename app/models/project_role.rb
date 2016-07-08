@@ -9,9 +9,11 @@
 #  updated_at :datetime         not null
 #
 
-class ProjectRole < ActiveRecord::Base
-  belongs_to :project, required: true
-  belongs_to :role, required: true
+class ProjectRole < ApplicationRecord
+  belongs_to :project
+  belongs_to :role
 
   validates :project_id, uniqueness: { scope: :role_id }
+  validates :project, presence: true
+  validates :role, presence: true
 end

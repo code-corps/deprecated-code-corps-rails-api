@@ -19,5 +19,4 @@ class NotificationMailer < ActionMailer::Base
     def subject
       "You have been mentioned in a #{@type}"
     end
-
 end

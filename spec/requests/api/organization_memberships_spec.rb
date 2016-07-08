@@ -5,7 +5,7 @@ require "rails_helper"
 # - not found
 # - not allowed
 # - successful
-describe "OrganizationMemberships API" do
+describe "OrganizationMemberships API", :json_api do
   context "GET /organization_memberships" do
     describe "coalesce find requests" do
       let(:organization) { create(:organization) }
