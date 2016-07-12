@@ -40,6 +40,32 @@ Have everything installed and ready to work? [Read our usage guides](docs/USAGE.
 - Serve the Ember app's `index.html`
 - Debug with `pry-remote`
 
+## API Docs
+
+You can generate documentation by navigating into the `/blueprint` directory.
+
+If installing for the first time, run:
+
+```shell
+docker-compose build
+```
+
+Then start the `aglio` service with:
+
+```shell
+docker-compose up
+```
+
+Now you can generate the docs with our shell script:
+
+```bash
+./generate
+```
+
+You should be able to view the docs by opening the newly generated `index.html` in your browser.
+
+If you're developing with [Atom](https://atom.io/), you can also use the [API Blueprint Preview](https://atom.io/packages/api-blueprint-preview) package to preview your blueprint changes in realtime.
+
 ## Built with
 
 - [Rails](http://edgeguides.rubyonrails.org/api_app.html) — Our backend API uses Rails 5 in its API-only configuration.
