@@ -37,6 +37,82 @@ Exchange credentials for `access_token`.
 
 # Group Categories
 
+## Category [/categories/new]
+
+### Create a category [POST]
+
++ Request
+  + Attributes (OAuth Grant Request)
+
++ Headers
+
+  Authorization: Basic 5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8
+
++ Response 201 (application/vnd.api+json)
+
+  + Attributes (Category Response)
+
++ Response 422 (application/vnd.api+json)
+
+  + Attributes (Unprocessable Entity Response)
+
+## Category [/categories/{id}]
+
+### Retrieve a category [GET]
+
++ Request
+  + Attributes (OAuth Grant Request)
+
++ Headers
+
+  Authorization: Basic 5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8
+
++ Response 200 (application/vnd.api+json)
+
+  + Attributes (Category Response)
+
++ Response 404 (application/vnd.api+json)
+
+  + Attributes (Record Not Found Response)
+
+## Category [/categories/{id}/edit]
+
+### Update a category [PUT]
+
++ Request
+  + Attributes (OAuth Grant Request)
+
++ Headers
+
+  Authorization: Basic 5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8
+
++ Response 204 (application/vnd.api+json)
+
+  + Attributes (No Content Response)
+
++ Response 404 (application/vnd.api+json)
+
+  + Attributes (Record Not Found Response)
+
++ Response 409 (application/vnd.api+json)
+
+  + Attributes (Creation Conflict Response)
+
+## Categories [/categories]
+
+### List all categories [GET]
+
++ Request
+  + Attributes (OAuth Grant Request)
+
++ Headers
+
+  Authorization: Basic 5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8
+
++ Response 200 (application/vnd.api+json)
+
+  + Attributes (Categories Response)
+
 # Group Comment Images
 
 # Group Comment User Mentions
@@ -135,6 +211,14 @@ Exchange credentials for `access_token`.
 + id: 1 (string)
 + type: organizations (string)
 
+## Project Categories Relationship (object)
++ id: 1 (string)
++ type: project_categories (string)
+
+## Projects Relationship (object)
++ id: 1 (string)
++ type: projects (string)
+
 ## Roles Relationship (object)
 + id: 1 (string)
 + type: roles (string)
@@ -163,6 +247,12 @@ Exchange credentials for `access_token`.
 + user_skills
   + data(array[User Skills Relationship], required)
 
+## No Content Response (object)
+
++ title: `No Content` (string)
+
++ status: 204 (number) - HTTP status code
+
 ## Record Not Found Response Base (object)
 + id: `RECORD_NOT_FOUND` (string)
 
@@ -174,6 +264,37 @@ Exchange credentials for `access_token`.
 
 ## Record Not Found Response (object)
 + errors(array[Record Not Found Response Base], required)
+
+## Creation Conflict Response (object)
++ title: `Conflict` (string)
+
++ detail: `{Object} with 'id'={id} already created` (string) - Details of what record was already there.
+
++ status: 409 (number) - HTTP status code
+
+## Unprocessable Entity Response (object)
++ title: `Unprocessable Entity`
+
++ status: 422 (number) - HTTP status code
+
+## Category (object)
++ name: `Category` (required, string)
++ slug: `cat1` (required, string)
++ description: `This is the category description` (string)
+
+## Category Relationships Base (object)
++ include Project Categories Relationship
+
+## Category Response (object)
++ data
+  + id: `1` (string)
+  + type: `categories` (string)
+  + attributes(Category, required)
+  + relationships(Category Relationships Base, required)
+
+## Categories Response (object)
++ categories
+  + data(array[Category], required)
 
 ## User (object)
 + email: `team@codecorps.org` (string)
