@@ -1,0 +1,202 @@
+FORMAT: 1A
+
+# API Reference
+
+The Code Corps API is a [JSON API](https://github.com/code-corps/code-corps-api)-based REST API built on Rails. You can visit the [API project on GitHub](https://github.com/code-corps/code-corps-api).
+
+This document outlines how to interact with the API's resource-oriented URLs. JSON API errors returned by the API are also documented along with their HTTP status codes.
+
+This API is intended for direct consumption by the Code Corps Ember application.
+
+The production API can be found at `https://api.codecorps.org`.
+
+The staging API can be found at `https://api.pbqrpbecf.org`.
+
+The remote development API can be found at `https://api.pbqrpbecf-qri.org`.
+
+# Authentication
+When using the API's authenticated endpoints you can authenticate users by exchanging the `username` and `password` for an OAuth token.
+
+## OAuth Token Exchange [/oauth/token]
+Exchange credentials for `access_token`.
+
+### Exchange credentials for token [POST]
++ Request
+    + Attributes (OAuth Grant Request)
+    + Headers
+
+            Authorization: Basic 5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8
+
++ Response 200 (application/json)
+    + Attributes (OAuth Valid Response)
+
+# Group Categories
+
+# Group Comment Images
+
+# Group Comment User Mentions
+
+# Group Comments
+
+# Group Ember Index
+
+# Group Github Repositories
+
+# Group Import Skill Failures
+
+# Group Imports
+
+# Group OAuth Applications
+
+# Group Organization Memberships
+
+# Group Organizations
+
+# Group Ping
+
+# Group Post Images
+
+# Group Post Likes
+
+# Group Post User Mentions
+
+# Group Posts
+
+# Group Preview User Mentions
+
+# Group Previews
+
+# Group Project Categories
+
+# Group Project Roles
+
+# Group Projects
+
+# Group Roles
+
+# Group Role Skills
+
+# Group Skills
+
+# Group Slugged Routes
+
+# Group User Categories
+
+# Group User Roles
+
+# Group User Skills
+
+# Group Users
+
+## User [/users/{id}]
+
++ Parameters
+
+  + id: 1 (string)
+
+  + theme (enum[string], optional)
+
+        + Default: `light`
+
+        + Members
+          + `light`
+          + `dark`
+
+### Retrieve a user [GET]
+
++ Relation: self
+
++ Request
+    + Attributes (OAuth Grant Request)
+
+    + Headers
+
+            Authorization: Basic 5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8
+
++ Response 200 (application/vnd.api+json)
+
+  + Attributes (User Response)
+
++ Response 404 (application/vnd.api+json)
+
+  + Attributes (Record Not Found Response)
+
+# Data Structures
+
+## Categories Relationship (object)
++ id: 1 (string)
++ type: categories (string)
+
+## Organizations Relationship (object)
++ id: 1 (string)
++ type: organizations (string)
+
+## Roles Relationship (object)
++ id: 1 (string)
++ type: roles (string)
+
+## Skills Relationship (object)
++ id: 1 (string)
++ type: skills (string)
+
+## User Categories Relationship (object)
++ id: 1 (string)
++ type: user_categories (string)
+
+## User Roles Relationship (object)
++ id: 1 (string)
++ type: user_roles (string)
+
+## User Roles Relationships (object)
++ user_roles
+  + data(array[User Roles Relationship], required)
+
+## User Skills Relationship (object)
++ id: 1 (string)
++ type: user_skills (string)
+
+## User Skills Relationships (object)
++ user_skills
+  + data(array[User Skills Relationship], required)
+
+## Record Not Found Response Base (object)
++ id: `RECORD_NOT_FOUND` (string)
+
++ title: `Record not found` (string)
+
++ detail: `Couldn't find {object} with 'id'={id}` (string) - Details of what record was not found.
+
++ status: 404 (number) - HTTP status code
+
+## Record Not Found Response (object)
++ errors(array[Record Not Found Response Base], required)
+
+## User (object)
++ email: `team@codecorps.org` (string)
++ theme: `light` (string)
+
+  The theme is either `light` or `dark`.
+
+## User Relationships Base (object)
++ include User Roles Relationships
++ include User Skills Relationships
+
+## User Response (object)
++ data
+  + id: `1` (string)
+  + type: `users` (string)
+  + attributes(User, required)
+  + relationships(User Relationships Base, required)
+
+## OAuth Grant Request (object)
+  + grant_type: `password` (string, required)
+  + username: `josh@coderly.com` (string, required) - The user's email address.
+  + password: `password` (string, required)
+
+## OAuth Valid Response (object)
+  + access_token: `5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8` (string, required)
+  + token_type: `bearer` (string, required)
+  + expires_in: 7200 (number, required)
+  + refresh_token: `f160d958cab936626305062dc594c2cadb12712ebc7cbca091a27ec4921b91d8` (string, required)
+  + created_at: 1468283904 (number, required)
+  + user_id: 1 (number, required)
