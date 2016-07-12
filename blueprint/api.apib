@@ -32,6 +32,9 @@ Exchange credentials for `access_token`.
 + Response 200 (application/json)
     + Attributes (OAuth Valid Response)
 
++ Response 401 (application/json)
+    + Attributes (OAuth Invalid Response)
+
 # Group Categories
 
 # Group Comment Images
@@ -193,6 +196,12 @@ Exchange credentials for `access_token`.
   + grant_type: `password` (string, required)
   + username: `josh@coderly.com` (string, required) - The user's email address.
   + password: `password` (string, required)
+
+## OAuth Invalid Response (object)
+  + id: `INVALID_GRANT` (string, required)
+  + title: `Invalid grant` (string, required)
+  + detail: `The provided authorization grant is invalid, expired, revoked, does not match the redirection URI used in the authorization request, or was issued to another client.` (string, required)
+  + status: 401 (number, required)
 
 ## OAuth Valid Response (object)
   + access_token: `5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8` (string, required)
