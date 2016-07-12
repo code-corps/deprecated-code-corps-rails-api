@@ -107,8 +107,8 @@ When creating a user you *must* include either `email` or a combination of `face
 
   + base64_photo_data: `data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7` (string, optional)
   + email: `team@codecorps.org` (string, optional)
-  + facebook_id: `12345` (number, optional)
-  + facebook_access_token: `abcedf` (string, optional)
+  + facebook_id: `1234567890` (string, optional)
+  + facebook_access_token: `CAABwiWr8tH8BAGKCYOIgoMwJ9T0ZAmJ6KJJNcUjzmftdAOCx1RgzxZAjzGB1s37DDCEoy9r2VgrCLffCTvEGe9cZBZPAwBhygi2ZpTubZC2eCzMe16CLP4Wlc9bStWGwUNYoLEl4dXu4uJl2CCLiFXEtP4GKDv0Gk4s35iXty77KZBx5NYBCcEUs98WjdJQcXLsb1X2ZBaMTW2AZDZN` (string, optional)
   + password: `password` (string, required)
   + username: `codecorps` (string, required)
 
@@ -184,14 +184,21 @@ When creating a user you *must* include either `email` or a combination of `face
 + errors(array[Record Not Found Response Base], required)
 
 ## User (object)
++ base64_photo_data: `data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7` (string, optional)
 + biography: `Sample bio.` (string, optional)
-+ email: `team@codecorps.org` (string, required)
++ created_at: `2016-07-05T01:49:33.544Z` (string, optional)
++ email: `team@codecorps.org` (string, optional)
++ facebook_id: `1234567890` (string, optional)
++ facebook_access_token: `CAABwiWr8tH8BAGKCYOIgoMwJ9T0ZAmJ6KJJNcUjzmftdAOCx1RgzxZAjzGB1s37DDCEoy9r2VgrCLffCTvEGe9cZBZPAwBhygi2ZpTubZC2eCzMe16CLP4Wlc9bStWGwUNYoLEl4dXu4uJl2CCLiFXEtP4GKDv0Gk4s35iXty77KZBx5NYBCcEUs98WjdJQcXLsb1X2ZBaMTW2AZDZN` (string, optional)
++ password: `password` (string, required)
++ photo_thumb_url: `https://d3pgew4wbk2vb1.cloudfront.net/icons/user_default_thumb.png` (string, optional)
++ photo_large_url: `https://d3pgew4wbk2vb1.cloudfront.net/icons/user_default_large.png` (string, optional)
++ state: `signed_up` (string)
 + theme: `light` (string, optional)
   The theme is either `light` or `dark`.
-+ state: `signed_up` (string)
 + twitter: `codecorps` (string, optional)
++ username: `codecorps` (string, required)
 + website: `https://codecorps.org` (string, optional)
-+ username: `codecorps-team` (string, required)
 
 ## User Relationships Base (object)
 + include User Roles Relationships
