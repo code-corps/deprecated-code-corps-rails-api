@@ -1,4 +1,5 @@
 FORMAT: 1A
+HOST: https://api.codecorps.org
 
 # API Reference
 
@@ -26,9 +27,67 @@ Exchange credentials for `access_token`.
     + Headers
 
             Authorization: Basic 5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8
+            Content-Type: application/x-www-form-urlencoded
 
 + Response 200 (application/json)
     + Attributes (OAuth Valid Response)
+
++ Response 401 (application/json)
+    + Attributes (OAuth Invalid Response)
+
+# Group Categories
+
+# Group Comment Images
+
+# Group Comment User Mentions
+
+# Group Comments
+
+# Group Github Repositories
+
+# Group Import Skill Failures
+
+# Group Imports
+
+# Group OAuth Applications
+
+# Group Organization Memberships
+
+# Group Organizations
+
+# Group Ping
+
+# Group Post Images
+
+# Group Post Likes
+
+# Group Post User Mentions
+
+# Group Posts
+
+# Group Preview User Mentions
+
+# Group Previews
+
+# Group Project Categories
+
+# Group Project Roles
+
+# Group Projects
+
+# Group Roles
+
+# Group Role Skills
+
+# Group Skills
+
+# Group Slugged Routes
+
+# Group User Categories
+
+# Group User Roles
+
+# Group User Skills
 
 # Group Users
 
@@ -36,7 +95,7 @@ Exchange credentials for `access_token`.
 
 + Parameters
 
-  + id: 1 (string)
+  + id: 1 (string, required)
 
   + theme (enum[string], optional)
 
@@ -64,6 +123,7 @@ Exchange credentials for `access_token`.
 + Response 404 (application/vnd.api+json)
 
   + Attributes (Record Not Found Response)
+
 
 # Data Structures
 
@@ -136,6 +196,12 @@ Exchange credentials for `access_token`.
   + grant_type: `password` (string, required)
   + username: `josh@coderly.com` (string, required) - The user's email address.
   + password: `password` (string, required)
+
+## OAuth Invalid Response (object)
+  + id: `INVALID_GRANT` (string, required)
+  + title: `Invalid grant` (string, required)
+  + detail: `The provided authorization grant is invalid, expired, revoked, does not match the redirection URI used in the authorization request, or was issued to another client.` (string, required)
+  + status: 401 (number, required)
 
 ## OAuth Valid Response (object)
   + access_token: `5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8` (string, required)
