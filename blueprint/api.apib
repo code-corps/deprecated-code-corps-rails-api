@@ -5,9 +5,11 @@ HOST: https://api.codecorps.org
 
 The Code Corps API is a [JSON API](https://github.com/code-corps/code-corps-api)-based REST API built on Rails. You can visit the [API project on GitHub](https://github.com/code-corps/code-corps-api).
 
-This document outlines how to interact with the API's resource-oriented URLs. JSON API errors returned by the API are also documented along with their HTTP status codes.
+This document outlines how to interact with the API's resource-oriented URLs.
 
 This API is intended for direct consumption by the Code Corps Ember application.
+
+## Hosts
 
 The production API can be found at `https://api.codecorps.org`.
 
@@ -16,6 +18,10 @@ The staging API can be found at `https://api.pbqrpbecf.org`.
 The remote development API can be found at `https://api.pbqrpbecf-qri.org`.
 
 We recommend that you use the remote development API for your development and testing.
+
+## Errors
+
+JSON API errors returned by the API are also documented along with their HTTP status codes.
 
 ## Authentication [/oauth/token]
 When using the API's authenticated endpoints you can authenticate users by exchanging the `username` and `password` for an OAuth token.
