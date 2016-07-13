@@ -21,13 +21,7 @@ Then check out some GitHub issues to see where you can help out.
 
 ## Installing
 
-### Recommended install
-
-To make your life easier, you can just clone this repository and use our Docker container. [Follow this guide to get started.](docs/DEFAULT_INSTALL.md)
-
-#### Custom install
-
-We wholeheartedly recommend against doing a custom install. You'll be spending more time configuring and less time being productive. But if you'd like to work that way, you can read our [custom install guide](docs/CUSTOM_INSTALL.md).
+To make your life easier, you can just clone this repository and use our Docker container. [Follow this guide to get started.](docs/INSTALLING.md)
 
 ## Usage
 
