@@ -30,6 +30,7 @@ code-corps-api/          # → Root folder for this project
 Go to the `code-corps-api` directory and type:
 
 ```shell
+docker-compose build
 docker-compose up
 ```
 
@@ -63,7 +64,7 @@ Point your browser (or make a direct request) to `http://api.lvh.me/ping`. There
 
 ### Next steps
 
-Now that you're set up, you should [read more about how to develop with the API](docs/USAGE.md).
+Now that you're set up, you should [read more about how to develop with the API](USAGE.md).
 
 ### Issues installing?
 
