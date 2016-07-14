@@ -34,6 +34,8 @@ docker-compose build
 docker-compose up
 ```
 
+You should now see a lot of output from the Docker processes and will not be able to interact with that terminal window.
+
 Docker will set up your base Ruby container, as well as containers for:
 
 - `postgres`
@@ -46,7 +48,9 @@ You can view more detailed information about these services in the `docker-compo
 
 ### Setup your database
 
-You can now create and seed your database in the `web` container with our helpful bash script:
+You can now create and seed your database in the `web` container with our helpful bash script.
+
+Open up a new terminal window and type:
 
 ```shell
 bin/setup
