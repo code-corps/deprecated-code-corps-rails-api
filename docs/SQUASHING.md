@@ -1,12 +1,14 @@
 # How do I "squash" my commits?
 
-On your command line you'll want to do:
+Before you start, [make sure your text editor is associated with Git](https://help.github.com/articles/associating-text-editors-with-git/) to not close without a response, otherwise you'll see some weird behavior.
 
-```
+On your command line, run:
+
+```shell
 git rebase -i origin/develop
 ```
 
-This says to rebase your work off of develop. If you use an editor like Sublime Text, you'll want to [be sure your editor doesn't close without a response](https://gist.github.com/geekmanager/9939cf67598efd409bc7).
+This says to rebase your work off of develop.
 
 From here, you'll see something like:
 
