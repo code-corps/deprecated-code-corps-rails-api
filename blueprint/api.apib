@@ -200,87 +200,16 @@ Exchange credentials for `access_token`.
 
   + Attributes (Record Not Found Response)
 
-
 # Data Structures
-
-## Categories Relationship (object)
-+ id: 1 (string)
-+ type: categories (string)
-
-## Organizations Relationship (object)
-+ id: 1 (string)
-+ type: organizations (string)
-
-## Project Categories Relationship (object)
-+ id: 1 (string)
-+ type: project_categories (string)
-
-## Projects Relationship (object)
-+ id: 1 (string)
-+ type: projects (string)
-
-## Roles Relationship (object)
-+ id: 1 (string)
-+ type: roles (string)
-
-## Skills Relationship (object)
-+ id: 1 (string)
-+ type: skills (string)
-
-## User Categories Relationship (object)
-+ id: 1 (string)
-+ type: user_categories (string)
-
-## User Roles Relationship (object)
-+ id: 1 (string)
-+ type: user_roles (string)
-
-## User Roles Relationships (object)
-+ user_roles
-  + data(array[User Roles Relationship], required)
-
-## User Skills Relationship (object)
-+ id: 1 (string)
-+ type: user_skills (string)
-
-## User Skills Relationships (object)
-+ user_skills
-  + data(array[User Skills Relationship], required)
-
-## No Content Response (object)
-
-+ title: `No Content` (string)
-
-+ status: 204 (number) - HTTP status code
-
-## Record Not Found Response Base (object)
-+ id: `RECORD_NOT_FOUND` (string)
-
-+ title: `Record not found` (string)
-
-+ detail: `Couldn't find {object} with 'id'={id}` (string) - Details of what record was not found.
-
-+ status: 404 (number) - HTTP status code
-
-## Record Not Found Response (object)
-+ errors(array[Record Not Found Response Base], required)
-
-## Creation Conflict Response (object)
-+ title: `Conflict` (string)
-
-+ detail: `{Object} with 'id'={id} already created` (string) - Details of what record was already there.
-
-+ status: 409 (number) - HTTP status code
-
-## Unprocessable Entity Response (object)
-+ title: `Unprocessable Entity`
-
-+ status: 422 (number) - HTTP status code
 
 ## Category (object)
 + name: `Category` (required, string)
 + slug: `cat1` (required, string)
 + description: `This is the category description` (string)
+
+## Categories Relationship (object)
++ id: 1 (string)
++ type: categories (string)
 
 ## Category Relationships Base (object)
 + include Project Categories Relationship
@@ -296,22 +225,18 @@ Exchange credentials for `access_token`.
 + categories
   + data(array[Category], required)
 
-## User (object)
-+ email: `team@codecorps.org` (string)
-+ theme: `light` (string)
+## Creation Conflict Response (object)
++ title: `Conflict` (string)
 
-  The theme is either `light` or `dark`.
++ detail: `{Object} with 'id'={id} already created` (string) - Details of what record was already there.
 
-## User Relationships Base (object)
-+ include User Roles Relationships
-+ include User Skills Relationships
++ status: 409 (number) - HTTP status code
 
-## User Response (object)
-+ data
-  + id: `1` (string)
-  + type: `users` (string)
-  + attributes(User, required)
-  + relationships(User Relationships Base, required)
+## No Content Response (object)
+
++ title: `No Content` (string)
+
++ status: 204 (number) - HTTP status code
 
 ## OAuth Grant Request (object)
   + grant_type: `password` (string, required)
@@ -331,3 +256,77 @@ Exchange credentials for `access_token`.
   + refresh_token: `f160d958cab936626305062dc594c2cadb12712ebc7cbca091a27ec4921b91d8` (string, required)
   + created_at: 1468283904 (number, required)
   + user_id: 1 (number, required)
+
+## Organizations Relationship (object)
++ id: 1 (string)
++ type: organizations (string)
+
+## Project Categories Relationship (object)
++ id: 1 (string)
++ type: project_categories (string)
+
+## Projects Relationship (object)
++ id: 1 (string)
++ type: projects (string)
+
+## Record Not Found Response Base (object)
++ id: `RECORD_NOT_FOUND` (string)
+
++ title: `Record not found` (string)
+
++ detail: `Couldn't find {object} with 'id'={id}` (string) - Details of what record was not found.
+
++ status: 404 (number) - HTTP status code
+
+## Record Not Found Response (object)
++ errors(array[Record Not Found Response Base], required)
+
+## Roles Relationship (object)
++ id: 1 (string)
++ type: roles (string)
+
+## Skills Relationship (object)
++ id: 1 (string)
++ type: skills (string)
+
+## Unprocessable Entity Response (object)
++ title: `Unprocessable Entity`
+
++ status: 422 (number) - HTTP status code
+
+## User (object)
++ email: `team@codecorps.org` (string)
++ theme: `light` (string)
+
+  The theme is either `light` or `dark`.
+
+## User Categories Relationship (object)
++ id: 1 (string)
++ type: user_categories (string)
+
+## User Relationships Base (object)
++ include User Roles Relationships
++ include User Skills Relationships
+
+## User Response (object)
++ data
+  + id: `1` (string)
+  + type: `users` (string)
+  + attributes(User, required)
+  + relationships(User Relationships Base, required)
+
+## User Roles Relationship (object)
++ id: 1 (string)
++ type: user_roles (string)
+
+## User Roles Relationships (object)
++ user_roles
+  + data(array[User Roles Relationship], required)
+
+## User Skills Relationship (object)
++ id: 1 (string)
++ type: user_skills (string)
+
+## User Skills Relationships (object)
++ user_skills
+  + data(array[User Skills Relationship], required)
