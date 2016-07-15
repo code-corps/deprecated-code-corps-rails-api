@@ -25,7 +25,7 @@ code-corps-api/          # → Root folder for this project
 
 ### Setup your Docker containers and run the server
 
-> Note: We bind to ports 6380 for `redis` and 5001 for `foreman`. Make sure you're not running anything on those ports. We do not expose port 5432 for `postgres` or 9200 for `elasticsearch`.
+> Note: We bind to ports 80 for `web`, 8081 for `apiary`, 6380 for `redis` and 5001 for `foreman`. Make sure you're not running anything on those ports. We do not expose port 5432 for `postgres` or 9200 for `elasticsearch`.
 
 Go to the `code-corps-api` directory and type:
 
@@ -43,6 +43,7 @@ Docker will set up your base Ruby container, as well as containers for:
 - `redis`
 - `web` runs `foreman s` with the `Procfile.dev`
 - `test` runs `guard start`
+- `apiary` runs an [Apiary client](API.md#apiary-cli) server on port `8081`
 
 You can view more detailed information about these services in the `docker-compose.yml` file, but you shouldn't need to edit it unless you're intentionally contributing changes to our Docker workflow.
 

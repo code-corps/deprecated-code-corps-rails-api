@@ -36,29 +36,14 @@ Have everything installed and ready to work? [Read our usage guides](docs/USAGE.
 
 ## API Docs
 
-You can generate documentation by navigating into the `/blueprint` directory.
+Want to see documentation for the API endpoints?
 
-If installing for the first time, run:
+Documentation is available on Apiary for the following branches:
 
-```shell
-docker-compose build
-```
+- `master` (api.codecorps.org): [http://docs.codecorpsapi.apiary.io/](http://docs.codecorpsapi.apiary.io/)
+- `develop` (api.pbqrpbecf.org and api.pbqrpbecf-qri.org): [http://docs.codecorpsapidevelop.apiary.io/](http://docs.codecorpsapidevelop.apiary.io/)
 
-Then start the `aglio` service with:
-
-```shell
-docker-compose up
-```
-
-Now you can generate the docs with our shell script:
-
-```bash
-./generate
-```
-
-You should be able to view the docs by opening the newly generated `index.html` in your browser.
-
-If you're developing with [Atom](https://atom.io/), you can also use the [API Blueprint Preview](https://atom.io/packages/api-blueprint-preview) package to preview your blueprint changes in realtime.
+Read our guide to see how to [generate API docs locally as you develop](docs/API.md).
 
 ## Built with
 

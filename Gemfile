@@ -57,6 +57,7 @@ group :development, :test do
 end
 
 group :development do
+  gem "apiary"
   gem "foreman"
   gem "guard-rspec", require: false
   gem "sinatra", github: "sinatra", require: nil # for Sidekiq UI to work in development

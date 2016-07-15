@@ -38,19 +38,46 @@ Once you've created the issue, you can [make your changes and push them up](#how
 
 ## What kind of documentation are you writing?
 
-- [I want to improve the API developer docs.](#improving-the-api-docs)
-- [I want to document some of the internals of the Rails app](#improving-internal-docs).
-- [I want to improve the README.](#improving-the-readme)
+- [I want to improve the documentation of the API endpoints.](#improving-the-api-endpoint-docs)
+- [I want to document some of the internals of the Rails app](#improving-ruby-docs).
+- [I want to improve the docs on GitHub.](#improving-the-readme)
 
-## Improving the API docs
+## Improving the API endpoint docs
 
 We're still trying to figure this out, but you can [follow this journey issue](https://github.com/code-corps/code-corps-api/issues/387) and see some of the `Closed` pull requests for how to document.
 
 We're using [API Blueprint](https://apiblueprint.org/) for writing our docs, and you can use the Apiary CLI tool to preview them.
 
+#### Learning how to write API Blueprint documentation
+
+API Blueprint has a [quick tutorial you can read](https://apiblueprint.org/documentation/tutorial.html) that walks through writing your first docs in the API Blueprint language.
+
+You can [read more examples here](https://github.com/apiaryio/api-blueprint/tree/master/examples) or check our own blueprint for examples.
+
+#### Where do I make changes?
+
+You will be working with the `blueprint/api.apib` document. You'll likely be adding any number of:
+
+- Resource Groups
+- Resources
+- Actions
+- URI Templates
+- URI Parameters
+- Data Structures
+
+Data Structures often serve as your base objects for assembling the higher-level endpoint documentation. These objects are composeable – like Lego blocks – in new and often interesting ways.
+
+The `/users/:id` endpoint documented in the `User` resource group, for example, may contain a `User Response` for its `200` response. This `User Response` data structure is itself composed of a `User` data structure (which collects the attributes for that user like `email` and `username`) and a `User Relationships Base` data structure, which includes yet more data structures like the `User Skills Relationship`.
+
+By creating small, modular pieces, we can assemble complex data structures that describe our API.
+
+#### Previewing your changes
+
+You can preview your changes by [walking through our guide on how to generate API documentation locally](API.md).
+
 [Done with your changes?](#i-finished-my-changes)
 
-## Improving internal docs
+## Improving Ruby docs
 
 You can see how much code is documented on [Inch CI](http://inch-ci.org/github/code-corps/code-corps-api).
 
