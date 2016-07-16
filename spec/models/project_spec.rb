@@ -117,22 +117,4 @@ describe Project, type: :model, local_skip: true do
       end
     end
   end
-
-  describe "#save" do
-    context "when markdown is not empty" do
-      it "renders markdown to body" do
-        post = build(:project, long_description_markdown: "# Hello World\n\nHello, world.")
-        post.save
-        expect(post.long_description_body).to eq "<h1>Hello World</h1>\n\n<p>Hello, world.</p>"
-      end
-    end
-
-    context "when markdown is empty" do
-      it "does not render markdown to body" do
-        post = build(:project, long_description_markdown: "")
-        post.save
-        expect(post.long_description_body).to be_nil
-      end
-    end
-  end
 end

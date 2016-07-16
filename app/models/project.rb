@@ -73,7 +73,6 @@ class Project < ApplicationRecord
     end
 
     def render_markdown_to_body
-      return if long_description_markdown.blank?
       html = pipeline.call(long_description_markdown)
       self.long_description_body = html[:output].to_s
     end
