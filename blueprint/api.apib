@@ -133,16 +133,25 @@ Exchange credentials for `access_token`.
 
 # Group Ping
 
+You can check if the server is up and running by hitting the `/ping` end-point. The response differs between logged in user and the anonymous user as shown below
+
 ## Ping [/ping]
 
 ### Check server status [GET]
 
+For a logged in users, this end-point returns the users registered email id in the response json.
 
 + Response 200 (application/json)
 
-  + Attributes 
+  + Attributes (Ping Logged In User Response)
 
-    + ping: `pong`
+### Check server status [GET]
+
+For a anonymous users, this end-point returns `pong` in the response json.
+
++ Response 200 (application/json)
+
+  + Attributes (Ping Guest User Response)
 
 # Group Post Images
 
@@ -341,3 +350,12 @@ Exchange credentials for `access_token`.
 ## User Skills Relationships (object)
 + user_skills
   + data(array[User Skills Relationship], required)
+
+
+## Ping Guest User Response (object)
++ data
+  + ping: `pong` (string)
+
+## Ping Logged In User Response (object)
+ + data
+   + ping: `author@coderly.com` (string)
