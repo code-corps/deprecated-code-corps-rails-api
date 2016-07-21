@@ -145,6 +145,30 @@ Exchange credentials for `access_token`.
 
 # Group Previews
 
+## Preview [/previews]
+
+### Create a preview [POST]
+
++ Request
+
+  + Attributes (OAuth Grant Request)
+
++ Headers
+
+  Authorization: Bearer {access_token}
+
++ Response 201 (application/vnd.api+json)
+
+  + Attributes (Preview Response)
+
++ Response 401 (application/json)
+
+  + Attributes (OAuth Invalid Response)
+
++ Response 422 (application/vnd.api+json)
+
+  + Attributes (Unprocessable Entity Response)
+
 # Group Project Categories
 
 # Group Project Roles
@@ -261,6 +285,31 @@ Exchange credentials for `access_token`.
 + id: 1 (string)
 + type: organizations (string)
 
+## Preview (object)
++ body: `<p>A <strong>strong</strong> preview</p>` (string)
++ markdown: `A *strong* preview` (string)
+
+## Preview Response Base (object)
++ id: `1` (string)
++ type: `previews` (string)
++ attributes(Preview, required)
++ relationships(Preview Relationships Base, required)
+
+## Preview Response (object)
++ data(Preview Response Base)
+
+## Previews Relationship (object)
++ id: 1 (string)
++ type: previews (string)
+
+## Preview Relationships Base (object)
++ include Users Relationship
++ include Preview User Mentions Relationship
+
+## Preview User Mentions Relationship (object)
++ id: 1 (string)
++ type: preview_user_mentions (string)
+
 ## Project Categories Relationship (object)
 + id: 1 (string)
 + type: project_categories (string)
@@ -303,6 +352,10 @@ Exchange credentials for `access_token`.
 ## User Categories Relationship (object)
 + id: 1 (string)
 + type: user_categories (string)
+
+## Users Relationship
++ id: 1 (string)
++ type: users (string)
 
 ## User Relationships Base (object)
 + include User Roles Relationships
