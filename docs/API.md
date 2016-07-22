@@ -12,6 +12,8 @@ You can generate documentation a few ways:
 
 Once Docker is running your containers, `apiary` runs an Apiary CLI server on port `8081`. You can visit the documentation by visiting `localhost:8081` in your browser. Just refresh the page any time you make changes to the documentation file at `/blueprint/api.apib`.
 
+As an internal style guide, please use double spacing when adding new lines to the documentation. The only place that single lines should be used is for the Data Structures Section.
+
 ### aglio
 
 Navigate into the `/blueprint` directory.
