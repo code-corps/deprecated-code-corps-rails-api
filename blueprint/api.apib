@@ -196,6 +196,52 @@ Exchange credentials for `access_token`.
 
 # Group Roles
 
+This endpoint is for creating and returning the roles available for users
+
+A user is able to have multiple roles through user_roles
+
+## Role [/roles]
+
+### Create a role [POST]
+
++ Request
+
+  + Headers
+
+       Accept: application/vnd.api+json
+
+       Authorization: Bearer {access_token}
+
++ Response 200 (application/vnd.api+json)
+
+  + Attributes (Role Response)
+
++ Response 401 (application/json)
+
+  + Attributes (OAuth Invalid Response)
+
++ Response 403 (application/json)
+
+  + Attributes (Forbidden Response)
+
++ Response 422 (application/vnd.api+json)
+
+  + Attributes (Unprocessable Entity Response)
+
+## Roles [/roles]
+
+### List all roles [GET]
+
++ Request
+
+  + Headers
+
+       Accept: application/vnd.api+json
+
++ Response 200 (application/vnd.api+json)
+
+  + Attributes (Roles Response)
+
 # Group Role Skills
 
 This group is used as a join table to connect the many to many relationship of Skills and Roles
@@ -579,6 +625,27 @@ This allows A Skill to be under different Roles and a Role to have multiple Skil
 ## Skill Resource Identifier
 + id: `1` (string)
 + type: `skills` (string)
+
+## Role Response (object)
++ data(Role Resource)
+
+## Roles Response (object)
++ data(array[Role Resource])
+
+## Role Resource (object)
++ include Role Resource Identifier
++ attributes
+  + name: `Backend Developer` (string)
+  + ability: `Backend Development` (string)
+  + kind: `technology` (enum[string])
+    + Members
+      + `technology`
+      + `creative`
+      + `support`
++ relationships
+  + skills
+    + data(array[Skill Resource Identifier])
+    + links
 
 ## Role Skill Response (object)
 + data(Role Skill Resource)
