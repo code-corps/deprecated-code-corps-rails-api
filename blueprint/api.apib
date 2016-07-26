@@ -382,6 +382,75 @@ This allows A Skill to be under different Roles and a Role to have multiple Skil
 
 # Group Skills
 
+This endpoint retrieves skills that can be applied to both users (through user_skills) and roles (through role_skills)
+
+## Skills [/skills?{filter}]
+
+### List all skills or filter by parameter [GET]
+
++ Parameters
+
+    + filter: `1` (enum[number], optional) - Id query to filter returned skills
+
+    + query: `elixir` (string, optional) - Text query to filter returned skills
+
++ Request
+
+    + Headers
+
+        Accept: application/vnd.api+json
+
++ Response 200 (application/vnd.api+json)
+
+    + Attributes (Skills Response)
+
+### Create a skill [POST]
+
++ Request
+
+    + Headers
+
+        Accept: application/vnd.api+json
+        Authorization: Bearer <access_token>
+
++ Response 200 (application/vnd.api+json)
+
+    + Attributes (Skill Response)
+
++ Response 401 (application/json)
+
+    + Attributes (OAuth Invalid Response)
+
++ Response 403 (application/json)
+
+    + Attributes (Forbidden Response)
+
++ Response 422 (application/vnd.api+json)
+
+    + Attributes (Unprocessable Entity Response)
+
+## Skill [/skills/{id}]
+
+### Retrieve a skill [GET]
+
++ Parameters
+
+    + id - The Id of a skill
+
++ Request
+
+    + Headers
+
+        Accept: application/vnd.api+json
+
++ Response 200 (application/vnd.api+json)
+
+    + Attributes (Skill Response)
+
++ Response 404 (application/vnd.api+json)
+
+    + Attributes (Record Not Found Response)
+
 # Group Slugged Routes
 
 # Group User Categories
@@ -858,10 +927,6 @@ When creating a user category, the authenticated user is assumed by the server s
 + id: `1` (string)
 + type: `roles` (string)
 
-## Skill Resource Identifier
-+ id: `1` (string)
-+ type: `skills` (string)
-
 ## Role Response (object)
 + data(Role Resource)
 
@@ -895,8 +960,28 @@ When creating a user category, the authenticated user is assumed by the server s
     + links
 
 ## Role Skill Resource Identifier (object)
++ id: `1` (string)
++ type: `role_skills` (string)
+
+## Skill Resource (object)
++ include Skill Resource Identifier
++ attributes
+    + title: `Elixir`
+    + description: `Elixir is a functional, concurrent, general-purpose programming language that runs on the Erlang virtual machine (BEAM).`
++ relationships
+    + roles
+        + data(array[Role Resource Identifier])
+        + links
+
+## Skill Response (object)
++ data(Skill Resource)
+
+## Skills Response (object)
++ data(array[Skill Resource])
+
+## Skill Resource Identifier (object)
 + id: 1 (string)
-+ type: role_skills (string)
++ type: skill (string)
 
 ## Unprocessable Entity Response (object)
 + errors (array)
