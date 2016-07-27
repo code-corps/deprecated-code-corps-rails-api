@@ -210,38 +210,192 @@ Exchange credentials for `access_token`.
 
 # Group Users
 
-## User [/users/{id}]
+## Users [/users]
 
-+ Parameters
+### Create a user [POST]
 
-  + id: 1 (string, required)
-
-  + theme (enum[string], optional)
-
-        + Default: `light`
-
-        + Members
-          + `light`
-          + `dark`
-
-### Retrieve a user [GET]
-
-+ Relation: self
-
-+ Request
-    + Attributes (OAuth Grant Request)
++ Request (application/vnd.api+json)
 
     + Headers
 
-            Authorization: Basic 5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8
+        Accept: application/vnd.api+json
+
+    + Attributes (object)
+
+        + data (object)
+            + type: `users` (string, required)
+            + attributes (object)
+                + base64_photo_data: `data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7` (string, optional)
+                + email: `me@testuser.org` (string, optional)
+                + facebook_id: `1234567890` (string, optional)
+                + facebook_access_token: `CAABwiWr8tH8BAGKCYOIgoMwJ9T0ZAmJ6KJJNcUjzmftdAOCx1RgzxZAjzGB1s37DDCEoy9r2VgrCLffCTvEGe9cZBZPAwBhygi2ZpTubZC2eCzMe16CLP4Wlc9bStWGwUNYoLEl4dXu4uJl2CCLiFXEtP4GKDv0Gk4s35iXty77KZBx5NYBCcEUs98WjdJQcXLsb1X2ZBaMTW2AZDZN` (string, optional)
+                + password: `password` (string, required)
+                + username: `testuser` (string, required)
+
++ Response 201 (application/vnd.api+json)
+
+    + Attributes (User Response)
+
++ Response 422 (application/vnd.api+json)
+
+    + Attributes (Unprocessable Entity Response)
+
+### Find a user [GET /users/{id}]
+
++ Parameters
+
+    + id - The Id of a user.
+
++ Request
+
+    + Headers
+
+        Accept: application/vnd.api+json
 
 + Response 200 (application/vnd.api+json)
 
-  + Attributes (User Response)
+    + Attributes (User Response)
 
 + Response 404 (application/vnd.api+json)
 
-  + Attributes (Record Not Found Response)
+    + Attributes (Record Not Found Response)
+
+### Check email availability [GET /users/email_available?email={email}]
+
++ Parameters
+
+    + email: me@testuser.org (string, required)
+
++ Response 200 (application/vnd.api+json)
+
+    + Attributes
+
+        + available: `true` (boolean)
+        + valid: `true` (boolean)
+
+### Check username availability [GET /users/username_available?username={username}]
+
++ Parameters
+
+    + username: testuser (string, required)
+
++ Response 200 (application/vnd.api+json)
+
+    + Attributes
+
+        + available: `true` (boolean)
+        + valid: `true` (boolean)
+
+### Update a user [PATCH /users/{id}]
+
++ Parameters
+
+    + id: `1` - The Id of a user.
+
++ Request (application/vnd.api+json)
+
+    + Attributes
+        + data
+            + Include (User Resource Identifier)
+            + attributes (object)
+                + first_name: `Test` (string, optional)
+                + last_name: `User` (string, optional)
+                + website: `https://testuser.org` (string, optional)
+                + biography: `Sample bio.` (string, optional)
+                + twitter: `testuser` (string, optional)
+                + base64_photo_data: `data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7` (string, optional)
+                + `state_transition`: `signed_up` (string, optional)
+                + theme: `light` (string, optional)
+
+    + Headers
+
+        Authorization: Bearer {access_token}
+        Accept: application/vnd.api+json
+
++ Response 200 (application/vnd.api+json)
+
+    + Attributes (User Response)
+
++ Response 401 (application/vnd.api+json)
+
+    + Attributes (OAuth Invalid Response)
+
++ Response 403 (application/vnd.api+json)
+
+    + Attributes (Forbidden Response)
+
++ Response 422 (application/vnd.api+json)
+
+    + Attributes (Unprocessable Entity Response)
+
+### Update me [PATCH /users/me]
+
++ Request (application/vnd.api+json)
+
+    + Attributes
+        + data
+            + Include (User Resource Identifier)
+            + attributes (object)
+                + first_name: `Test` (string, optional)
+                + last_name: `User` (string, optional)
+                + website: `https://testuser.org` (string, optional)
+                + biography: `Sample bio.` (string, optional)
+                + twitter: `testuser` (string, optional)
+                + base64_photo_data: `data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7` (string, optional)
+                + `state_transition`: `signed_up` (string, optional)
+                + theme: `light` (string, optional)
+
+    + Headers
+
+        Authorization: Bearer {access_token}
+        Accept: application/vnd.api+json
+
++ Response 200 (application/vnd.api+json)
+
+    + Attributes (User Response)
+
++ Response 401 (application/vnd.api+json)
+
+    + Attributes (OAuth Invalid Response)
+
++ Response 422 (application/vnd.api+json)
+
+    + Attributes (Unprocessable Entity Response)
+
+### List users [GET /users?filter[id]={ids}]
+
++ Parameters
+
+    + `filter[id]`: `1,2` (required, string)
+
++ Request (application/vnd.api+json)
+
++ Response 200 (application/vnd.api+json)
+
+    + Attributes (Users Response)
+
++ Response 404 (application/vnd.api+json)
+
+    + Attributes (Record Not Found Response)
+
+## User [/user]
+
+### Show authenticated user [GET]
+
++ Request (application/vnd.api+json)
+
+    + Headers
+
+        Authorization: Bearer {access_token}
+        Accept: application/vnd.api+json
+
++ Response 200 (application/vnd.api+json)
+
+    + Attributes (User Response)
+
++ Response 401 (application/vnd.api+json)
+
+    + Attributes (OAuth Invalid Response)
 
 # Data Structures
 
@@ -251,11 +405,20 @@ Exchange credentials for `access_token`.
 + description: `This is the category description` (string)
 
 ## Categories Relationship (object)
-+ id: 1 (string)
-+ type: categories (string)
++ data
+  + id: 1 (string)
+  + type: categories (string)
+
+## Categories Relationships (object)
++ categories
+  + data(array[Categories Relationship], required)
 
 ## Category Relationships Base (object)
 + include Project Categories Relationship
+
+## Category Resource Identifier
++ id: `1` (string)
++ type: `categories`
 
 ## Category Response (object)
 + data
@@ -275,7 +438,7 @@ Exchange credentials for `access_token`.
 + comment
   + data(Comments Relationship)
 + user
-  + data(Users Relationship)
+  + data(User Resource Identifier)
 
 ## Comment Image Response Base (object)
 + id: `1` (string)
@@ -297,6 +460,14 @@ Exchange credentials for `access_token`.
 
 + status: 409 (number) - HTTP status code
 
+## Forbidden Response (object)
++ errors (array)
+    + Attributes
+        + id: `FORBIDDEN` (string)
+        + title: `Forbidden` (string)
+        + detail: `You are not authorized to perform this action on {subject_name}` (string) - Details of what record was not found.
+        + status: 403 (number) - HTTP status code
+
 ## No Content Response (object)
 
 + title: `No Content` (string)
@@ -305,26 +476,32 @@ Exchange credentials for `access_token`.
 
 ## OAuth Grant Request (object)
   + grant_type: `password` (string, required)
-  + username: `josh@coderly.com` (string, required) - The user's email address.
+  + username: `me@testuser.org` (string, required) - The user's email address.
   + password: `password` (string, required)
 
 ## OAuth Invalid Response (object)
-  + id: `INVALID_GRANT` (string, required)
-  + title: `Invalid grant` (string, required)
-  + detail: `The provided authorization grant is invalid, expired, revoked, does not match the redirection URI used in the authorization request, or was issued to another client.` (string, required)
-  + status: 401 (number, required)
++ errors (array)
+    + Attributes
+        + id: `INVALID_GRANT` (string, required)
+        + title: `Invalid grant` (string, required)
+        + detail: `The provided authorization grant is invalid, expired, revoked, does not match the redirection URI used in the authorization request, or was issued to another client.` (string, required)
+        + status: 401 (number, required)
 
 ## OAuth Valid Response (object)
-  + access_token: `5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8` (string, required)
-  + token_type: `bearer` (string, required)
-  + expires_in: 7200 (number, required)
-  + refresh_token: `f160d958cab936626305062dc594c2cadb12712ebc7cbca091a27ec4921b91d8` (string, required)
-  + created_at: 1468283904 (number, required)
-  + user_id: 1 (number, required)
++ access_token: `5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8` (string, required)
++ token_type: `bearer` (string, required)
++ expires_in: 7200 (number, required)
++ refresh_token: `f160d958cab936626305062dc594c2cadb12712ebc7cbca091a27ec4921b91d8` (string, required)
++ created_at: 1468283904 (number, required)
++ user_id: 1 (number, required)
 
-## Organizations Relationship (object)
-+ id: 1 (string)
-+ type: organizations (string)
+## Organization Membership Resource Identifier
++ id: `1` (string)
++ type: `organization_memberships` (string)
+
+## Organization Resource Identifier
++ id: `1` (string)
++ type: `organizations` (string)
 
 ## Preview (object)
 + body: `<p>A <strong>strong</strong> preview</p>` (string)
@@ -344,7 +521,7 @@ Exchange credentials for `access_token`.
 + type: previews (string)
 
 ## Preview Relationships Base (object)
-+ include Users Relationship
++ include User Resource Identifier
 + include Preview User Mentions Relationship
 
 ## Preview User Mentions Relationship (object)
@@ -355,72 +532,88 @@ Exchange credentials for `access_token`.
 + id: 1 (string)
 + type: project_categories (string)
 
-## Projects Relationship (object)
-+ id: 1 (string)
-+ type: projects (string)
-
-## Record Not Found Response Base (object)
-+ id: `RECORD_NOT_FOUND` (string)
-
-+ title: `Record not found` (string)
-
-+ detail: `Couldn't find {object} with 'id'={id}` (string) - Details of what record was not found.
-
-+ status: 404 (number) - HTTP status code
-
 ## Record Not Found Response (object)
-+ errors(array[Record Not Found Response Base], required)
++ errors (array)
+    + Attributes
+        + id: `RECORD_NOT_FOUND` (string)
+        + title: `Record not found` (string)
+        + detail: `Couldn't find {object} with 'id'={id}` (string) - Details of what record was not found.
+        + status: 404 (number) - HTTP status code
 
-## Roles Relationship (object)
-+ id: 1 (string)
-+ type: roles (string)
+## Role Resource Identifier
++ id: `1` (string)
++ type: `roles` (string)
 
-## Skills Relationship (object)
-+ id: 1 (string)
-+ type: skills (string)
+## Skill Resource Identifier
++ id: `1` (string)
++ type: `skills` (string)
 
 ## Unprocessable Entity Response (object)
-+ title: `Unprocessable Entity`
++ errors (array)
+    + Attributes
+        + title: `Unprocessable Entity` (string)
+        + status: 422 (number) - HTTP status code
 
-+ status: 422 (number) - HTTP status code
-
-## User (object)
-+ email: `team@codecorps.org` (string)
+## User Attributes (object)
++ created_at: `2016-07-08T03:03:51.967Z` (string)
++ email: `me@testuser.org` (string)
++ first_name: `Test` (string)
++ last_name: `User` (string)
++ name: `Test User` (string)
++ username: `testuser` (string)
++ twitter: `testuser` (string)
++ biography: `Sample bio.` (string)
++ website: `https://testuser.org` (string)
++ facebook_id: `1234567890` (string)
++ facebook_access_token: `CAABwiWr8tH8BAGKCYOIgoMwJ9T0ZAmJ6KJJNcUjzmftdAOCx1RgzxZAjzGB1s37DDCEoy9r2VgrCLffCTvEGe9cZBZPAwBhygi2ZpTubZC2eCzMe16CLP4Wlc9bStWGwUNYoLEl4dXu4uJl2CCLiFXEtP4GKDv0Gk4s35iXty77KZBx5NYBCcEUs98WjdJQcXLsb1X2ZBaMTW2AZDZN` (string)
++ photo_thumb_url: `https://d3pgew4wbk2vb1.cloudfront.net/icons/user_default_thumb.png` (string)
++ photo_large_url: `https://d3pgew4wbk2vb1.cloudfront.net/icons/user_default_large.png` (string)
++ state: `signed_up` (string)
 + theme: `light` (string)
 
-  The theme is either `light` or `dark`.
-
-## User Categories Relationship (object)
-+ id: 1 (string)
-+ type: user_categories (string)
-
-## User Relationships Base (object)
-+ include User Roles Relationships
-+ include User Skills Relationships
+## User Relationships (object)
++ categories (object)
+  + data(array[Category Resource Identifier])
++ organization_memberships (object)
+  + data(array[Organization Membership Resource Identifier])
++ organizations (object)
+  + data(array[Organization Resource Identifier])
++ roles (object)
+  + data(array[Role Resource Identifier])
++ skills (object)
+  + data(array[Skill Resource Identifier])
++ user_categories (object)
+  + data(array[User Category Resource Identifier])
++ user_roles (object)
+  + data(array[User Role Resource Identifier])
++ user_skills (object)
+  + data(array[User Skill Resource Identifier])
 
 ## User Response (object)
-+ data
-  + id: `1` (string)
-  + type: `users` (string)
-  + attributes(User, required)
-  + relationships(User Relationships Base, required)
++ data (object)
+    + Include (User Resource)
+    + relationships
+        + Include (User Relationships)
 
-## User Roles Relationship (object)
-+ id: 1 (string)
-+ type: user_roles (string)
+## Users Response (object)
++ data(array[User Resource])
 
-## User Roles Relationships (object)
-+ user_roles
-  + data(array[User Roles Relationship], required)
+## User Resource (object)
++ Include User Resource Identifier
++ attributes (User Attributes)
 
-## User Skills Relationship (object)
-+ id: 1 (string)
-+ type: user_skills (string)
+## User Resource Identifier (object)
++ id: `1` (string)
++ type: `users` (string)
 
-## User Skills Relationships (object)
-+ user_skills
-  + data(array[User Skills Relationship], required)
+## User Category Resource Identifier
++ id: `1` (string)
++ type: `user_categories` (string)
 
-## Users Relationship (object)
-+ id: 1 (string)
-+ type: users (string)
+## User Role Resource Identifier
++ id: `1` (string)
++ type: `user_roles` (string)
+
+## User Skill Resource Identifier (object)
++ id: `1` (string)
++ type: `user_skills` (string)
