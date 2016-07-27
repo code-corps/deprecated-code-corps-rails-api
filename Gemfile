@@ -45,6 +45,7 @@ end
 
 group :development, :test do
   gem "annotate"
+  gem "apiary"
   gem "bullet"
   gem "dotenv-rails"
   gem "fakeredis", require: "fakeredis/rspec"
@@ -57,7 +58,6 @@ group :development, :test do
 end
 
 group :development do
-  gem "apiary"
   gem "foreman"
   gem "guard-rspec", require: false
   gem "sinatra", github: "sinatra", require: nil # for Sidekiq UI to work in development
