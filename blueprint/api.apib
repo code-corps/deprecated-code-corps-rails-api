@@ -198,6 +198,38 @@ Exchange credentials for `access_token`.
 
 # Group Role Skills
 
+This group is used as a join table to connect the many to many relationship of Skills and Roles
+
+This allows A Skill to be under different Roles and a Role to have multiple Skills
+
+## Role Skill [/role_skills]
+
+### Create a Role Skill [POST]
+
++ Request
+
+  + Attributes (OAuth Grant Request)
+
++ Headers
+
+  Authorization: Bearer {access_token}
+
++ Response 200 (application/vnd.api+json)
+
+  + Attributes (Role Skill Response)
+
++ Response 401 (application/json)
+
+  + Attributes (OAuth Invalid Response)
+
++ Response 403 (application/json)
+
+  + Attributes (Forbidden Response)
+
++ Response 422 (application/vnd.api+json)
+
+  + Attributes (Unprocessable Entity Response)
+
 # Group Skills
 
 # Group Slugged Routes
@@ -547,6 +579,21 @@ Exchange credentials for `access_token`.
 ## Skill Resource Identifier
 + id: `1` (string)
 + type: `skills` (string)
+
+## Role Skill Response (object)
++ data(Role Skill Resource)
+
+## Role Skill Resource (object)
++ include Role Skill Resource Identifier
++ relationships
+  + roles
+    + data(array[Roles Relationship])
+    + data(array[Skills Relationship])
+    + links
+
+## Role Skill Resource Identifier (object)
++ id: 1 (string)
++ type: role_skills (string)
 
 ## Unprocessable Entity Response (object)
 + errors (array)
