@@ -981,6 +981,10 @@ When creating a user category, the authenticated user is assumed by the server s
 + id: `1` (string)
 + type: `role_skills` (string)
 
+## Skill Resource Identifier (object)
++ id: `1` (string)
++ type: `skill` (string)
+
 ## Skill Resource (object)
 + include Skill Resource Identifier
 + attributes
@@ -996,10 +1000,6 @@ When creating a user category, the authenticated user is assumed by the server s
 
 ## Skills Response (object)
 + data(array[Skill Resource])
-
-## Skill Resource Identifier (object)
-+ id: 1 (string)
-+ type: skill (string)
 
 ## Unprocessable Entity Response (object)
 + errors (array)
