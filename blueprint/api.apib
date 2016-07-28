@@ -174,7 +174,7 @@ Write privileges are for admin users only, read can be accessable by any user.
 
 + Response 400 (application/vnd.api+json)
 
-    + Attributes (Bad Request Response)
+    + Attributes (Filter Missing Response)
 
 ### Create an organization [POST]
 
@@ -743,6 +743,14 @@ When creating a user category, the authenticated user is assumed by the server s
 + detail: `{Object} with 'id'={id} already created` (string) - Details of what record was already there.
 
 + status: 409 (number) - HTTP status code
+
+## Filter Missing Response (object)
++ errors (array)
+    + Attributes
+        + id: `PARAMETER_MISSING` (string)
+        + title: `Filter is missing` (string)
+        + detail: `You must specify a Filter.` (string) - Details of what record was not found.
+        + status: 400 (number) - HTTP status code
 
 ## Forbidden Response (object)
 + errors (array)
