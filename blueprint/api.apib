@@ -384,13 +384,31 @@ This allows A Skill to be under different Roles and a Role to have multiple Skil
 
 This endpoint retrieves skills that can be applied to both users (through user_skills) and roles (through role_skills)
 
-## Skills [/skills?{filter}]
+## Skills [/skills{?filter}]
 
-### List all skills or filter by parameter [GET]
+Skills can be filtered by the id of the skill. This should be an array of one or multiple ids.
+
+### Filter by id [GET]
 
 + Parameters
 
     + filter: `1` (enum[number], optional) - Id query to filter returned skills
+
++ Request
+
+    + Headers
+
+        Accept: application/vnd.api+json
+
++ Response 200 (application/vnd.api+json)
+
+    + Attributes (Skills Response)
+
+### Filter by string query [GET]
+
+Skills can be filtered by the name of the skill. This should be a string with one or more letters of the name of the skill requested.
+
++ Parameters
 
     + query: `elixir` (string, optional) - Text query to filter returned skills
 
