@@ -124,7 +124,7 @@ Exchange credentials for `access_token`.
 
 + Headers
 
-  Authorization: Bearer 5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8
+  Authorization: Bearer {access_token}
 
 + Response 201 (application/vnd.api+json)
 
@@ -236,7 +236,7 @@ Write privileges are for admin users only, read can be accessable by any user.
     + Headers
 
         Accept: application/vnd.api+json
-        Authorization: Bearer 5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8
+        Authorization: Bearer {access_token}
 
 + Response 200 (application/vnd.api+json)
 
@@ -278,7 +278,7 @@ Write privileges are for admin users only, read can be accessable by any user.
 
 + Headers
 
-  Authorization: Bearer 5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8
+  Authorization: Bearer {access_token}
 
 + Response 201 (application/vnd.api+json)
 
@@ -314,7 +314,7 @@ A user is able to have multiple roles through user_roles
 
        Accept: application/vnd.api+json
 
-       Authorization: Bearer 5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8
+       Authorization: Bearer {access_token}
 
 + Response 200 (application/vnd.api+json)
 
@@ -362,7 +362,7 @@ This allows A Skill to be under different Roles and a Role to have multiple Skil
 
 + Headers
 
-  Authorization: Bearer 5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8
+  Authorization: Bearer {access_token}
 
 + Response 200 (application/vnd.api+json)
 
@@ -414,6 +414,8 @@ It may be eaasier to think of a User Category as one of a user's interest. They 
 
 ### Create a user category [POST]
 
+When creating a user category, the authenticated user is assumed by the server so you should not supply the user's `id`. This will be ignored by your request and the server will default to the authenticated user making the request.
+
 + Request
 
     + Attributes
@@ -432,7 +434,7 @@ It may be eaasier to think of a User Category as one of a user's interest. They 
 
 + Headers
 
-    Authorization: Bearer 5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8
+    Authorization: Bearer {access_token}
 
 + Response 201 (application/vnd.api+json)
 
@@ -476,7 +478,7 @@ It may be eaasier to think of a User Category as one of a user's interest. They 
 
 + Headers
 
-    Authorization: Bearer 5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8
+    Authorization: Bearer {access_token}
 
 + Response 204 (application/vnd.api+json)
 
@@ -595,7 +597,7 @@ It may be eaasier to think of a User Category as one of a user's interest. They 
 
     + Headers
 
-        Authorization: Bearer 5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8
+        Authorization: Bearer {access_token}
         Accept: application/vnd.api+json
 
 + Response 200 (application/vnd.api+json)
@@ -633,7 +635,7 @@ It may be eaasier to think of a User Category as one of a user's interest. They 
 
     + Headers
 
-        Authorization: Bearer 5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8
+        Authorization: Bearer {access_token}
         Accept: application/vnd.api+json
 
 + Response 200 (application/vnd.api+json)
@@ -672,7 +674,7 @@ It may be eaasier to think of a User Category as one of a user's interest. They 
 
     + Headers
 
-        Authorization: Bearer 5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8
+        Authorization: Bearer {access_token}
         Accept: application/vnd.api+json
 
 + Response 200 (application/vnd.api+json)
