@@ -150,6 +150,110 @@ Exchange credentials for `access_token`.
 
 # Group Organizations
 
+This endpoint retrieves organzations that are signed up with Code Corp looking for contributors.
+
+Write privileges are for admin users only, read can be accessable by any user.
+
+## Organizations [/organizations{?filter}]
+
+### Filters organizations by id [GET]
+
++ Parameters
+
+    + filter: `1` (enum[number], required) - Array of Ids query to filter organizations
+
++ Request
+
+    + Headers
+
+        Accept: application/vnd.api+json
+
++ Response 200 (application/vnd.api+json)
+
+    + Attributes (Organizations Response)
+
++ Response 400 (application/vnd.api+json)
+
+    + Attributes (Bad Request Response)
+
+### Create an organization [POST]
+
++ Request
+
+    + Headers
+
+        Accept: application/vnd.api+json
+        Authorization: Bearer <access_token>
+
++ Response 200 (application/vnd.api+json)
+
+    + Attributes (Organization Response)
+
++ Response 401 (application/json)
+
+    + Attributes (OAuth Invalid Response)
+
++ Response 403 (application/json)
+
+    + Attributes (Forbidden Response)
+
++ Response 422 (application/vnd.api+json)
+
+    + Attributes (Unprocessable Entity Response)
+
+## Organization [/organizations/{id}]
+
+### Retrieve an organization [GET]
+
++ Parameters
+
+    + id: `1` - The Id of an organization
+
++ Request
+
+    + Headers
+
+        Accept: application/vnd.api+json
+
++ Response 200 (application/vnd.api+json)
+
+    + Attributes (Organization Response)
+
++ Response 404 (application/vnd.api+json)
+
+    + Attributes (Record Not Found Response)
+
+### Update an organization [PATCH]
+
++ Parameters
+
+    + id: `1` - The Id of an organization
+
++ Request (application/vnd.api+json)
+
+    + Attributes (Organization Resource)
+
+    + Headers
+
+        Accept: application/vnd.api+json
+        Authorization: Bearer {access_token}
+
++ Response 200 (application/vnd.api+json)
+
+    + Attributes (Organization Response)
+
++ Response 401 (application/vnd.api+json)
+
+    + Attributes (OAuth Invalid Response)
+
++ Response 403 (application/vnd.api+json)
+
+    + Attributes (Forbidden Response)
+
++ Response 422 (application/vnd.api+json)
+
+    + Attributes (Unprocessable Entity Response)
+
 # Group Ping
 
 # Group Post Images
@@ -573,13 +677,38 @@ This allows A Skill to be under different Roles and a Role to have multiple Skil
 + created_at: 1468283904 (number, required)
 + user_id: 1 (number, required)
 
-## Organization Membership Resource Identifier
-+ id: `1` (string)
-+ type: `organization_memberships` (string)
-
 ## Organization Resource Identifier
 + id: `1` (string)
 + type: `organizations` (string)
+
+## Organization Response (object)
++ data(Organization Resource)
+
+## Organizations Response (object)
++ data(array[Organization Resource])
+
+## Organization Resource (object)
++ include Organization Resource Identifier
++ attributes
+    + name: `Code Corps`
+    + slug: `code_corps`
+    + description: `Build a better future.`
+    + icon_thumb_url: `https://random_string.cloundfront.net/organizations/1/thumb.png`
+    + icon_large_url: `https://random_string.cloundfront.net/organizations/1/large.png`
++ relationships
+    + members
+        + data(array[Members Resource Identifier])
+        + links
+    + projects
+        + data(array[Projects Resource Identifier])
+        + links
+    + organization_memberships
+        + data(array[Organization Memberships Resource Identifier])
+        + links
+
+## Organization Membership Resource Identifier
++ id: `1` (string)
++ type: `organization_memberships` (string)
 
 ## Preview (object)
 + body: `<p>A <strong>strong</strong> preview</p>` (string)
