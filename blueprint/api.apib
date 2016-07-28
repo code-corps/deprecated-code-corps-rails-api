@@ -471,6 +471,28 @@ Skills can be filtered by the name of the skill. This should be a string with on
 
 # Group Slugged Routes
 
+A slugged route is a unique slug that resolves at the root of any request to `codecorps.org`. For the URI `codecorps.org/code-corps`, for example, `code-corps` is the slug that represents the slugged route.
+
+Slugged routes allow us to make API requests for a user or an organization without knowing their `id` in advance. This is particularly useful on the web when the first request may be to a user's profile or an organization's page.
+
+## Slugged Routes [/:slug]
+
+### Find a Slugged Route [GET]
+
+This endpoint will return one of two possible responses, depending on if the slugged route's owner is a user or an organization. If the slugged route is owned by a user, the responses's owner relationship will point to a user and include a user resource. If it's owned by an organization, it will point to and include an organization resource.
+
++ Headers
+
+    Authorization: Basic 5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8
+
++ Response 200 (application/vnd.api+json)
+
+    + Attributes (Slugged Route User Response)
+
++ Response 200 (application/vnd.api+json)
+
+    + Attributes (Slugged Route Organization Response)
+
 # Group User Categories
 
 This resource identifies a relationship between a User and a Category. For example, the category of "Society" may belong to a given user.
@@ -1001,6 +1023,36 @@ When creating a user category, the authenticated user is assumed by the server s
 ## Skills Response (object)
 + data(array[Skill Resource])
 
+## Slugged Route User Resource (object)
++ include Slugged Route Resource Identifier
++ attributes
+    + slug: `example-slug`
+    + owner_type: `user`
++ relationships
+    + owner
+        + data(User Resource Identifier)
+
+## Slugged Route Organization Resource (object)
++ include Slugged Route Resource Identifier
++ attributes
+    + slug: `example-slug`
+    + owner_type: `organization`
++ relationships
+    + owner
+        + data(Organization Resource Identifier)
+
+## Slugged Route Resource Identifier (object)
++ id: `1` (string)
++ type: `slugged_routes` (string)
+
+## Slugged Route User Response (object)
++ data(Slugged Route User Resource)
++ included(array[User Resource])
+
+## Slugged Route Organization Response (object)
++ data(Slugged Route Organization Resource)
++ included(array[Organization Resource])
+
 ## Unprocessable Entity Response (object)
 + errors (array)
     + Attributes
@@ -1063,10 +1115,7 @@ When creating a user category, the authenticated user is assumed by the server s
   + data(array[User Skill Resource Identifier])
 
 ## User Response (object)
-+ data (object)
-    + Include (User Resource)
-    + relationships
-        + Include (User Relationships)
++ data (User Resource)
 
 ## Users Response (object)
 + data(array[User Resource])
@@ -1074,6 +1123,7 @@ When creating a user category, the authenticated user is assumed by the server s
 ## User Resource (object)
 + Include User Resource Identifier
 + attributes (User Attributes)
++ relationships(User Relationships)
 
 ## User Resource Identifier (object)
 + id: `1` (string)
