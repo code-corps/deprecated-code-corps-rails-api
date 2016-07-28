@@ -412,6 +412,40 @@ It may be eaasier to think of a User Category as one of a user's interest. They 
 
     + Attributes (Bad Request Response)
 
+### Create a user category [POST]
+
++ Request
+
+    + Attributes
+
+      + data (object)
+
+          + relationships (object)
+
+              + category (object)
+
+                  + data (object)
+
+                      + type: `categories` (string, required)
+
+                      + id: `1` (number, required)
+
++ Headers
+
+    Authorization: Bearer 5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8
+
++ Response 201 (application/vnd.api+json)
+
+    + Attributes (User Category Response)
+
++ Response 401 (application/json)
+
+    + Attributes (OAuth Invalid Response)
+
++ Response 422 (application/vnd.api+json)
+
+    + Attributes (Unprocessable Entity Response)
+
 ## User Category [/organizations/{id}]
 
 ### Retrieve a user category [GET]
@@ -433,37 +467,6 @@ It may be eaasier to think of a User Category as one of a user's interest. They 
 + Response 404 (application/vnd.api+json)
 
     + Attributes (Record Not Found Response)
-
-### Update a user category [PATCH]
-
-+ Parameters
-
-    + id: `1` - The Id of an organization
-
-+ Request (application/vnd.api+json)
-
-    + Attributes (User Category Resource)
-
-    + Headers
-
-        Accept: application/vnd.api+json
-        Authorization: Bearer 5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8
-
-+ Response 200 (application/vnd.api+json)
-
-    + Attributes (User Category Response)
-
-+ Response 401 (application/vnd.api+json)
-
-    + Attributes (OAuth Invalid Response)
-
-+ Response 403 (application/vnd.api+json)
-
-    + Attributes (Forbidden Response)
-
-+ Response 422 (application/vnd.api+json)
-
-    + Attributes (Unprocessable Entity Response)
 
 ### Delete a user category [POST]
 
@@ -920,9 +923,11 @@ It may be eaasier to think of a User Category as one of a user's interest. They 
 ## User Category Resource (object)
 + include User Category Resource Identifier
 + relationships
-    + roles
-        + data(array[Category Resource Identifier])
-        + data(array[User Resource Identifier])
+    + categories
+        + data(Category Resource Identifier)
+        + links
+    + users
+        + data(User Resource Identifier)
         + links
 
 ## User Category Resource Identifier
