@@ -236,7 +236,7 @@ Write privileges are for admin users only, read can be accessable by any user.
     + Headers
 
         Accept: application/vnd.api+json
-        Authorization: Bearer {access_token}
+        Authorization: Bearer 5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8
 
 + Response 200 (application/vnd.api+json)
 
@@ -278,7 +278,7 @@ Write privileges are for admin users only, read can be accessable by any user.
 
 + Headers
 
-  Authorization: Bearer {access_token}
+  Authorization: Bearer 5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8
 
 + Response 201 (application/vnd.api+json)
 
@@ -314,7 +314,7 @@ A user is able to have multiple roles through user_roles
 
        Accept: application/vnd.api+json
 
-       Authorization: Bearer {access_token}
+       Authorization: Bearer 5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8
 
 + Response 200 (application/vnd.api+json)
 
@@ -362,7 +362,7 @@ This allows A Skill to be under different Roles and a Role to have multiple Skil
 
 + Headers
 
-  Authorization: Bearer {access_token}
+  Authorization: Bearer 5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8
 
 + Response 200 (application/vnd.api+json)
 
@@ -385,6 +385,107 @@ This allows A Skill to be under different Roles and a Role to have multiple Skil
 # Group Slugged Routes
 
 # Group User Categories
+
+This resource identifies a relationship between a User and a Category. For example, the category of "Society" may belong to a given user.
+
+It may be eaasier to think of a User Category as one of a user's interest. They may be interested in "Society", "Technology" and "Government". We use those interests to match users up to relevant organizations and projects. The term "category" therefore is more appropriate for _categorizing_ those organizations and projects.
+
+## User Categories [/user_categories]
+
+### Filters user categories by id [GET]
+
++ Parameters
+
+    + filter: `1` (enum[number], required) - Comma separated string of `id`s to filter organizations.
+
++ Request
+
+    + Headers
+
+        Accept: application/vnd.api+json
+
++ Response 200 (application/vnd.api+json)
+
+    + Attributes (User Categories Response)
+
++ Response 400 (application/vnd.api+json)
+
+    + Attributes (Bad Request Response)
+
+## User Category [/organizations/{id}]
+
+### Retrieve a user category [GET]
+
++ Parameters
+
+    + id: `1` - The `id` of a user category.
+
++ Request
+
+    + Headers
+
+        Accept: application/vnd.api+json
+
++ Response 200 (application/vnd.api+json)
+
+    + Attributes (User Category Response)
+
++ Response 404 (application/vnd.api+json)
+
+    + Attributes (Record Not Found Response)
+
+### Update a user category [PATCH]
+
++ Parameters
+
+    + id: `1` - The Id of an organization
+
++ Request (application/vnd.api+json)
+
+    + Attributes (User Category Resource)
+
+    + Headers
+
+        Accept: application/vnd.api+json
+        Authorization: Bearer 5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8
+
++ Response 200 (application/vnd.api+json)
+
+    + Attributes (User Category Response)
+
++ Response 401 (application/vnd.api+json)
+
+    + Attributes (OAuth Invalid Response)
+
++ Response 403 (application/vnd.api+json)
+
+    + Attributes (Forbidden Response)
+
++ Response 422 (application/vnd.api+json)
+
+    + Attributes (Unprocessable Entity Response)
+
+### Delete a user category [POST]
+
++ Request
+
+    + Attributes (OAuth Grant Request)
+
++ Headers
+
+    Authorization: Bearer 5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8
+
++ Response 204 (application/vnd.api+json)
+
+    + Attributes (No Content Response)
+
++ Response 401 (application/json)
+
+    + Attributes (OAuth Invalid Response)
+
++ Response 403 (application/json)
+
+    + Attributes (Forbidden Response)
 
 # Group User Roles
 
@@ -491,7 +592,7 @@ This allows A Skill to be under different Roles and a Role to have multiple Skil
 
     + Headers
 
-        Authorization: Bearer {access_token}
+        Authorization: Bearer 5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8
         Accept: application/vnd.api+json
 
 + Response 200 (application/vnd.api+json)
@@ -529,7 +630,7 @@ This allows A Skill to be under different Roles and a Role to have multiple Skil
 
     + Headers
 
-        Authorization: Bearer {access_token}
+        Authorization: Bearer 5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8
         Accept: application/vnd.api+json
 
 + Response 200 (application/vnd.api+json)
@@ -568,7 +669,7 @@ This allows A Skill to be under different Roles and a Role to have multiple Skil
 
     + Headers
 
-        Authorization: Bearer {access_token}
+        Authorization: Bearer 5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8
         Accept: application/vnd.api+json
 
 + Response 200 (application/vnd.api+json)
@@ -652,9 +753,7 @@ This allows A Skill to be under different Roles and a Role to have multiple Skil
 
 ## No Content Response (object)
 
-+ title: `No Content` (string)
-
-+ status: 204 (number) - HTTP status code
+    {}
 
 ## OAuth Grant Request (object)
   + grant_type: `password` (string, required)
@@ -739,6 +838,10 @@ This allows A Skill to be under different Roles and a Role to have multiple Skil
 + id: 1 (string)
 + type: project_categories (string)
 
+## Project Resource Identifier
++ id: `1` (string)
++ type: `projects` (string)
+
 ## Record Not Found Response (object)
 + errors (array)
     + Attributes
@@ -814,6 +917,24 @@ This allows A Skill to be under different Roles and a Role to have multiple Skil
 + state: `signed_up` (string)
 + theme: `light` (string)
 
+## User Category Resource (object)
++ include User Category Resource Identifier
++ relationships
+    + roles
+        + data(array[Category Resource Identifier])
+        + data(array[User Resource Identifier])
+        + links
+
+## User Category Resource Identifier
++ id: `1` (string)
++ type: `user_categories` (string)
+
+## User Category Response (object)
++ data(User Category Resource)
+
+## User Categories Response (object)
++ data(array[User Category Resource])
+
 ## User Relationships (object)
 + categories (object)
   + data(array[Category Resource Identifier])
@@ -848,10 +969,6 @@ This allows A Skill to be under different Roles and a Role to have multiple Skil
 ## User Resource Identifier (object)
 + id: `1` (string)
 + type: `users` (string)
-
-## User Category Resource Identifier
-+ id: `1` (string)
-+ type: `user_categories` (string)
 
 ## User Role Resource Identifier
 + id: `1` (string)
