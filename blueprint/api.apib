@@ -294,6 +294,50 @@ Write privileges are for admin users only, read can be accessable by any user.
 
 # Group Project Categories
 
+## Project Categories [/project_categories]
+
+### Create a Project Category [POST]
+
++ Request
+
+  + Attributes (Project Category Create Request)
+
++ Headers
+
+  Authorization: Bearer {access_token}
+
++ Response 201 (application/vnd.api+json)
+
+  + Attributes (Project Category Response)
+
++ Response 401 (application/json)
+
+  + Attributes (OAuth Invalid Response)
+
++ Response 422 (application/vnd.api+json)
+
+  + Attributes (Unprocessable Entity Response)
+
+## Project Category [/project_categories/:id]
+
+### Delete a Project Category [DELETE]
+
++ Headers
+
+    Authorization: Bearer {access_token}
+
++ Response 204 (application/vnd.api+json)
+
+    + Attributes (No Content Response)
+
++ Response 401 (application/json)
+
+    + Attributes (OAuth Invalid Response)
+
++ Response 403 (application/json)
+
+    + Attributes (Forbidden Response)
+
 # Group Project Roles
 
 # Group Projects
@@ -802,7 +846,7 @@ When creating a user category, the authenticated user is assumed by the server s
   + data(array[Categories Relationship], required)
 
 ## Category Relationships Base (object)
-+ include Project Categories Relationship
++ include Project Category Resource Identifier
 
 ## Category Resource Identifier
 + id: `1` (string)
@@ -947,9 +991,23 @@ When creating a user category, the authenticated user is assumed by the server s
 + id: 1 (string)
 + type: preview_user_mentions (string)
 
-## Project Categories Relationship (object)
+## Project Category Resource (object)
++ include Project Category Resource Identifier
++ relationships
+    + projects
+        + data(Project Resource Identifier)
+    + categories
+        + data(Category Resource Identifier)
+
+## Project Category Resource Identifier (object)
 + id: 1 (string)
 + type: project_categories (string)
+
+## Project Category Create Request (object)
++ data(Project Category Resource)
+
+# Project Category Response (object)
++ data(Project Category Resource)
 
 ## Project Resource Identifier
 + id: `1` (string)
