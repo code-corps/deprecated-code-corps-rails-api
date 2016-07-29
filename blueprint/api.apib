@@ -520,26 +520,11 @@ This endpoint is used as a check to see if the user can access the server
 
 # Group Posts
 
-## Posts [/posts]
+### List all posts in a project [GET /project/{id}/posts]
 
-### Create a post [POST]
++ Parameters
 
-+ Request
-
-    + Headers
-
-            Accept: application/vnd.api+json
-            Authorization: Bearer {access_token}
-
-+ Response 201 (application/vnd.api+json)
-
-    + Attributes (Post Response)
-
-+ Response 422 (application/vnd.api+json)
-
-    + Attributes (Unprocessable Entity Response)
-
-### List all posts [GET]
+    + id (number) - Id of the project.
 
 + Request
 
@@ -552,13 +537,35 @@ This endpoint is used as a check to see if the user can access the server
 
     + Attributes (Posts Response)
 
-## Post [/posts/{id}]
+### Create a post [POST /posts]
 
-### Retrieve a post [GET /posts/{id}]
++ Request
+
+    + Attributes (Post Resource)
+
+    + Headers
+
+            Accept: application/vnd.api+json
+            Authorization: Bearer {access_token}
+
++ Response 201 (application/vnd.api+json)
+
+    + Attributes (Post Response)
+
++ Response 401 (application/vnd.api+json)
+
+    + Attributes (OAuth Invalid Response)
+
++ Response 422 (application/vnd.api+json)
+
+    + Attributes (Unprocessable Entity Response)
+
+### Retrieve a post [GET /projects/{project_id}/posts/{post_id}]
 
 + Parameters
 
-    + id (number) - Id of a post.
+    + project_id (number) - Id of a proejct.
+    + post_id (number) - Id of a post within a proejct.
 
 + Request
 
@@ -575,34 +582,33 @@ This endpoint is used as a check to see if the user can access the server
 
     + Attributes (Record Not Found Response)
 
-### Update a post [PATCH /posts/{id}]
+### Update a post [PATCH /projects/{project_id}/posts/{post_id}]
 
 + Parameters
 
-    + id (number) - Id of a post.
+    + project_id (number) - Id of a proejct.
+    + post_id (number) - Id of a post within a proejct.
 
 + Request
+
+    + Attributes (Post Resource)
 
     + Headers
 
             Accept: application/vnd.api+json
             Authorization: Bearer {access_token}
 
-+ Response 201 (application/vnd.api+json)
++ Response 200 (application/vnd.api+json)
 
     + Attributes (Post Response)
-
-+ Response 204 (application/vnd.api+json)
-
-    + Attributes (No Content Response)
 
 + Response 404 (application/vnd.api+json)
 
     + Attributes (Record Not Found Response)
 
-+ Response 409 (application/vnd.api+json)
++ Response 422 (application/vnd.api+json)
 
-    + Attributes (Creation Conflict Response)
+    + Attributes (Unprocessable Entity Response)
 
 # Group Preview User Mentions
 
@@ -1681,17 +1687,31 @@ This resource identifies a relationship between a User and a Skill. For example,
 + id: `1` (string)
 + type: `posts` (string)
 
-## Post Response (object)
-+ id: 1 (string)
-+ status: `open` (string)
+## Post Attributes (object)
++ number: 1 (number)
 + post_type: `task` (string)
-+ title: `This is the title of a post` (string)
-+ body: `This is the body of of a post filled with lots of awesome details` (string)
-+ user_id: 1 (string)
++ state: `published` (string)
++ status: `open` (string)
++ title: `A task` (string)
++ body: `This is a basic task` (string)
++ markdown: `This is a basic task` (string)
++ likes_count: 0 (number)
++ comments_count: 0 (number)
+
+## Post Resource (object)
++ include Post Resource Identifier
++ attributes(Post Attributes)
++ relationships
+    + users
+        + data(User Resource Identifier)
+    + projects
+        + data(Project Resource Identifier)
+
+## Post Response (object)
++ data(Post Resource)
 
 ## Posts Response (object)
-+ posts
-    + data(array[Post Response], required)
++ data(array[Post Resource], required)
 
 ## Preview (object)
 + body: `<p>A <strong>strong</strong> preview</p>` (string)
