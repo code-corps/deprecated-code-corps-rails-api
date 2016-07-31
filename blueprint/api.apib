@@ -609,9 +609,9 @@ Write privileges are for admin users only, read can be accessable by any user.
 
 # Group Roles
 
-This endpoint is for creating and returning the roles available for users
+This endpoint is for creating and returning the roles available for users.
 
-A user is able to have multiple roles through user_roles
+A user is able to have multiple roles through their user roles.
 
 ## Role [/roles]
 
@@ -902,6 +902,54 @@ When creating a user category, the authenticated user is assumed by the server s
     + Attributes (Forbidden Response)
 
 # Group User Roles
+
+This resource identifies a relationship between a User and a Role. For example, the role of "Backend Developer" may belong to a given user.
+
+### Create a user role [POST /user_roles]
+
++ Request
+
+    + Headers
+
+        Accept: application/vnd.api+json
+        Authorization: Bearer <access_token>
+
++ Response 200 (application/vnd.api+json)
+
+    + Attributes (User Role Response)
+
++ Response 422 (application/vnd.api+json)
+
+    + Attributes (Unprocessable Entity Response)
+
+### Delete a user role [DELETE /user_roles/{id}]
+
++ Parameters
+
+    + id - The Id of a user role
+
++ Request
+
+    + Headers
+
+        Accept: application/vnd.api+json
+        Authorization: Bearer <access_token>
+
++ Response 204 (application/vnd.api+json)
+
+    + Attributes (No Content Response)
+
++ Response 401 (application/json)
+
+    + Attributes (OAuth Invalid Response)
+
++ Response 403 (application/vnd.api+json)
+
+    + Attributes (Forbidden Response)
+
++ Response 404 (application/vnd.api+json)
+
+    + Attributes (Record Not Found Response)
 
 # Group User Skills
 
@@ -1684,6 +1732,22 @@ This endpoint retrieves sets of users and skills to act as a join table between 
 ## User Role Resource Identifier
 + id: `1` (string)
 + type: `user_roles` (string)
+
+## User Role Response (object)
++ data(User Role Resource)
+
+## User Roles Response (object)
++ data(array[User Role Resource])
+
+## User Role Resource (object)
++ include User Role Resource Identifier
++ relationships
+    + role
+        + data(Role Resource Identifier)
+        + links
+    + user
+        + data(User Resource Identifier)
+        + links
 
 ## User Skill Resource Identifier (object)
 + id: `1` (string)
