@@ -26,94 +26,114 @@ Exchange email and password for `access_token`.
 ### Exchange email and password for token [POST]
 
 + Request
+
     + Attributes (OAuth Grant Request)
+
     + Headers
 
-            Content-Type: application/vnd.api+json
+        Content-Type: application/vnd.api+json
 
 + Response 200 (application/json)
+
     + Attributes (OAuth Valid Response)
 
 + Response 401 (application/json)
+
     + Attributes (OAuth Invalid Response)
 
 # Group Categories
 
-## Category [/categories/new]
+## Categories [/categories]
 
 ### Create a category [POST]
 
 + Request
-  + Attributes (OAuth Grant Request)
 
-+ Headers
+    + Attributes (OAuth Grant Request)
 
-  Authorization: Basic 5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8
+    + Headers
+
+        Accept: application/vnd.api+json
+
+        Authorization: Bearer {access_token}
+
 
 + Response 201 (application/vnd.api+json)
 
-  + Attributes (Category Response)
+    + Attributes (Category Response)
 
 + Response 422 (application/vnd.api+json)
 
-  + Attributes (Unprocessable Entity Response)
+    + Attributes (Unprocessable Entity Response)
 
 ## Category [/categories/{id}]
 
 ### Retrieve a category [GET]
 
 + Request
-  + Attributes (OAuth Grant Request)
 
-+ Headers
+    + Attributes (OAuth Grant Request)
 
-  Authorization: Basic 5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8
+    + Headers
+
+        Accept: application/vnd.api+json
+
+        Authorization: Bearer {access_token}
+
 
 + Response 200 (application/vnd.api+json)
 
-  + Attributes (Category Response)
+    + Attributes (Category Response)
 
 + Response 404 (application/vnd.api+json)
 
-  + Attributes (Record Not Found Response)
+    + Attributes (Record Not Found Response)
 
-## Category [/categories/{id}/edit]
+## Category [/categories/{id}]
 
-### Update a category [PUT]
+### Update a category [PATCH]
 
 + Request
-  + Attributes (OAuth Grant Request)
 
-+ Headers
+    + Attributes (OAuth Grant Request)
 
-  Authorization: Basic 5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8
+    + Headers
+
+        Accept: application/vnd.api+json
+
+        Authorization: Bearer {access_token}
+
 
 + Response 204 (application/vnd.api+json)
 
-  + Attributes (No Content Response)
+    + Attributes (No Content Response)
 
 + Response 404 (application/vnd.api+json)
 
-  + Attributes (Record Not Found Response)
+    + Attributes (Record Not Found Response)
 
 + Response 409 (application/vnd.api+json)
 
-  + Attributes (Creation Conflict Response)
+    + Attributes (Creation Conflict Response)
 
 ## Categories [/categories]
 
 ### List all categories [GET]
 
 + Request
-  + Attributes (OAuth Grant Request)
 
-+ Headers
+    + Attributes (OAuth Grant Request)
 
-  Authorization: Basic 5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8
+    + Headers
+
+        Accept: application/vnd.api+json
+
+        Authorization: Bearer {access_token}
+
 
 + Response 200 (application/vnd.api+json)
 
-  + Attributes (Categories Response)
+    + Attributes (Categories Response)
 
 # Group Comment Images
 
@@ -122,19 +142,20 @@ Exchange email and password for `access_token`.
 ### Create a Comment Image [POST]
 
 + Request
-  + Attributes (OAuth Grant Request)
+
+    + Attributes (OAuth Grant Request)
 
 + Headers
 
-  Authorization: Bearer {access_token}
+    Authorization: Bearer {access_token}
 
 + Response 201 (application/vnd.api+json)
 
-  + Attributes (Comment Image Response)
+    + Attributes (Comment Image Response)
 
 + Response 422 (application/vnd.api+json)
 
-  + Attributes (Unprocessable Entity Response)
+    + Attributes (Unprocessable Entity Response)
 
 # Group Comment User Mentions
 
@@ -154,18 +175,21 @@ In the example above, the `indices` returned would be `[21, 26]`, corresponding 
 
 ### List all comment user mentions [GET]
 
++ Parameters
+
+    + comment_id: `1` (string)
+
 + Request
 
-+ Parameters
-  + comment_id: `1` (string)
+    + Headers
 
-+ Headers
+        Accept: application/vnd.api+json
 
-  Authorization: Basic 5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8
+        Authorization: Bearer {access_token}
 
 + Response 200 (application/vnd.api+json)
 
-  + Attributes (Comment User Mentions Response)
+    + Attributes (Comment User Mentions Response)
 
 # Group Comments
 
@@ -230,24 +254,6 @@ In the example above, the `indices` returned would be `[21, 26]`, corresponding 
 
     + Attributes (Unprocessable Entity Response)
 
-### Update a comment [PATCH /comments/{id}]
-
-+ Request
-
-    + Attributes (Comment Update Request)
-
-+ Headers
-
-    Authorization: Basic 5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8
-
-+ Response 201 (application/vnd.api+json)
-
-    + Attributes (Comment Response)
-
-+ Response 422 (application/vnd.api+json)
-
-    + Attributes (Unprocessable Entity Response)
-
 ## Comment [/comments/{id}]
 
 + Parameters
@@ -273,38 +279,6 @@ In the example above, the `indices` returned would be `[21, 26]`, corresponding 
 + Response 422 (application/vnd.api+json)
 
     + Attributes (Unprocessable Entity Response)
-
-### List comments with specified ids [GET]
-
-+ Request
-
-    + Attributes (Id Filter)
-
-+ Headers
-
-    Authorization: Basic 5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8
-
-+ Response 200 (application/vnd.api+json)
-
-    + Attributes (Comments Response)
-
-## List comments for a specified post [GET /posts/:number/comments]
-
-+ Headers
-
-    Authorization: Basic 5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8
-
-+ Response 200 (application/vnd.api+json)
-
-    + Attributes (Comments Response)
-
-# Group Github Repositories
-
-# Group Import Skill Failures
-
-# Group Imports
-
-# Group OAuth Applications
 
 # Group Organization Memberships
 
@@ -522,8 +496,6 @@ Write privileges are for admin users only, read can be accessable by any user.
 # Group Ping
 
 # Group Post Images
-
-# Group Post Likes
 
 # Group Post User Mentions
 
@@ -745,7 +717,9 @@ Write privileges are for admin users only, read can be accessable by any user.
 
   + Attributes (Project Response)
 
-### Update a project [PATCH /projects/:id]
+## Project [/projects/{id}]
+
+### Update a project [PATCH]
 
 + Request
 
@@ -799,9 +773,9 @@ A user is able to have multiple roles through their user roles.
 
 + Request
 
-  + Headers
+    + Headers
 
-       Accept: application/vnd.api+json
+        Accept: application/vnd.api+json
 
 + Response 200 (application/vnd.api+json)
 
@@ -819,27 +793,27 @@ We can use the many skills grouped under a role to suggest popular skills to use
 
 + Request
 
-  + Attributes (OAuth Grant Request)
+    + Attributes (OAuth Grant Request)
 
 + Headers
 
-  Authorization: Bearer {access_token}
+    Authorization: Bearer {access_token}
 
 + Response 200 (application/vnd.api+json)
 
-  + Attributes (Role Skill Response)
+    + Attributes (Role Skill Response)
 
 + Response 401 (application/json)
 
-  + Attributes (OAuth Invalid Response)
+    + Attributes (OAuth Invalid Response)
 
 + Response 403 (application/json)
 
-  + Attributes (Forbidden Response)
+    + Attributes (Forbidden Response)
 
 + Response 422 (application/vnd.api+json)
 
-  + Attributes (Unprocessable Entity Response)
+    + Attributes (Unprocessable Entity Response)
 
 # Group Skills
 
@@ -944,7 +918,10 @@ This endpoint will return one of two possible responses, depending on if the slu
 
 + Headers
 
-    Authorization: Basic 5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8
+    Accept: application/vnd.api+json
+
+    Authorization: Bearer {access_token}
+
 
 + Response 200 (application/vnd.api+json)
 
@@ -1057,7 +1034,9 @@ When creating a user category, the authenticated user is assumed by the server s
 
 This resource identifies a relationship between a User and a Role. For example, the role of "Backend Developer" may belong to a given user.
 
-### Create a user role [POST /user_roles]
+## User Roles [/user_roles]
+
+### Create a user role [POST]
 
 + Request
 
@@ -1074,7 +1053,9 @@ This resource identifies a relationship between a User and a Role. For example, 
 
     + Attributes (Unprocessable Entity Response)
 
-### Delete a user role [DELETE /user_roles/{id}]
+## User Roles [/user_roles/{id}]
+
+### Delete a user role [DELETE]
 
 + Parameters
 
@@ -1107,7 +1088,9 @@ This resource identifies a relationship between a User and a Role. For example, 
 
 This resource identifies a relationship between a User and a Skill. For example, the skill of "Elixir" may belong to a given user.
 
-### Filter User Skills by id [GET /user_skills{?filter}]
+## User Skills [/user_skills]
+
+### Filter user skills by id [GET /user_skills{?filter}]
 
 + Parameters
 
@@ -1144,7 +1127,9 @@ This resource identifies a relationship between a User and a Skill. For example,
 
     + Attributes (Unprocessable Entity Response)
 
-### Retrieve a User Skill [GET /user_skills/{id}]
+## User Skill [/user_skills/{id}]
+
+### Retrieve a user skill [GET]
 
 + Parameters
 
@@ -1161,7 +1146,7 @@ This resource identifies a relationship between a User and a Skill. For example,
     + Attributes (User Skill Response)
 
 
-### Delete a User Skill [DELETE /user_skills/{id}]
+### Delete a user skill [DELETE]
 
 + Parameters
 
@@ -1194,6 +1179,22 @@ This resource identifies a relationship between a User and a Skill. For example,
 
 ## Users [/users]
 
+### Filter users by id [GET /users?filter[id]={ids}]
+
++ Parameters
+
+    + `filter[id]`: `1,2` (required, string)
+
++ Request (application/vnd.api+json)
+
++ Response 200 (application/vnd.api+json)
+
+    + Attributes (Users Response)
+
++ Response 404 (application/vnd.api+json)
+
+    + Attributes (Record Not Found Response)
+
 ### Create a user [POST]
 
 + Request (application/vnd.api+json)
@@ -1222,26 +1223,6 @@ This resource identifies a relationship between a User and a Skill. For example,
 
     + Attributes (Unprocessable Entity Response)
 
-### Find a user [GET /users/{id}]
-
-+ Parameters
-
-    + id - The Id of a user.
-
-+ Request
-
-    + Headers
-
-        Accept: application/vnd.api+json
-
-+ Response 200 (application/vnd.api+json)
-
-    + Attributes (User Response)
-
-+ Response 404 (application/vnd.api+json)
-
-    + Attributes (Record Not Found Response)
-
 ### Check email availability [GET /users/email_available?email={email}]
 
 + Parameters
@@ -1265,6 +1246,28 @@ This resource identifies a relationship between a User and a Skill. For example,
 
         + available: `true` (boolean)
         + valid: `true` (boolean)
+
+## User [/users/{id}]
+
+### Retrieve a user [GET /users/{id}]
+
++ Parameters
+
+    + id - The Id of a user.
+
++ Request
+
+    + Headers
+
+        Accept: application/vnd.api+json
+
++ Response 200 (application/vnd.api+json)
+
+    + Attributes (User Response)
+
++ Response 404 (application/vnd.api+json)
+
+    + Attributes (Record Not Found Response)
 
 ### Update a user [PATCH /users/{id}]
 
@@ -1341,22 +1344,6 @@ This resource identifies a relationship between a User and a Skill. For example,
 + Response 422 (application/vnd.api+json)
 
     + Attributes (Unprocessable Entity Response)
-
-### List users [GET /users?filter[id]={ids}]
-
-+ Parameters
-
-    + `filter[id]`: `1,2` (required, string)
-
-+ Request (application/vnd.api+json)
-
-+ Response 200 (application/vnd.api+json)
-
-    + Attributes (Users Response)
-
-+ Response 404 (application/vnd.api+json)
-
-    + Attributes (Record Not Found Response)
 
 ## User [/user]
 
@@ -1663,7 +1650,7 @@ This resource identifies a relationship between a User and a Skill. For example,
 
 ## Posts Response (object)
 + posts
-  + data(array[Post Response], required)
+    + data(array[Post Response], required)
 
 ## Preview (object)
 + body: `<p>A <strong>strong</strong> preview</p>` (string)
@@ -1786,17 +1773,17 @@ This resource identifies a relationship between a User and a Skill. For example,
 ## Role Resource (object)
 + include Role Resource Identifier
 + attributes
-  + name: `Backend Developer` (string)
-  + ability: `Backend Development` (string)
-  + kind: `technology` (enum[string])
-    + Members
-      + `technology`
-      + `creative`
-      + `support`
+    + name: `Backend Developer` (string)
+    + ability: `Backend Development` (string)
+    + kind: `technology` (enum[string])
+        + Members
+            + `technology`
+            + `creative`
+            + `support`
 + relationships
-  + skills
-    + data(array[Skill Resource Identifier])
-    + links
+    + skills
+        + data(array[Skill Resource Identifier])
+        + links
 
 ## Role Skill Response (object)
 + data(Role Skill Resource)
@@ -1804,10 +1791,10 @@ This resource identifies a relationship between a User and a Skill. For example,
 ## Role Skill Resource (object)
 + include Role Skill Resource Identifier
 + relationships
-  + roles
-    + data(array[Role Resource Identifier])
-    + data(array[Skill Resource Identifier])
-    + links
+    + roles
+        + data(array[Role Resource Identifier])
+        + data(array[Skill Resource Identifier])
+        + links
 
 ## Role Skill Resource Identifier (object)
 + id: `1` (string)
@@ -1908,21 +1895,21 @@ This resource identifies a relationship between a User and a Skill. For example,
 
 ## User Relationships (object)
 + categories (object)
-  + data(array[Category Resource Identifier])
+    + data(array[Category Resource Identifier])
 + organization_memberships (object)
-  + data(array[Organization Membership Resource Identifier])
+    + data(array[Organization Membership Resource Identifier])
 + organizations (object)
-  + data(array[Organization Resource Identifier])
+    + data(array[Organization Resource Identifier])
 + roles (object)
-  + data(array[Role Resource Identifier])
+    + data(array[Role Resource Identifier])
 + skills (object)
-  + data(array[Skill Resource Identifier])
+    + data(array[Skill Resource Identifier])
 + user_categories (object)
-  + data(array[User Category Resource Identifier])
+    + data(array[User Category Resource Identifier])
 + user_roles (object)
-  + data(array[User Role Resource Identifier])
+    + data(array[User Role Resource Identifier])
 + user_skills (object)
-  + data(array[User Skill Resource Identifier])
+    + data(array[User Skill Resource Identifier])
 
 ## User Response (object)
 + data (User Resource)
@@ -1980,9 +1967,9 @@ This resource identifies a relationship between a User and a Skill. For example,
 ## User Skill Resource (object)
 + include User Skill Resource Identifier
 + relationships
-  + skill
-    + data(Skill Resource Identifier)
-    + links
-  + user
-    + data(User Resource Identifier)
-    + links
+    + skill
+        + data(Skill Resource Identifier)
+        + links
+    + user
+        + data(User Resource Identifier)
+        + links
