@@ -31,7 +31,7 @@ Exchange email and password for `access_token`.
 
     + Headers
 
-        Content-Type: application/vnd.api+json
+            Content-Type: application/vnd.api+json
 
 + Response 200 (application/json)
 
@@ -49,14 +49,10 @@ Exchange email and password for `access_token`.
 
 + Request
 
-    + Attributes (OAuth Grant Request)
-
     + Headers
 
-        Accept: application/vnd.api+json
-
-        Authorization: Bearer {access_token}
-
+            Accept: application/vnd.api+json
+            Authorization: Bearer {access_token}
 
 + Response 201 (application/vnd.api+json)
 
@@ -66,6 +62,19 @@ Exchange email and password for `access_token`.
 
     + Attributes (Unprocessable Entity Response)
 
+### List all categories [GET]
+
++ Request
+
+    + Headers
+
+            Accept: application/vnd.api+json
+            Authorization: Bearer {access_token}
+
++ Response 200 (application/vnd.api+json)
+
+    + Attributes (Categories Response)
+
 ## Category [/categories/{id}]
 
 ### Retrieve a category [GET]
@@ -74,11 +83,10 @@ Exchange email and password for `access_token`.
 
     + Attributes (OAuth Grant Request)
 
-    + Headers
+        + Headers
 
-        Accept: application/vnd.api+json
-
-        Authorization: Bearer {access_token}
+                Accept: application/vnd.api+json
+                Authorization: Bearer {access_token}
 
 
 + Response 200 (application/vnd.api+json)
@@ -89,19 +97,16 @@ Exchange email and password for `access_token`.
 
     + Attributes (Record Not Found Response)
 
-## Category [/categories/{id}]
-
 ### Update a category [PATCH]
 
 + Request
 
     + Attributes (OAuth Grant Request)
 
-    + Headers
+        + Headers
 
-        Accept: application/vnd.api+json
-
-        Authorization: Bearer {access_token}
+                Accept: application/vnd.api+json
+                Authorization: Bearer {access_token}
 
 
 + Response 204 (application/vnd.api+json)
@@ -116,25 +121,6 @@ Exchange email and password for `access_token`.
 
     + Attributes (Creation Conflict Response)
 
-## Categories [/categories]
-
-### List all categories [GET]
-
-+ Request
-
-    + Attributes (OAuth Grant Request)
-
-    + Headers
-
-        Accept: application/vnd.api+json
-
-        Authorization: Bearer {access_token}
-
-
-+ Response 200 (application/vnd.api+json)
-
-    + Attributes (Categories Response)
-
 # Group Comment Images
 
 ## Comment Image [/comment_images]
@@ -143,11 +129,10 @@ Exchange email and password for `access_token`.
 
 + Request
 
-    + Attributes (OAuth Grant Request)
+    + Headers
 
-+ Headers
-
-    Authorization: Bearer {access_token}
+            Accept: application/vnd.api+json
+            Authorization: Bearer {access_token}
 
 + Response 201 (application/vnd.api+json)
 
@@ -183,9 +168,8 @@ In the example above, the `indices` returned would be `[21, 26]`, corresponding 
 
     + Headers
 
-        Accept: application/vnd.api+json
-
-        Authorization: Bearer {access_token}
+            Accept: application/vnd.api+json
+            Authorization: Bearer {access_token}
 
 + Response 200 (application/vnd.api+json)
 
@@ -208,9 +192,8 @@ In the example above, the `indices` returned would be `[21, 26]`, corresponding 
 
     + Headers
 
-        Accept: application/vnd.api+json
-
-        Authorization: Bearer {access_token}
+            Accept: application/vnd.api+json
+            Authorization: Bearer {access_token}
 
 + Response 200 (application/vnd.api+json)
 
@@ -226,9 +209,8 @@ In the example above, the `indices` returned would be `[21, 26]`, corresponding 
 
     + Headers
 
-        Accept: application/vnd.api+json
-
-        Authorization: Bearer {access_token}
+            Accept: application/vnd.api+json
+            Authorization: Bearer {access_token}
 
 + Response 200 (application/vnd.api+json)
 
@@ -240,9 +222,8 @@ In the example above, the `indices` returned would be `[21, 26]`, corresponding 
 
     + Headers
 
-        Accept: application/vnd.api+json
-
-        Authorization: Bearer {access_token}
+            Accept: application/vnd.api+json
+            Authorization: Bearer {access_token}
 
     + Attributes (Comment Create Request)
 
@@ -266,9 +247,8 @@ In the example above, the `indices` returned would be `[21, 26]`, corresponding 
 
     + Headers
 
-        Accept: application/vnd.api+json
-
-        Authorization: Bearer {access_token}
+            Accept: application/vnd.api+json
+            Authorization: Bearer {access_token}
 
     + Attributes (Comment Update Request)
 
@@ -291,9 +271,12 @@ In the example above, the `indices` returned would be `[21, 26]`, corresponding 
     + filter
         + id: `1,2,...` (string, required) - Comma separated string of `ids` to filter by.
 
-+ Headers
++ Request
 
-    Authorization: Bearer {access_token}
+    + Headers
+
+            Accept: application/vnd.api+json
+            Authorization: Bearer {access_token}
 
 + Response 200 (application/vnd.api+json)
 
@@ -305,9 +288,10 @@ In the example above, the `indices` returned would be `[21, 26]`, corresponding 
 
     + Attributes (Organization Membership Create Request)
 
-+ Headers
+    + Headers
 
-    Authorization: Bearer {access_token}
+            Accept: application/vnd.api+json
+            Authorization: Bearer {access_token}
 
 + Response 201 (application/vnd.api+json)
 
@@ -323,9 +307,12 @@ In the example above, the `indices` returned would be `[21, 26]`, corresponding 
 
 ### List all organization memberships for an organization [GET /organizations/:id/memberships]
 
-+ Headers
++ Request
 
-    Authorization: Bearer {access_token}
+    + Headers
+
+            Accept: application/vnd.api+json
+            Authorization: Bearer {access_token}
 
 + Response 200 (application/vnd.api+json)
 
@@ -335,9 +322,12 @@ In the example above, the `indices` returned would be `[21, 26]`, corresponding 
 
 ### Retrieve an organization membership [GET]
 
-+ Headers
++ Request
 
-    Authorization: Bearer {access_token}
+    + Headers
+
+            Accept: application/vnd.api+json
+            Authorization: Bearer {access_token}
 
 + Response 200 (application/vnd.api+json)
 
@@ -349,9 +339,10 @@ In the example above, the `indices` returned would be `[21, 26]`, corresponding 
 
     + Attributes (Organization Membership Update Request)
 
-+ Headers
+    + Headers
 
-    Authorization: Bearer {access_token}
+            Accept: application/vnd.api+json
+            Authorization: Bearer {access_token}
 
 + Response 201 (application/vnd.api+json)
 
@@ -367,9 +358,12 @@ In the example above, the `indices` returned would be `[21, 26]`, corresponding 
 
 ### Destroy an organization membership [DELETE]
 
-+ Headers
++ Request
 
-    Authorization: Bearer {access_token}
+    + Headers
+
+            Accept: application/vnd.api+json
+            Authorization: Bearer {access_token}
 
 + Response 204 (application/vnd.api+json)
 
@@ -405,7 +399,7 @@ Write privileges are for admin users only, read can be accessable by any user.
 
     + Headers
 
-        Accept: application/vnd.api+json
+            Accept: application/vnd.api+json
 
 + Response 200 (application/vnd.api+json)
 
@@ -421,8 +415,8 @@ Write privileges are for admin users only, read can be accessable by any user.
 
     + Headers
 
-        Accept: application/vnd.api+json
-        Authorization: Bearer <access_token>
+            Accept: application/vnd.api+json
+            Authorization: Bearer <access_token>
 
 + Response 200 (application/vnd.api+json)
 
@@ -452,7 +446,7 @@ Write privileges are for admin users only, read can be accessable by any user.
 
     + Headers
 
-        Accept: application/vnd.api+json
+            Accept: application/vnd.api+json
 
 + Response 200 (application/vnd.api+json)
 
@@ -474,8 +468,8 @@ Write privileges are for admin users only, read can be accessable by any user.
 
     + Headers
 
-        Accept: application/vnd.api+json
-        Authorization: Bearer {access_token}
+            Accept: application/vnd.api+json
+            Authorization: Bearer {access_token}
 
 + Response 200 (application/vnd.api+json)
 
@@ -507,11 +501,10 @@ Write privileges are for admin users only, read can be accessable by any user.
 
 + Request
 
-    + Attributes (OAuth Grant Request)
+    + Headers
 
-+ Headers
-
-    Authorization: Bearer 5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8
+            Accept: application/vnd.api+json
+            Authorization: Bearer {access_token}
 
 + Response 201 (application/vnd.api+json)
 
@@ -520,6 +513,19 @@ Write privileges are for admin users only, read can be accessable by any user.
 + Response 422 (application/vnd.api+json)
 
     + Attributes (Unprocessable Entity Response)
+
+### List all posts [GET]
+
++ Request
+
+    + Headers
+
+            Accept: application/vnd.api+json
+            Authorization: Bearer {access_token}
+
++ Response 200 (application/vnd.api+json)
+
+    + Attributes (Posts Response)
 
 ## Post [/posts/{id}]
 
@@ -531,11 +537,10 @@ Write privileges are for admin users only, read can be accessable by any user.
 
 + Request
 
-    + Attributes (OAuth Grant Request)
+    + Headers
 
-+ Headers
-
-    Authorization: Bearer 5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8
+            Accept: application/vnd.api+json
+            Authorization: Bearer {access_token}
 
 + Response 200 (application/vnd.api+json)
 
@@ -551,9 +556,12 @@ Write privileges are for admin users only, read can be accessable by any user.
 
     + id: 1 (number, required)
 
-+ Headers
++ Request
 
-    Authorization: Bearer 5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8
+    + Headers
+
+            Accept: application/vnd.api+json
+            Authorization: Bearer {access_token}
 
 + Response 201 (application/vnd.api+json)
 
@@ -571,18 +579,6 @@ Write privileges are for admin users only, read can be accessable by any user.
 
     + Attributes (Creation Conflict Response)
 
-## Posts [/posts]
-
-### List all posts [GET]
-
-+ Headers
-
-    Authorization: Bearer 5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8
-
-+ Response 200 (application/vnd.api+json)
-
-    + Attributes (Posts Response)
-
 # Group Preview User Mentions
 
 # Group Previews
@@ -593,23 +589,22 @@ Write privileges are for admin users only, read can be accessable by any user.
 
 + Request
 
-  + Attributes (OAuth Grant Request)
+    + Headers
 
-+ Headers
-
-  Authorization: Bearer {access_token}
+            Accept: application/vnd.api+json
+            Authorization: Bearer {access_token}
 
 + Response 201 (application/vnd.api+json)
 
-  + Attributes (Preview Response)
+    + Attributes (Preview Response)
 
 + Response 401 (application/json)
 
-  + Attributes (OAuth Invalid Response)
+    + Attributes (OAuth Invalid Response)
 
 + Response 422 (application/vnd.api+json)
 
-  + Attributes (Unprocessable Entity Response)
+    + Attributes (Unprocessable Entity Response)
 
 # Group Project Categories
 
@@ -619,31 +614,35 @@ Write privileges are for admin users only, read can be accessable by any user.
 
 + Request
 
-  + Attributes (Project Category Create Request)
+    + Attributes (Project Category Create Request)
 
-+ Headers
+    + Headers
 
-  Authorization: Bearer {access_token}
+            Accept: application/vnd.api+json
+            Authorization: Bearer {access_token}
 
 + Response 201 (application/vnd.api+json)
 
-  + Attributes (Project Category Response)
+    + Attributes (Project Category Response)
 
 + Response 401 (application/json)
 
-  + Attributes (OAuth Invalid Response)
+    + Attributes (OAuth Invalid Response)
 
 + Response 422 (application/vnd.api+json)
 
-  + Attributes (Unprocessable Entity Response)
+    + Attributes (Unprocessable Entity Response)
 
 ## Project Category [/project_categories/:id]
 
 ### Delete a Project Category [DELETE]
 
-+ Headers
++ Request
 
-    Authorization: Bearer {access_token}
+    + Headers
+
+            Accept: application/vnd.api+json
+            Authorization: Bearer {access_token}
 
 + Response 204 (application/vnd.api+json)
 
@@ -665,57 +664,70 @@ Write privileges are for admin users only, read can be accessable by any user.
 
 ### List all projects [GET]
 
-+ Headers
++ Request
 
-  Authorization: Bearer {access_token}
+    + Headers
+
+            Accept: application/vnd.api+json
+            Authorization: Bearer {access_token}
 
 + Response 200 (application/vnd.api+json)
 
-  + Attributes (Projects Response)
+    + Attributes (Projects Response)
 
 ### Retrieve a project [GET /projects/:id]
 
-+ Headers
++ Request
 
-  Authorization: Bearer {access_token}
+    + Headers
+
+            Accept: application/vnd.api+json
+            Authorization: Bearer {access_token}
 
 + Response 200 (application/vnd.api+json)
 
-  + Attributes (Project Response)
+    + Attributes (Project Response)
 
 ### Retrieve all projects for organization specified by slug [GET /:slug/projects]
 
-+ Headers
++ Request
 
-  Authorization: Bearer {access_token}
+    + Headers
+
+            Accept: application/vnd.api+json
+            Authorization: Bearer {access_token}
 
 + Response 200 (application/vnd.api+json)
 
-  + Attributes (Projects Response)
+    + Attributes (Projects Response)
 
 ### Retrieve a project by slug [GET /:slug/:project_slug]
 
-+ Headers
++ Request
 
-  Authorization: Bearer {access_token}
+    + Headers
+
+            Accept: application/vnd.api+json
+            Authorization: Bearer {access_token}
 
 + Response 200 (application/vnd.api+json)
 
-  + Attributes (Project Response)
+    + Attributes (Project Response)
 
 ### Create a project [POST]
 
 + Request
 
-  + Attributes (Project Create Request)
+    + Attributes (Project Create Request)
 
-+ Headers
+    + Headers
 
-  Authorization: Bearer {access_token}
+            Accept: application/vnd.api+json
+            Authorization: Bearer {access_token}
 
 + Response 200 (application/vnd.api+json)
 
-  + Attributes (Project Response)
+    + Attributes (Project Response)
 
 ## Project [/projects/{id}]
 
@@ -723,15 +735,16 @@ Write privileges are for admin users only, read can be accessable by any user.
 
 + Request
 
-  + Attributes (Project Update Request)
+    + Attributes (Project Update Request)
 
-+ Headers
+    + Headers
 
-  Authorization: Bearer {access_token}
+            Accept: application/vnd.api+json
+            Authorization: Bearer {access_token}
 
 + Response 200 (application/vnd.api+json)
 
-  + Attributes (Project Response)
+    + Attributes (Project Response)
 
 # Group Roles
 
@@ -739,17 +752,16 @@ This endpoint is for creating and returning the roles available for users.
 
 A user is able to have multiple roles through their user roles.
 
-## Role [/roles]
+## Roles [/roles]
 
 ### Create a role [POST]
 
 + Request
 
-  + Headers
+    + Headers
 
-       Accept: application/vnd.api+json
-
-       Authorization: Bearer {access_token}
+            Accept: application/vnd.api+json
+            Authorization: Bearer {access_token}
 
 + Response 200 (application/vnd.api+json)
 
@@ -767,15 +779,13 @@ A user is able to have multiple roles through their user roles.
 
   + Attributes (Unprocessable Entity Response)
 
-## Roles [/roles]
-
 ### List all roles [GET]
 
 + Request
 
     + Headers
 
-        Accept: application/vnd.api+json
+            Accept: application/vnd.api+json
 
 + Response 200 (application/vnd.api+json)
 
@@ -793,11 +803,10 @@ We can use the many skills grouped under a role to suggest popular skills to use
 
 + Request
 
-    + Attributes (OAuth Grant Request)
+    + Headers
 
-+ Headers
-
-    Authorization: Bearer {access_token}
+            Accept: application/vnd.api+json
+            Authorization: Bearer {access_token}
 
 + Response 200 (application/vnd.api+json)
 
@@ -819,11 +828,11 @@ We can use the many skills grouped under a role to suggest popular skills to use
 
 This endpoint retrieves skills that can be applied to both users (through user_skills) and roles (through role_skills)
 
-## Skills [/skills{?filter}]
+## Skills [/skills]
 
 Skills can be filtered by the id of the skill. This should be an array of one or multiple ids.
 
-### Filter by id [GET]
+### Filter by id [GET /skills{?filter}]
 
 + Parameters
 
@@ -833,25 +842,27 @@ Skills can be filtered by the id of the skill. This should be an array of one or
 
     + Headers
 
-        Accept: application/vnd.api+json
+            Accept: application/vnd.api+json
 
 + Response 200 (application/vnd.api+json)
 
     + Attributes (Skills Response)
 
-### Filter by string query [GET]
+### Autocomplete skill with query [GET /skills{?query}]
 
-Skills can be filtered by the name of the skill. This should be a string with one or more letters of the name of the skill requested.
+Skills can be queried by a substring of the name of the skill. This should be a string with one or more letters of the name of the skill requested.
+
+For example, if we wanted to return skills like "Java" and "JavaScript", we may query with the substring "jav". A good use for this API would be a skill typeahed input.
 
 + Parameters
 
-    + filter: `elixir` (string, optional) - Text query to filter returned skills
+    + query: `jav` (string, optional) - Text query to filter returned skills
 
 + Request
 
     + Headers
 
-        Accept: application/vnd.api+json
+            Accept: application/vnd.api+json
 
 + Response 200 (application/vnd.api+json)
 
@@ -863,8 +874,8 @@ Skills can be filtered by the name of the skill. This should be a string with on
 
     + Headers
 
-        Accept: application/vnd.api+json
-        Authorization: Bearer <access_token>
+            Accept: application/vnd.api+json
+            Authorization: Bearer <access_token>
 
 + Response 200 (application/vnd.api+json)
 
@@ -894,7 +905,7 @@ Skills can be filtered by the name of the skill. This should be a string with on
 
     + Headers
 
-        Accept: application/vnd.api+json
+            Accept: application/vnd.api+json
 
 + Response 200 (application/vnd.api+json)
 
@@ -916,12 +927,12 @@ Slugged routes allow us to make API requests for a user or an organization witho
 
 This endpoint will return one of two possible responses, depending on if the slugged route's owner is a user or an organization. If the slugged route is owned by a user, the responses's owner relationship will point to a user and include a user resource. If it's owned by an organization, it will point to and include an organization resource.
 
-+ Headers
++ Request
 
-    Accept: application/vnd.api+json
+    + Headers
 
-    Authorization: Bearer {access_token}
-
+            Accept: application/vnd.api+json
+            Authorization: Bearer {access_token}
 
 + Response 200 (application/vnd.api+json)
 
@@ -949,7 +960,7 @@ It may be eaasier to think of a User Category as one of a user's interest. They 
 
     + Headers
 
-        Accept: application/vnd.api+json
+            Accept: application/vnd.api+json
 
 + Response 200 (application/vnd.api+json)
 
@@ -970,9 +981,12 @@ When creating a user category, the authenticated user is assumed by the server s
                       + type: `categories` (string, required)
                       + id: `1` (number, required)
 
-+ Headers
+                  + Request
 
-    Authorization: Bearer {access_token}
+                      + Headers
+
+                              Accept: application/vnd.api+json
+                              Authorization: Bearer {access_token}
 
 + Response 201 (application/vnd.api+json)
 
@@ -998,7 +1012,7 @@ When creating a user category, the authenticated user is assumed by the server s
 
     + Headers
 
-        Accept: application/vnd.api+json
+            Accept: application/vnd.api+json
 
 + Response 200 (application/vnd.api+json)
 
@@ -1012,11 +1026,10 @@ When creating a user category, the authenticated user is assumed by the server s
 
 + Request
 
-    + Attributes (OAuth Grant Request)
+    + Headers
 
-+ Headers
-
-    Authorization: Bearer {access_token}
+            Accept: application/vnd.api+json
+            Authorization: Bearer {access_token}
 
 + Response 204 (application/vnd.api+json)
 
@@ -1042,8 +1055,8 @@ This resource identifies a relationship between a User and a Role. For example, 
 
     + Headers
 
-        Accept: application/vnd.api+json
-        Authorization: Bearer <access_token>
+            Accept: application/vnd.api+json
+            Authorization: Bearer <access_token>
 
 + Response 200 (application/vnd.api+json)
 
@@ -1065,8 +1078,8 @@ This resource identifies a relationship between a User and a Role. For example, 
 
     + Headers
 
-        Accept: application/vnd.api+json
-        Authorization: Bearer <access_token>
+            Accept: application/vnd.api+json
+            Authorization: Bearer <access_token>
 
 + Response 204 (application/vnd.api+json)
 
@@ -1100,7 +1113,7 @@ This resource identifies a relationship between a User and a Skill. For example,
 
     + Headers
 
-        Accept: application/vnd.api+json
+            Accept: application/vnd.api+json
 
 + Response 200 (application/vnd.api+json)
 
@@ -1112,8 +1125,8 @@ This resource identifies a relationship between a User and a Skill. For example,
 
     + Headers
 
-        Accept: application/vnd.api+json
-        Authorization: Bearer <access_token>
+            Accept: application/vnd.api+json
+            Authorization: Bearer <access_token>
 
 + Response 200 (application/vnd.api+json)
 
@@ -1139,7 +1152,7 @@ This resource identifies a relationship between a User and a Skill. For example,
 
     + Headers
 
-        Accept: application/vnd.api+json
+            Accept: application/vnd.api+json
 
 + Response 200 (application/vnd.api+json)
 
@@ -1156,8 +1169,8 @@ This resource identifies a relationship between a User and a Skill. For example,
 
     + Headers
 
-        Accept: application/vnd.api+json
-        Authorization: Bearer <access_token>
+            Accept: application/vnd.api+json
+            Authorization: Bearer <access_token>
 
 + Response 204 (application/vnd.api+json)
 
@@ -1201,7 +1214,7 @@ This resource identifies a relationship between a User and a Skill. For example,
 
     + Headers
 
-        Accept: application/vnd.api+json
+            Accept: application/vnd.api+json
 
     + Attributes (object)
 
@@ -1228,6 +1241,8 @@ This resource identifies a relationship between a User and a Skill. For example,
 + Parameters
 
     + email: me@testuser.org (string, required)
+
++ Response 200 (application/vnd.api+json)
 
     + Attributes
 
@@ -1259,7 +1274,7 @@ This resource identifies a relationship between a User and a Skill. For example,
 
     + Headers
 
-        Accept: application/vnd.api+json
+            Accept: application/vnd.api+json
 
 + Response 200 (application/vnd.api+json)
 
@@ -1292,8 +1307,8 @@ This resource identifies a relationship between a User and a Skill. For example,
 
     + Headers
 
-        Authorization: Bearer {access_token}
-        Accept: application/vnd.api+json
+            Authorization: Bearer {access_token}
+            Accept: application/vnd.api+json
 
 + Response 200 (application/vnd.api+json)
 
@@ -1330,8 +1345,8 @@ This resource identifies a relationship between a User and a Skill. For example,
 
     + Headers
 
-        Authorization: Bearer {access_token}
-        Accept: application/vnd.api+json
+            Authorization: Bearer {access_token}
+            Accept: application/vnd.api+json
 
 + Response 200 (application/vnd.api+json)
 
@@ -1353,8 +1368,8 @@ This resource identifies a relationship between a User and a Skill. For example,
 
     + Headers
 
-        Authorization: Bearer {access_token}
-        Accept: application/vnd.api+json
+            Authorization: Bearer {access_token}
+            Accept: application/vnd.api+json
 
 + Response 200 (application/vnd.api+json)
 
