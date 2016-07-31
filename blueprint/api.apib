@@ -809,9 +809,9 @@ A user is able to have multiple roles through their user roles.
 
 # Group Role Skills
 
-This group is used as a join table to connect the many to many relationship of Skills and Roles
+This resource identifies a relationship between a Role and a Skill. For example, the skill of "JavaScript" may relate to the role of "Backend Developer," and also "Front End Developer" and even "Mobile Developer".
 
-This allows A Skill to be under different Roles and a Role to have multiple Skills
+We can use the many skills grouped under a role to suggest popular skills to users who may have self-identifed as a "Backend Developer".
 
 ## Role Skill [/role_skills]
 
@@ -1105,7 +1105,7 @@ This resource identifies a relationship between a User and a Role. For example, 
 
 # Group User Skills
 
-This endpoint retrieves sets of users and skills to act as a join table between the two
+This resource identifies a relationship between a User and a Skill. For example, the skill of "Elixir" may belong to a given user.
 
 ### Filter User Skills by id [GET /user_skills{?filter}]
 
