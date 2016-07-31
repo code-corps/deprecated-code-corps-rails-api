@@ -16,18 +16,20 @@ The staging API can be found at `https://api.pbqrpbecf.org`.
 The remote development API can be found at `https://api.pbqrpbecf-qri.org`.
 
 # Authentication
-When using the API's authenticated endpoints you can authenticate users by exchanging the `username` and `password` for an OAuth token.
+
+When using the API's authenticated endpoints you can authenticate users by exchanging the `username` (email address) and `password` for an OAuth token.
 
 ## OAuth Token Exchange [/oauth/token]
-Exchange credentials for `access_token`.
 
-### Exchange credentials for token [POST]
+Exchange email and password for `access_token`.
+
+### Exchange email and password for token [POST]
+
 + Request
     + Attributes (OAuth Grant Request)
     + Headers
 
-            Authorization: Basic 5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8
-            Content-Type: application/x-www-form-urlencoded
+            Content-Type: application/vnd.api+json
 
 + Response 200 (application/json)
     + Attributes (OAuth Valid Response)
@@ -136,11 +138,39 @@ Exchange credentials for `access_token`.
 
 # Group Comment User Mentions
 
+A comment may contain a number of comment user mentions. For example, let's imagine a user were to comment:
+
+> Looks good to merge, @test!
+
+The comment user mention inside the body of this comment string would return the user's `username` which is `test`, along with `indices`, an array of positions indicating the start and end characters for the user's original username inside the string.
+
+When fetching mentions, you are expected to replace the old `username` in the string with the current `username` using the provided `indices`.
+
+Since a user's username may change over time, we don't want to always update the user's previous comments. Instead, we keep track of the location of the `username` inside the string. This allows us to update the text dynamically, and return a dynamic `username` that reflects the current value.
+
+In the example above, the `indices` returned would be `[21, 26]`, corresponding to their location in the string. If the `username` were to change to `testuser` after the comment was created, the `indices` would remain the same, but the `username` returned would be the new value of `testuser`. Many languages allow some form of `slice` that lets you use these indices to replace the substring dynamically.
+
+## Comment User mentions [/comment_user_mentions]
+
+### List all comment user mentions [GET]
+
++ Request
+
++ Parameters
+  + comment_id: `1` (string)
+
++ Headers
+
+  Authorization: Basic 5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8
+
++ Response 200 (application/vnd.api+json)
+
+  + Attributes (Comment User Mentions Response)
+
 # Group Comments
 
 ## Comments [/comments]
 
-<<<<<<< HEAD
 ### Filter comments by list of ids [GET /comments{?filter[id]}]
 
 + Parameters
@@ -183,6 +213,7 @@ Exchange credentials for `access_token`.
 ### Create a comment [POST]
 
 + Request
+
     + Headers
 
         Accept: application/vnd.api+json
@@ -190,16 +221,6 @@ Exchange credentials for `access_token`.
         Authorization: Bearer {access_token}
 
     + Attributes (Comment Create Request)
-=======
-### Create a comment [POST]
-
-+ Request
-
-    + Attributes (Comment Create Request)
-
-+ Headers
-
-    Authorization: Basic 5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8
 
 + Response 201 (application/vnd.api+json)
 
@@ -218,7 +239,6 @@ Exchange credentials for `access_token`.
 + Headers
 
     Authorization: Basic 5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8
->>>>>>> dcb1458... Added documentation for comment API
 
 + Response 201 (application/vnd.api+json)
 
@@ -228,7 +248,6 @@ Exchange credentials for `access_token`.
 
     + Attributes (Unprocessable Entity Response)
 
-<<<<<<< HEAD
 ## Comment [/comments/{id}]
 
 + Parameters
@@ -254,7 +273,7 @@ Exchange credentials for `access_token`.
 + Response 422 (application/vnd.api+json)
 
     + Attributes (Unprocessable Entity Response)
-=======
+
 ### List comments with specified ids [GET]
 
 + Request
@@ -278,7 +297,6 @@ Exchange credentials for `access_token`.
 + Response 200 (application/vnd.api+json)
 
     + Attributes (Comments Response)
->>>>>>> dcb1458... Added documentation for comment API
 
 # Group Github Repositories
 
@@ -1282,9 +1300,28 @@ This endpoint retrieves sets of users and skills to act as a join table between 
     The start and the end index of where the mention is to be placed within the comment body
 + username: 'Username of related user' (string)
 
-## Comment User Mention Resource Identifier (object)
+## Comment Relationship (object)
++ id: 1 (string)
++ type: comments (string)
+
+## Comment User Mention Relationships (object)
++ user
+    + data (User Relationship)
++ comment
+    + data (Comment Relationship)
+
+## Comment User Mention Resource Identifier
 + id: `1` (string)
 + type: `comment_user_mentions` (string)
+
+## Comment User Mention Response (object)
++ data (object)
+    + Include (Comment User Mention Resource)
+    + relationships
+        + Include (Comment User Mention Relationships)
+
+## Comment User Mentions Response (object)
++ data(array[Comment User Mention Response])
 
 ## Creation Conflict Response (object)
 + title: `Conflict` (string)
@@ -1635,6 +1672,14 @@ This endpoint retrieves sets of users and skills to act as a join table between 
 ## User Resource Identifier (object)
 + id: `1` (string)
 + type: `users` (string)
+
+## User Relationship (object)
++ id: 1 (string)
++ type: users (string)
+
+## User Roles Relationship (object)
++ id: 1 (string)
++ type: user_roles (string)
 
 ## User Role Resource Identifier
 + id: `1` (string)
