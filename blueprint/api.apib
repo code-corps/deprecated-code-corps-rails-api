@@ -640,6 +640,92 @@ When creating a user category, the authenticated user is assumed by the server s
 
 # Group User Skills
 
+This endpoint retrieves sets of users and skills to act as a join table between the two
+
+### Filter User Skills by id [GET /user_skills{?filter}]
+
++ Parameters
+
+    + filter: (Id Filter)
+
++ Request
+
+    + Headers
+
+        Accept: application/vnd.api+json
+
++ Response 200 (application/vnd.api+json)
+
+    + Attributes (User Skills Response)
+
+
+### Create a User Skill [POST /user_skills]
+
++ Request
+
+    + Headers
+
+        Accept: application/vnd.api+json
+        Authorization: Bearer <access_token>
+
++ Response 200 (application/vnd.api+json)
+
+    + Attributes (User Skill Response)
+
++ Response 401 (application/json)
+
+    + Attributes (OAuth Invalid Response)
+
++ Response 422 (application/vnd.api+json)
+
+    + Attributes (Unprocessable Entity Response)
+
+### Retrieve a User Skill [GET /user_skills/{id}]
+
++ Parameters
+
+    + id - The Id of a user_skill
+
++ Request
+
+    + Headers
+
+        Accept: application/vnd.api+json
+
++ Response 200 (application/vnd.api+json)
+
+    + Attributes (User Skill Response)
+
+
+### Delete a User Skill [DELETE /user_skills/{id}]
+
++ Parameters
+
+    + id - The Id of a user_skill
+
++ Request
+
+    + Headers
+
+        Accept: application/vnd.api+json
+        Authorization: Bearer <access_token>
+
++ Response 204 (application/vnd.api+json)
+
+    + Attributes (No Content Response)
+
++ Response 401 (application/json)
+
+    + Attributes (OAuth Invalid Response)
+
++ Response 403 (application/vnd.api+json)
+
+    + Attributes (Forbidden Response)
+
++ Response 404 (application/vnd.api+json)
+
+    + Attributes (Record Not Found Response)
+
 # Group Users
 
 ## Users [/users]
@@ -907,6 +993,10 @@ When creating a user category, the authenticated user is assumed by the server s
         + title: `Forbidden` (string)
         + detail: `You are not authorized to perform this action on {subject_name}` (string) - Details of what record was not found.
         + status: 403 (number) - HTTP status code
+
+## Id Filter (object)
++ filter:
+    + id: `1,2,3,...` (string, required) - A list of ids, in a single string, comma-separated
 
 ## No Content Response (object)
 
@@ -1194,3 +1284,19 @@ When creating a user category, the authenticated user is assumed by the server s
 ## User Skill Resource Identifier (object)
 + id: `1` (string)
 + type: `user_skills` (string)
+
+## User Skill Response (object)
++ data(User Skill Resource)
+
+## User Skills Response (object)
++ data(array[User Skill Resource])
+
+## User Skill Resource (object)
++ include User Skill Resource Identifier
++ relationships
+  + skill
+    + data(Skill Resource Identifier)
+    + links
+  + user
+    + data(User Resource Identifier)
+    + links
