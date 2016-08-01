@@ -25,9 +25,13 @@ Exchange email and password for `access_token`.
 
 ### Exchange email and password for token [POST]
 
-+ Request
++ Parameters
 
-    + Attributes (OAuth Grant Request)
+    + grant_type: `password` (string, required)
+    + username: `me@testuser.org` (string, required) - The user's email address.
+    + password: `password` (string, required)
+
++ Request
 
     + Headers
 
@@ -81,12 +85,10 @@ Exchange email and password for `access_token`.
 
 + Request
 
-    + Attributes (OAuth Grant Request)
+    + Headers
 
-        + Headers
-
-                Accept: application/vnd.api+json
-                Authorization: Bearer {access_token}
+            Accept: application/vnd.api+json
+            Authorization: Bearer {access_token}
 
 
 + Response 200 (application/vnd.api+json)
@@ -101,12 +103,10 @@ Exchange email and password for `access_token`.
 
 + Request
 
-    + Attributes (OAuth Grant Request)
+    + Headers
 
-        + Headers
-
-                Accept: application/vnd.api+json
-                Authorization: Bearer {access_token}
+            Accept: application/vnd.api+json
+            Authorization: Bearer {access_token}
 
 
 + Response 204 (application/vnd.api+json)
@@ -1556,11 +1556,6 @@ This resource identifies a relationship between a User and a Skill. For example,
 ## No Content Response (object)
 
     {}
-
-## OAuth Grant Request (object)
-  + grant_type: `password` (string, required)
-  + username: `me@testuser.org` (string, required) - The user's email address.
-  + password: `password` (string, required)
 
 ## OAuth Invalid Response (object)
 + errors (array)
