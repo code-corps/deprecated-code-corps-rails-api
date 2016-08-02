@@ -260,6 +260,29 @@ In the example above, the `indices` returned would be `[21, 26]`, corresponding 
 
     + Attributes (Unprocessable Entity Response)
 
+# Group Imports
+
+This endpoint is for uploading files to the Code Corps site.
+
+## Create an Import [POST /imports]
+
++ Request
+
+    + Attributes (Import Resource)
+
+    + Headers
+
+            Accept: application/vnd.api+json
+            Authorization: Bearer {access_token}
+
++ Response 200 (application/vnd.api+json)
+
+    + Attributes (Import Response)
+
++ Response 401 (application/vnd.api+json)
+
+    + Attributes (OAuth Invalid Response)
+
 # Group Organization Memberships
 
 ## Organization Memberships [/organization_memberships]
@@ -1579,6 +1602,24 @@ This resource identifies a relationship between a User and a Skill. For example,
 ## Id Filter (object)
 + filter:
     + id: `1,2,3,...` (string, required) - A list of ids, in a single string, comma-separated
+
+## Import Resource Identifier
++ id: `1` (string)
++ type: `imports` (string)
+
+## Import Attributes (object)
++ file_file_name: `upload_file.csv` (string)
++ file_content_type: `csv` (string)
++ file_file_size: `100KB` (string)
++ file_updated_at: `2016-08-02T00:00:00Z` (string)
++ status: `uploaded` (string)
+
+## Import Resource (object)
++ include Import Resource Identifier
++ attributes(Import Attributes)
+
+## Import Response (object)
++ data(Import Resource)
 
 ## Github Repository Resource Identifier
 + id: `1` (string)
