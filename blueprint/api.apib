@@ -489,6 +489,31 @@ Write privileges are for admin users only, read can be accessable by any user.
 
 # Group Ping
 
+This endpoint is used as a check to see if the user can access the server
+
+## Ping [/ping]
+
+### Check server status [GET]
+
++ Request
+
+  + Headers
+
+      Accept: application/vnd.api+json
+      Authorization: Bearer {access_token}
+
++ Response 200 (application/json)
+
+    For an authenticated user
+
+    + Attributes (Ping Auth Response)
+
++ Response 200 (application/json)
+
+    For an unauthenticated user
+
+    + Attributes (Ping Unauth Response)
+
 # Group Post Images
 
 # Group Post User Mentions
@@ -1645,6 +1670,12 @@ This resource identifies a relationship between a User and a Skill. For example,
 ## Organization Membership Update Request (object)
 + include Organization Membership Resource Identifier
 + attributes(Organization Membership Attributes)
+
+## Ping Auth Response
++ ping: `team@codecorps.org` (string)
+
+## Ping Unauth Response
++ ping: `pong` (string)
 
 ## Post Resource Identifier
 + id: `1` (string)
