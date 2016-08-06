@@ -539,6 +539,35 @@ This endpoint is used as a check to see if the user can access the server
 
 # Group Post Images
 
+### Create a post_images [POST /post_images]
+
++ Request
+
+    + Attributes (Post Image Resource)
+
+    + Headers
+
+          Accept: application/vnd.api+json
+          Authorization: Bearer {access_token}
+
++ Response 200 (application/vnd.api+json)
+
+    + Attributes (Post Image Response)
+
++ Response 401 (application/vnd.api+json)
+
+    + Attributes (OAuth Invalid Response)
+
++ Response 422 (application/vnd.api+json)
+
+    + Attributes (Unprocessable Entity Response)
+
++ Response 403 (application/vnd.api+json)
+
+    + Attributes (Forbidden Response)
+
+
+
 # Group Post User Mentions
 
 # Group Posts
@@ -2132,6 +2161,29 @@ This resource identifies a relationship between a User and a Skill. For example,
     + post
       + count: '1' (string)
       + type: 'posts' (string)
+
+
+## Post Image Resource
++ data
+    + type: "post_images",
+    + attributes
+        + filename: "jake.gif"
+        + base64_photo_data: gif_string
+    + relationships
+        + post
+            + data(Post Resource Identifier)
+
+## Post Image Response
++ id: "1" (string)
++ filename: "image_file_name" (string)
++ relationships
+    + user
+      + id: "1" (string)
+      + type: "users" (string)
+    + post
+      + id: "1" (string)
+      + type: "posts" (string)
+
 
 ## User Skill Resource Identifier (object)
 + id: `1` (string)
