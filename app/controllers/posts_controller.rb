@@ -24,7 +24,6 @@ class PostsController < ApplicationController
   def index
     authorize Post
     includes = [:user, :project]
-    id_params = params[:filter]
     posts = Post.includes(includes).where(id: id_params)
     render json: posts
   end
