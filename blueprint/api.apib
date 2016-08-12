@@ -566,8 +566,6 @@ This endpoint is used as a check to see if the user can access the server
 
     + Attributes (Forbidden Response)
 
-
-
 # Group Post User Mentions
 
 # Group Posts
@@ -796,6 +794,64 @@ This endpoint is used as a check to see if the user can access the server
     + Attributes (Forbidden Response)
 
 # Group Project Roles
+
+### Create a project role [POST /project_roles]
+
++ Request
+
+    + Attributes (Project Role Identifier)
+
+    + Headers
+
+          Accept: application/vnd.api+json
+          Authorization: Bearer {access_token}
+
++ Response 200 (application/vnd.api+json)
+
+    + Attributes (Project Role Identifier)
+
++ Response 401 (application/vnd.api+json)
+
+    + Attributes (OAuth Invalid Response)
+
++ Response 422 (application/vnd.api+json)
+
+    + Attributes (Unprocessable Entity Response)
+
++ Response 422 (application/vnd.api+json)
+
+    + Attributes (Filter Missing Response)
+
+## Delete Project Role [/project_roles/{id}]
+
+### Delete a project role [DELETE]
+
++ Parameters
+
+    + id (number) - Id of a project role.
+
++ Request
+
+    + Headers
+
+            Accept: application/vnd.api+json
+            Authorization: Bearer <access_token>
+
++ Response 204 (application/vnd.api+json)
+
+    + Attributes (No Content Response)
+
++ Response 401 (application/json)
+
+    + Attributes (OAuth Invalid Response)
+
++ Response 403 (application/vnd.api+json)
+
+    + Attributes (Forbidden Response)
+
++ Response 404 (application/vnd.api+json)
+
+    + Attributes (Record Not Found Response)
 
 # Group Projects
 
@@ -2162,6 +2218,17 @@ This resource identifies a relationship between a User and a Skill. For example,
       + count: '1' (string)
       + type: 'posts' (string)
 
+## Project Role Identifier
++ data
+    + relationships
+        + project
+            data
+              + type: 'projects'
+              + id: '1'
+        + role
+            data
+              + type: 'roles'
+              + id: '1'
 
 ## Post Image Resource
 + data
