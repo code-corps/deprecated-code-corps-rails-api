@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160705185815) do
+ActiveRecord::Schema.define(version: 20160911211503) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -86,8 +86,8 @@ ActiveRecord::Schema.define(version: 20160705185815) do
   end
 
   create_table "notifications", force: :cascade do |t|
-    t.integer  "notifiable_id",   null: false
     t.string   "notifiable_type", null: false
+    t.integer  "notifiable_id",   null: false
     t.integer  "user_id",         null: false
     t.string   "aasm_state"
     t.datetime "created_at",      null: false
@@ -153,6 +153,7 @@ ActiveRecord::Schema.define(version: 20160705185815) do
     t.datetime "icon_updated_at"
     t.text     "base64_icon_data"
     t.text     "description"
+    t.string   "icon_string"
     t.index ["slug"], name: "index_organizations_on_slug", unique: true, using: :btree
   end
 
@@ -259,11 +260,11 @@ ActiveRecord::Schema.define(version: 20160705185815) do
     t.text     "base64_icon_data"
     t.string   "slug",                                  null: false
     t.integer  "organization_id",                       null: false
-    t.string   "aasm_state"
     t.text     "long_description_body"
     t.text     "long_description_markdown"
     t.integer  "open_posts_count",          default: 0, null: false
     t.integer  "closed_posts_count",        default: 0, null: false
+    t.string   "icon_string"
     t.index ["organization_id"], name: "index_projects_on_organization_id", using: :btree
   end
 
@@ -294,11 +295,13 @@ ActiveRecord::Schema.define(version: 20160705185815) do
   end
 
   create_table "slugged_routes", force: :cascade do |t|
-    t.string   "slug",       null: false
-    t.integer  "owner_id"
+    t.string   "slug",            null: false
     t.string   "owner_type"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.integer  "owner_id"
+    t.datetime "created_at",      null: false
+    t.datetime "updated_at",      null: false
+    t.integer  "organization_id"
+    t.integer  "user_id"
     t.index ["owner_id", "owner_type"], name: "index_slugged_routes_on_owner_id_and_owner_type", unique: true, using: :btree
     t.index ["slug"], name: "index_slugged_routes_on_slug", unique: true, using: :btree
   end
@@ -357,6 +360,7 @@ ActiveRecord::Schema.define(version: 20160705185815) do
     t.string   "theme",                             default: "light",     null: false
     t.text     "first_name"
     t.text     "last_name"
+    t.string   "photo_string"
     t.index ["email"], name: "index_users_on_email", using: :btree
     t.index ["remember_token"], name: "index_users_on_remember_token", using: :btree
   end
