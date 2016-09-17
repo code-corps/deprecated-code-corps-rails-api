@@ -21,13 +21,7 @@ Then check out some GitHub issues to see where you can help out.
 
 ## Installing
 
-### Recommended install
-
-To make your life easier, you can just clone this repository and use our Docker container. [Follow this guide to get started.](docs/DEFAULT_INSTALL.md)
-
-#### Custom install
-
-We wholeheartedly recommend against doing a custom install. You'll be spending more time configuring and less time being productive. But if you'd like to work that way, you can read our [custom install guide](docs/CUSTOM_INSTALL.md).
+To make your life easier, you can just clone this repository and use our Docker container. [Follow this guide to get started.](docs/INSTALLING.md)
 
 ## Usage
 
@@ -39,6 +33,17 @@ Have everything installed and ready to work? [Read our usage guides](docs/USAGE.
 - Push changes to GitHub
 - Serve the Ember app's `index.html`
 - Debug with `pry-remote`
+
+## API Docs
+
+Want to see documentation for the API endpoints?
+
+Documentation is available on Apiary for the following branches:
+
+- `master` (api.codecorps.org): [http://docs.codecorpsapi.apiary.io/](http://docs.codecorpsapi.apiary.io/)
+- `develop` (api.pbqrpbecf.org and api.pbqrpbecf-qri.org): [http://docs.codecorpsapidevelop.apiary.io/](http://docs.codecorpsapidevelop.apiary.io/)
+
+Read our guide to see how to [generate API docs locally as you develop](docs/API.md).
 
 ## Built with
 

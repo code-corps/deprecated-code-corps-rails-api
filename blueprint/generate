@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+
+# Exit if any subcommand fails
+set -e
+
+# Import colors
+. ../bin/colors
+
+# Check for tools that need to be installed
+dependencies='docker-compose'
+for name in $dependencies
+do
+  if ! which "$name" > /dev/null; then
+    echo -e "${red}\xE2\x9D\x8C  $name not installed! Exiting.${end}"
+    exit 1
+  fi
+done
+
+printf "\nGenerating API docs...\n\n"
+# Creates the database.
+docker-compose run aglio aglio --theme-variables flatly -i /tmp/api.apib -o /tmp/index.html
+
+echo ""
+printf "${green}Docs generated.${end}"
+
+exit 0

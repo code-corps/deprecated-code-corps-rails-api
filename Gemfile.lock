@@ -74,6 +74,9 @@ GEM
     annotate (2.7.1)
       activerecord (>= 3.2, < 6.0)
       rake (>= 10.4, < 12.0)
+    apiaryio (0.0.1)
+      launchy (>= 0.3.2)
+      rest-client (~> 1.6.1)
     arel (7.0.0)
     aws-sdk (2.3.19)
       aws-sdk-resources (= 2.3.19)
@@ -209,6 +212,8 @@ GEM
       addressable
       faraday
       multi_json
+    launchy (2.4.3)
+      addressable (~> 2.3)
     listen (3.1.5)
       rb-fsevent (~> 0.9, >= 0.9.4)
       rb-inotify (~> 0.9, >= 0.9.7)
@@ -314,6 +319,8 @@ GEM
     rb-inotify (0.9.7)
       ffi (>= 0.5.0)
     redis (3.3.0)
+    rest-client (1.6.7)
+      mime-types (>= 1.16)
     rouge (1.11.1)
     rspec (3.5.0)
       rspec-core (~> 3.5.0)
@@ -408,6 +415,7 @@ DEPENDENCIES
   active_model_serializers (= 0.10.1)
   analytics-ruby
   annotate
+  apiaryio
   aws-sdk
   bullet
   capybara
@@ -461,6 +469,9 @@ DEPENDENCIES
   strip_attributes
   vcr
   webmock
+
+RUBY VERSION
+   ruby 2.2.5p319
 
 BUNDLED WITH
    1.12.5

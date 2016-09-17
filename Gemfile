@@ -45,6 +45,7 @@ end
 
 group :development, :test do
   gem "annotate"
+  gem "apiaryio"
   gem "bullet"
   gem "dotenv-rails"
   gem "fakeredis", require: "fakeredis/rspec"
