@@ -539,6 +539,33 @@ This endpoint is used as a check to see if the user can access the server
 
 # Group Post Images
 
+### Create a post_images [POST /post_images]
+
++ Request
+
+    + Attributes (Post Image Resource)
+
+    + Headers
+
+          Accept: application/vnd.api+json
+          Authorization: Bearer {access_token}
+
++ Response 200 (application/vnd.api+json)
+
+    + Attributes (Post Image Response)
+
++ Response 401 (application/vnd.api+json)
+
+    + Attributes (OAuth Invalid Response)
+
++ Response 422 (application/vnd.api+json)
+
+    + Attributes (Unprocessable Entity Response)
+
++ Response 403 (application/vnd.api+json)
+
+    + Attributes (Forbidden Response)
+
 # Group Post User Mentions
 
 # Group Posts
@@ -633,6 +660,62 @@ This endpoint is used as a check to see if the user can access the server
 
     + Attributes (Unprocessable Entity Response)
 
+# Group Post Likes
+
+### Create a post_likes [POST /post_likes]
+
++ Request
+
+    + Attributes (Post Like Resource)
+
+    + Headers
+
+          Accept: application/vnd.api+json
+          Authorization: Bearer {access_token}
+
++ Response 200 (application/vnd.api+json)
+
+    + Attributes (Post Likes Response)
+
++ Response 401 (application/vnd.api+json)
+
+    + Attributes (OAuth Invalid Response)
+
++ Response 422 (application/vnd.api+json)
+
+    + Attributes (Unprocessable Entity Response)
+
+## Delete Post Likes [/post_likes/{id}]
+
+### Delete a post like [DELETE]
+
++ Parameters
+
+    + id (number) - Id of a post like.
+
++ Request
+
+    + Headers
+
+            Accept: application/vnd.api+json
+            Authorization: Bearer <access_token>
+
++ Response 204 (application/vnd.api+json)
+
+    + Attributes (No Content Response)
+
++ Response 401 (application/json)
+
+    + Attributes (OAuth Invalid Response)
+
++ Response 403 (application/vnd.api+json)
+
+    + Attributes (Forbidden Response)
+
++ Response 404 (application/vnd.api+json)
+
+    + Attributes (Record Not Found Response)
+
 # Group Preview User Mentions
 
 # Group Previews
@@ -711,6 +794,64 @@ This endpoint is used as a check to see if the user can access the server
     + Attributes (Forbidden Response)
 
 # Group Project Roles
+
+### Create a project role [POST /project_roles]
+
++ Request
+
+    + Attributes (Project Role Identifier)
+
+    + Headers
+
+          Accept: application/vnd.api+json
+          Authorization: Bearer {access_token}
+
++ Response 200 (application/vnd.api+json)
+
+    + Attributes (Project Role Identifier)
+
++ Response 401 (application/vnd.api+json)
+
+    + Attributes (OAuth Invalid Response)
+
++ Response 422 (application/vnd.api+json)
+
+    + Attributes (Unprocessable Entity Response)
+
++ Response 422 (application/vnd.api+json)
+
+    + Attributes (Filter Missing Response)
+
+## Delete Project Role [/project_roles/{id}]
+
+### Delete a project role [DELETE]
+
++ Parameters
+
+    + id (number) - Id of a project role.
+
++ Request
+
+    + Headers
+
+            Accept: application/vnd.api+json
+            Authorization: Bearer <access_token>
+
++ Response 204 (application/vnd.api+json)
+
+    + Attributes (No Content Response)
+
++ Response 401 (application/json)
+
+    + Attributes (OAuth Invalid Response)
+
++ Response 403 (application/vnd.api+json)
+
+    + Attributes (Forbidden Response)
+
++ Response 404 (application/vnd.api+json)
+
+    + Attributes (Record Not Found Response)
 
 # Group Projects
 
@@ -2055,6 +2196,61 @@ This resource identifies a relationship between a User and a Skill. For example,
     + user
         + data(User Resource Identifier)
         + links
+
+
+
+## User Posts Resource Identifier (object)
++ id: `1` (string)
++ type: `posts` (string)
+
+## Post Like Resource (object)
++ data
+    + relationships
+        + post
+            + data(Post Resource Identifier)
+
+## Post Likes Response
++ data
+    + user
+      + count: '1' (string)
+      + type: 'users' (string)
+    + post
+      + count: '1' (string)
+      + type: 'posts' (string)
+
+## Project Role Identifier
++ data
+    + relationships
+        + project
+            data
+              + type: 'projects'
+              + id: '1'
+        + role
+            data
+              + type: 'roles'
+              + id: '1'
+
+## Post Image Resource
++ data
+    + type: "post_images",
+    + attributes
+        + filename: "jake.gif"
+        + base64_photo_data: gif_string
+    + relationships
+        + post
+            + data(Post Resource Identifier)
+
+## Post Image Response
++ id: "1" (string)
++ filename: "image_file_name" (string)
++ relationships
+    + user
+      + id: "1" (string)
+      + type: "users" (string)
+    + post
+      + id: "1" (string)
+      + type: "posts" (string)
+
 
 ## User Skill Resource Identifier (object)
 + id: `1` (string)
